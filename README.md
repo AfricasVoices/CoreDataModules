@@ -1,4 +1,6 @@
 # Core Data Modules
+The skeleton of an AVF module library, with tests. 
+Currently contains a trivial example which cleans gender from English text.
 
 ### Testing
 All tests are to be written using [unittest](https://docs.python.org/3/library/unittest.html), 
