@@ -1,6 +1,6 @@
 import unittest
 
-from cleaners.demographic_cleaner import DemographicCleaner
+from cleaners.english.demographic_cleaner import DemographicCleaner
 
 
 class TestDemographicCleaner(unittest.TestCase):
