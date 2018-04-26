@@ -3,8 +3,8 @@ class DemographicCleaner:
     def __init__(self):
         pass
 
-    @classmethod
-    def clean_gender(cls, string):
+    @staticmethod
+    def clean_gender(string):
         """
         Converts a string describing gender to M, F, or NC.
         :param string: Text to be cleaned.
