@@ -6,6 +6,6 @@ ADD . /app
 
 RUN pip install pipenv
 RUN pipenv sync
+RUN mkdir unittest
 
-#CMD pipenv run python test_runner.py
-CMD (pipenv run pytest --junitxml=test_results.xml || echo "")
+CMD pipenv run pytest --junitxml=unittest/test_results.xml
