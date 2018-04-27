@@ -16,9 +16,9 @@ jobs:
           name: Run tests
           command: docker start -a core-data-container
       - run:
-          name: Copy test results from Docker
+          name: Copy test results from Docker (subdir)
           command: |
-            mkdir -p ~/test_results
-            docker cp core-data-container:/app/test_results.xml ~/test_results/unittest.xml
+            mkdir -p ~/test-results/unittest
+            docker cp core-data-container:/app/test_results.xml ~/test-results/unittest/results.xml
       - store_test_results:
-          path: ~/test_results
+          path: ~/test-results
