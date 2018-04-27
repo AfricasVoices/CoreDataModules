@@ -12,9 +12,9 @@ jobs:
       - run:
           name: Create Docker container
           command: |
-            mkdir -p "$(pwd)/test-results/unittest"
+            mkdir -p $(pwd)/test-results/unittest
 
-            docker container create --name core-data-container --mount type=bind,source="$(pwd)/test-results/unittest",target=/app/unittest/ core-data-modules
+            docker container create --name core-data-container --mount type=bind,source=$(pwd)/test-results/unittest,target=/app/unittest/ core-data-modules
       - run:
           name: Run tests
           command: |
