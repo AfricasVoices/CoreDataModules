@@ -12,8 +12,8 @@ jobs:
       - run:
           name: Create Docker container
           command: |
-            mkdir -p ~/test-results
-            docker container create --name core-data-container --mount type=bind,source=~/test-results/unittest,target=/app/unittest/ core-data-modules
+            mkdir -p /test-results
+            docker container create --name core-data-container --mount type=bind,source=/test-results/unittest,target=/app/unittest/ core-data-modules
       - run:
           name: Run tests
           command: |
@@ -24,4 +24,4 @@ jobs:
 #            mkdir -p ~/test-results/unittest
 #            docker cp core-data-container:/app/test_results.xml ~/test-results/unittest/results.xml
       - store_test_results:
-          path: ~/test-results
+          path: /test-results
