@@ -16,7 +16,11 @@ jobs:
 
             ls
 
-            docker container create --name core-data-container --mount type=bind,source=$(pwd)/test-results/unittest,target=/app/unittest/ core-data-modules
+            echo "Test"
+
+            ls test-results
+
+            docker container create --name core-data-container --mount "type=bind,source=$(pwd)/test-results/unittest,target=/app/unittest/" core-data-modules
       - run:
           name: Run tests
           command: |
