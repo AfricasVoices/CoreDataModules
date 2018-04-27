@@ -14,11 +14,7 @@ jobs:
           command: |
             mkdir -p $(pwd)/test-results/unittest
 
-            ls
-
-            echo "Test"
-
-            ls test-results
+            if [ -d $(pwd)/test-results/unittest  ]; then echo "directory exists"; else echo "directory does not exist"; fi
 
             docker container create --name core-data-container --mount "type=bind,source=$(pwd)/test-results/unittest,target=/app/unittest/" core-data-modules
       - run:
