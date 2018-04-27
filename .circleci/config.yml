@@ -11,7 +11,7 @@ jobs:
           command: docker build -t core-data-modules .
       - run:
           name: Create Docker container
-          command: docker container create core-data-container
+          command: docker container create --name core-data-container core-data-modules
       - run:
           name: Run tests
           command: docker start -a core-data-container
