@@ -1,4 +1,7 @@
 # Core Data Modules
+
+[![CircleCI](https://circleci.com/gh/AfricasVoices/experimental_CoreDataModules/tree/master.svg?style=shield)](https://circleci.com/gh/AfricasVoices/experimental_CoreDataModules/tree/master)
+
 The skeleton of an AVF module library, with tests. 
 Currently contains a trivial example which cleans gender from English text.
 
