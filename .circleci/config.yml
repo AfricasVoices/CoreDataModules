@@ -11,16 +11,14 @@ jobs:
           command: docker build -t core-data-modules .
       - run:
           name: Create Docker container
-          command: |
-            mkdir -p $(pwd)/test-results/unittest
-
-            if [ -d $(pwd)/test-results/unittest  ]; then echo "directory exists"; else echo "directory does not exist"; fi
-
-            docker container create --name core-data-container --mount "type=bind,source=$(pwd)/test-results/unittest,target=/app/unittest/" core-data-modules
+          command: docker container create --name core-data-container core-data-modules
       - run:
           name: Run tests
           command: |
-            docker start -a core-data-container
+            mkdir -p ~/test-results/unittest
+            (docker start -a core-data-container; EC=$?) || exit 0
+            docker cp core-data-container:/app/test_results.xml ~/test-results/unittest/results.xml
+            exit $EC
 #      - run:
 #          name: Copy test results from Docker (subdir)
 #          command: |
