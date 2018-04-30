@@ -7,4 +7,4 @@ ADD . /app
 RUN pip install pipenv
 RUN pipenv sync
 
-CMD pipenv run pytest --junitxml=unittest/test_results.xml
+CMD pipenv run pytest --junitxml=test_results.xml
