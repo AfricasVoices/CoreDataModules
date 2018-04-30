@@ -22,4 +22,4 @@ jobs:
             docker cp core-data-container:/app/test_results.xml ~/test-results/unittest/results.xml
           when: always
       - store_test_results:
-          path: /test-results
+          path: ~/test-results
