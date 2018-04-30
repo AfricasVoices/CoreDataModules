@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: docker:18.03.0-ce-git
+      - image: docker:18.03.0-ce-git # Outer Container (environment in which the core data container will be built)
     steps:
       - checkout
       - setup_remote_docker
@@ -10,7 +10,7 @@ jobs:
           name: Build Docker image
           command: docker build -t core-data-modules .
       - run:
-          name: Create Docker container
+          name: Create Docker container # Inner Container (the core data container)
           command: docker container create --name core-data-container core-data-modules
       - run:
           name: Run tests
