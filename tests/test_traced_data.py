@@ -89,7 +89,7 @@ class TestTracedData(unittest.TestCase):
         if six.PY2:
             self.assertIs(type(td.values()), list)
         if six.PY3:
-            self.assertIsInstance(td.values(), list)
+            self.assertIsInstance(td.values(), collections.ValuesView)
 
         # Test that the contents of the returned data are the same
         self.assertSetEqual(set(td.values()), {"0", "+441632000001", "man"})
