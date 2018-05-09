@@ -1,10 +1,8 @@
-FROM python:2.7-slim
+ARG PYTHON_VERSION
+FROM python:${PYTHON_VERSION}-slim
 
 WORKDIR /app
 
 ADD . /app
 
-RUN pip install pipenv
-RUN pipenv sync -d
-
-CMD pipenv run pytest --junitxml=test_results.xml
+CMD python setup.py test --addopts "--junitxml=test_results.xml"

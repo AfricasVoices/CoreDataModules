@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  python-2.7:
     docker:
       - image: docker:18.03.0-ce-git # Outer Container (environment in which the core data container will be built)
     steps:
@@ -8,7 +8,7 @@ jobs:
       - setup_remote_docker
       - run:
           name: Build Docker image
-          command: docker build -t core-data-modules .
+          command: docker build -t core-data-modules --build-arg PYTHON_VERSION=2.7 .
       - run:
           name: Create Docker container # Inner Container (the core data container)
           command: docker container create --name core-data-container core-data-modules
@@ -23,3 +23,32 @@ jobs:
           when: always
       - store_test_results:
           path: ~/test-results
+  python-3.5:
+    docker:
+      - image: docker:18.03.0-ce-git # Outer Container (environment in which the core data container will be built)
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t core-data-modules --build-arg PYTHON_VERSION=3.5 .
+      - run:
+          name: Create Docker container # Inner Container (the core data container)
+          command: docker container create --name core-data-container core-data-modules
+      - run:
+          name: Run tests
+          command: docker start -a core-data-container
+      - run:
+          name: Copy test results
+          command: |
+            mkdir -p ~/test-results/unittest
+            docker cp core-data-container:/app/test_results.xml ~/test-results/unittest/results.xml
+          when: always
+      - store_test_results:
+          path: ~/test-results
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - python-2.7
+      - python-3.5
