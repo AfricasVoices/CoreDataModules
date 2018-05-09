@@ -1,6 +1,5 @@
 import hashlib
 import json
-import time
 from deprecation import deprecated
 
 import six
@@ -28,11 +27,11 @@ class Metadata(object):
 
 
 class TracedData(object):
-    def __init__(self, data, user, program, prev=None):
+    def __init__(self, data, user, program, timestamp, prev=None):
         self.__prev = prev
         self.__data = data
         self.__sha = self.__sha_with_prev(data, "" if prev is None else prev.__sha)
-        self.__metadata = Metadata(user, program, time.time())
+        self.__metadata = Metadata(user, program, timestamp)
 
     @staticmethod
     def __sha_with_prev(data, prev_sha):
@@ -55,11 +54,12 @@ class TracedData(object):
     def __getitem__(self, key):
         return self.get(key)
 
-    def append(self, new_data, user, program):
-        self.__prev = TracedData(self.__data, self.__metadata.user, self.__metadata.program, self.__prev)
+    def append(self, new_data, user, program, timestamp):
+        self.__prev = TracedData(
+            self.__data, self.__metadata.user, self.__metadata.program, self.__metadata.timestamp, self.__prev)
         self.__data = new_data
         self.__sha = self.__sha_with_prev(self.__data, self.__prev.__sha)
-        self.__metadata = Metadata(user, program, time.time())
+        self.__metadata = Metadata(user, program, timestamp)
 
     @deprecated
     def has_key(self, key):

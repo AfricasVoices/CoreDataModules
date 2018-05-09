@@ -1,4 +1,5 @@
 import collections
+import time
 import unittest
 import six
 
@@ -9,13 +10,13 @@ class TestTracedData(unittest.TestCase):
     @staticmethod
     def td_1():
         data = {"id": "0", "phone": "+441632000001", "gender": "man"}
-        return TracedData(data, "test_user", "run_fetcher")
+        return TracedData(data, "test_user", "run_fetcher", time.time())
 
     @classmethod
     def td_2(cls):
         td = cls.td_1()
         data_cleaned = {"gender": "male", "age": 30}
-        td.append(data_cleaned, "test_user", "demographic_cleaner")
+        td.append(data_cleaned, "test_user", "demographic_cleaner", time.time())
         return td
 
     def test_append(self):
