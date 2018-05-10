@@ -3,20 +3,20 @@ import time
 import unittest
 import six
 
-from core_data_modules.traced_data import TracedData
+from core_data_modules.traced_data import TracedData, Metadata
 
 
 class TestTracedData(unittest.TestCase):
     @staticmethod
     def td_1():
         data = {"id": "0", "phone": "+441632000001", "gender": "man"}
-        return TracedData(data, "test_user", "run_fetcher", time.time())
+        return TracedData(data, Metadata("test_user", "run_fetcher", time.time()))
 
     @classmethod
     def td_2(cls):
         td = cls.td_1()
         data_cleaned = {"gender": "male", "age": 30}
-        td.append(data_cleaned, "test_user", "demographic_cleaner", time.time())
+        td.append(data_cleaned, Metadata("test_user", "demographic_cleaner", time.time()))
         return td
 
     def test_append(self):
