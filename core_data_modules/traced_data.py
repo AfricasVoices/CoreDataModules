@@ -28,26 +28,26 @@ class Metadata(object):
 
 class TracedData(object):
     def __init__(self, data, metadata, prev=None):
-        self.__prev = prev
-        self.__data = data
-        self.__sha = self.__sha_with_prev(data, "" if prev is None else prev.__sha)
-        self.__metadata = metadata
+        self._prev = prev
+        self._data = data
+        self._sha = self._sha_with_prev(data, "" if prev is None else prev._sha)
+        self._metadata = metadata
 
     @staticmethod
-    def __sha_with_prev(data, prev_sha):
+    def _sha_with_prev(data, prev_sha):
         return SHAUtils.sha_dict({"data": data, "prev_sha": prev_sha})
 
     def __len__(self):
-        if self.__prev is None:
-            return len(self.__data)
+        if self._prev is None:
+            return len(self._data)
         else:
-            return len(self.__data) + len(self.__prev)
+            return len(self._data) + len(self._prev)
 
     def get(self, key, default=None):
-        if key in self.__data:
-            return self.__data[key]
-        elif self.__prev is not None:
-            return self.__prev.get(key, default)
+        if key in self._data:
+            return self._data[key]
+        elif self._prev is not None:
+            return self._prev.get(key, default)
         else:
             return default
 
@@ -55,82 +55,82 @@ class TracedData(object):
         return self.get(key)
 
     def append(self, new_data, new_metadata):
-        self.__prev = TracedData(self.__data, self.__metadata, self.__prev)
-        self.__data = new_data
-        self.__sha = self.__sha_with_prev(self.__data, self.__prev.__sha)
-        self.__metadata = new_metadata
+        self._prev = TracedData(self._data, self._metadata, self._prev)
+        self._data = new_data
+        self._sha = self._sha_with_prev(self._data, self._prev._sha)
+        self._metadata = new_metadata
 
     @deprecated
     def has_key(self, key):
-        if self.__data.has_key(key):
+        if self._data.has_key(key):
             return True
-        elif self.__prev is not None:
-            return self.__prev.has_key(key)
+        elif self._prev is not None:
+            return self._prev.has_key(key)
         else:
             return False
 
     def __contains__(self, key):
-        if key in self.__data:
+        if key in self._data:
             return True
-        elif self.__prev is not None:
-            return key in self.__prev
+        elif self._prev is not None:
+            return key in self._prev
         else:
             return False
 
     def items(self):
-        if self.__prev is None:
-            return self.__data.items()
+        if self._prev is None:
+            return self._data.items()
         else:
             # TODO: In Python 3 self.__prev.items() returns an iterator, which is immediately expanded to build a dict.
             # TODO: Consider a rewrite which does not require performing this expansion.
-            prev_items = dict(self.__prev.items())
-            for (key, value) in six.iteritems(self.__data):
+            prev_items = dict(self._prev.items())
+            for (key, value) in six.iteritems(self._data):
                 prev_items[key] = value
             return prev_items.items()
 
     def keys(self):
-        if self.__prev is None:
-            return self.__data.keys()
+        if self._prev is None:
+            return self._data.keys()
         else:
-            prev_items = dict(self.__prev.items())
-            for (key, value) in six.iteritems(self.__data):
+            prev_items = dict(self._prev.items())
+            for (key, value) in six.iteritems(self._data):
                 prev_items[key] = value
             return prev_items.keys()
 
     def values(self):
-        if self.__prev is None:
-            return self.__data.values()
+        if self._prev is None:
+            return self._data.values()
         else:
-            prev_items = dict(self.__prev.items())
-            for (key, value) in six.iteritems(self.__data):
+            prev_items = dict(self._prev.items())
+            for (key, value) in six.iteritems(self._data):
                 prev_items[key] = value
             return prev_items.values()
 
     if six.PY2:
         def iteritems(self):
-            if self.__prev is None:
-                return self.__data.iteritems()
+            if self._prev is None:
+                return self._data.iteritems()
             else:
-                prev_items = dict(self.__prev.iteritems())
-                for (key, value) in self.__data.iteritems():
+                prev_items = dict(self._prev.iteritems())
+                for (key, value) in self._data.iteritems():
                     prev_items[key] = value
                 return prev_items.iteritems()
 
         def iterkeys(self):
-            if self.__prev is None:
-                return self.__data.iterkeys()
+            if self._prev is None:
+                return self._data.iterkeys()
             else:
-                prev_items = dict(self.__prev.iteritems())
-                for (key, value) in self.__data.iteritems():
+                prev_items = dict(self._prev.iteritems())
+                for (key, value) in self._data.iteritems():
                     prev_items[key] = value
                 return prev_items.iterkeys()
 
         def itervalues(self):
-            if self.__prev is None:
-                return self.__data.itervalues()
+            if self._prev is None:
+                return self._data.itervalues()
             else:
-                prev_items = dict(self.__prev.iteritems())
-                for (key, value) in self.__data.iteritems():
+                prev_items = dict(self._prev.iteritems())
+                for (key, value) in self._data.iteritems():
                     prev_items[key] = value
                 return prev_items.itervalues()
 
