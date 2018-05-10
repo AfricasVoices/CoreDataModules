@@ -138,3 +138,9 @@ class TracedData(object):
 
     def __iter__(self):
         return six.iterkeys(self)
+
+    def __copy__(self):
+        return TracedData(self._data, self._metadata, self._prev.copy())
+
+    def get_history(self, key):
+        pass

@@ -158,6 +158,9 @@ class TestTracedData(unittest.TestCase):
 
         self.td_2(td)
         self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
+        self.assertEqual(len(keys), 4)
+        self.assertTrue("phone" in keys)
+        self.assertTrue("county" not in keys)
 
         keys = td.viewkeys()
         self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
