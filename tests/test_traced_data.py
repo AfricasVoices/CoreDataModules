@@ -96,6 +96,17 @@ class TestTracedData(unittest.TestCase):
             self.assertTrue("phone" in keys)
             self.assertTrue("county" not in keys)
 
+            # Test set operations
+            td1 = self.td_1()
+            td2 = self.td_1()
+            self.td_2(td2)
+
+            self.assertSetEqual(td1.keys() & td2.keys(), {"id", "phone", "gender"})
+            self.assertSetEqual(td1.keys() | td2.keys(), {"id", "phone", "gender", "age"})
+            self.assertSetEqual(td1.keys() - td2.keys(), set())
+            self.assertSetEqual(td2.keys() - td1.keys(), {"age"})
+            self.assertSetEqual(td1.keys() ^ td2.keys(), {"age"})
+
         keys = td.keys()
         self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
 
@@ -164,6 +175,17 @@ class TestTracedData(unittest.TestCase):
 
         keys = td.viewkeys()
         self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
+
+        # Test set operations
+        td1 = self.td_1()
+        td2 = self.td_1()
+        self.td_2(td2)
+
+        self.assertSetEqual(td1.viewkeys() & td2.viewkeys(), {"id", "phone", "gender"})
+        self.assertSetEqual(td1.viewkeys() | td2.viewkeys(), {"id", "phone", "gender", "age"})
+        self.assertSetEqual(td1.viewkeys() - td2.viewkeys(), set())
+        self.assertSetEqual(td2.viewkeys() - td1.viewkeys(), {"age"})
+        self.assertSetEqual(td1.viewkeys() ^ td2.viewkeys(), {"age"})
 
     def test_itervalues(self):
         td = self.td_1()
