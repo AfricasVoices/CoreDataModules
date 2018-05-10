@@ -13,11 +13,9 @@ class TestTracedData(unittest.TestCase):
         return TracedData(data, Metadata("test_user", "run_fetcher", time.time()))
 
     @classmethod
-    def td_2(cls):
-        td = cls.td_1()
+    def td_2(cls, td):
         data_cleaned = {"gender": "male", "age": 30}
         td.append(data_cleaned, Metadata("test_user", "demographic_cleaner", time.time()))
-        return td
 
     def test_append(self):
         td = self.td_1()
@@ -28,7 +26,7 @@ class TestTracedData(unittest.TestCase):
         self.assertEqual(td.get("age"), None)
         self.assertEqual(td.get("age", "default"), "default")
 
-        td = self.td_2()
+        self.td_2(td)
 
         self.assertEqual(td.get("id"), "0")
         self.assertEqual(td.get("phone"), "+441632000001")
@@ -46,7 +44,7 @@ class TestTracedData(unittest.TestCase):
         self.assertEqual("gender" not in td, False)
         self.assertEqual("age" not in td, True)
 
-        td = self.td_2()
+        self.td_2(td)
 
         self.assertEqual("gender" in td, True)
         self.assertEqual("age" in td, True)
@@ -64,24 +62,32 @@ class TestTracedData(unittest.TestCase):
         self.assertDictEqual(dict(td.items()),
                              dict([("id", "0"), ("phone", "+441632000001"), ("gender", "man")]))
 
-        td = self.td_2()
+        self.td_2(td)
         self.assertDictEqual(dict(td.items()),
                              dict([("id", "0"), ("phone", "+441632000001"), ("gender", "male"), ("age", 30)]))
 
     def test_keys(self):
         td = self.td_1()
+        keys = td.keys()
 
         # Test that the return type is correct for this version of Python
         if six.PY2:
-            self.assertIs(type(td.keys()), list)
+            self.assertIs(type(keys), list)
         if six.PY3:
-            self.assertIsInstance(td.keys(), collections.KeysView)
+            self.assertIsInstance(keys, collections.KeysView)
 
         # Test that the contents of the returned data are the same
-        self.assertSetEqual(set(td.keys()), {"id", "phone", "gender"})
+        self.assertSetEqual(set(keys), {"id", "phone", "gender"})
 
-        td = self.td_2()
-        self.assertSetEqual(set(td.keys()), {"id", "phone", "gender", "age"})
+        self.td_2(td)
+
+        if six.PY2:
+            self.assertSetEqual(set(keys), {"id", "phone", "gender"})
+        if six.PY3:
+            self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
+
+        keys = td.keys()
+        self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
 
     def test_values(self):
         td = self.td_1()
@@ -95,7 +101,7 @@ class TestTracedData(unittest.TestCase):
         # Test that the contents of the returned data are the same
         self.assertSetEqual(set(td.values()), {"0", "+441632000001", "man"})
 
-        td = self.td_2()
+        self.td_2(td)
         self.assertSetEqual(set(td.values()), {"0", "+441632000001", "male", 30})
 
     def test_iteritems(self):
@@ -110,7 +116,7 @@ class TestTracedData(unittest.TestCase):
         self.assertDictEqual(dict(td.iteritems()),
                              dict([("id", "0"), ("phone", "+441632000001"), ("gender", "man")]))
 
-        td = self.td_2()
+        self.td_2(td)
         self.assertDictEqual(dict(td.iteritems()),
                              dict([("id", "0"), ("phone", "+441632000001"), ("gender", "male"), ("age", 30)]))
 
@@ -125,8 +131,26 @@ class TestTracedData(unittest.TestCase):
         self.assertIsInstance(td.iterkeys(), collections.Iterator)
         self.assertSetEqual(set(td.iterkeys()), {"id", "phone", "gender"})
 
-        td = self.td_2()
+        self.td_2(td)
         self.assertSetEqual(set(td.iterkeys()), {"id", "phone", "gender", "age"})
+
+    def test_viewkeys(self):
+        td = self.td_1()
+
+        if six.PY3:
+            # viewkeys was renamed keys in Python 3
+            self.assertRaises(AttributeError, lambda: td.viewkeys())
+            return
+
+        keys = td.viewkeys()
+        self.assertIsInstance(keys, collections.KeysView)
+        self.assertSetEqual(set(keys), {"id", "phone", "gender"})
+
+        self.td_2(td)
+        self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
+
+        keys = td.viewkeys()
+        self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
 
     def test_itervalues(self):
         td = self.td_1()
@@ -139,13 +163,17 @@ class TestTracedData(unittest.TestCase):
         self.assertIsInstance(td.itervalues(), collections.Iterator)
         self.assertSetEqual(set(td.itervalues()), {"0", "+441632000001", "man"})
 
-        td = self.td_2()
+        self.td_2(td)
         self.assertSetEqual(set(td.itervalues()), {"0", "+441632000001", "male", 30})
 
-    def test_iter(self):
+    def test___iter__(self):
         td = self.td_1()
         self.assertIsInstance(iter(td), collections.Iterator)
         self.assertSetEqual(set(iter(td)), {"id", "phone", "gender"})
 
-        td = self.td_2()
+        self.td_2(td)
         self.assertSetEqual(set(iter(td)), {"id", "phone", "gender", "age"})
+
+    def test___copy__(self):
+        # TODO: Figure out how to test this!
+        pass

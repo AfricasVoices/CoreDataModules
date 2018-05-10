@@ -4,6 +4,8 @@ from deprecation import deprecated
 
 import six
 
+from core_data_modules.views import _TracedDataKeysView
+
 
 class SHAUtils(object):
     @staticmethod
@@ -81,21 +83,27 @@ class TracedData(object):
         if self._prev is None:
             return self._data.items()
         else:
-            # TODO: In Python 3 self.__prev.items() returns an iterator, which is immediately expanded to build a dict.
+            # TODO: In Python 3 self._prev.items() returns an iterator, which is immediately expanded to build a dict.
             # TODO: Consider a rewrite which does not require performing this expansion.
             prev_items = dict(self._prev.items())
             for (key, value) in six.iteritems(self._data):
                 prev_items[key] = value
             return prev_items.items()
 
-    def keys(self):
-        if self._prev is None:
-            return self._data.keys()
-        else:
-            prev_items = dict(self._prev.items())
-            for (key, value) in six.iteritems(self._data):
-                prev_items[key] = value
-            return prev_items.keys()
+    if six.PY2:
+        def keys(self):
+            if self._prev is None:
+                return self._data.keys()
+            else:
+                prev_items = dict(self._prev.items())
+                # noinspection PyCompatibility
+                for (key, value) in self._data.iteritems():
+                    prev_items[key] = value
+                return prev_items.keys()
+
+    if six.PY3:
+        def keys(self):
+            return _TracedDataKeysView(self)
 
     def values(self):
         if self._prev is None:
@@ -117,13 +125,10 @@ class TracedData(object):
                 return prev_items.iteritems()
 
         def iterkeys(self):
-            if self._prev is None:
-                return self._data.iterkeys()
-            else:
-                prev_items = dict(self._prev.iteritems())
-                for (key, value) in self._data.iteritems():
-                    prev_items[key] = value
-                return prev_items.iterkeys()
+            return iter(self.viewkeys())
+
+        def viewkeys(self):
+            return _TracedDataKeysView(self)
 
         def itervalues(self):
             if self._prev is None:
