@@ -35,6 +35,13 @@ class TestTracedData(unittest.TestCase):
 
         # TODO: Test that the original data is still available.
 
+    def test___len__(self):
+        td = self.td_1()
+        self.assertEqual(len(td), 3)
+
+        self.td_2(td)
+        self.assertEqual(len(td), 4)
+
     def test___contains__(self):
         td = self.td_1()
 
@@ -85,6 +92,9 @@ class TestTracedData(unittest.TestCase):
             self.assertSetEqual(set(keys), {"id", "phone", "gender"})
         if six.PY3:
             self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
+            self.assertEqual(len(keys), 4)
+            self.assertTrue("phone" in keys)
+            self.assertTrue("county" not in keys)
 
         keys = td.keys()
         self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})

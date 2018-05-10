@@ -4,7 +4,7 @@ from deprecation import deprecated
 
 import six
 
-from core_data_modules.views import _TracedDataKeysView
+from core_data_modules.views.traced_data_keys_view import _TracedDataKeysView
 
 
 class SHAUtils(object):
@@ -40,10 +40,7 @@ class TracedData(object):
         return SHAUtils.sha_dict({"data": data, "prev_sha": prev_sha})
 
     def __len__(self):
-        if self._prev is None:
-            return len(self._data)
-        else:
-            return len(self._data) + len(self._prev)
+        return sum(1 for _ in six.viewkeys(self))
 
     def get(self, key, default=None):
         if key in self._data:
