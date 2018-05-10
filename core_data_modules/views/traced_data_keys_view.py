@@ -22,15 +22,11 @@ class _TracedDataKeysIterator(collections.Iterator):
                         self.seen_keys.add(key)
                         return key
             except StopIteration:
-                pass
-
-            # If no keys left to try, load the keys from the prev. TracedData instance.
-            self.traced_data = self.traced_data._prev
-
-            if self.traced_data is None:
-                raise StopIteration()
-
-            self.next_keys = iter(self.traced_data._data.keys())
+                # We ran out of keys which we haven't yet returned. Try the prev TracedData.
+                self.traced_data = self.traced_data._prev
+                if self.traced_data is None:
+                    raise StopIteration()
+                self.next_keys = iter(self.traced_data._data.keys())
 
     if six.PY2:
         def next(self):
