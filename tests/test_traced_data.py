@@ -122,18 +122,28 @@ class TestTracedData(unittest.TestCase):
 
     def test_values(self):
         td = self.td_1()
+        values = td.values()
 
         # Test that the return type is correct for this version of Python
         if six.PY2:
-            self.assertIs(type(td.values()), list)
+            self.assertIs(type(values), list)
         if six.PY3:
-            self.assertIsInstance(td.values(), collections.ValuesView)
+            self.assertIsInstance(values, collections.ValuesView)
 
         # Test that the contents of the returned data are the same
-        self.assertSetEqual(set(td.values()), {"0", "+441632000001", "man"})
+        self.assertSetEqual(set(values), {"0", "+441632000001", "man"})
 
         self.td_2(td)
-        self.assertSetEqual(set(td.values()), {"0", "+441632000001", "male", 30})
+        if six.PY2:
+            self.assertSetEqual(set(values), {"0", "+441632000001", "man"})
+        if six.PY3:
+            self.assertSetEqual(set(values), {"0", "+441632000001", "male", 30})
+            self.assertEqual(len(values), 4)
+            self.assertTrue(30 in values)
+            self.assertTrue("female" not in values)
+
+        values = td.values()
+        self.assertSetEqual(set(values), {"0", "+441632000001", "male", 30})
 
     def test_iteritems(self):
         td = self.td_1()
@@ -155,7 +165,7 @@ class TestTracedData(unittest.TestCase):
         td = self.td_1()
 
         if six.PY3:
-            # viewkeys was renamed keys in Python 3
+            # viewitems was renamed keys in Python 3
             self.assertRaises(AttributeError, lambda: td.viewkeys())
             return
 
@@ -252,6 +262,27 @@ class TestTracedData(unittest.TestCase):
 
         self.td_2(td)
         self.assertSetEqual(set(td.itervalues()), {"0", "+441632000001", "male", 30})
+
+    def test_viewvalues(self):
+        td = self.td_1()
+
+        if six.PY3:
+            # viewvalues was removed in Python 3
+            self.assertRaises(AttributeError, lambda: td.itervalues())
+            return
+
+        values = td.viewvalues()
+        self.assertIsInstance(values, collections.ValuesView)
+        self.assertSetEqual(set(values), {"0", "+441632000001", "man"})
+
+        self.td_2(td)
+        self.assertSetEqual(set(values), {"0", "+441632000001", "male", 30})
+        self.assertEqual(len(values), 4)
+        self.assertTrue(30 in values)
+        self.assertTrue("female" not in values)
+
+        values = td.viewvalues()
+        self.assertSetEqual(set(values), {"0", "+441632000001", "male", 30})
 
     def test___iter__(self):
         td = self.td_1()

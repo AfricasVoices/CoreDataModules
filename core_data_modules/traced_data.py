@@ -6,6 +6,7 @@ import six
 
 from core_data_modules.views.traced_data_items_view import _TracedDataItemsView
 from core_data_modules.views.traced_data_keys_view import _TracedDataKeysView
+from core_data_modules.views.traced_data_values_view import _TracedDataValuesView
 
 
 class SHAUtils(object):
@@ -84,14 +85,8 @@ class TracedData(object):
         def keys(self):
             return _TracedDataKeysView(self)
 
-    def values(self):
-        if self._prev is None:
-            return self._data.values()
-        else:
-            prev_items = dict(self._prev.items())
-            for (key, value) in six.iteritems(self._data):
-                prev_items[key] = value
-            return prev_items.values()
+        def values(self):
+            return _TracedDataValuesView(self)
 
     if six.PY2:
         def items(self):
@@ -124,14 +119,20 @@ class TracedData(object):
         def viewkeys(self):
             return _TracedDataKeysView(self)
 
-        def itervalues(self):
+        def values(self):
             if self._prev is None:
-                return self._data.itervalues()
+                return self._data.values()
             else:
-                prev_items = dict(self._prev.iteritems())
-                for (key, value) in self._data.iteritems():
+                prev_items = dict(self._prev.items())
+                for (key, value) in self._data.items():
                     prev_items[key] = value
-                return prev_items.itervalues()
+                return prev_items.values()
+
+        def itervalues(self):
+            return iter(self.viewvalues())
+
+        def viewvalues(self):
+            return _TracedDataValuesView(self)
 
     def __iter__(self):
         return six.iterkeys(self)

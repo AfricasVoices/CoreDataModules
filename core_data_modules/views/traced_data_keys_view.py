@@ -44,8 +44,8 @@ class _TracedDataKeysView(collections.KeysView):
     def __len__(self):
         return len(self.traced_data)
 
-    def __contains__(self, x):
-        return x in self.traced_data
+    def __contains__(self, key):
+        return key in self.traced_data
 
     def __iter__(self):
         return _TracedDataKeysIterator(self.traced_data)
