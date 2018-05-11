@@ -60,20 +60,34 @@ class TestTracedData(unittest.TestCase):
 
     def test_items(self):
         td = self.td_1()
+        items = td.items()
 
         # Test that the return type is correct for this version of Python
         if six.PY2:
-            self.assertIs(type(td.items()), list)
+            self.assertIs(type(items), list)
         if six.PY3:
-            self.assertIsInstance(td.items(), collections.ItemsView)
+            self.assertIsInstance(items, collections.ItemsView)
 
         # Test that the contents of the returned data are the same
         self.assertDictEqual(dict(td.items()),
                              dict([("id", "0"), ("phone", "+441632000001"), ("gender", "man")]))
 
         self.td_2(td)
-        self.assertDictEqual(dict(td.items()),
-                             dict([("id", "0"), ("phone", "+441632000001"), ("gender", "male"), ("age", 30)]))
+        if six.PY2:
+            self.assertDictEqual(dict(items),
+                                 dict([("id", "0"), ("phone", "+441632000001"), ("gender", "man")]))
+        if six.PY3:
+            self.assertDictEqual(dict(items),
+                                 dict([("id", "0"), ("phone", "+441632000001"), ("gender", "male"), ("age", 30)]))
+            self.assertEqual(len(items), 4)
+            self.assertTrue(("id", "0") in items)
+            self.assertTrue(("id", "1") not in items)
+
+        if six.PY3:            
+            td1 = self.td_1()
+            td2 = self.td_1()
+            self.td_2(td2)
+            self.viewitems_set_like_helper(td1.items(), td2.items())
 
     def test_keys(self):
         td = self.td_1()
@@ -89,7 +103,6 @@ class TestTracedData(unittest.TestCase):
         self.assertSetEqual(set(keys), {"id", "phone", "gender"})
 
         self.td_2(td)
-
         if six.PY2:
             self.assertSetEqual(set(keys), {"id", "phone", "gender"})
         if six.PY3:
@@ -102,12 +115,7 @@ class TestTracedData(unittest.TestCase):
             td1 = self.td_1()
             td2 = self.td_1()
             self.td_2(td2)
-
-            self.assertSetEqual(td1.keys() & td2.keys(), {"id", "phone", "gender"})
-            self.assertSetEqual(td1.keys() | td2.keys(), {"id", "phone", "gender", "age"})
-            self.assertSetEqual(td1.keys() - td2.keys(), set())
-            self.assertSetEqual(td2.keys() - td1.keys(), {"age"})
-            self.assertSetEqual(td1.keys() ^ td2.keys(), {"age"})
+            self.viewkeys_set_like_helper(td1.keys(), td2.keys())
 
         keys = td.keys()
         self.assertSetEqual(set(keys), {"id", "phone", "gender", "age"})
@@ -142,6 +150,46 @@ class TestTracedData(unittest.TestCase):
         self.td_2(td)
         self.assertDictEqual(dict(td.iteritems()),
                              dict([("id", "0"), ("phone", "+441632000001"), ("gender", "male"), ("age", 30)]))
+
+    def test_viewitems(self):
+        td = self.td_1()
+
+        if six.PY3:
+            # viewkeys was renamed keys in Python 3
+            self.assertRaises(AttributeError, lambda: td.viewkeys())
+            return
+
+        items = td.viewitems()
+        self.assertIsInstance(items, collections.ItemsView)
+        self.assertDictEqual(dict(items),
+                             dict([("id", "0"), ("phone", "+441632000001"), ("gender", "man")]))
+
+        self.td_2(td)
+        self.assertDictEqual(dict(items),
+                             dict([("id", "0"), ("phone", "+441632000001"), ("gender", "male"), ("age", 30)]))
+        self.assertEqual(len(items), 4)
+        self.assertTrue(("id", "0") in items)
+        self.assertTrue(("id", "1") not in items)
+
+        items = td.viewitems()
+        self.assertDictEqual(dict(items),
+                             dict([("id", "0"), ("phone", "+441632000001"), ("gender", "male"), ("age", 30)]))
+
+        # Test set operations
+        td1 = self.td_1()
+        td2 = self.td_1()
+        self.td_2(td2)
+        self.viewitems_set_like_helper(td1.viewitems(), td2.viewitems())
+
+    def viewitems_set_like_helper(self, a, b):
+        self.assertSetEqual(a & b,
+                            {("id", "0"), ("phone", "+441632000001")})
+        self.assertSetEqual(a | b,
+                            {("id", "0"), ("phone", "+441632000001"), ("gender", "man"), ("gender", "male"),
+                             ("age", 30)})
+        self.assertSetEqual(a - b, {("gender", "man")})
+        self.assertSetEqual(b - a, {("gender", "male"), ("age", 30)})
+        self.assertSetEqual(a ^ b, {("gender", "man"), ("gender", "male"), ("age", 30)})
 
     def test_iterkeys(self):
         td = self.td_1()
@@ -182,12 +230,14 @@ class TestTracedData(unittest.TestCase):
         td1 = self.td_1()
         td2 = self.td_1()
         self.td_2(td2)
+        self.viewkeys_set_like_helper(td1.viewkeys(), td2.viewkeys())
 
-        self.assertSetEqual(td1.viewkeys() & td2.viewkeys(), {"id", "phone", "gender"})
-        self.assertSetEqual(td1.viewkeys() | td2.viewkeys(), {"id", "phone", "gender", "age"})
-        self.assertSetEqual(td1.viewkeys() - td2.viewkeys(), set())
-        self.assertSetEqual(td2.viewkeys() - td1.viewkeys(), {"age"})
-        self.assertSetEqual(td1.viewkeys() ^ td2.viewkeys(), {"age"})
+    def viewkeys_set_like_helper(self, a, b):
+        self.assertSetEqual(a & b, {"id", "phone", "gender"})
+        self.assertSetEqual(a | b, {"id", "phone", "gender", "age"})
+        self.assertSetEqual(a - b, set())
+        self.assertSetEqual(b - a, {"age"})
+        self.assertSetEqual(a ^ b, {"age"})
 
     def test_itervalues(self):
         td = self.td_1()

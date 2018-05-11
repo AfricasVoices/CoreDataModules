@@ -4,6 +4,7 @@ from deprecation import deprecated
 
 import six
 
+from core_data_modules.views.traced_data_items_view import _TracedDataItemsView
 from core_data_modules.views.traced_data_keys_view import _TracedDataKeysView
 
 
@@ -76,29 +77,10 @@ class TracedData(object):
         else:
             return False
 
-    def items(self):
-        if self._prev is None:
-            return self._data.items()
-        else:
-            # TODO: In Python 3 self._prev.items() returns an iterator, which is immediately expanded to build a dict.
-            # TODO: Consider a rewrite which does not require performing this expansion.
-            prev_items = dict(self._prev.items())
-            for (key, value) in six.iteritems(self._data):
-                prev_items[key] = value
-            return prev_items.items()
-
-    if six.PY2:
-        def keys(self):
-            if self._prev is None:
-                return self._data.keys()
-            else:
-                prev_items = dict(self._prev.items())
-                # noinspection PyCompatibility
-                for (key, value) in self._data.iteritems():
-                    prev_items[key] = value
-                return prev_items.keys()
-
     if six.PY3:
+        def items(self):
+            return _TracedDataItemsView(self)
+
         def keys(self):
             return _TracedDataKeysView(self)
 
@@ -112,14 +94,29 @@ class TracedData(object):
             return prev_items.values()
 
     if six.PY2:
-        def iteritems(self):
+        def items(self):
             if self._prev is None:
-                return self._data.iteritems()
+                return self._data.items()
             else:
-                prev_items = dict(self._prev.iteritems())
-                for (key, value) in self._data.iteritems():
+                prev_items = dict(self._prev.items())
+                for (key, value) in self._data.items():
                     prev_items[key] = value
-                return prev_items.iteritems()
+                return prev_items.items()
+
+        def iteritems(self):
+            return iter(self.viewitems())
+
+        def viewitems(self):
+            return _TracedDataItemsView(self)
+
+        def keys(self):
+            if self._prev is None:
+                return self._data.keys()
+            else:
+                prev_items = dict(self._prev.items())
+                for (key, value) in self._data.items():
+                    prev_items[key] = value
+                return prev_items.keys()
 
         def iterkeys(self):
             return iter(self.viewkeys())
