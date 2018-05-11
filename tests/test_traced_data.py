@@ -292,6 +292,10 @@ class TestTracedData(unittest.TestCase):
         self.td_2(td)
         self.assertSetEqual(set(iter(td)), {"id", "phone", "gender", "age"})
 
-    def test___copy__(self):
-        # TODO: Figure out how to test this!
-        pass
+    def test_copy(self):
+        td = self.td_1()
+        self.td_2(td)
+        td_copy = td.copy()
+
+        self.assertFalse(td is td_copy)
+        self.assertTrue(td == td_copy)

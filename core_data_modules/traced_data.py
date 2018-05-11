@@ -29,6 +29,8 @@ class Metadata(object):
         self.program = program
         self.timestamp = timestamp
 
+    def __eq__(self, other):
+        return self.user == other.user and self.program == other.program and self.timestamp == other.timestamp
 
 class TracedData(object):
     def __init__(self, data, metadata, prev=None):
@@ -137,8 +139,13 @@ class TracedData(object):
     def __iter__(self):
         return six.iterkeys(self)
 
-    def __copy__(self):
-        return TracedData(self._data, self._metadata, self._prev.copy())
+    def __eq__(self, other):
+        return self._data == other._data and self._metadata == other._metadata and \
+               self._sha == other._sha and self._prev == other._prev
+
+    def copy(self):
+        # Data, Metadata, and prev are read only so no need to recursively copy those.
+        return TracedData(self._data, self._metadata, self._prev)
 
     def get_history(self, key):
         history = [] if self._prev is None else self._prev.get_history(key)
