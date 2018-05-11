@@ -33,7 +33,9 @@ class TestTracedData(unittest.TestCase):
         self.assertEqual(td.get("gender"), "male")
         self.assertEqual(td.get("age"), 30)
 
-        # TODO: Test that the original data is still available.
+        # Test that the original data is still available.
+        history = td.get_history("gender")
+        self.assertListEqual(list(map(lambda x: x["value"], history)), ["man", "male"])
 
     def test___len__(self):
         td = self.td_1()

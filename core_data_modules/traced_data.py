@@ -143,4 +143,7 @@ class TracedData(object):
         return TracedData(self._data, self._metadata, self._prev.copy())
 
     def get_history(self, key):
-        pass
+        history = [] if self._prev is None else self._prev.get_history(key)
+        if key in self._data:
+            history.append({"sha": self._sha, "value": self._data[key]})
+        return history
