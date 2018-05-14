@@ -1,26 +1,11 @@
-import hashlib
-import json
 from deprecation import deprecated
 
 import six
 
+from core_data_modules.util.sha_utils import SHAUtils
 from core_data_modules.views.traced_data_items_view import _TracedDataItemsView
 from core_data_modules.views.traced_data_keys_view import _TracedDataKeysView
 from core_data_modules.views.traced_data_values_view import _TracedDataValuesView
-
-
-class SHAUtils(object):
-    @staticmethod
-    def sha_string(string):
-        return hashlib.sha256(string.encode("utf-8")).hexdigest()
-
-    @classmethod
-    def stringify_dict(cls, d):
-        return json.dumps(d, sort_keys=True)
-
-    @classmethod
-    def sha_dict(cls, d):
-        return cls.sha_string(cls.stringify_dict(d))
 
 
 class Metadata(object):
