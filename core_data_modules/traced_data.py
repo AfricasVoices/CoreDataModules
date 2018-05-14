@@ -1,14 +1,28 @@
+import time
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
 
-from deprecation import deprecated
-
 import six
+from deprecation import deprecated
 
 from core_data_modules.util.sha_utils import SHAUtils
 
 
 class Metadata(object):
+    """
+    Holds additional information about a TracedData update.
+
+    A TracedData update occurs when new fields are added to a TracedData object, or existing fields are updated.
+    """
+
     def __init__(self, user, source, timestamp):
+        """
+        :param user: Identifier of the user who requested the update.
+        :type user: str
+        :param source: Identifier of the program, or similar, which generated the new data.
+        :type source: str
+        :param timestamp: When the updated data was generated.
+        :type timestamp: float
+        """
         self.user = user
         self.source = source
         self.timestamp = timestamp
@@ -18,7 +32,40 @@ class Metadata(object):
 
 
 class TracedData(Mapping):
+    """
+    An append-only dictionary with data provenance.
+
+    **Example Usage**
+
+    To construct a TracedData object, provide a dictionary containing the initial (key, value) pairs,
+    plus additional metadata which records where this data came from:
+    >>> data = {"id": "0", "phone": "01234123123", "gender": "woman"}
+    >>> traced_data = TracedData(data, Metadata("user", "source", time.time()))
+
+    Retrieve values by using Python's dict syntax:
+    >>> traced_data["id"]
+    '0'
+    >>> traced_data.get("missing_key", "default")
+    'default'
+
+    To update the object, provide a new dictionary containing the (key, value) pairs to update, and new metadata:
+    >>> new_data = {"gender": "f", "age": 25}
+    >>> traced_data.append(new_data, Metadata("user", "age_source", time.time()))
+    >>> traced_data["age"]
+    30
+    >>> traced_data["gender"]
+    'f'
+    """
+
     def __init__(self, data, metadata, _prev=None):
+        """
+        :param data: Dict containing data to insert.
+        :type data: dict
+        :param metadata: See core_data_modules.traced_data.Metadata
+        :type metadata: Metadata
+        :param _prev: Pointer to the previous update. Not for external use.
+        :type _prev: TracedData
+        """
         self._prev = _prev
         self._data = data
         self._sha = self._sha_with_prev(data, "" if _prev is None else _prev._sha)
@@ -112,6 +159,18 @@ class TracedData(Mapping):
         return TracedData(self._data, self._metadata, self._prev)
 
     def get_history(self, key):
+        """
+        Returns the history of all the values a particular key has been set to, along with the
+        hashes of the TracedData object which was updated.
+
+        :param key: Key to return history of values for.
+        :type key: hashable
+        :return: List containing the value history for this key, sorted oldest to newest.
+                 Each element is a dictionary with the keys {"sha", "value"}.
+                 The "sha" field gives the hash of the TracedData object when this value was set.
+                 The "value" field gives what this value was actually set to.
+        :rtype: list of dict of (hashable, any)
+        """
         history = [] if self._prev is None else self._prev.get_history(key)
         if key in self._data:
             history.append({"sha": self._sha, "value": self._data[key]})
@@ -120,6 +179,7 @@ class TracedData(Mapping):
 
 # noinspection PyProtectedMember
 class _TracedDataKeysIterator(Iterator):
+    """Iterator over the keys of a TracedData object"""
     def __init__(self, traced_data):
         self.traced_data = traced_data
         self.next_keys = iter(traced_data._data.keys())
