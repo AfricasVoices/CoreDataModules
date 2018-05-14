@@ -9,11 +9,13 @@ from core_data_modules.traced_data import TracedData, Metadata
 class TestTracedData(unittest.TestCase):
     @staticmethod
     def generate_test_data():
+        """Returns a new TracedData object with example id, phone, and gender fields"""
         data = {"id": "0", "phone": "+441632000001", "gender": "man"}
         return TracedData(data, Metadata("test_user", "run_fetcher", time.time()))
 
     @classmethod
     def append_test_data(cls, td):
+        """Updates the gender field and adds an age field to the given TracedData object (td)"""
         data_cleaned = {"gender": "male", "age": 30}
         td.append(data_cleaned, Metadata("test_user", "demographic_cleaner", time.time()))
 

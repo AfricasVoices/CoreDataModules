@@ -33,11 +33,12 @@ class Metadata(object):
 
 class TracedData(Mapping):
     """
-    An append-only dict with data provenance.
+    An append-only dictionary with data provenance.
 
     **Example Usage**
 
-    To construct a TracedData object, provide an existing dictionary with additional metadata.
+    To construct a TracedData object, provide a dictionary containing the initial (key, value) pairs,
+    plus additional metadata which records where this data came from:
     >>> data = {"id": "0", "phone": "01234123123", "gender": "woman"}
     >>> traced_data = TracedData(data, Metadata("user", "source", time.time()))
 
@@ -48,10 +49,12 @@ class TracedData(Mapping):
     'default'
 
     To update the object, provide a new dictionary containing the (key, value) pairs to update, and new metadata:
-    >>> new_data = {"age": 30}
+    >>> new_data = {"gender": "f", "age": 25}
     >>> traced_data.append(new_data, Metadata("user", "age_source", time.time()))
     >>> traced_data["age"]
     30
+    >>> traced_data["gender"]
+    'f'
     """
 
     def __init__(self, data, metadata, _prev=None):
@@ -156,6 +159,18 @@ class TracedData(Mapping):
         return TracedData(self._data, self._metadata, self._prev)
 
     def get_history(self, key):
+        """
+        Returns the history of all the values a particular key has been set to, along with the
+        hashes of the TracedData object which was updated.
+
+        :param key: Key to return history of values for.
+        :type key: hashable
+        :return: List containing the value history for this key, sorted oldest to newest.
+                 Each element is a dictionary with the keys {"sha", "value"}.
+                 The "sha" field gives the hash of the TracedData object when this value was set.
+                 The "value" field gives what this value was actually set to.
+        :rtype: list of dict of (hashable, any)
+        """
         history = [] if self._prev is None else self._prev.get_history(key)
         if key in self._data:
             history.append({"sha": self._sha, "value": self._data[key]})
@@ -164,6 +179,7 @@ class TracedData(Mapping):
 
 # noinspection PyProtectedMember
 class _TracedDataKeysIterator(Iterator):
+    """Iterator over the keys of a TracedData object"""
     def __init__(self, traced_data):
         self.traced_data = traced_data
         self.next_keys = iter(traced_data._data.keys())
