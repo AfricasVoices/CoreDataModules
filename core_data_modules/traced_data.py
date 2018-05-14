@@ -3,9 +3,9 @@ from deprecation import deprecated
 import six
 
 from core_data_modules.util.sha_utils import SHAUtils
-from core_data_modules.views.traced_data_items_view import _TracedDataItemsView
-from core_data_modules.views.traced_data_keys_view import _TracedDataKeysView
-from core_data_modules.views.traced_data_values_view import _TracedDataValuesView
+from core_data_modules.traced_data_views.traced_data_items_view import _TracedDataItemsView
+from core_data_modules.traced_data_views.traced_data_keys_view import _TracedDataKeysView
+from core_data_modules.traced_data_views.traced_data_values_view import _TracedDataValuesView
 
 
 class Metadata(object):

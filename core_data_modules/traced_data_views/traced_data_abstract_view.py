@@ -1,11 +1,11 @@
-import collections
 import six
 
 
 # noinspection PyProtectedMember
-class _TracedDataValuesIterator(collections.Iterator):
-    def __init__(self, traced_data):
+class _AbstractTracedDataIterator(object):
+    def __init__(self, traced_data, return_attr):
         self.traced_data = traced_data
+        self.return_attr = return_attr
         self.next_items = iter(traced_data._data.items())
         self.seen_keys = set()
 
@@ -20,7 +20,7 @@ class _TracedDataValuesIterator(collections.Iterator):
                     key, value = next(self.next_items)
                     if key not in self.seen_keys:
                         self.seen_keys.add(key)
-                        return value
+                        return self.return_attr((key, value))
             except StopIteration:
                 # We ran out of values which we haven't yet returned. Try the prev TracedData.
                 self.traced_data = self.traced_data._prev
@@ -37,15 +37,12 @@ class _TracedDataValuesIterator(collections.Iterator):
             return self._next_item()
 
 
-class _TracedDataValuesView(collections.ValuesView):
+class _AbstractTracedDataView(object):
     def __init__(self, traced_data):
         self.traced_data = traced_data
 
     def __len__(self):
         return len(self.traced_data)
 
-    def __contains__(self, value):
-        return value in six.itervalues(self.traced_data)
-
-    def __iter__(self):
-        return _TracedDataValuesIterator(self.traced_data)
+    def __contains__(self, item):
+        return item in iter(self)
