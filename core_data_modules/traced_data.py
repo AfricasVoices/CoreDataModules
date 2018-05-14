@@ -50,7 +50,7 @@ class TracedData(Mapping):
 
     To update the object, provide a new dictionary containing the (key, value) pairs to update, and new metadata:
     >>> new_data = {"gender": "f", "age": 25}
-    >>> traced_data.append(new_data, Metadata("user", "age_source", time.time()))
+    >>> traced_data.append_data(new_data, Metadata("user", "age_source", time.time()))
     >>> traced_data["age"]
     25
     >>> traced_data["gender"]
@@ -71,7 +71,7 @@ class TracedData(Mapping):
         self._sha = self._sha_with_prev(data, "" if _prev is None else _prev._sha)
         self._metadata = metadata
 
-    def append(self, new_data, new_metadata):
+    def append_data(self, new_data, new_metadata):
         self._prev = TracedData(self._data, self._metadata, self._prev)
         self._data = new_data
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
