@@ -52,7 +52,7 @@ class TracedData(Mapping):
     >>> new_data = {"gender": "f", "age": 25}
     >>> traced_data.append(new_data, Metadata("user", "age_source", time.time()))
     >>> traced_data["age"]
-    30
+    25
     >>> traced_data["gender"]
     'f'
     """
