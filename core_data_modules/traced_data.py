@@ -45,6 +45,9 @@ class TracedData(Mapping):
         else:
             return default
 
+    def __len__(self):
+        return sum(1 for _ in self)
+
     def __contains__(self, key):
         if key in self._data:
             return True
@@ -56,11 +59,8 @@ class TracedData(Mapping):
     def __iter__(self):
         return _TracedDataKeysIterator(self)
 
-    def __len__(self):
-        return sum(1 for _ in self)
-
     if six.PY2:
-        @deprecated
+        @deprecated(deprecated_in="v0")
         def has_key(self, key):
             return key in self
 
