@@ -1,10 +1,8 @@
 import time
-
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
 
-from deprecation import deprecated
-
 import six
+from deprecation import deprecated
 
 from core_data_modules.util.sha_utils import SHAUtils
 
