@@ -9,13 +9,13 @@ from core_data_modules.views.traced_data_values_view import _TracedDataValuesVie
 
 
 class Metadata(object):
-    def __init__(self, user, program, timestamp):
+    def __init__(self, user, source, timestamp):
         self.user = user
-        self.program = program
+        self.source = source
         self.timestamp = timestamp
 
     def __eq__(self, other):
-        return self.user == other.user and self.program == other.program and self.timestamp == other.timestamp
+        return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
 
 
 class TracedData(object):
