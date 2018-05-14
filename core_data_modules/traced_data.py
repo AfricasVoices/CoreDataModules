@@ -1,3 +1,5 @@
+import time
+
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
 
 from deprecation import deprecated
@@ -8,7 +10,21 @@ from core_data_modules.util.sha_utils import SHAUtils
 
 
 class Metadata(object):
+    """
+    Holds additional information about a TracedData update.
+
+    A TracedData update occurs when new fields are added to a TracedData object, or existing fields are updated.
+    """
+
     def __init__(self, user, source, timestamp):
+        """
+        :param user: Identifier of the user who requested the update.
+        :type user: str
+        :param source: Identifier of the program, or similar, which generated the new data.
+        :type source: str
+        :param timestamp: When the updated data was generated.
+        :type timestamp: float
+        """
         self.user = user
         self.source = source
         self.timestamp = timestamp
@@ -18,7 +34,37 @@ class Metadata(object):
 
 
 class TracedData(Mapping):
+    """
+    An append-only dict with data provenance.
+
+    **Example Usage**
+
+    To construct a TracedData object, provide an existing dictionary with additional metadata.
+    >>> data = {"id": "0", "phone": "01234123123", "gender": "woman"}
+    >>> traced_data = TracedData(data, Metadata("user", "source", time.time()))
+
+    Retrieve values by using Python's dict syntax:
+    >>> traced_data["id"]
+    '0'
+    >>> traced_data.get("missing_key", "default")
+    'default'
+
+    To update the object, provide a new dictionary containing the (key, value) pairs to update, and new metadata:
+    >>> new_data = {"age": 30}
+    >>> traced_data.append(new_data, Metadata("user", "age_source", time.time()))
+    >>> traced_data["age"]
+    30
+    """
+
     def __init__(self, data, metadata, _prev=None):
+        """
+        :param data: Dict containing data to insert.
+        :type data: dict
+        :param metadata: See core_data_modules.traced_data.Metadata
+        :type metadata: Metadata
+        :param _prev: Pointer to the previous update. Not for external use.
+        :type _prev: TracedData
+        """
         self._prev = _prev
         self._data = data
         self._sha = self._sha_with_prev(data, "" if _prev is None else _prev._sha)
