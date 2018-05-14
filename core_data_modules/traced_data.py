@@ -19,10 +19,10 @@ class Metadata(object):
 
 
 class TracedData(object):
-    def __init__(self, data, metadata, prev=None):
-        self._prev = prev
+    def __init__(self, data, metadata, _prev=None):
+        self._prev = _prev
         self._data = data
-        self._sha = self._sha_with_prev(data, "" if prev is None else prev._sha)
+        self._sha = self._sha_with_prev(data, "" if _prev is None else _prev._sha)
         self._metadata = metadata
 
     @staticmethod
