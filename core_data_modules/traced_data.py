@@ -32,6 +32,7 @@ class Metadata(object):
     def __eq__(self, other):
         return self.user == other.user and self.program == other.program and self.timestamp == other.timestamp
 
+
 class TracedData(object):
     def __init__(self, data, metadata, prev=None):
         self._prev = prev
