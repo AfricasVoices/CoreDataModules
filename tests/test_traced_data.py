@@ -17,9 +17,9 @@ class TestTracedData(unittest.TestCase):
     def append_test_data(cls, td):
         """Updates the gender field and adds an age field to the given TracedData object (td)"""
         data_cleaned = {"gender": "male", "age": 30}
-        td.append(data_cleaned, Metadata("test_user", "demographic_cleaner", time.time()))
+        td.append_data(data_cleaned, Metadata("test_user", "demographic_cleaner", time.time()))
 
-    def test_append(self):
+    def test_append_data(self):
         td = self.generate_test_data()
 
         self.assertEqual(td.get("id"), "0")
