@@ -82,7 +82,7 @@ class TracedDataCodaIO(object):
         coded = list(filter(lambda row: row["deco_codeValue"] != "", csv))
 
         for td in data:
-            code = "NC"
+            code = "NC"  # TODO: This means a Coda user can't have an "NC" as an item in their scheme.
 
             # TODO: Cleaning here is calling strip, which export does not.
             # TODO: Also, this mode of cleaning is called a lot. Refactor into a TextUtils method?
@@ -95,7 +95,7 @@ class TracedDataCodaIO(object):
                 row_text = row["data"]
                 row_cleaned_text = TextUtils.remove_non_ascii(TextUtils.clean_text(row_text).strip().replace(" ", ""))
 
-                if td_text != "nan":  # TODO: Aren't there other ways of being NaN? e.g. NaN and np.nan?
+                if td_text != "nan":  # TODO: Aren't there other ways of being NaN? e.g. "NaN" and np.nan?
                     # TODO Why would one of these tests be true and the other not?
                     if str(row_id) != str(td_id) and td_cleaned_text != row_cleaned_text:
                         continue
@@ -105,7 +105,11 @@ class TracedDataCodaIO(object):
                     code = TextUtils.remove_non_ascii(row["deco_codeValue"].strip()).lower()
                     
             if code == "NC" or code == "non_relevant":
-                pass  # TODO
+                # TODO: In the CASH project version of this script, the Coda data file to read is more of a hint.
+                # TODO: Coding from a Coda file in that project actually accepts a directory and a filename - if 
+                # TODO: no match was found in the specified file, we repeat the above for block again, but this time
+                # TODO: iterate over *all* files in the Coda-coded data file directory.
+                pass
 
             if code == "non-relevant":  # TODO: This is "-" separated but last time it was "_" separated
                 code = "NC_cleared"
@@ -121,59 +125,3 @@ class TracedDataCodaIO(object):
             td.append_data({key_of_coded: code}, Metadata("user", "coda_import", time.time()))
 
             yield td
-
-    def _cash_code(self):
-        coded_followup = self.coded_practice_files[followup]
-
-        # id = create_hashid(asciify(text).lower().strip())
-        code = 'NC'
-        # code_columns = ['code', 'district', 'gender', 'idp', 'urban_rural', 'nomad', 'deco_codevalue', 'reason',
-        #                 'reason_1', 'reason_2', 'code 1', 'code 2', 'code 3', 'relevant', 'yes/no']
-        # cleaned_text = self.asciify(self.clean_text(text).strip().replace(' ', ''))
-        # id = self.create_hashid(cleaned_text)
-        # for row in coded_followup:
-        #     id_from_file = row['id']
-        #     cleaned_text_from_file = self.asciify(self.clean_text(row['data']).strip().replace(' ', ''))
-        #     # cleaned_text_from_file = self.clean_text(row['text']).replace(' ', '')
-        #     if text != 'nan':
-        #         if str(id) != str(id_from_file) and cleaned_text != cleaned_text_from_file:
-        #             continue
-        #         for column in row.keys():
-        #             if column.lower() in code_columns:
-        #                 if len(row[column]) > 0:
-        #                     print(column)
-        #                     code = self.asciify(row[column].strip()).lower()
-        #                     self.practices_and_codes[followup].add(row[column].strip())
-
-        if code == 'NC' or code == 'non_relevant':
-            for coded_file in self.coded_practice_files.values():
-                for row in coded_file:
-                    id_from_file = row['id']
-                    cleaned_text_from_file = self.asciify(self.clean_text(row['data']).strip().replace(' ', ''))
-                    # cleaned_text_from_file = self.clean_text(row['text']).replace(' ', '')
-                    if text != 'nan':
-                        if str(id) != str(id_from_file) and cleaned_text != cleaned_text_from_file:
-                            continue
-                        for column in row.keys():
-                            if column.lower() in code_columns:
-                                if len(row[column]) > 0:
-                                    code = self.asciify(row[column].strip()).lower()
-        if code == 'non-relevant':
-            code = 'NC_cleared'
-        try:
-            if str(text).lower() == 'haa waaa laga helaa':
-                print
-                'key at from id', code
-        except:
-            pass
-        return code
-
-
-        files = {os.path.basename(filename).split('.')[0]: open(os.path.join(directory, filename), 'r') for filename in
-                 filenames}
-        coded_practice_files = {filename: list(unicodecsv.DictReader(f, delimiter=';')) for filename, f in
-                                files.items()}
-        print('opened coded practice files')
-        for f in files.values():
-            f.close()
-
