@@ -13,7 +13,7 @@ from core_data_modules.traced_data.io import TracedDataCodaIO
 def generate_traced_data_frame():
     random.seed(0)
     for i, text in enumerate(["female", "m", "WoMaN", "27"]):
-        d = {"Gender": text, "URN": "+001234500000" + str(i)}
+        d = {"URN": "+001234500000" + str(i), "Gender": text}
         yield TracedData(d, Metadata("test_user", "data_generator", time.time()))
 
 
@@ -24,18 +24,33 @@ class TestTracedDataCodaIO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    @staticmethod
-    def generate_traced_data_frame():
-        random.seed(0)
-        for i, text in enumerate(["female", "m", "WoMaN", "27"]):
-            d = {"Gender": text, "URN": "+001234500000" + str(i)}
-            yield TracedData(d, Metadata("test_user", "data_generator", time.time()))
-
     def test_dump(self):
         data = generate_traced_data_frame()
         file_path = path.join(self.test_dir, "coda_test.csv")
 
         with open(file_path, "wb") as f:
-            TracedDataCodaIO.dump(data, "Gender", f)
+            TracedDataCodaIO.export_coda(data, "Gender", f)
 
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output.csv"))
+
+    def test_load(self):
+        data = generate_traced_data_frame()
+
+        print(type(data))
+
+        file_path = "tests/traced_data/resources/coda_import_data.txt"
+        with open(file_path, "rb") as f:
+            data = list(TracedDataCodaIO.import_coda(data, "Gender", "CodaCodedGender", f))
+
+        for td in data:
+            print(td)
+
+        expected_data = [
+            {"URN": "+0012345000000", "Gender": "female", "CodaCodedGender": "f"},
+            {"URN": "+0012345000001", "Gender": "m", "CodaCodedGender": "m"},
+            {"URN": "+0012345000002", "Gender": "WoMaN", "CodaCodedGender": "f"},
+            {"URN": "+0012345000003", "Gender": "27", "CodaCodedGender": "NC"}
+        ]
+
+        for x, y in zip(data, expected_data):
+            self.assertDictEqual(dict(x.items()), y)

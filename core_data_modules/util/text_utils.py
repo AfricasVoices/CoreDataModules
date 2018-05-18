@@ -3,6 +3,7 @@ import string
 import six
 
 
+# TODO: The functions currently here arguably do cleaning. Move to a TextCleaner class?
 class TextUtils(object):
     @staticmethod
     def remove_non_ascii(text):
@@ -31,7 +32,5 @@ class TextUtils(object):
             translator = string.maketrans(string.punctuation, " " * len(string.punctuation))
         if six.PY3:
             translator = bytes.maketrans(string.punctuation.encode("ascii"), b" " * len(string.punctuation))
-
-        print(type(text))
 
         return text.encode("ascii", "ignore").translate(translator).lower().decode()
