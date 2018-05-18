@@ -59,6 +59,21 @@ class TracedDataCodaIO(object):
 
     @staticmethod
     def import_coda(data, key_to_code, key_of_coded, f):
+        """
+        Codes a "column" of a collection of TracedData objects by looking up each value for that column in a coded
+        Coda data file, and assigning the coded values to a specified column.
+
+        :param data: TracedData objects to append import data into.
+        :type data: iterable of TracedData
+        :param key_to_code: Key of TracedData objects which should be coded.
+        :type key_to_code: str
+        :param key_of_coded: Key to write coded data to.
+        :type key_of_coded: str
+        :param f: Coda data file to import codes from.
+        :type f: file-like
+        :return: TracedData objects with Coda data appended
+        :rtype: generator of TracedData
+        """
         # TODO: I think this function is going to assume that there is only one code scheme...
 
         csv = unicodecsv.DictReader(f, delimiter=";")
@@ -116,19 +131,19 @@ class TracedDataCodaIO(object):
         #                 'reason_1', 'reason_2', 'code 1', 'code 2', 'code 3', 'relevant', 'yes/no']
         # cleaned_text = self.asciify(self.clean_text(text).strip().replace(' ', ''))
         # id = self.create_hashid(cleaned_text)
-        for row in coded_followup:
-            id_from_file = row['id']
-            cleaned_text_from_file = self.asciify(self.clean_text(row['data']).strip().replace(' ', ''))
-            # cleaned_text_from_file = self.clean_text(row['text']).replace(' ', '')
-            if text != 'nan':
-                if str(id) != str(id_from_file) and cleaned_text != cleaned_text_from_file:
-                    continue
-                for column in row.keys():
-                    if column.lower() in code_columns:
-                        if len(row[column]) > 0:
-                            print(column)
-                            code = self.asciify(row[column].strip()).lower()
-                            self.practices_and_codes[followup].add(row[column].strip())
+        # for row in coded_followup:
+        #     id_from_file = row['id']
+        #     cleaned_text_from_file = self.asciify(self.clean_text(row['data']).strip().replace(' ', ''))
+        #     # cleaned_text_from_file = self.clean_text(row['text']).replace(' ', '')
+        #     if text != 'nan':
+        #         if str(id) != str(id_from_file) and cleaned_text != cleaned_text_from_file:
+        #             continue
+        #         for column in row.keys():
+        #             if column.lower() in code_columns:
+        #                 if len(row[column]) > 0:
+        #                     print(column)
+        #                     code = self.asciify(row[column].strip()).lower()
+        #                     self.practices_and_codes[followup].add(row[column].strip())
 
         if code == 'NC' or code == 'non_relevant':
             for coded_file in self.coded_practice_files.values():
