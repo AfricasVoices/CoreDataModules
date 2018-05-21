@@ -74,7 +74,7 @@ class TracedDataCodaIO(object):
         :return: TracedData objects with Coda data appended
         :rtype: generator of TracedData
         """
-        # TODO: I think this function is going to assume that there is only one code scheme...
+        # TODO: This function assumes there is only one code scheme.
 
         # TODO: Will this work when the host machine is in other languages e.g. German?
         csv = unicodecsv.DictReader(f, delimiter=";")
