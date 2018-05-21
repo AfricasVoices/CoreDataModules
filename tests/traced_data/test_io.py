@@ -29,21 +29,16 @@ class TestTracedDataCodaIO(unittest.TestCase):
         file_path = path.join(self.test_dir, "coda_test.csv")
 
         with open(file_path, "wb") as f:
-            TracedDataCodaIO.export_coda(data, "Gender", f)
+            TracedDataCodaIO.export_traced_data_iterable_to_coda(data, "Gender", f)
 
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output.csv"))
 
     def test_load(self):
         data = generate_traced_data_frame()
 
-        print(type(data))
-
         file_path = "tests/traced_data/resources/coda_import_data.txt"
         with open(file_path, "rb") as f:
-            data = list(TracedDataCodaIO.import_coda(data, "Gender", "CodaCodedGender", f))
-
-        for td in data:
-            print(td)
+            data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(data, "Gender", "CodaCodedGender", f))
 
         expected_data = [
             {"URN": "+0012345000000", "Gender": "female", "CodaCodedGender": "f"},

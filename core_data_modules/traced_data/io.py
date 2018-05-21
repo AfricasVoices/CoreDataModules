@@ -9,7 +9,7 @@ from core_data_modules.util import SHAUtils, TextUtils
 
 class TracedDataCodaIO(object):
     @staticmethod
-    def export_coda(data, key, f):
+    def export_traced_data_iterable_to_coda(data, key, f):
         """
         Exports a "column" from a collection of TracedData objects to a file in Coda's data format.
 
@@ -58,7 +58,7 @@ class TracedDataCodaIO(object):
             f.writelines([item for item in lines if len(item) > 0])
 
     @staticmethod
-    def import_coda(data, key_to_code, key_of_coded, f):
+    def import_coda_to_traced_data_iterable(data, key_to_code, key_of_coded, f):
         """
         Codes a "column" of a collection of TracedData objects by looking up each value for that column in a coded
         Coda data file, and assigning the coded values to a specified column.
@@ -76,6 +76,7 @@ class TracedDataCodaIO(object):
         """
         # TODO: I think this function is going to assume that there is only one code scheme...
 
+        # TODO: Will this work when the host machine is in other languages e.g. German?
         csv = unicodecsv.DictReader(f, delimiter=";")
 
         # Remove rows which still haven't been coded.
