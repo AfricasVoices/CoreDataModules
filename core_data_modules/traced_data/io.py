@@ -9,14 +9,18 @@ from core_data_modules.util import SHAUtils, TextUtils
 
 class TracedDataCodaIO(object):
     @staticmethod
-    def export_traced_data_iterable_to_coda(data, key, f):
+    def export_traced_data_iterable_to_coda(data, key, owner_key, f):
         """
         Exports a "column" from a collection of TracedData objects to a file in Coda's data format.
+        TODO: This function exports everything in that column. Export only not-coded?
 
         :param data: TracedData objects to export data to Coda from.
         :type data: iterable of TracedData
         :param key: The key in each TracedData object which should have its values exported.
         :type key: str
+        :param owner_key: Key of column to use to generate Coda's "owner" field e.g. a UUID or phone number of the
+                          respondent.
+        :type owner_key: str
         :param f: File to export to, opened in 'wb' mode.
         :type f: file-like
         """
@@ -32,12 +36,14 @@ class TracedDataCodaIO(object):
         writer = unicodecsv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
         writer.writeheader()
 
+        # TODO: Deduplicate messages when exporting? The exporter in CASH attempted this, but not correctly.
+
         for td in data:
             row = {
                 "id": SHAUtils.create_hash_id(TextUtils.clean_text(td[key]).replace(" ", "")),
 
                 # TODO: Use Contact UUID to operate on current pipeline.
-                "owner": SHAUtils.create_hash_id(td["URN"]),
+                "owner": SHAUtils.create_hash_id(td[owner_key]),
 
                 # TODO: Data goes through a different cleaning process than id. This means messages which are identical
                 # TODO: in all but case and whitespace will have the same id, breaking Coda.
@@ -48,7 +54,7 @@ class TracedDataCodaIO(object):
 
         # Ensure the output file doesn't end with a blank line.
         # TODO: Fix in Coda? This is not the first case that this issue has caused us pain.
-        # TODO: Reliance on f.name will break some file-like arguments which are not files.s
+        # TODO: Reliance on f.name will break some file-like arguments which are not files.
         file_path = f.name
         f.close()
         with open(file_path, "r") as f:
