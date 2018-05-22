@@ -29,7 +29,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         file_path = path.join(self.test_dir, "coda_test.csv")
 
         with open(file_path, "wb") as f:
-            TracedDataCodaIO.export_traced_data_iterable_to_coda(data, "Gender", f)
+            TracedDataCodaIO.export_traced_data_iterable_to_coda(data, "Gender", "URN", f)
 
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output.csv"))
 
