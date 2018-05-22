@@ -158,12 +158,6 @@ class TracedData(Mapping):
         # Data, Metadata, and prev are read only so no need to recursively copy those.
         return TracedData(self._data, self._metadata, self._prev)
 
-    def __str__(self):
-        output = "TracedData:\n"
-        for key in self:
-            output += "  " + key + ": " + self[key] + "\n"
-        return output
-
     def get_history(self, key):
         """
         Returns the history of all the values a particular key has been set to, along with the
