@@ -6,6 +6,12 @@ import six
 from core_data_modules.traced_data import TracedData, Metadata
 
 
+class TestMetadata(unittest.TestCase):
+    def test_location(self):
+        location = Metadata.location()
+        self.assertTrue(location.endswith("tests/test_traced_data.py:11:test_location"))
+
+
 class TestTracedData(unittest.TestCase):
     @staticmethod
     def generate_test_data():
