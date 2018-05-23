@@ -97,7 +97,12 @@ class TracedData(Mapping):
         return SHAUtils.sha_dict({"data": data, "prev_sha": prev_sha})
 
     def __getitem__(self, key):
-        return self.get(key)
+        if key in self._data:
+            return self._data[key]
+        elif self._prev is not None:
+            return self._prev[key]
+        else:
+            raise KeyError
 
     def get(self, key, default=None):
         if key in self._data:

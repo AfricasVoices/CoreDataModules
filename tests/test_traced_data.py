@@ -35,6 +35,7 @@ class TestTracedData(unittest.TestCase):
         self.assertEqual(td.get("gender"), "man")
         self.assertEqual(td["gender"], "man")
         self.assertEqual(td.get("age"), None)
+        self.assertRaises(KeyError, lambda: td["age"])
         self.assertEqual(td.get("age", "default"), "default")
 
         self.append_test_data(td)
