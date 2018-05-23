@@ -6,6 +6,14 @@ import six
 from core_data_modules.traced_data import TracedData, Metadata
 
 
+class TestMetadata(unittest.TestCase):
+    def test_get_call_location(self):
+        call_location = Metadata.get_call_location()
+        # call_location contains an absolute path, but this only tests the end of that path so that it can run
+        # independently of the project's location.
+        self.assertTrue(call_location.endswith("tests/test_traced_data.py:11:test_get_call_location"))
+
+
 class TestTracedData(unittest.TestCase):
     @staticmethod
     def generate_test_data():
