@@ -1,3 +1,4 @@
+import inspect
 import time
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
 
@@ -29,6 +30,20 @@ class Metadata(object):
 
     def __eq__(self, other):
         return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
+
+    @staticmethod
+    def get_call_location():
+        """
+        Returns the location where this function was called from.
+
+        :return Caller location in the format 'absolute_path/to/file.py:line:function_name'
+        :rtype: str
+        """
+        frame = inspect.stack()[1]  # Access the previous frame to find out where this function was called from.
+        f = frame[1]
+        line = frame[2]
+        func = frame[3]
+        return "{}:{}:{}".format(f, str(line), func)
 
 
 class TracedData(Mapping):
