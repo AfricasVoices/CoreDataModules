@@ -32,7 +32,7 @@ class Metadata(object):
         return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
 
     @staticmethod
-    def location():
+    def get_call_location():
         """
         Returns the location where this function was called from.
 
