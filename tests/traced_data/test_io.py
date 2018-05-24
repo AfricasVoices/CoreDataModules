@@ -30,7 +30,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         # Test exporting everything
         data = generate_traced_data_frame()
         with open(file_path, "wb") as f:
-            TracedDataCodaIO.export_traced_data_iterable_to_coda(data, f, key_of_raw="Gender")
+            TracedDataCodaIO.export_traced_data_iterable_to_coda(data, "Gender", f)
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_coded.csv"))
 
         # Test exporting only not coded elements
@@ -40,7 +40,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", time.time()))
         with open(file_path, "wb") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda(
-                data, f, key_of_raw="Gender", exclude_coded_under_key="Gender_clean")
+                data, "Gender", f, exclude_coded_with_key="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
     def test_import_coda_to_traced_data_iterable(self):

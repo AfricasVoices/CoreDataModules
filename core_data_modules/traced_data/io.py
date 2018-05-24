@@ -6,7 +6,7 @@ from core_data_modules import Metadata
 
 class TracedDataCodaIO(object):
     @staticmethod
-    def export_traced_data_iterable_to_coda(data, f, key_of_raw, exclude_coded_under_key=None):
+    def export_traced_data_iterable_to_coda(data, key_of_raw, f, exclude_coded_with_key=None):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
 
@@ -14,13 +14,14 @@ class TracedDataCodaIO(object):
 
         :param data: TracedData objects to export data to Coda from.
         :type data: iterable of TracedData
-        :param key_of_raw: The key in each TracedData object which should have its values exported.
+        :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. of the messages
+                           before they were coded).
         :type key_of_raw: str
         :param f: File to export to, opened in 'wb' mode.
         :type f: file-like
-        :param exclude_coded_under_key: Set to None to export every message to Coda, or to the key in each TracedData
+        :param exclude_coded_with_key: Set to None to export every message to Coda, or to the key in each TracedData
                                         object of message codes to exclude messages which have already been coded.
-        :type exclude_coded_under_key: str | None
+        :type exclude_coded_with_key: str | None
         """
         headers = [
             "id", "owner", "data",
@@ -34,9 +35,9 @@ class TracedDataCodaIO(object):
         writer = unicodecsv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
         writer.writeheader()
 
-        if exclude_coded_under_key is not None:
+        if exclude_coded_with_key is not None:
             # Exclude data items which have been coded.
-            data = filter(lambda td: td.get(exclude_coded_under_key) is None, data)
+            data = filter(lambda td: td.get(exclude_coded_with_key) is None, data)
 
         # Deduplicate messages
         seen = set()
@@ -67,17 +68,17 @@ class TracedDataCodaIO(object):
     def import_coda_to_traced_data_iterable(data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
         """
         Codes a "column" of a collection of TracedData objects by looking up each value for that column in a coded
-        Coda data file, and assigning the coded values to a specified column.
+        Coda data file, and assigning the coded values to the specified column.
 
-        :param data: TracedData objects to append import data into.
+        :param data: TracedData objects to code a column of using the Coda data-file.
         :type data: iterable of TracedData
-        :param key_of_raw: Key of TracedData objects which should be coded.
+        :param key_of_raw: Key in the TracedData objects of messages which should be coded.
         :type key_of_raw: str
-        :param key_of_coded: Key to write coded data to.
+        :param key_of_coded: Key to write imported codes to.
         :type key_of_coded: str
         :param f: Coda data file to import codes from, opened in 'rb' mode.
         :type f: file-like
-        :param overwrite_existing_codes: Whether to replace existing codes with the new codes in the Coda datafile.
+        :param overwrite_existing_codes: Whether to replace existing codes with new codes from the Coda datafile.
         :type overwrite_existing_codes: bool
         :return: TracedData objects with Coda data appended
         :rtype: generator of TracedData
