@@ -36,7 +36,7 @@ class TracedDataCodaIO(object):
 
         if exclude_coded_under_key is not None:
             # Exclude data items which have been coded.
-            data = filter(lambda td: td.get(exclude_coded_under_key) is not None, data)
+            data = filter(lambda td: td.get(exclude_coded_under_key) is None, data)
 
         # Deduplicate messages
         seen = set()

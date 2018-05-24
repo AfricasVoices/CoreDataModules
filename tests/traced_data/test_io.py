@@ -25,7 +25,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_traced_data_iterable_to_coda(self):
-        file_path = path.join(self.test_dir, "coda_test.csv")
+        file_path = path.join("coda_test.csv")
 
         # Test exporting everything
         data = generate_traced_data_frame()
