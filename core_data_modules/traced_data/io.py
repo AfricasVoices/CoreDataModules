@@ -10,17 +10,17 @@ class TracedDataCodaIO(object):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
 
-        Optionally exports only the elements which have not already been coded.
+        Optionally exports only the elements which have not yet been coded.
 
         :param data: TracedData objects to export data to Coda from.
         :type data: iterable of TracedData
-        :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. of the messages
-                           before they were coded).
+        :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
+                           messages before they were coded).
         :type key_of_raw: str
         :param f: File to export to, opened in 'wb' mode.
         :type f: file-like
-        :param exclude_coded_with_key: Set to None to export every message to Coda, or to the key in each TracedData
-                                        object of message codes to exclude messages which have already been coded.
+        :param exclude_coded_with_key: Set to None to export every item in key_of_raw to Coda, or to the key of
+                                       existing codes to exclude items of key_of_raw which have already been coded.
         :type exclude_coded_with_key: str | None
         """
         headers = [
@@ -67,20 +67,20 @@ class TracedDataCodaIO(object):
     @staticmethod
     def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
         """
-        Codes a "column" of a collection of TracedData objects by looking up each value for that column in a coded
-        Coda data file, and assigning the coded values to the specified column.
+        Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
         :param user: Identifier of user running this program
         :type user: str
-        :param data: TracedData objects to code a column of using the Coda data-file.
+        :param data: TracedData objects to be coded using the Coda file.
         :type data: iterable of TracedData
         :param key_of_raw: Key in the TracedData objects of messages which should be coded.
         :type key_of_raw: str
-        :param key_of_coded: Key to write imported codes to.
+        :param key_of_coded: Key in the TracedData objects to write imported codes to.
         :type key_of_coded: str
         :param f: Coda data file to import codes from, opened in 'rb' mode.
         :type f: file-like
-        :param overwrite_existing_codes: Whether to replace existing codes with new codes from the Coda datafile.
+        :param overwrite_existing_codes: For messages which are already coded, Whether to replace those codes with
+                                         new codes from the Coda datafile.
         :type overwrite_existing_codes: bool
         :return: TracedData objects with Coda data appended
         :rtype: generator of TracedData
@@ -103,7 +103,6 @@ class TracedDataCodaIO(object):
                 if td[key_of_raw] == row["data"]:
                     code = row["deco_codeValue"]
 
-            # TODO: Retrieve user from somewhere.
             td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
             yield td
