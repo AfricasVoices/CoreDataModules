@@ -1,8 +1,6 @@
 import hashlib
 import json
 
-from core_data_modules.util.text_utils import TextUtils
-
 
 class SHAUtils(object):
     @staticmethod
