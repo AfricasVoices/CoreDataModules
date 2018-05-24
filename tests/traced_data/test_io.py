@@ -53,7 +53,8 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         file_path = "tests/traced_data/resources/coda_import_data.txt"
         with open(file_path, "rb") as f:
-            data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(data, "Gender", "Gender_clean", f))
+            data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
+                "test_user", data, "Gender", "Gender_clean", f))
 
         expected_data = [
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "X"},
@@ -74,7 +75,8 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         file_path = "tests/traced_data/resources/coda_import_data.txt"
         with open(file_path, "rb") as f:
-            data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(data, "Gender", "Gender_clean", f, True))
+            data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
+                "test_user", data, "Gender", "Gender_clean", f, True))
 
         expected_data = [
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "F"},

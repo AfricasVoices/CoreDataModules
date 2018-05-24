@@ -65,11 +65,13 @@ class TracedDataCodaIO(object):
             f.writelines([item for item in lines if len(item) > 0])
 
     @staticmethod
-    def import_coda_to_traced_data_iterable(data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
+    def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
         """
         Codes a "column" of a collection of TracedData objects by looking up each value for that column in a coded
         Coda data file, and assigning the coded values to the specified column.
 
+        :param user: Identifier of user running this program
+        :type user: str
         :param data: TracedData objects to code a column of using the Coda data-file.
         :type data: iterable of TracedData
         :param key_of_raw: Key in the TracedData objects of messages which should be coded.
@@ -102,6 +104,6 @@ class TracedDataCodaIO(object):
                     code = row["deco_codeValue"]
 
             # TODO: Retrieve user from somewhere.
-            td.append_data({key_of_coded: code}, Metadata("user", Metadata.get_call_location(), time.time()))
+            td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
             yield td
