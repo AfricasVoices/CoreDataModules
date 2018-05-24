@@ -43,10 +43,3 @@ class SHAUtils(object):
         :rtype: string
         """
         return cls.sha_string(cls.stringify_dict(d))
-
-    @staticmethod
-    def create_hash_id(text):
-        """TODO"""
-        h = hashlib.sha1(TextUtils.remove_non_ascii(text).encode("utf-8"))  # TODO: Is SHA1 acceptable? TODO 2: Can we use sha_string?
-        n = str(int(h.hexdigest()[:10], 16))[:10]  # TODO:  Refactor into its own method?
-        return n

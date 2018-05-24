@@ -14,8 +14,3 @@ class TestSHAUtils(unittest.TestCase):
             SHAUtils.sha_string(""),
             "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         )
-
-    def test_create_hash_id(self):
-        self.assertEqual(SHAUtils.create_hash_id("test"), "7271004174")
-        self.assertEqual(SHAUtils.create_hash_id(""), "9372699152")
-        self.assertEqual(SHAUtils.create_hash_id("+2212345123123"), "1517694669")
