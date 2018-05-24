@@ -2,7 +2,8 @@ class DemographicCleaner(object):
     @staticmethod
     def clean_gender(string):
         """
-        Converts a string describing gender to M, F, or NC.
+        Converts a string describing gender to M, F, or None.
+
         :param string: Text to be cleaned.
         :return: "M" if male, "F" if female, or None if the gender could not automatically be identified.
         """
