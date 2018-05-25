@@ -110,14 +110,7 @@ class TestTracedDataCSVIO(unittest.TestCase):
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/csv_export_expected.csv"))
 
     def test_import_csv_to_traced_data_iterable(self):
-        pass
-
-    def test_io(self):
-        data = generate_traced_data_frame()
-        file_path = path.join(self.test_dir, "csv_test.csv")
-
-        with open(file_path, "wb") as f:
-            TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f)
+        file_path = "tests/traced_data/resources/csv_import_data.csv"
 
         with open(file_path, "rb") as f:
             exported = list(generate_traced_data_frame())
