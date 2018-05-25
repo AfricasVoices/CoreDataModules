@@ -99,6 +99,18 @@ class TestTracedDataCSVIO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
+    def test_export_traced_data_iterable_to_csv(self):
+        data = generate_traced_data_frame()
+        file_path = path.join(self.test_dir, "csv_test.csv")
+
+        with open(file_path, "wb") as f:
+            TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f)
+
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/csv_export_expected.csv"))
+
+    def test_import_csv_to_traced_data_iterable(self):
+        pass
+
     def test_io(self):
         data = generate_traced_data_frame()
         file_path = path.join(self.test_dir, "csv_test.csv")
@@ -113,6 +125,4 @@ class TestTracedDataCSVIO(unittest.TestCase):
             self.assertEqual(len(exported), len(imported))
 
             for x, y in zip(exported, imported):
-                # TODO: Decide if column order matters, then delete one of these tests accordingly.
                 self.assertSetEqual(set(x.items()), set(y.items()))
-                # self.assertListEqual(list(x.items()), list(y.items()))

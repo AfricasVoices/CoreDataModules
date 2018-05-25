@@ -115,7 +115,7 @@ class TracedDataCSVIO(object):
         """
         Writes a collection of TracedData objects to a CSV.
         
-        Columns will be exported in an an arbitrary order. TODO: Delete this comment with the one in the body.
+        Columns will be exported in an an arbitrary order.
 
         :param data: TracedData objects to export.
         :type data: iterable of TracedData
@@ -127,7 +127,7 @@ class TracedDataCSVIO(object):
         headers = set()
         for td in data:
             for key in six.iterkeys(td):
-                headers.add(key)  # TODO: Sort somehow? Column name addition order?
+                headers.add(key)
 
         writer = unicodecsv.DictWriter(f, fieldnames=headers)
         writer.writeheader()
@@ -140,15 +140,13 @@ class TracedDataCSVIO(object):
         """
         Loads a CSV into new TracedData objects.
 
-        :param user: Identifier of user running this program
+        :param user: Identifier of user running this program.
         :type user: str
         :param f: File to import from, opened in 'rb' mode.
         :type f: file-like
         :return: TracedData objects imported from the provided file.
         :rtype: generator of TracedData
         """
-        # TODO: This doesn't attempt to merge back with an existing Traced Data iterable.
-        # TODO: This doesn't necessarily import the columns in the same order as they were exported in.
         csv = unicodecsv.DictReader(f)
 
         for row in csv:
