@@ -105,10 +105,7 @@ class TestTracedDataCSVIO(unittest.TestCase):
         file_path = path.join(self.test_dir, "csv_test.csv")
 
         with open(file_path, "wb") as f:
-            TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f)
-
-        print(subprocess.check_output(['cat', '-e', file_path]))
-        print(subprocess.check_output(['cat', '-e', "tests/traced_data/resources/csv_export_expected.csv"]))
+            TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f, headers=["URN", "Gender", "Non-Existent"])
 
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/csv_export_expected.csv"))
 

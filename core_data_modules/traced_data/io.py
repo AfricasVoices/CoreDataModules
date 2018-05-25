@@ -111,29 +111,36 @@ class TracedDataCodaIO(object):
 
 class TracedDataCSVIO(object):
     @staticmethod
-    def export_traced_data_iterable_to_csv(data, f):
+    def export_traced_data_iterable_to_csv(data, f, headers=None):
         """
         Writes a collection of TracedData objects to a CSV.
         
-        Columns will be exported in an an arbitrary order.
+        Columns will be exported in the order declared in headers if that parameter is specified,
+        otherwise the output order will be arbitrary.
 
         :param data: TracedData objects to export.
         :type data: iterable of TracedData
         :param f: File to export to, opened in 'wb' mode.
         :type f: file-like
+        :param headers: Headers to export. If this is None, all headers will be exported.
+        :type headers: list of str
         """
         data = list(data)
 
-        headers = set()
-        for td in data:
-            for key in six.iterkeys(td):
-                headers.add(key)
+        # If headers unspecified, search data for all headers which were used
+        if headers is None:
+            headers = set()
+            for td in data:
+                for key in six.iterkeys(td):
+                    headers.add(key)
 
-        writer = unicodecsv.DictWriter(f, fieldnames=headers)
+        writer = unicodecsv.DictWriter(f, fieldnames=headers, lineterminator="\n")
         writer.writeheader()
 
         for td in data:
-            writer.writerow(dict(td.items()))
+            row = {key: td.get(key) for key in headers}
+
+            writer.writerow(row)
 
     @staticmethod
     def import_csv_to_traced_data_iterable(user, f):
