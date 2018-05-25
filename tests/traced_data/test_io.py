@@ -6,8 +6,8 @@ import time
 import unittest
 from os import path
 
-from core_data_modules import Metadata, TracedData
-from core_data_modules.traced_data.io import TracedDataCodaIO
+from core_data_modules.traced_data import Metadata, TracedData
+from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO
 
 
 def generate_traced_data_frame():
@@ -25,7 +25,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_traced_data_iterable_to_coda(self):
-        file_path = path.join("coda_test.csv")
+        file_path = path.join(self.test_dir, "coda_test.csv")
 
         # Test exporting everything
         data = generate_traced_data_frame()
@@ -90,3 +90,29 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         for x, y in zip(data, expected_data):
             self.assertDictEqual(dict(x.items()), y)
+
+
+class TestTracedDataCSVIO(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_io(self):
+        data = generate_traced_data_frame()
+        file_path = path.join(self.test_dir, "csv_test.csv")
+
+        with open(file_path, "wb") as f:
+            TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f)
+
+        with open(file_path, "rb") as f:
+            exported = list(generate_traced_data_frame())
+            imported = list(TracedDataCSVIO.import_csv_to_traced_data_iterable("test_user", f))
+
+            self.assertEqual(len(exported), len(imported))
+
+            for x, y in zip(exported, imported):
+                # TODO: Decide if column order matters, then delete one of these tests accordingly.
+                self.assertSetEqual(set(x.items()), set(y.items()))
+                # self.assertListEqual(list(x.items()), list(y.items()))

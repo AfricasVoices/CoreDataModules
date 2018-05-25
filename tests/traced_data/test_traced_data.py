@@ -3,7 +3,7 @@ import time
 import unittest
 import six
 
-from core_data_modules import TracedData, Metadata
+from core_data_modules.traced_data import TracedData, Metadata
 
 
 class TestMetadata(unittest.TestCase):

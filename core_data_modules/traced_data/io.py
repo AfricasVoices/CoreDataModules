@@ -1,7 +1,8 @@
 import time
 
+import six
 import unicodecsv
-from core_data_modules import Metadata
+from core_data_modules.traced_data import Metadata, TracedData
 
 
 class TracedDataCodaIO(object):
@@ -106,3 +107,49 @@ class TracedDataCodaIO(object):
             td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
             yield td
+
+
+class TracedDataCSVIO(object):
+    @staticmethod
+    def export_traced_data_iterable_to_csv(data, f):
+        """
+        Writes a collection of TracedData objects to a CSV.
+        
+        Columns will be exported in an an arbitrary order. TODO: Delete this comment with the one in the body.
+
+        :param data: TracedData objects to export.
+        :type data: iterable of TracedData
+        :param f: File to export to, opened in 'wb' mode.
+        :type f: file-like
+        """
+        data = list(data)
+
+        headers = set()
+        for td in data:
+            for key in six.iterkeys(td):
+                headers.add(key)  # TODO: Sort somehow? Column name addition order?
+
+        writer = unicodecsv.DictWriter(f, fieldnames=headers)
+        writer.writeheader()
+
+        for td in data:
+            writer.writerow(dict(td.items()))
+
+    @staticmethod
+    def import_csv_to_traced_data_iterable(user, f):
+        """
+        Loads a CSV into new TracedData objects.
+
+        :param user: Identifier of user running this program
+        :type user: str
+        :param f: File to import from, opened in 'rb' mode.
+        :type f: file-like
+        :return: TracedData objects imported from the provided file.
+        :rtype: generator of TracedData
+        """
+        # TODO: This doesn't attempt to merge back with an existing Traced Data iterable.
+        # TODO: This doesn't necessarily import the columns in the same order as they were exported in.
+        csv = unicodecsv.DictReader(f)
+
+        for row in csv:
+            yield TracedData(row, Metadata(user, Metadata.get_call_location(), time.time()))
