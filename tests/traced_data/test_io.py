@@ -5,6 +5,7 @@ import tempfile
 import time
 import unittest
 from os import path
+import subprocess
 
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO
@@ -105,6 +106,9 @@ class TestTracedDataCSVIO(unittest.TestCase):
 
         with open(file_path, "wb") as f:
             TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f)
+
+        print(subprocess.check_output(['cat', '-e', file_path]))
+        print(subprocess.check_output(['cat', '-e', "tests/traced_data/resources/csv_export_expected.csv"]))
 
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/csv_export_expected.csv"))
 
