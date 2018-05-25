@@ -152,4 +152,4 @@ class TracedDataCSVIO(object):
         csv = unicodecsv.DictReader(f)
 
         for row in csv:
-            yield TracedData(row, Metadata(user, Metadata.get_call_location(), time.time()))
+            yield TracedData(dict(row), Metadata(user, Metadata.get_call_location(), time.time()))
