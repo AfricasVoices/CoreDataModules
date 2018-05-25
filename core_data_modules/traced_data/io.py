@@ -1,5 +1,7 @@
+import json
 import time
 
+import jsonpickle
 import unicodecsv
 from core_data_modules import Metadata
 
@@ -106,3 +108,49 @@ class TracedDataCodaIO(object):
             td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
             yield td
+
+
+class TracedDataJsonIO(object):
+    @staticmethod
+    def export_traced_data_iterable_to_json(data, f, pretty_print=False):
+        """
+        Exports a collection of TracedData objects to a JSON file.
+
+        The original TracedData objects which are exported by this function are fully recoverable from the emitted
+        JSON using TracedDataJsonIO.import_json_to_traced_data_iterable.
+
+        :param data: TracedData objects to export.
+        :type data: iterable of TracedData
+        :param f: File to export the TracedData objects to, opened in "wb" mode.
+        :type f: file-like
+        :param pretty_print: Whether to format the JSON with new lines, indentation, and alphabetised keys.
+        :type pretty_print: bool
+        """
+        # Serialize the list of TracedData to a format which can be trivially deserialized.
+        output = jsonpickle.dumps(data)
+
+        if pretty_print:
+            # jsonpickle doesn't support pretty-printing so use the built-in json library.
+            # The built-in json library was inappropriate for the initial serialization because the produced JSON is
+            # not easily deserializable.
+            # separators are set to account for the difference in defaults between Python 2 and Python 3
+            output = json.dumps(json.loads(output), indent=2, sort_keys=True, separators=(", ", ": ")).encode()
+
+        # Write pretty-printed JSON to a file.
+        f.write(output)
+        f.write("\n".encode())
+
+    @staticmethod
+    def import_json_to_traced_data_iterable(f):
+        """
+        Imports a JSON file to TracedData objects.
+
+        Note that the JSON file must be a serialized representation of TracedData objects in jsonpickle format
+        e.g. as produced by TracedDataJsonIO.export_traced_data_iterable_to_json.
+
+        :param f: File to import JSON from, opened in "rb" mode.
+        :type f: file-like
+        :return: TracedData objects deserialized from the JSON file.
+        :rtype: generator of TracedData
+        """
+        return jsonpickle.decode(f.read())
