@@ -6,8 +6,8 @@ import time
 import unittest
 from os import path
 
-from core_data_modules import Metadata, TracedData
-from core_data_modules.traced_data.io import TracedDataCodaIO
+from core_data_modules.traced_data import Metadata, TracedData
+from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, _td_type_error_string
 
 
 def generate_traced_data_frame():
@@ -25,11 +25,20 @@ class TestTracedDataCodaIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_traced_data_iterable_to_coda(self):
-        file_path = path.join("coda_test.csv")
+        file_path = path.join(self.test_dir, "coda_test.csv")
+
+        # Test exporting wrong data type
+        data = list(generate_traced_data_frame())
+        with open(file_path, "w") as f:
+            try:
+                TracedDataCodaIO.export_traced_data_iterable_to_coda(data[0], "Gender", f)
+                self.fail("Exporting the wrong data type did not raise an assertion error")
+            except AssertionError as e:
+                self.assertEquals(str(e), _td_type_error_string)
 
         # Test exporting everything
         data = generate_traced_data_frame()
-        with open(file_path, "wb") as f:
+        with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda(data, "Gender", f)
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_coded.csv"))
 
@@ -38,7 +47,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data[0].append_data({"Gender_clean": None}, Metadata("test_user", "cleaner", time.time()))
         data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", time.time()))
         data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", time.time()))
-        with open(file_path, "wb") as f:
+        with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda(
                 data, "Gender", f, exclude_coded_with_key="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
@@ -52,7 +61,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", time.time()))
 
         file_path = "tests/traced_data/resources/coda_import_data.txt"
-        with open(file_path, "rb") as f:
+        with open(file_path, "r") as f:
             data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
                 "test_user", data, "Gender", "Gender_clean", f))
 
@@ -74,7 +83,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", time.time()))
 
         file_path = "tests/traced_data/resources/coda_import_data.txt"
-        with open(file_path, "rb") as f:
+        with open(file_path, "r") as f:
             data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
                 "test_user", data, "Gender", "Gender_clean", f, True))
 
@@ -90,3 +99,42 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         for x, y in zip(data, expected_data):
             self.assertDictEqual(dict(x.items()), y)
+
+
+class TestTracedDataCSVIO(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_export_traced_data_iterable_to_csv(self):
+        file_path = path.join(self.test_dir, "csv_test.csv")
+
+        # Test exporting wrong data type
+        data = list(generate_traced_data_frame())
+        with open(file_path, "w") as f:
+            try:
+                TracedDataCSVIO.export_traced_data_iterable_to_csv(data[0], f)
+                self.fail("Exporting the wrong data type did not raise an assertion error")
+            except AssertionError as e:
+                self.assertEquals(str(e), _td_type_error_string)
+
+        # Test exporting normal data, with a key not in the list.
+        data = generate_traced_data_frame()
+        with open(file_path, "w") as f:
+            TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f, headers=["URN", "Gender", "Non-Existent"])
+
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/csv_export_expected.csv"))
+
+    def test_import_csv_to_traced_data_iterable(self):
+        file_path = "tests/traced_data/resources/csv_import_data.csv"
+
+        with open(file_path, "r") as f:
+            exported = list(generate_traced_data_frame())
+            imported = list(TracedDataCSVIO.import_csv_to_traced_data_iterable("test_user", f))
+
+            self.assertEqual(len(exported), len(imported))
+
+            for x, y in zip(exported, imported):
+                self.assertSetEqual(set(x.items()), set(y.items()))
