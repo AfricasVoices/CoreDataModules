@@ -55,7 +55,7 @@ class TracedData(Mapping):
     To construct a TracedData object, provide a dictionary containing the initial (key, value) pairs,
     plus additional metadata which records where this data came from:
     >>> data = {"id": "0", "phone": "01234123123", "gender": "woman"}
-    >>> traced_data = TracedData(data, Metadata("user", "source", time.time()))
+    >>> traced_data = TracedData(data, Metadata("user", Metadata.get_call_location(), time.time()))
 
     Retrieve values by using Python's dict syntax:
     >>> traced_data["id"]
@@ -65,7 +65,7 @@ class TracedData(Mapping):
 
     To update the object, provide a new dictionary containing the (key, value) pairs to update, and new metadata:
     >>> new_data = {"gender": "f", "age": 25}
-    >>> traced_data.append_data(new_data, Metadata("user", "age_source", time.time()))
+    >>> traced_data.append_data(new_data, Metadata("user", Metadata.get_call_location(), time.time()))
     >>> traced_data["age"]
     25
     >>> traced_data["gender"]
