@@ -2,7 +2,6 @@ import filecmp
 import random
 import shutil
 import tempfile
-import time
 import unittest
 from os import path
 
