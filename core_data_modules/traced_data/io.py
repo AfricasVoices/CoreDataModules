@@ -182,24 +182,23 @@ class TracedDataJsonIO(object):
 
         :param data: TracedData objects to export.
         :type data: iterable of TracedData
-        :param f: File to export the TracedData objects to, opened in "wb" mode.
+        :param f: File to export the TracedData objects to.
         :type f: file-like
-        :param pretty_print: Whether to format the JSON with new lines, indentation, and alphabetised keys.
+        :param pretty_print: Whether to format the JSON with line breaks, indentation, and alphabetised keys.
         :type pretty_print: bool
         """
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
         # Serialize the list of TracedData to a format which can be trivially deserialized.
-        output = jsonpickle.dumps(data)
-
         if pretty_print:
-            # jsonpickle doesn't support pretty-printing so use the built-in json library.
-            # The built-in json library was inappropriate for the initial serialization because the produced JSON is
-            # not easily deserializable.
-            # separators are set to account for the difference in defaults between Python 2 and Python 3
-            output = json.dumps(json.loads(output), indent=2, sort_keys=True, separators=(", ", ": ")).encode()
+            jsonpickle.set_encoder_options("json", sort_keys=True, indent=2, separators=(", ", ": "))
+        else:
+            jsonpickle.set_encoder_options("json", sort_keys=True)
 
-        # Write pretty-printed JSON to a file.
-        f.write(output)
-        f.write("\n".encode())
+        f.write(jsonpickle.dumps(data))
+        f.write("\n")
 
     @staticmethod
     def import_json_to_traced_data_iterable(f):
@@ -209,7 +208,7 @@ class TracedDataJsonIO(object):
         Note that the JSON file must be a serialized representation of TracedData objects in jsonpickle format
         e.g. as produced by TracedDataJsonIO.export_traced_data_iterable_to_json.
 
-        :param f: File to import JSON from, opened in "rb" mode.
+        :param f: File to import JSON from.
         :type f: file-like
         :return: TracedData objects deserialized from the JSON file.
         :rtype: generator of TracedData

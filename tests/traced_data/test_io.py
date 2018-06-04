@@ -7,7 +7,7 @@ import unittest
 from os import path
 
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, _td_type_error_string
+from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, _td_type_error_string
 
 
 def generate_traced_data_frame():
@@ -47,7 +47,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data[0].append_data({"Gender_clean": None}, Metadata("test_user", "cleaner", 10))
         data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
         data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
-        with open(file_path, "wb") as f:
+        with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda(
                 data, "Gender", f, exclude_coded_with_key="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
@@ -120,7 +120,7 @@ class TestTracedDataCSVIO(unittest.TestCase):
             except AssertionError as e:
                 self.assertEquals(str(e), _td_type_error_string)
 
-        # Test exporting normal data, with a key not in the list.
+        # Test exporting normal data, including requesting an unknown header.
         data = generate_traced_data_frame()
         with open(file_path, "w") as f:
             TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f, headers=["URN", "Gender", "Non-Existent"])
@@ -149,18 +149,33 @@ class TestTracedDataJsonIO(unittest.TestCase):
 
     def test_export_traced_data_iterable_to_json(self):
         file_path = path.join(self.test_dir, "json_test.json")
+
+        # Test exporting wrong data type
+        data = list(generate_traced_data_frame())
+        with open(file_path, "w") as f:
+            try:
+                TracedDataJsonIO.export_traced_data_iterable_to_json(data[0], f)
+                self.fail("Exporting the wrong data type did not raise an assertion error")
+            except AssertionError as e:
+                self.assertEquals(str(e), _td_type_error_string)
+
+        # Test normal export
         data = generate_traced_data_frame()
-
-        with open(file_path, "wb") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-
+        with open(file_path, "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f)
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected.json"))
+
+        # Test normal export with pretty print enabled
+        data = generate_traced_data_frame()
+        with open(file_path, "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected_pretty_print.json"))
 
     def test_import_json_to_traced_data_iterable(self):
         file_path = "tests/traced_data/resources/json_export_expected.json"
         expected = list(generate_traced_data_frame())
 
-        with open(file_path, "rb") as f:
+        with open(file_path, "r") as f:
             imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
 
         self.assertListEqual(expected, imported)
