@@ -36,7 +36,7 @@ class Metadata(object):
         """
         Returns the location where this function was called from.
 
-        :return Caller location in the format 'absolute_path/to/file.py:line:function_name'
+        :return Caller location in the format 'path/to/file.py:line:function_name'
         :rtype: str
         """
         frame = inspect.stack()[1]  # Access the previous frame to find out where this function was called from.

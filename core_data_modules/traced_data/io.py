@@ -1,8 +1,14 @@
 import time
 
 import six
-import unicodecsv
 from core_data_modules.traced_data import Metadata, TracedData
+
+if six.PY2:
+    import unicodecsv as csv
+if six.PY3:
+    import csv
+
+_td_type_error_string = "argument 'data' contains an element which is not of type TracedData"
 
 
 class TracedDataCodaIO(object):
@@ -18,22 +24,26 @@ class TracedDataCodaIO(object):
         :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
                            messages before they were coded).
         :type key_of_raw: str
-        :param f: File to export to, opened in 'wb' mode.
+        :param f: File to export to.
         :type f: file-like
         :param exclude_coded_with_key: Set to None to export every item in key_of_raw to Coda, or to the key of
                                        existing codes to exclude items of key_of_raw which have already been coded.
         :type exclude_coded_with_key: str | None
         """
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
         headers = [
             "id", "owner", "data",
             "timestamp", "schemeId", "schemeName",
             "deco_codeValue", "deco_codeId", "deco_confidence", "deco_manual", "deco_timestamp", "deco_author"
         ]
 
-        dialect = unicodecsv.excel
+        dialect = csv.excel
         dialect.delimiter = ";"
 
-        writer = unicodecsv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
+        writer = csv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
         writer.writeheader()
 
         if exclude_coded_with_key is not None:
@@ -78,7 +88,7 @@ class TracedDataCodaIO(object):
         :type key_of_raw: str
         :param key_of_coded: Key in the TracedData objects to write imported codes to.
         :type key_of_coded: str
-        :param f: Coda data file to import codes from, opened in 'rb' mode.
+        :param f: Coda data file to import codes from.
         :type f: file-like
         :param overwrite_existing_codes: For messages which are already coded, Whether to replace those codes with
                                          new codes from the Coda datafile.
@@ -89,10 +99,10 @@ class TracedDataCodaIO(object):
         # TODO: This function assumes there is only one code scheme.
 
         # TODO: Test when running on a machine set to German.
-        csv = unicodecsv.DictReader(f, delimiter=";")
+        imported_csv = csv.DictReader(f, delimiter=";")
 
         # Remove rows which still haven't been coded.
-        coded = list(filter(lambda row: row["deco_codeValue"] != "", csv))
+        coded = list(filter(lambda row: row["deco_codeValue"] != "", imported_csv))
 
         for td in data:
             if not overwrite_existing_codes and td.get(key_of_coded) is not None:
@@ -120,12 +130,14 @@ class TracedDataCSVIO(object):
 
         :param data: TracedData objects to export.
         :type data: iterable of TracedData
-        :param f: File to export to, opened in 'wb' mode.
+        :param f: File to export to.
         :type f: file-like
         :param headers: Headers to export. If this is None, all headers will be exported.
         :type headers: list of str
         """
         data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
 
         # If headers unspecified, search data for all headers which were used
         if headers is None:
@@ -134,12 +146,11 @@ class TracedDataCSVIO(object):
                 for key in six.iterkeys(td):
                     headers.add(key)
 
-        writer = unicodecsv.DictWriter(f, fieldnames=headers, lineterminator="\n")
+        writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n")
         writer.writeheader()
 
         for td in data:
             row = {key: td.get(key) for key in headers}
-
             writer.writerow(row)
 
     @staticmethod
@@ -149,12 +160,10 @@ class TracedDataCSVIO(object):
 
         :param user: Identifier of user running this program.
         :type user: str
-        :param f: File to import from, opened in 'rb' mode.
+        :param f: File to import from.
         :type f: file-like
         :return: TracedData objects imported from the provided file.
         :rtype: generator of TracedData
         """
-        csv = unicodecsv.DictReader(f)
-
-        for row in csv:
+        for row in csv.DictReader(f):
             yield TracedData(dict(row), Metadata(user, Metadata.get_call_location(), time.time()))
