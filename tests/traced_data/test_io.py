@@ -7,14 +7,14 @@ import unittest
 from os import path
 
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, _td_type_error_string
+from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, _td_type_error_string
 
 
 def generate_traced_data_frame():
     random.seed(0)
     for i, text in enumerate(["female", "m", "WoMaN", "27", "female"]):
         d = {"URN": "+001234500000" + str(i), "Gender": text}
-        yield TracedData(d, Metadata("test_user", "data_generator", time.time()))
+        yield TracedData(d, Metadata("test_user", "data_generator", i))
 
 
 class TestTracedDataCodaIO(unittest.TestCase):
@@ -44,9 +44,9 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         # Test exporting only not coded elements
         data = list(generate_traced_data_frame())
-        data[0].append_data({"Gender_clean": None}, Metadata("test_user", "cleaner", time.time()))
-        data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", time.time()))
-        data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", time.time()))
+        data[0].append_data({"Gender_clean": None}, Metadata("test_user", "cleaner", 10))
+        data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
+        data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
         with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda(
                 data, "Gender", f, exclude_coded_with_key="Gender_clean")
@@ -58,7 +58,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
     def _overwrite_false_asserts(self):
         data = list(generate_traced_data_frame())
-        data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", time.time()))
+        data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
         file_path = "tests/traced_data/resources/coda_import_data.txt"
         with open(file_path, "r") as f:
@@ -80,7 +80,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
     def _overwrite_true_asserts(self):
         data = list(generate_traced_data_frame())
-        data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", time.time()))
+        data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
         file_path = "tests/traced_data/resources/coda_import_data.txt"
         with open(file_path, "r") as f:
@@ -120,7 +120,7 @@ class TestTracedDataCSVIO(unittest.TestCase):
             except AssertionError as e:
                 self.assertEquals(str(e), _td_type_error_string)
 
-        # Test exporting normal data, with a key not in the list.
+        # Test exporting normal data, including requesting an unknown header.
         data = generate_traced_data_frame()
         with open(file_path, "w") as f:
             TracedDataCSVIO.export_traced_data_iterable_to_csv(data, f, headers=["URN", "Gender", "Non-Existent"])
@@ -138,3 +138,44 @@ class TestTracedDataCSVIO(unittest.TestCase):
 
             for x, y in zip(exported, imported):
                 self.assertSetEqual(set(x.items()), set(y.items()))
+
+
+class TestTracedDataJsonIO(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_export_traced_data_iterable_to_json(self):
+        file_path = path.join(self.test_dir, "json_test.json")
+
+        # Test exporting wrong data type
+        data = list(generate_traced_data_frame())
+        with open(file_path, "w") as f:
+            try:
+                TracedDataJsonIO.export_traced_data_iterable_to_json(data[0], f)
+                self.fail("Exporting the wrong data type did not raise an assertion error")
+            except AssertionError as e:
+                self.assertEquals(str(e), _td_type_error_string)
+
+        # Test normal export
+        data = generate_traced_data_frame()
+        with open(file_path, "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f)
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected.json"))
+
+        # Test normal export with pretty print enabled
+        data = generate_traced_data_frame()
+        with open(file_path, "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected_pretty_print.json"))
+
+    def test_import_json_to_traced_data_iterable(self):
+        file_path = "tests/traced_data/resources/json_export_expected.json"
+        expected = list(generate_traced_data_frame())
+
+        with open(file_path, "r") as f:
+            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+
+        self.assertListEqual(expected, imported)
