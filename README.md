@@ -37,8 +37,8 @@ td.append_data({"age": "21"}, Metadata(USER, Metadata.get_call_location(), time.
 print(td["age"])  # 21
 ```
 
-#### IO
-CoreDataModules supports conversion between in-memory `iterables of TracedData` and Coda, CSV, and JSON files.
+CoreDataModules also provides utilites for converting between in-memory `iterables of TracedData` and Coda, 
+CSV, and JSON files.
 For example, to save and load a list of `TracedData` objects by serializing to and from JSON:
 ```python
 from core_data_modules.traced_data.io import TracedDataJsonIO
