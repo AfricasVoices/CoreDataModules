@@ -15,12 +15,6 @@ class TestPhoneNumberUuidTable(unittest.TestCase):
         self.assertEqual(lut.add_phone("01234123123"), uuid)
         self.assertRaises(KeyError, lambda: lut.get_uuid("01234000001"))
 
-    def test___getitem__(self):
-        lut = PhoneNumberUuidTable()
-        uuid = lut.add_phone("01234123123")
-        self.assertEqual(lut["01234123123"], uuid)
-        self.assertRaises(KeyError, lambda: lut["01234000001"])
-
     def test_dumps_loads(self):
         lut = PhoneNumberUuidTable()
         lut.add_phone("01234000001")

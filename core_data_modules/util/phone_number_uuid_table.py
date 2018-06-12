@@ -6,16 +6,16 @@ import six
 
 class PhoneNumberUuidTable(object):
     """
-    A Lookup Table for conversion between phone numbers and UUIDs and vice versa.
+    An append-only lookup table for conversion between phone numbers and UUIDs and vice versa.
 
-    Note that phone numbers are only considired equal if they are provided in exactly the same format
-    (e.g. the table considers +254123123 and 0123123 to be different).
+    Note that phone numbers are only considered equal if they are provided in exactly the same format
+    (for example, this table would consider +254123123, 243123123, and 0123123 to all be different).
     """
 
     def __init__(self, table=None):
         """
-        :param table: An existing dictionary of phone numbers to UUIDs to use.
-        :type table: dict
+        :param table: An existing dictionary of phone numbers to UUIDs to construct the table from.
+        :type table: dict of str -> str
         """
         if table is None:
             table = {}
@@ -24,7 +24,7 @@ class PhoneNumberUuidTable(object):
 
     def add_phone(self, phone):
         """
-        Adds a new phone number to this lookup table and returns a new UUID for that phone number.
+        Adds a new phone number to this lookup table and returns a new UUID which is now associated with that number.
         If the phone number was already in this table, instead returns the existing UUID for that phone number.
 
         :param phone: Phone number to add to the lookup table
@@ -52,19 +52,6 @@ class PhoneNumberUuidTable(object):
         :rtype: str
         """
         return self.phone_to_uuid[number]
-
-    def __getitem__(self, number):
-        """
-        Returns the UUID of a phone number in this table.
-
-        Raises a KeyError if the phone number was not found in this table.
-
-        :param number: Number to retrieve UUID of.
-        :type number: str
-        :return: UUID
-        :rtype: str
-        """
-        return self.get_uuid(number)
 
     def get_phone(self, uuid):
         """
@@ -101,9 +88,6 @@ class PhoneNumberUuidTable(object):
             Returns all the numbers in the table, as an iterator.
             
             Analogous to dict.iterkeys.
-            
-            :return:
-            :rtype:
             """
             return self.phone_to_uuid.iterkeys()
 
