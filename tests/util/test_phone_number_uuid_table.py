@@ -68,6 +68,11 @@ class TestPhoneNumberUuidTable(unittest.TestCase):
 
     @staticmethod
     def time_table_operations():
+        """
+        Times various PhoneNumberUuidTable options with 100k numbers.
+
+        Not automatically run as part of the test suite.
+        """
         lut = PhoneNumberUuidTable()
 
         print("Times:")

@@ -34,7 +34,7 @@ class PhoneNumberUuidTable(object):
         """
         if phone not in self.phone_to_uuid:
             new_uuid = str(uuid.uuid4())
-            assert new_uuid not in self.uuid_to_phone, "UUID collision occurred"
+            assert new_uuid not in self.uuid_to_phone, "UUID collision occurred"  # Not handling because extremely rare
             self.phone_to_uuid[phone] = new_uuid
             self.uuid_to_phone[new_uuid] = phone
 
