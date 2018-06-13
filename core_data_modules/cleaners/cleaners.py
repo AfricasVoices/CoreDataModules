@@ -16,7 +16,7 @@ class Cleaners(object):
         for args in clean_args:
             raw_column = args["raw"]
             cleaners = args["cleaners"]
-            if type(cleaners) != "list":
+            if type(cleaners) != list:
                 cleaners = [cleaners]
             clean_column = args.get("clean", "{}_clean".format(raw_column))
 

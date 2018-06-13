@@ -158,7 +158,7 @@ class DemographicCleaner(object):
 
     @classmethod
     def clean_age(cls, text):
-        cls.clean_number(text)
+        return cls.clean_number(text)
 
 
 class Cleaners(object):

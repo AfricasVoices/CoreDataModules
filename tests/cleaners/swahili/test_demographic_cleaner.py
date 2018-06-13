@@ -43,3 +43,11 @@ class TestDemographicCleaner(unittest.TestCase):
 
         self.run_cleaner(DemographicCleaner.clean_number_digits, test_cases)
 
+    def test_clean_number(self):
+        test_cases = {
+            "10": "10",
+            "27": "27"
+        }
+
+        self.run_cleaner(DemographicCleaner.clean_number, test_cases)
+
