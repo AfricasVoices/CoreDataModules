@@ -1,7 +1,7 @@
-import uuid
 import json
 
 import six
+from core_data_modules.util import IDUtils
 
 
 class PhoneNumberUuidTable(object):
@@ -33,8 +33,10 @@ class PhoneNumberUuidTable(object):
         :rtype: str
         """
         if phone not in self.phone_to_uuid:
-            new_uuid = str(uuid.uuid4())
-            assert new_uuid not in self.uuid_to_phone, "UUID collision occurred"  # Not handling because extremely rare
+            new_uuid = IDUtils.generate_uuid()
+            assert new_uuid not in self.uuid_to_phone, "UUID collision occurred. " \
+                                                       "This is an extremely rare event. Re-running the program " \
+                                                       "should resolve the issue."  # Not handling because so rare.
             self.phone_to_uuid[phone] = new_uuid
             self.uuid_to_phone[new_uuid] = phone
 
