@@ -1,6 +1,164 @@
-from .regexes import Regex
+import re
+
+from core_data_modules.cleaners.codes import Codes
+
+from .regexes import Regex, Patterns
 import numpy as np
 import sys
+
+
+class DemographicCleaner(object):
+    @staticmethod
+    def clean_with_patterns(text, patterns):
+        for code, pattern in patterns.items():
+            if Regex.has_matches(text, pattern):
+                return code  # TODO: This follows what Dreams does.
+                # TODO: Might cause issues if there are responses matching multiple regexes.
+        return Codes.NotCleaned
+
+    @classmethod
+    def clean_gender(cls, text):
+        patterns = {
+            Codes.male: Patterns.male,
+            Codes.female: Patterns.female
+        }
+
+        return cls.clean_with_patterns(text, patterns)
+
+    @classmethod
+    def clean_number_units(cls, text):
+        patterns = {
+            1: Patterns.one,
+            2: Patterns.two,
+            3: Patterns.three,
+            4: Patterns.four,
+            5: Patterns.five,
+            6: Patterns.six,
+            7: Patterns.seven,
+            8: Patterns.eight,
+            9: Patterns.nine,
+        }
+
+        return cls.clean_with_patterns(text, patterns)
+
+    @classmethod
+    def clean_number_teens(cls, text):
+        patterns = {
+            11: Patterns.eleven,
+            12: Patterns.twelve,
+            13: Patterns.thirteen,
+            14: Patterns.fourteen,
+            15: Patterns.fifteen,
+            16: Patterns.sixteen,
+            17: Patterns.seventeen,
+            18: Patterns.eighteen,
+            19: Patterns.nineteen
+        }
+
+        return cls.clean_with_patterns(text, patterns)
+
+    @classmethod
+    def clean_number_tens(cls, text):
+        patterns = {
+            10: Patterns.ten,
+            20: Patterns.twenty,
+            30: Patterns.thirty,
+            40: Patterns.forty,
+            50: Patterns.fifty,
+            60: Patterns.sixty,
+            70: Patterns.seventy,
+            80: Patterns.eighty,
+            90: Patterns.ninety
+        }
+
+        return cls.clean_with_patterns(text, patterns)
+
+    @staticmethod
+    def replace_digit_like_characters(text):
+        """
+        Replaces letters which look like digits with those digits.
+
+        For example, the characters "o" and "O" are replaced with "0".
+
+        :param text: Text to replace digit-like characters with digits.
+        :type text: str
+        :return: text with digit-like characters replaced
+        :rtype: str
+        """
+        replacements = {
+            "o": "0",
+            "i": "1",
+            "j": "1",
+            "l": "1",
+            "z": "2",
+            "t": "7"
+        }
+
+        for target, replacement in replacements.items():
+            text = text.replace(target, replacement)
+            text = text.replace(target.upper(), replacement)
+        
+        return text
+
+    @classmethod
+    def clean_number_words(cls, text):
+        """
+        Extracts the number words in the given text (e.g. for English these would include "four", "seventy"), and
+        converts them to an integer (e.g. 74).
+
+        :param text: Text to clean
+        :type text: str
+        :return: Extracted number
+        :rtype: int | Codes.NotCleaned
+        """
+        cleaned_units = cls.clean_number_units(text)
+        if cleaned_units == Codes.NotCleaned:
+            cleaned_units = 0
+
+        cleaned_teens = cls.clean_number_teens(text)
+        if cleaned_teens == Codes.NotCleaned:
+            cleaned_teens = 0
+            
+        cleaned_tens = cls.clean_number_tens(text)
+        if cleaned_tens == Codes.NotCleaned:
+            cleaned_tens = 0
+
+        cleaned = cleaned_tens + cleaned_teens + cleaned_units
+
+        if cleaned == 0:
+            cleaned = Codes.NotCleaned
+
+        return cleaned
+    
+    @classmethod
+    def clean_number_digits(cls, text):
+        """
+        Extracts the digit (and digit-like characters e.g. 'o') from the given text and converts to an integer.
+        
+        :param text: Text to clean
+        :type text: str
+        :return: Extracted number
+        :rtype: str  TODO: Are we sure we don't want int?
+        """
+        text = cls.replace_digit_like_characters(text)
+
+        matches = re.search(r"(\b\d{2}\b|\b\d\d\b)", text)  # TODO: This regex only extracts 2-digit numbers
+        if matches:
+            return matches.group(1).strip()
+        else:
+            return Codes.NotCleaned
+
+    @classmethod
+    def clean_number(cls, text):
+        cleaned_digits = cls.clean_number_digits(text)
+        if cleaned_digits != Codes.NotCleaned:
+            return cleaned_digits
+        else:
+            return cls.clean_number_words(text)
+
+    @classmethod
+    def clean_age(cls, text):
+        cls.clean_number(text)
 
 
 class Cleaners(object):
@@ -8,6 +166,7 @@ class Cleaners(object):
     Used to pull clean data from columns.
     Assumes pandas is loaded
     '''
+
     def __init__(self):
         self.rg = Regex()
 
