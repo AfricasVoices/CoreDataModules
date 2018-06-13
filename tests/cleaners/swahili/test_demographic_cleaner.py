@@ -1,7 +1,7 @@
 import unittest
 
 from core_data_modules.cleaners.codes import Codes
-from core_data_modules.cleaners.swahili.demographic_cleaner import DemographicCleaner
+from core_data_modules.cleaners.swahili import DemographicCleaner
 
 
 class TestDemographicCleaner(unittest.TestCase):
