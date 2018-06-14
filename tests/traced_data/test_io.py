@@ -7,8 +7,8 @@ import unittest
 from os import path
 
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, _td_type_error_string, \
-    TracedDataTheInterfaceIO
+from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
+    TracedDataTheInterfaceIO, _td_type_error_string
 
 
 def generate_traced_data_frame():
