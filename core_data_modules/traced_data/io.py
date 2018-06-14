@@ -228,6 +228,14 @@ class TracedDataTheInterfaceIO(object):
                 value = "NA"
             return value
 
+    age_groups = {
+        (0, 14): "<15",
+        (15, 19): "15-19",
+        (20, 24): "20-24",
+        (25, 29): "25-29",
+        (30, 100): "30+"
+    }
+
     @classmethod
     def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
                                                      id_col, date_col=None, message_col=None, gender_col=None,
@@ -254,6 +262,14 @@ class TracedDataTheInterfaceIO(object):
                     "age": cls._format_col(td, age_col),
                     "county": cls._format_col(td, county_col)
                 }
+
+                # TODO: Pull this block out somewhere?
+                if row["age"] != "NA":
+                    for age_range in cls.age_groups:
+                        if age_range[0] < row["age"] < age_range[1]:
+                            row["age"] = cls.age_groups[age_range]
+                            break
+                    # TODO: What happens if we make it this far?
 
                 writer.writerow(row)
 
