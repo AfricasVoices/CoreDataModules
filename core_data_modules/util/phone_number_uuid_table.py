@@ -37,7 +37,7 @@ class PhoneNumberUuidTable(object):
         phone = PhoneCleaner.normalise_phone(phone)
 
         if phone not in self.phone_to_uuid:
-            new_uuid = IDUtils.generate_uuid()
+            new_uuid = IDUtils.generate_uuid("avf-phone-uuid-")
             assert new_uuid not in self.uuid_to_phone, "UUID collision occurred. " \
                                                        "This is an extremely rare event. Re-running the program " \
                                                        "should resolve the issue."  # Not handling because so rare.
