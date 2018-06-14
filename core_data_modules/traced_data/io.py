@@ -238,7 +238,7 @@ class TracedDataTheInterfaceIO(object):
 
     @classmethod
     def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
-                                                     id_col, date_col=None, message_col=None, gender_col=None,
+                                                     phone_col, date_col=None, message_col=None, gender_col=None,
                                                      age_col=None, county_col=None):
         data = list(data)
         for td in data:
@@ -257,7 +257,7 @@ class TracedDataTheInterfaceIO(object):
 
             for td in data:
                 row = {
-                    "phone": td[id_col],
+                    "phone": td[phone_col],
                     "gender": cls._format_col(td, gender_col),
                     "age": cls._format_col(td, age_col),
                     "county": cls._format_col(td, county_col)
