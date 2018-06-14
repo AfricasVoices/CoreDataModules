@@ -101,14 +101,14 @@ class PhoneNumberUuidTable(object):
             """
             return self.uuid_to_phone.iterkeys()
 
-    def dumps(self):
+    def dumps(self, sort_keys=False):
         """
         Serializes this object to a JSON string.
 
         :return: Serialized JSON string
         :rtype: str
         """
-        return json.dumps(self.phone_to_uuid)
+        return json.dumps(self.phone_to_uuid, sort_keys=sort_keys)
 
     @classmethod
     def loads(cls, s):
@@ -122,14 +122,16 @@ class PhoneNumberUuidTable(object):
         """
         return cls(json.loads(s))
 
-    def dump(self, f):
+    def dump(self, f, **dumps_args):
         """
         Serializes this object to a file.
 
         :param f: File to write to.
         :type f: file-like
+        :param dumps_args: See arguments to dumps
+        :type dumps_args: dict
         """
-        f.write(self.dumps())
+        f.write(self.dumps(dumps_args))
 
     @classmethod
     def load(cls, f):

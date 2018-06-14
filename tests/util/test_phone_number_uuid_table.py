@@ -1,30 +1,29 @@
 import collections
+import filecmp
+import shutil
+import tempfile
 import time
 import unittest
 import uuid
+from os import path
 
 import six
 from core_data_modules.util import PhoneNumberUuidTable
 
 
 class TestPhoneNumberUuidTable(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
     def test_add_get_phone(self):
         lut = PhoneNumberUuidTable()
         uuid = lut.add_phone("01234123123")
         self.assertEqual(lut.get_uuid("01234123123"), uuid)
         self.assertEqual(lut.add_phone("01234123123"), uuid)
         self.assertRaises(KeyError, lambda: lut.get_uuid("01234000001"))
-
-    def test_dumps_loads(self):
-        lut = PhoneNumberUuidTable()
-        lut.add_phone("01234000001")
-        lut.add_phone("01234000002")
-        lut.add_phone("01234000003")
-
-        dumped = lut.dumps()
-        loaded = lut.loads(dumped)
-
-        self.assertEqual(lut, loaded)
 
     def test_numbers(self):
         lut = PhoneNumberUuidTable()
@@ -65,6 +64,46 @@ class TestPhoneNumberUuidTable(unittest.TestCase):
             self.assertSetEqual(set(lut.iteruuids()), uuids)
         if six.PY3:
             self.assertRaises(AttributeError, lambda: lut.iteruuids())
+
+    def test_dumps_loads(self):
+        lut = PhoneNumberUuidTable()
+        lut.add_phone("01234000001")
+        lut.add_phone("01234000002")
+        lut.add_phone("01234000003")
+
+        dumped = lut.dumps()
+        loaded = lut.loads(dumped)
+
+        self.assertEqual(lut, loaded)
+        
+    def get_dump_load_lut(self):
+        table = {
+            "01234000001": "4bf3388a-039b-4ca7-8789-319cf8ee343c",
+            "01234000002": "62815f71-2721-42a6-856c-9cd66b66d6b5",
+            "01234000003": "6becf322-7819-44f1-b212-5a13066def17"
+        }
+
+        lut = PhoneNumberUuidTable(table)
+        self.assertEqual(lut.get_uuid("01234000003"), "6becf322-7819-44f1-b212-5a13066def17")
+        self.assertEqual(lut.get_phone("62815f71-2721-42a6-856c-9cd66b66d6b5"), "01234000002")
+        
+        return lut
+
+    def test_dump(self):
+        file_path = path.join( "test_output.json")
+        lut = self.get_dump_load_lut()
+
+        with open(file_path, "w") as f:
+            lut.dump(f, sort_keys=True)
+
+        self.assertTrue(filecmp.cmp(file_path, "tests/util/resources/phone_number_table_sample.json"))
+
+    def test_load(self):
+        with open("tests/util/resources/phone_number_table_sample.json", "r") as f:
+            lut = PhoneNumberUuidTable.load(f)
+
+        expected = self.get_dump_load_lut()
+        self.assertEqual(lut, expected)
 
     @staticmethod
     def time_table_operations():
