@@ -3,6 +3,7 @@ from os import path
 import jsonpickle
 import time
 import six
+from core_data_modules.cleaners import TextCleaner
 
 from core_data_modules.traced_data import Metadata, TracedData
 
@@ -254,7 +255,7 @@ class TracedDataTheInterfaceIO(object):
             for td in data:
                 row = {
                     "phone": td[phone_col],
-                    "message": td[message_col]
+                    "message": TextCleaner.fold_lines(TextCleaner.clean_text(td[message_col]))
                 }
 
                 writer.writerow(row)

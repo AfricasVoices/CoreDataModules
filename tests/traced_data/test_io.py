@@ -194,7 +194,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         data_dicts = [
             {"uuid": "a", "message": "Message 1", "gender": "male", "age": 27, "county": None},
-            {"uuid": "b", "message": "Message 2", "gender": None, "age": None},
+            {"uuid": "b", "message": "Message 2\nis very long", "gender": None, "age": None},
             {"uuid": "c", "message": "Message 3", "county": "mogadishu"}
         ]
 
