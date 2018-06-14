@@ -26,7 +26,7 @@ class TextCleaner(object):
     @staticmethod
     def fold_lines(text):
         """
-        Converts a multiline string to a single line string by replacing new lines with spaces.
+        Converts a multi-line string to a single line string by replacing new lines with spaces.
 
         >>> TextCleaner.fold_lines("a\\nb")
         'a b'
