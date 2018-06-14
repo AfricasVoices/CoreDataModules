@@ -238,7 +238,7 @@ class TracedDataTheInterfaceIO(object):
 
     @classmethod
     def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
-                                                     phone_col, date_col=None, message_col=None, gender_col=None,
+                                                     phone_col, message_col, gender_col=None,
                                                      age_col=None, county_col=None):
         data = list(data)
         for td in data:
