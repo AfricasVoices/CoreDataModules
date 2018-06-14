@@ -19,6 +19,17 @@ class TestTextCleaner(unittest.TestCase):
             clean = TextCleaner.to_ascii(raw)
             self.assertEqual(expected, clean)
 
+    def test_fold_lines(self):
+        test_cases = {
+            "": "",
+            "a": "a",
+            "line 1\nline 2": "line 1 line 2"
+        }
+
+        for raw, expected in test_cases.items():
+            clean = TextCleaner.fold_lines(raw)
+            self.assertEqual(expected, clean)
+
     def test_clean_text(self):
         test_cases = {
             "abc": "abc",

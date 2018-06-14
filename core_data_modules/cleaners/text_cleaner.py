@@ -8,7 +8,7 @@ class TextCleaner(object):
     @staticmethod
     def to_ascii(text):
         """
-        Removes non-ASCII characters from the given input string
+        Removes non-ASCII characters from the given input string.
 
         >>> TextCleaner.to_ascii(u"tøåst")
         'tst'
@@ -22,6 +22,21 @@ class TextCleaner(object):
             return text.encode("ascii", "ignore")
         if six.PY3:
             return text.encode("ascii", "ignore").decode()
+
+    @staticmethod
+    def fold_lines(text):
+        """
+        Converts a multiline string to a single line string by replacing new lines with spaces.
+
+        >>> TextCleaner.fold_lines("a\\nb")
+        'a b'
+
+        :param text: String to fold
+        :type text: str | unicode
+        :return: Folded string
+        :rtype: str
+        """
+        return text.replace("\n", " ")
 
     @classmethod
     def clean_text(cls, text):
