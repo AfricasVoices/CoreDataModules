@@ -246,7 +246,18 @@ class TracedDataTheInterfaceIO(object):
 
         # Export inbox file
         with open(path.join(export_directory, "inbox"), "w") as f:
-            pass
+            headers = ["phone", "date", "time", "message"]
+
+            writer = csv.DictWriter(f, fieldnames=headers, delimiter="\t")
+            writer.writeheader()
+
+            for td in data:
+                row = {
+                    "phone": td[phone_col],
+                    "message": td[message_col]
+                }
+
+                writer.writerow(row)
 
         # Export demo file
         with open(path.join(export_directory, "demo"), "w") as f:

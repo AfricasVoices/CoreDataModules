@@ -190,12 +190,12 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_export_traced_data_iterable_to_the_interface(self):
-        output_directory = self.test_dir
+        output_directory = "."
 
         data_dicts = [
-            {"uuid": "a", "gender": "male", "age": 27, "county": None},
-            {"uuid": "b", "gender": None, "age": None},
-            {"uuid": "c", "county": "mogadishu"}
+            {"uuid": "a", "message": "Message 1", "gender": "male", "age": 27, "county": None},
+            {"uuid": "b", "message": "Message 2", "gender": None, "age": None},
+            {"uuid": "c", "message": "Message 3", "county": "mogadishu"}
         ]
 
         data = map(
@@ -203,6 +203,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
             data, output_directory, "uuid",
+            message_col="message",
             gender_col="gender", age_col="age", county_col="county")
 
         self.assertTrue(filecmp.cmp(path.join(output_directory, "demo"),
