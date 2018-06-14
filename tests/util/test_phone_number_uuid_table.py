@@ -22,27 +22,29 @@ class TestPhoneNumberUuidTable(unittest.TestCase):
         lut = PhoneNumberUuidTable()
         uuid = lut.add_phone("01234123123")
         self.assertEqual(lut.get_uuid("01234123123"), uuid)
+        self.assertEqual(lut.get_uuid("(01234) 123123"), uuid)
         self.assertEqual(lut.add_phone("01234123123"), uuid)
+        self.assertEqual(lut.add_phone("+1234 123-123"), uuid)
         self.assertRaises(KeyError, lambda: lut.get_uuid("01234000001"))
 
     def test_numbers(self):
         lut = PhoneNumberUuidTable()
-        lut.add_phone("01234000001")
-        lut.add_phone("01234000002")
+        lut.add_phone("1234000001")
+        lut.add_phone("1234000002")
 
         if six.PY2:
             self.assertIs(type(lut.numbers()), list)
         if six.PY3:
             self.assertIsInstance(iter(lut.numbers()), collections.Iterable)
 
-        self.assertSetEqual(set(lut.numbers()), {"01234000001", "01234000002"})
+        self.assertSetEqual(set(lut.numbers()), {"1234000001", "1234000002"})
 
     def test_iternumbers(self):
         lut = PhoneNumberUuidTable()
         if six.PY2:
-            lut.add_phone("01234000001")
-            lut.add_phone("01234000002")
-            self.assertSetEqual(set(lut.iternumbers()), {"01234000001", "01234000002"})
+            lut.add_phone("1234000001")
+            lut.add_phone("1234000002")
+            self.assertSetEqual(set(lut.iternumbers()), {"1234000001", "1234000002"})
         if six.PY3:
             self.assertRaises(AttributeError, lambda: lut.iternumbers())
 
@@ -78,19 +80,19 @@ class TestPhoneNumberUuidTable(unittest.TestCase):
         
     def get_dump_load_lut(self):
         table = {
-            "01234000001": "4bf3388a-039b-4ca7-8789-319cf8ee343c",
-            "01234000002": "62815f71-2721-42a6-856c-9cd66b66d6b5",
-            "01234000003": "6becf322-7819-44f1-b212-5a13066def17"
+            "1234000001": "4bf3388a-039b-4ca7-8789-319cf8ee343c",
+            "1234000002": "62815f71-2721-42a6-856c-9cd66b66d6b5",
+            "1234000003": "6becf322-7819-44f1-b212-5a13066def17"
         }
 
         lut = PhoneNumberUuidTable(table)
         self.assertEqual(lut.get_uuid("01234000003"), "6becf322-7819-44f1-b212-5a13066def17")
-        self.assertEqual(lut.get_phone("62815f71-2721-42a6-856c-9cd66b66d6b5"), "01234000002")
+        self.assertEqual(lut.get_phone("62815f71-2721-42a6-856c-9cd66b66d6b5"), "1234000002")
         
         return lut
 
     def test_dump(self):
-        file_path = path.join( "test_output.json")
+        file_path = path.join(self.test_dir, "test_output.json")
         lut = self.get_dump_load_lut()
 
         with open(file_path, "w") as f:
