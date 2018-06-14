@@ -1,3 +1,5 @@
+from os import path
+
 import jsonpickle
 import time
 import six
@@ -213,3 +215,45 @@ class TracedDataJsonIO(object):
         :rtype: generator of TracedData
         """
         return jsonpickle.decode(f.read())
+
+
+class TracedDataTheInterfaceIO(object):
+    @staticmethod
+    def _format_col(td, col):
+        if col is None:
+            return "NA"
+        else:
+            value = td.get(col, None)
+            if value is None:
+                value = "NA"
+            return value
+
+    @classmethod
+    def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
+                                                     id_col, date_col=None, message_col=None, gender_col=None,
+                                                     age_col=None, county_col=None):
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
+        # Export inbox file
+        with open(path.join(export_directory, "inbox"), "w") as f:
+            pass
+
+        # Export demo file
+        with open(path.join(export_directory, "demo"), "w") as f:
+            headers = ["phone", "gender", "age", "county"]
+
+            writer = csv.DictWriter(f, fieldnames=headers, delimiter="\t")
+            writer.writeheader()
+
+            for td in data:
+                row = {
+                    "phone": td[id_col],
+                    "gender": cls._format_col(td, gender_col),
+                    "age": cls._format_col(td, age_col),
+                    "county": cls._format_col(td, county_col)
+                }
+
+                writer.writerow(row)
+

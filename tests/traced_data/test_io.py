@@ -2,11 +2,13 @@ import filecmp
 import random
 import shutil
 import tempfile
+import time
 import unittest
 from os import path
 
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, _td_type_error_string
+from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, _td_type_error_string, \
+    TracedDataTheInterfaceIO
 
 
 def generate_traced_data_frame():
@@ -178,3 +180,28 @@ class TestTracedDataJsonIO(unittest.TestCase):
             imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
 
         self.assertListEqual(expected, imported)
+
+
+class TestTracedDataTheInterfaceIO(unittest.TestCase):
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
+
+    def test_export_traced_data_iterable_to_the_interface(self):
+        data_dicts = [
+            {"uuid": "a", "gender": "male", "age": 27, "county": None},
+            {"uuid": "b", "gender": None, "age": None},
+            {"uuid": "c", "county": "mogadishu"}
+        ]
+
+        data = map(
+            lambda d: TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())), data_dicts)
+
+        TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
+            data, self.test_dir, "uuid",
+            gender_col="gender", age_col="age", county_col="county")
+
+        self.assertTrue(filecmp.cmp(path.join(self.test_dir, "demo"),
+                                    "tests/traced_data/resources/the_interface_export_expected_demo"))
