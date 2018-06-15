@@ -1,3 +1,4 @@
+# coding=utf-8
 import filecmp
 import random
 import shutil
@@ -195,7 +196,8 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         data_dicts = [
             {"uuid": "a", "message": "Message 1", "gender": "male", "age": 27, "county": None},
             {"uuid": "b", "message": "Message 2\nis very long", "gender": None, "age": None},
-            {"uuid": "c", "message": "Message 3", "county": "mogadishu"}
+            {"uuid": "c", "message": u"Message 3, has punctuation and non-ASCII: ø. These need cleaning!",
+             "county": "mogadishu"}
         ]
 
         data = map(
@@ -212,7 +214,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
                                     "tests/traced_data/resources/the_interface_export_expected_demo"))
 
     def test_export_traced_data_iterable_to_the_interface_with_tagging(self):
-        output_directory = "."
+        output_directory = self.test_dir
 
         data_dicts = [
             {"uuid": "a", "key_1": "abc", "key_2": "def"},
