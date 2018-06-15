@@ -239,8 +239,26 @@ class TracedDataTheInterfaceIO(object):
 
     @classmethod
     def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
-                                                     phone_col, message_col, gender_col=None,
-                                                     age_col=None, county_col=None):
+                                                     phone_key, message_key,
+                                                     gender_key=None, age_key=None, county_key=None):
+        """
+        Exports a collection of TracedData objects to inbox and demo files required by The Interface.
+
+        :param data: TracedData objects to export.
+        :type data: iterable of TracedData
+        :param export_directory: Directory to write inbox and demo files to.
+        :type export_directory: str
+        :param phone_key: Key in TracedData objects of respondent's phone number (or id)
+        :type phone_key: str
+        :param message_key: Key in TracedData objects of the message to export TODO: Change to accept
+        :type message_key: str
+        :param gender_key: Key in TracedData objects of respondent's gender
+        :type gender_key: str
+        :param age_key: Key in TracedData objects of respondent's age
+        :type age_key: str
+        :param county_key: Key in TracedData objects of respondent's county
+        :type county_key: str
+        """
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
@@ -254,8 +272,8 @@ class TracedDataTheInterfaceIO(object):
 
             for td in data:
                 row = {
-                    "phone": td[phone_col],
-                    "message": TextCleaner.fold_lines(TextCleaner.clean_text(td[message_col]))
+                    "phone": td[phone_key],
+                    "message": TextCleaner.fold_lines(TextCleaner.clean_text(td[message_key]))
                 }
 
                 writer.writerow(row)
@@ -269,10 +287,10 @@ class TracedDataTheInterfaceIO(object):
 
             for td in data:
                 row = {
-                    "phone": td[phone_col],
-                    "gender": cls._format_col(td, gender_col),
-                    "age": cls._format_col(td, age_col),
-                    "county": cls._format_col(td, county_col)
+                    "phone": td[phone_key],
+                    "gender": cls._format_col(td, gender_key),
+                    "age": cls._format_col(td, age_key),
+                    "county": cls._format_col(td, county_key)
                 }
 
                 # TODO: Pull this block out somewhere?

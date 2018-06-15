@@ -203,8 +203,8 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
             data, output_directory, "uuid",
-            message_col="message",
-            gender_col="gender", age_col="age", county_col="county")
+            message_key="message",
+            gender_key="gender", age_key="age", county_key="county")
 
         self.assertTrue(filecmp.cmp(path.join(output_directory, "demo"),
                                     "tests/traced_data/resources/the_interface_export_expected_demo"))
