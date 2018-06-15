@@ -1,4 +1,1 @@
-tests/traced_data/resources/the_interface_export_expected_demo eol=crlf
-tests/traced_data/resources/the_interface_export_expected_inbox eol=crlf
-tests/traced_data/resources/the_interface_export_expected_taggeddemo eol=crlf
-tests/traced_data/resources/the_interface_export_expected_tagged_inbox eol=crlf
+tests/traced_data/resources/the_interface_export_expected_* eol=crlf
