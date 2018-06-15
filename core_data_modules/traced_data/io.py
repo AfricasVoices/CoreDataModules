@@ -220,22 +220,44 @@ class TracedDataJsonIO(object):
 
 class TracedDataTheInterfaceIO(object):
     @staticmethod
-    def _format_col(td, col):
-        if col is None:
+    def _get_demographic(td, key):
+        """
+        Gets the demographic value for the given key of the given TracedData object.
+
+        Returns "NA" if the key is None, the TracedData object doesn't have that key, or the value for that key is None.
+
+        :param td: TracedData object to get value of.
+        :type td: TracedData
+        :param key: Key of TracedData object to access.
+        :type key: str
+        :rtype: str
+        """
+        if key is None:
             return "NA"
         else:
-            value = td.get(col, None)
+            value = td.get(key, None)
             if value is None:
                 value = "NA"
             return value
 
-    age_groups = {
-        (0, 14): "<15",
-        (15, 19): "15-19",
-        (20, 24): "20-24",
-        (25, 29): "25-29",
-        (30, 100): "30+"
-    }
+    @staticmethod
+    def _clean_interface_message(message):
+        return TextCleaner.fold_lines(TextCleaner.clean_text(message))
+
+    @staticmethod
+    def _age_to_age_group(age):
+        age_groups = {
+            (0, 14): "<15",
+            (15, 19): "15-19",
+            (20, 24): "20-24",
+            (25, 29): "25-29",
+            (30, 100): "30+"
+        }
+
+        for age_range in age_groups:
+            if age_range[0] < age < age_range[1]:
+                return age_groups[age_range]
+        return "NA"
 
     @classmethod
     def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
@@ -251,14 +273,18 @@ class TracedDataTheInterfaceIO(object):
         :param phone_key: Key in TracedData objects of respondent's phone number (or id)
         :type phone_key: str
         :param message_keys: Keys in the TracedData objects to export to the inbox file's "message" column.
+                             Messages are cleaned before export by converting to ASCII, removing punctuation,
+                             converting to lower case, and removing new line characters.
         :type message_keys: list or str
-        :param tag_messages: Whether to prepend output messages with the corresponding message_key
+        :param tag_messages: Whether to prepend output messages with the corresponding message_key.
         :type tag_messages: bool
-        :param gender_key: Key in TracedData objects of respondent's gender
+        :param gender_key: Key in TracedData objects of respondent's gender.
         :type gender_key: str
-        :param age_key: Key in TracedData objects of respondent's age
+        :param age_key: Key in TracedData objects of respondent's age.
+                        Age entries of TracedData must be numbers.
+                        They will be converted to the age ranges <15, 15-19, 20-24, 25-29, 30+, or NA.
         :type age_key: str
-        :param county_key: Key in TracedData objects of respondent's county
+        :param county_key: Key in TracedData objects of respondent's county.
         :type county_key: str
         """
         data = list(data)
@@ -277,7 +303,7 @@ class TracedDataTheInterfaceIO(object):
                     row = {
                         "phone": td[phone_key],
                         # TODO: Set 'date' and 'time'
-                        "message": TextCleaner.fold_lines(TextCleaner.clean_text(td[message_key]))
+                        "message": cls._clean_interface_message(td[message_key])
                     }
 
                     if tag_messages:
@@ -295,18 +321,12 @@ class TracedDataTheInterfaceIO(object):
             for td in data:
                 row = {
                     "phone": td[phone_key],
-                    "gender": cls._format_col(td, gender_key),
-                    "age": cls._format_col(td, age_key),
-                    "county": cls._format_col(td, county_key)
+                    "gender": cls._get_demographic(td, gender_key),
+                    "age": cls._get_demographic(td, age_key),
+                    "county": cls._get_demographic(td, county_key)
                 }
 
-                # TODO: Pull this block out somewhere?
                 if row["age"] != "NA":
-                    for age_range in cls.age_groups:
-                        if age_range[0] < row["age"] < age_range[1]:
-                            row["age"] = cls.age_groups[age_range]
-                            break
-                    # TODO: What happens if we make it this far?
+                    row["age"] = cls._age_to_age_group(row["age"])
 
                 writer.writerow(row)
-
