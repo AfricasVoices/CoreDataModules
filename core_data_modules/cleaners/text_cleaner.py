@@ -34,7 +34,7 @@ class TextCleaner(object):
         :param text: String to fold
         :type text: str | unicode
         :return: Folded string
-        :rtype: str
+        :rtype: str | unicode
         """
         return text.replace("\n", " ")
 
