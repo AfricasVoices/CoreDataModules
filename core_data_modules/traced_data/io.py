@@ -239,19 +239,21 @@ class TracedDataTheInterfaceIO(object):
 
     @classmethod
     def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
-                                                     phone_key, message_key,
+                                                     phone_key, message_keys, tag_messages=False,
                                                      gender_key=None, age_key=None, county_key=None):
         """
         Exports a collection of TracedData objects to inbox and demo files required by The Interface.
-
+        
         :param data: TracedData objects to export.
         :type data: iterable of TracedData
         :param export_directory: Directory to write inbox and demo files to.
         :type export_directory: str
         :param phone_key: Key in TracedData objects of respondent's phone number (or id)
         :type phone_key: str
-        :param message_key: Key in TracedData objects of the message to export TODO: Change to accept
-        :type message_key: str
+        :param message_keys: Keys in the TracedData objects to export to the inbox file's "message" column.
+        :type message_keys: list or str
+        :param tag_messages: Whether to prepend output messages with the corresponding message_key
+        :type tag_messages: bool
         :param gender_key: Key in TracedData objects of respondent's gender
         :type gender_key: str
         :param age_key: Key in TracedData objects of respondent's age
@@ -271,12 +273,17 @@ class TracedDataTheInterfaceIO(object):
             writer.writeheader()
 
             for td in data:
-                row = {
-                    "phone": td[phone_key],
-                    "message": TextCleaner.fold_lines(TextCleaner.clean_text(td[message_key]))
-                }
+                for message_key in message_keys:
+                    row = {
+                        "phone": td[phone_key],
+                        # TODO: Set 'date' and 'time'
+                        "message": TextCleaner.fold_lines(TextCleaner.clean_text(td[message_key]))
+                    }
 
-                writer.writerow(row)
+                    if tag_messages:
+                        row["message"] = "{} {}".format(message_key, row["message"])
+
+                    writer.writerow(row)
 
         # Export demo file
         with open(path.join(export_directory, "demo"), "w") as f:

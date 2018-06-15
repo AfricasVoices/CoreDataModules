@@ -190,7 +190,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_export_traced_data_iterable_to_the_interface(self):
-        output_directory = "."
+        output_directory = self.test_dir
 
         data_dicts = [
             {"uuid": "a", "message": "Message 1", "gender": "male", "age": 27, "county": None},
@@ -203,8 +203,31 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
             data, output_directory, "uuid",
-            message_key="message",
+            message_keys=["message"],
             gender_key="gender", age_key="age", county_key="county")
 
+        self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
+                                    "tests/traced_data/resources/the_interface_export_expected_inbox"))
         self.assertTrue(filecmp.cmp(path.join(output_directory, "demo"),
                                     "tests/traced_data/resources/the_interface_export_expected_demo"))
+
+    def test_export_traced_data_iterable_to_the_interface_with_tagging(self):
+        output_directory = "."
+
+        data_dicts = [
+            {"uuid": "a", "key_1": "abc", "key_2": "def"},
+            {"uuid": "b", "key_1": "cde", "key_2": "xyz"}
+        ]
+
+        data = map(
+            lambda d: TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())), data_dicts)
+
+        TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
+            data, output_directory, "uuid",
+            message_keys=["key_1", "key_2"], tag_messages=True,
+            gender_key="gender", age_key="age", county_key="county")
+
+        self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
+                                    "tests/traced_data/resources/the_interface_export_expected_tagged_inbox"))
+        self.assertTrue(filecmp.cmp(path.join(output_directory, "demo"),
+                                    "tests/traced_data/resources/the_interface_export_expected_tagged_demo"))
