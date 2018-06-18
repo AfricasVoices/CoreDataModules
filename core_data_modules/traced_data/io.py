@@ -1,6 +1,9 @@
+from os import path
+
 import jsonpickle
 import time
 import six
+from core_data_modules.cleaners import CharacterCleaner
 
 from core_data_modules.traced_data import Metadata, TracedData
 
@@ -213,3 +216,117 @@ class TracedDataJsonIO(object):
         :rtype: generator of TracedData
         """
         return jsonpickle.decode(f.read())
+
+
+class TracedDataTheInterfaceIO(object):
+    @staticmethod
+    def _get_demographic(td, key):
+        """
+        Gets the demographic value for the given key of the given TracedData object.
+
+        Returns "NA" if the key is None, the TracedData object doesn't have that key, or the value for that key is None.
+
+        :param td: TracedData object to get value of.
+        :type td: TracedData
+        :param key: Key of TracedData object to access.
+        :type key: str
+        :rtype: str
+        """
+        if key is None:
+            return "NA"
+        else:
+            value = td.get(key, None)
+            if value is None:
+                value = "NA"
+            return value
+
+    @staticmethod
+    def _clean_interface_message(message):
+        return CharacterCleaner.fold_lines(CharacterCleaner.clean_text(message))
+
+    @staticmethod
+    def _age_to_age_group(age):
+        age_groups = {
+            (0, 14): "<15",
+            (15, 19): "15-19",
+            (20, 24): "20-24",
+            (25, 29): "25-29",
+            (30, 100): "30+"
+        }
+
+        for age_range in age_groups:
+            if age_range[0] < age < age_range[1]:
+                return age_groups[age_range]
+        return "NA"
+
+    @classmethod
+    def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
+                                                     phone_key, message_keys, tag_messages=False,
+                                                     gender_key=None, age_key=None, county_key=None):
+        """
+        Exports a collection of TracedData objects to inbox and demo files required by The Interface.
+        
+        :param data: TracedData objects to export.
+        :type data: iterable of TracedData
+        :param export_directory: Directory to write inbox and demo files to.
+        :type export_directory: str
+        :param phone_key: Key in TracedData objects of respondent's phone number (or id)
+        :type phone_key: str
+        :param message_keys: Keys in the TracedData objects to export to the inbox file's "message" column.
+                             Messages are cleaned before export by converting to ASCII, removing punctuation,
+                             converting to lower case, and removing new line characters.
+        :type message_keys: list or str
+        :param tag_messages: Whether to prepend output messages with the corresponding message_key.
+        :type tag_messages: bool
+        :param gender_key: Key in TracedData objects of respondent's gender.
+        :type gender_key: str
+        :param age_key: Key in TracedData objects of respondent's age.
+                        Age entries of TracedData must be numbers.
+                        They will be converted to the age ranges <15, 15-19, 20-24, 25-29, 30+, or NA.
+        :type age_key: str
+        :param county_key: Key in TracedData objects of respondent's county.
+        :type county_key: str
+        """
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
+        # Export inbox file
+        with open(path.join(export_directory, "inbox"), "w") as f:
+            headers = ["phone", "date", "time", "message"]
+
+            writer = csv.DictWriter(f, fieldnames=headers, delimiter="\t")
+            writer.writeheader()
+
+            for td in data:
+                for message_key in message_keys:
+                    row = {
+                        "phone": td[phone_key],
+                        # TODO: Set 'date' and 'time'
+                        "message": cls._clean_interface_message(td[message_key])
+                    }
+
+                    if tag_messages:
+                        row["message"] = "{} {}".format(message_key, row["message"])
+
+                    writer.writerow(row)
+
+        # Export demo file
+        with open(path.join(export_directory, "demo"), "w") as f:
+            headers = ["phone", "gender", "age", "county"]
+
+            writer = csv.DictWriter(f, fieldnames=headers, delimiter="\t")
+            writer.writeheader()
+
+            for td in data:
+                row = {
+                    "phone": td[phone_key],
+                    "gender": cls._get_demographic(td, gender_key),
+                    "age": cls._get_demographic(td, age_key),
+                    "county": cls._get_demographic(td, county_key)
+                }
+
+                if row["age"] != "NA":
+                    row["age"] = cls._age_to_age_group(row["age"])
+
+                writer.writerow(row)
