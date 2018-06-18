@@ -1,10 +1,10 @@
 # coding=utf-8
 import unittest
 
-from core_data_modules.cleaners import TextCleaner
+from core_data_modules.cleaners import CharacterCleaner
 
 
-class TestTextCleaner(unittest.TestCase):
+class TestCharacterCleaner(unittest.TestCase):
     def test_remove_non_ascii(self):
         test_cases = {
             "abc": "abc",
@@ -16,7 +16,7 @@ class TestTextCleaner(unittest.TestCase):
         }
 
         for raw, expected in test_cases.items():
-            clean = TextCleaner.to_ascii(raw)
+            clean = CharacterCleaner.to_ascii(raw)
             self.assertEqual(expected, clean)
 
     def test_fold_lines(self):
@@ -27,7 +27,7 @@ class TestTextCleaner(unittest.TestCase):
         }
 
         for raw, expected in test_cases.items():
-            clean = TextCleaner.fold_lines(raw)
+            clean = CharacterCleaner.fold_lines(raw)
             self.assertEqual(expected, clean)
 
     def test_clean_text(self):
@@ -41,5 +41,5 @@ class TestTextCleaner(unittest.TestCase):
         }
 
         for raw, expected in test_cases.items():
-            clean = TextCleaner.clean_text(raw)
+            clean = CharacterCleaner.clean_text(raw)
             self.assertEqual(expected, clean)

@@ -1,2 +1,2 @@
 from .phone_cleaner import PhoneCleaner
-from .text_cleaner import TextCleaner
+from .character_cleaner import CharacterCleaner

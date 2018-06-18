@@ -4,13 +4,19 @@ import string
 import six
 
 
-class TextCleaner(object):
+class CharacterCleaner(object):
+    """
+    Provides language-agnostic cleaning functions which operate on individual characters.
+
+    These should generally be useful as pre-processing steps before further cleaning functions are applied.
+    """
+
     @staticmethod
     def to_ascii(text):
         """
         Removes non-ASCII characters from the given input string.
 
-        >>> TextCleaner.to_ascii(u"tøåst")
+        >>> CharacterCleaner.to_ascii(u"tøåst")
         'tst'
 
         :param text: String to convert to ASCII.
@@ -28,7 +34,7 @@ class TextCleaner(object):
         """
         Converts a multi-line string to a single line string by replacing new lines with spaces.
 
-        >>> TextCleaner.fold_lines("a\\nb")
+        >>> CharacterCleaner.fold_lines("a\\nb")
         'a b'
 
         :param text: String to fold
@@ -44,7 +50,7 @@ class TextCleaner(object):
         Removes non-ASCII characters from the given input string, replaces punctuation characters with spaces, and
         converts to lower case.
 
-        >>> TextCleaner.clean_text(u"aBc,d å ef")
+        >>> CharacterCleaner.clean_text(u"aBc,d å ef")
         'abc d  ef'
 
         :param text: Text to clean

@@ -3,7 +3,7 @@ from os import path
 import jsonpickle
 import time
 import six
-from core_data_modules.cleaners import TextCleaner
+from core_data_modules.cleaners import CharacterCleaner
 
 from core_data_modules.traced_data import Metadata, TracedData
 
@@ -242,7 +242,7 @@ class TracedDataTheInterfaceIO(object):
 
     @staticmethod
     def _clean_interface_message(message):
-        return TextCleaner.fold_lines(TextCleaner.clean_text(message))
+        return CharacterCleaner.fold_lines(CharacterCleaner.clean_text(message))
 
     @staticmethod
     def _age_to_age_group(age):
