@@ -303,6 +303,8 @@ class TracedDataTheInterfaceIO(object):
                     row = {
                         "phone": td[phone_key],
                         # TODO: Set 'date' and 'time'
+                        "date": "01/01/2000",
+                        "time": "00:00:00",
                         "message": cls._clean_interface_message(td[message_key])
                     }
 
