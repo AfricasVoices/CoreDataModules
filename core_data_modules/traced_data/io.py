@@ -309,9 +309,9 @@ class TracedDataTheInterfaceIO(object):
                 row = {
                     "phone": td[phone_key],
                     # "date": datetime.strftime(isoparse(td[date_key]), "%d/%m/%Y"),
-                    # "time": datetime.strftime(isoparse(td[date_key]), "%H:%M:%S"),
+                    "time": datetime.strftime(isoparse(td[date_key]), "%H:%M:%S"),
                     "date": "01/01/2000",
-                    "time": "10:40:00",
+                    # "time": "10:40:00",
                     "message": cls._clean_interface_message(td[message_key])
                 }
 
