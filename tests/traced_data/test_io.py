@@ -191,7 +191,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_export_traced_data_iterable_to_the_interface(self):
-        output_directory = "."
+        output_directory = self.test_dir
 
         data_dicts = [
             {"uuid": "a", "message": "Message 1", "date": "2018-06-01T10:47:02+03:00", "gender": "male",
