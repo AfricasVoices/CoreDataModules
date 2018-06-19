@@ -324,8 +324,13 @@ class TracedDataTheInterfaceIO(object):
 
             writer = csv.DictWriter(f, fieldnames=headers, delimiter="\t")
             writer.writeheader()
-
+            
+            exported_ids = set()
             for td in data:
+                if td[phone_key] in exported_ids:
+                    continue  # Only export demographic data for each respondent once.
+                exported_ids.add(td[phone_key])
+
                 row = {
                     "phone": td[phone_key],
                     "gender": cls._get_demographic(td, gender_key),
