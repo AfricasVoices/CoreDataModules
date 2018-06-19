@@ -194,10 +194,12 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         output_directory = self.test_dir
 
         data_dicts = [
-            {"uuid": "a", "message": "Message 1", "gender": "male", "age": 27, "county": None},
-            {"uuid": "b", "message": "Message 2\nis very long", "gender": None, "age": None},
+            {"uuid": "a", "message": "Message 1", "date": "2018-06-01T10:47:02+03:00", "gender": "male",
+             "age": 27, "county": None},
+            {"uuid": "b", "message": "Message 2\nis very long", "date": "2018-05-30T21:00:00+03:00",
+             "gender": None, "age": None},
             {"uuid": "c", "message": u"Message 3, has punctuation and non-ASCII: ø. These need cleaning!",
-             "county": "mogadishu"}
+             "date": "2018-06-02T18:30:02+01:00", "county": "mogadishu"}
         ]
 
         data = map(
@@ -205,7 +207,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
             data, output_directory, "uuid",
-            message_keys=["message"],
+            message_key="message", date_key="date",
             gender_key="gender", age_key="age", county_key="county")
 
         self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
@@ -214,11 +216,11 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
                                     "tests/traced_data/resources/the_interface_export_expected_demo"))
 
     def test_export_traced_data_iterable_to_the_interface_with_tagging(self):
-        output_directory = self.test_dir
+        output_directory = "."
 
         data_dicts = [
-            {"uuid": "a", "key_1": "abc", "key_2": "def"},
-            {"uuid": "b", "key_1": "cde", "key_2": "xyz"}
+            {"uuid": "a", "date": "2018-06-01T10:47:02+03:00", "key_1": "ABC"},
+            {"uuid": "b", "date": "2018-06-01T00:00:00+03:00", "key_1": u"cD: øe"}
         ]
 
         data = map(
@@ -226,7 +228,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
             data, output_directory, "uuid",
-            message_keys=["key_1", "key_2"], tag_messages=True,
+            message_key="key_1", tag_messages=True, date_key="date",
             gender_key="gender", age_key="age", county_key="county")
 
         self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
