@@ -102,7 +102,7 @@ class TracedData(Mapping):
         elif self._prev is not None:
             return self._prev[key]
         else:
-            raise KeyError
+            raise KeyError(key)
 
     def get(self, key, default=None):
         if key in self._data:
