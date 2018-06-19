@@ -194,12 +194,12 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         output_directory = self.test_dir
 
         data_dicts = [
-            {"uuid": "a", "message": "Message 1", "time": "2018-06-01T10:47:02+03:00", "gender": "male",
+            {"uuid": "a", "message": "Message 1", "date": "2018-06-01T10:47:02+03:00", "gender": "male",
              "age": 27, "county": None},
-            {"uuid": "b", "message": "Message 2\nis very long", "time": "2018-05-30T21:00:00+03:00",
+            {"uuid": "b", "message": "Message 2\nis very long", "date": "2018-05-30T21:00:00+03:00",
              "gender": None, "age": None},
             {"uuid": "c", "message": u"Message 3, has punctuation and non-ASCII: ø. These need cleaning!",
-             "time": "2018-06-02T18:30:02+01:00", "county": "mogadishu"}
+             "date": "2018-06-02T18:30:02+01:00", "county": "mogadishu"}
         ]
 
         data = map(
@@ -207,7 +207,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
             data, output_directory, "uuid",
-            message_key="message", date_key="time",
+            message_key="message", date_key="date",
             gender_key="gender", age_key="age", county_key="county")
 
         self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
