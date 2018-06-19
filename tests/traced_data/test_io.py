@@ -191,7 +191,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_export_traced_data_iterable_to_the_interface(self):
-        output_directory = self.test_dir
+        output_directory = "."
 
         data_dicts = [
             {"uuid": "a", "message": "Message 1", "date": "2018-06-01T10:47:02+03:00", "gender": "male",
@@ -216,11 +216,11 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
                                     "tests/traced_data/resources/the_interface_export_expected_demo"))
 
     def test_export_traced_data_iterable_to_the_interface_with_tagging(self):
-        output_directory = "."
+        output_directory = self.test_dir
 
         data_dicts = [
             {"uuid": "a", "date": "2018-06-01T10:47:02+03:00", "key_1": "ABC"},
-            {"uuid": "b", "date": "2018-06-01T00:00:00+03:00", "key_1": u"cD: øe"}
+            {"uuid": "b", "date": "2018-06-13T00:00:00+03:00", "key_1": u"cD: øe"}
         ]
 
         data = map(
