@@ -207,7 +207,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
 
         TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
             data, output_directory, "uuid",
-            message_keys=["message"], date_key="time",
+            message_key="message", date_key="time",
             gender_key="gender", age_key="age", county_key="county")
 
         self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
@@ -215,23 +215,23 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
         self.assertTrue(filecmp.cmp(path.join(output_directory, "demo"),
                                     "tests/traced_data/resources/the_interface_export_expected_demo"))
 
-    # def test_export_traced_data_iterable_to_the_interface_with_tagging(self):
-    #     output_directory = "."
-    #
-    #     data_dicts = [
-    #         {"uuid": "a", "date": "2018-06-01T10:47:02+03:00", "key_1": "ABC", "key_2": u"d,f"},
-    #         {"uuid": "b", "date": "2018-06-01T00:00:00+03:00", "key_1": "cde", "key_2": u"ø:xyz"}
-    #     ]
-    #
-    #     data = map(
-    #         lambda d: TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())), data_dicts)
-    #
-    #     TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
-    #         data, output_directory, "uuid",
-    #         message_keys=["key_1", "key_2"], tag_messages=True, date_key="date",
-    #         gender_key="gender", age_key="age", county_key="county")
-    #
-    #     self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
-    #                                 "tests/traced_data/resources/the_interface_export_expected_tagged_inbox"))
-    #     self.assertTrue(filecmp.cmp(path.join(output_directory, "demo"),
-    #                                 "tests/traced_data/resources/the_interface_export_expected_tagged_demo"))
+    def test_export_traced_data_iterable_to_the_interface_with_tagging(self):
+        output_directory = "."
+
+        data_dicts = [
+            {"uuid": "a", "date": "2018-06-01T10:47:02+03:00", "key_1": "ABC"},
+            {"uuid": "b", "date": "2018-06-01T00:00:00+03:00", "key_1": u"cD: øe"}
+        ]
+
+        data = map(
+            lambda d: TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())), data_dicts)
+
+        TracedDataTheInterfaceIO.export_traced_data_iterable_to_the_interface(
+            data, output_directory, "uuid",
+            message_key="key_1", tag_messages=True, date_key="date",
+            gender_key="gender", age_key="age", county_key="county")
+
+        self.assertTrue(filecmp.cmp(path.join(output_directory, "inbox"),
+                                    "tests/traced_data/resources/the_interface_export_expected_tagged_inbox"))
+        self.assertTrue(filecmp.cmp(path.join(output_directory, "demo"),
+                                    "tests/traced_data/resources/the_interface_export_expected_tagged_demo"))
