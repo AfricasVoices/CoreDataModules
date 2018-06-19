@@ -1,5 +1,7 @@
+from datetime import datetime
 from os import path
 
+from dateutil.parser import isoparse
 import jsonpickle
 import time
 import six
@@ -261,7 +263,7 @@ class TracedDataTheInterfaceIO(object):
 
     @classmethod
     def export_traced_data_iterable_to_the_interface(cls, data, export_directory,
-                                                     phone_key, message_keys, tag_messages=False,
+                                                     phone_key, message_keys, date_key, tag_messages=False,
                                                      gender_key=None, age_key=None, county_key=None):
         """
         Exports a collection of TracedData objects to inbox and demo files required by The Interface.
@@ -276,6 +278,8 @@ class TracedDataTheInterfaceIO(object):
                              Messages are cleaned before export by converting to ASCII, removing punctuation,
                              converting to lower case, and removing new line characters.
         :type message_keys: list or str
+        :param date_key: Key in TracedData objects of the date/time value to export with each inbox file entry.
+        :type date_key: str
         :param tag_messages: Whether to prepend output messages with the corresponding message_key.
         :type tag_messages: bool
         :param gender_key: Key in TracedData objects of respondent's gender.
@@ -302,9 +306,8 @@ class TracedDataTheInterfaceIO(object):
                 for message_key in message_keys:
                     row = {
                         "phone": td[phone_key],
-                        # TODO: Set 'date' and 'time'
-                        "date": "01/01/2000",
-                        "time": "00:00:00",
+                        "date": datetime.strftime(isoparse(td[date_key]), "%d/%m/%Y"),
+                        "time": datetime.strftime(isoparse(td[date_key]), "%H:%M:%S"),
                         "message": cls._clean_interface_message(td[message_key])
                     }
 
