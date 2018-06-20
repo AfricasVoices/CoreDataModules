@@ -237,7 +237,7 @@ class TestTracedDataTheInterfaceIO(unittest.TestCase):
                                     "tests/traced_data/resources/the_interface_export_expected_tagged_demo"))
 
     def test_export_traced_data_iterable_to_the_interface_multiple_sender_messages(self):
-        output_directory = "."
+        output_directory = self.test_dir
 
         data_dicts = [
             {"uuid": "a", "date": "2018-06-01T10:47:02+03:00", "message": "message 1"},
