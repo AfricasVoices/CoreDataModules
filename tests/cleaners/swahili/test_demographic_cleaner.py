@@ -1,6 +1,6 @@
 import unittest
 
-from core_data_modules.cleaners.codes import Codes
+from core_data_modules.cleaners import Codes
 from core_data_modules.cleaners.swahili import DemographicCleaner
 
 
