@@ -5,7 +5,7 @@ from core_data_modules.cleaners.swahili import DemographicCleaner
 
 
 class TestDemographicCleaner(unittest.TestCase):
-    def run_cleaner(self, cleaner, test_cases):
+    def run_cleaner_tests(self, cleaner, test_cases):
         for raw, expected in test_cases.items():
             clean = cleaner(raw)
             self.assertEqual(clean, expected)
@@ -17,7 +17,7 @@ class TestDemographicCleaner(unittest.TestCase):
             "  KiUme": Codes.male
         }
 
-        self.run_cleaner(DemographicCleaner.clean_gender, test_cases)
+        self.run_cleaner_tests(DemographicCleaner.clean_gender, test_cases)
 
     def test_replace_digit_like_characters(self):
         test_cases = {
@@ -28,7 +28,7 @@ class TestDemographicCleaner(unittest.TestCase):
             "HeLLO": "He110"
         }
 
-        self.run_cleaner(DemographicCleaner.replace_digit_like_characters, test_cases)
+        self.run_cleaner_tests(DemographicCleaner.replace_digit_like_characters, test_cases)
 
     def test_clean_number_words(self):
         test_cases = {
@@ -45,7 +45,7 @@ class TestDemographicCleaner(unittest.TestCase):
             "kumi na tisa": 19
         }
 
-        self.run_cleaner(DemographicCleaner.clean_number_words, test_cases)
+        self.run_cleaner_tests(DemographicCleaner.clean_number_words, test_cases)
 
     def test_clean_number_digits(self):
         test_cases = {
@@ -60,7 +60,7 @@ class TestDemographicCleaner(unittest.TestCase):
             "Text text 14 more text": "14"
         }
 
-        self.run_cleaner(DemographicCleaner.clean_number_digits, test_cases)
+        self.run_cleaner_tests(DemographicCleaner.clean_number_digits, test_cases)
 
     def test_clean_number(self):
         test_cases = {
@@ -70,5 +70,5 @@ class TestDemographicCleaner(unittest.TestCase):
             "ishirini na tisa": 29
         }
 
-        self.run_cleaner(DemographicCleaner.clean_number, test_cases)
+        self.run_cleaner_tests(DemographicCleaner.clean_number, test_cases)
 
