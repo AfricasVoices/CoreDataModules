@@ -27,7 +27,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_traced_data_iterable_to_coda(self):
-        file_path = path.join(self.test_dir, "coda_test.csv")
+        file_path = path.join(".", "coda_test.csv")
 
         # Test exporting wrong data type
         data = list(generate_traced_data_frame())
@@ -51,7 +51,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
         with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda(
-                data, "Gender", f, exclude_coded_with_key="Gender_clean")
+                data, "Gender", f, scheme_name="Gender", key_of_coded="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
     def test_import_coda_to_traced_data_iterable(self):

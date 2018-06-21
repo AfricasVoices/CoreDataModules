@@ -196,6 +196,14 @@ class TracedData(Mapping):
             history.append({"sha": self._sha, "value": self._data[key]})
         return history
 
+    def last_update_time(self, key):
+        if key in self._data:
+            return self._metadata.timestamp
+        elif self._prev is not None:
+            return self._prev.last_update_time(key)
+        else:
+            raise KeyError(key)
+
 
 # noinspection PyProtectedMember
 class _TracedDataKeysIterator(Iterator):

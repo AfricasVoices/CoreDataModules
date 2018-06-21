@@ -19,7 +19,7 @@ _td_type_error_string = "argument 'data' contains an element which is not of typ
 
 class TracedDataCodaIO(object):
     @staticmethod
-    def export_traced_data_iterable_to_coda(data, key_of_raw, f, exclude_coded_with_key=None):
+    def export_traced_data_iterable_to_coda(data, key_of_raw, f, exclude_coded_with_key=None, scheme_name="", key_of_coded=None):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
 
@@ -61,12 +61,30 @@ class TracedDataCodaIO(object):
         unique_data = [td for td in data if not (td[key_of_raw] in seen or seen.add(td[key_of_raw]))]
 
         # Export each message to a row in Coda's datafile format.
+        codes = dict()
+        x = 0
         for i, td in enumerate(unique_data):
             row = {
                 "id": i,
                 "owner": i,
-                "data": td[key_of_raw]
+                "data": td[key_of_raw],
             }
+
+            code = td.get(key_of_coded, None)
+            if code is not None:
+                row["schemeId"] = "1"
+                row["schemeName"] = scheme_name
+                
+                if code not in codes:
+                    codes[code] = "1-{}".format(x)
+                    x += 1
+                
+                row["deco_codeValue"] = code
+                row["deco_codeId"] = codes[code]
+                row["deco_confidence"] = 0.5
+                row["deco_manual"] = "false"
+                row["deco_timestamp"] = None
+                row["deco_author"] = None
 
             writer.writerow(row)
 
