@@ -242,6 +242,7 @@ class DemographicCleaner(object):
 
     @classmethod
     def clean_age(cls, text):
+        """Aliases DemographicCleaner.clean_number"""
         return cls.clean_number(text)
 
 
