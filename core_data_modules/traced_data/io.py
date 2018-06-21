@@ -70,11 +70,11 @@ class TracedDataCodaIO(object):
                 "data": td[key_of_raw],
             }
 
+            row["schemeId"] = "1"
+            row["schemeName"] = scheme_name
             code = td.get(key_of_coded, None)
             if code is not None:
-                row["schemeId"] = "1"
-                row["schemeName"] = scheme_name
-                
+
                 if code not in codes:
                     codes[code] = "1-{}".format(x)
                     x += 1
