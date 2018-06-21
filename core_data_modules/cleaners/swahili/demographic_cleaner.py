@@ -4,8 +4,6 @@ from core_data_modules.cleaners import Codes
 from core_data_modules.cleaners import Regex
 
 from .patterns import Patterns
-import numpy as np
-import sys
 
 
 class DemographicCleaner(object):
