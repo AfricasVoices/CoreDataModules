@@ -1,16 +1,20 @@
+from core_data_modules.cleaners.codes import Codes
+
+
 class DemographicCleaner(object):
     @staticmethod
-    def clean_gender(string):
+    def clean_gender(text):
         """
-        Converts a string describing gender to M, F, or None.
+        Converts a string describing gender to either male, female, or None.
 
-        :param string: Text to be cleaned.
-        :return: "M" if male, "F" if female, or None if the gender could not automatically be identified.
+        :param text: Text to be cleaned.
+        :return: Codes.male if male, Codes.female if female, or Codes.NotCleaned if the gender could not automatically be
+                 identified.
         """
-        string = string.lower()
-        if string == "m" or string == "male" or string == "man":
-            return "M"
-        elif string == "f" or string == "female" or string == "woman":
-            return "F"
+        text = text.lower()
+        if text == "m" or text == "male" or text == "man":
+            return Codes.male
+        elif text == "f" or text == "female" or text == "woman":
+            return Codes.female
         else:
-            return None
+            return Codes.NotCleaned
