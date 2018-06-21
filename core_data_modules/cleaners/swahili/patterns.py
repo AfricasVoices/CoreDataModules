@@ -1,42 +1,11 @@
-import re
 import sys
-
-from core_data_modules.cleaners.codes import Codes
-
-
-class Regex(object):
-    @staticmethod
-    def apply_regex(pattern, text, flags=0, case=False):
-        """
-
-        :param text:
-        :type text:
-        :param pattern:
-        :type pattern:
-        :param flags:
-        :type flags:
-        :param case:
-        :type case:
-        :return:
-        :rtype: MatchObject TODO: Check
-        """
-        # Note: Design based on str.contains in the pandas library. See:
-        # https://github.com/pandas-dev/pandas/blob/a00154dcfe5057cb3fd86653172e74b6893e337d/pandas/core/strings.py#L219
-        if not case:
-            flags |= re.IGNORECASE
-
-        regex = re.compile(pattern, flags=flags)
-
-        return regex.search(text)
-
-    @classmethod
-    def has_matches(cls, text, pattern, **kwargs):
-        return bool(cls.apply_regex(pattern, text, **kwargs))
 
 
 class Patterns(object):
-    # TODO: We're claiming (or will be claiming) that this is a Swahili pattern but we're also trying to match English
-    # TODO: here.
+    """
+    Lists regex patterns for cleaning Swahili demographics.
+    """
+    # TODO: This file is for the Swahili Demographic Cleaner, but includes regexes for English.
     male = (r'[ki]*[mwana]*ume|\b[ae]*m+[ae]le*|\bchail\b|lion|'
             r'\bchal[1l4]\b|\b(ni)*ch[ae]*[lr][eiy]*\b|'
             r'\bcharl[iy]\b|\bjali\b|\b[ae]*maie\b|\bm[ae]n\b|'
@@ -68,6 +37,8 @@ class Patterns(object):
     eight = r'nane|ng[ia]kankauni|eight'
     nine = r'tisa|ng[ia]kanko+mwon|nine'
 
+    # This patterns English-only because Swahili does not have this irregularity for teens.
+    # Swahili represents these as "ten five".
     eleven = r'eleven'
     twelve = r'twe*lve'
     thirteen = r'thir\s*teen'
@@ -87,6 +58,7 @@ class Patterns(object):
     seventy = r'sabini|ng[ia]toomw*on kaarei|seventy'
     eighty = r'themanini|ng[ia]tomw*on kauni|eighty'
     ninety = r'tisini|ng[ia]tomw*oun koomon|ninety'
+
 
 class _Regex(object):
     '''
