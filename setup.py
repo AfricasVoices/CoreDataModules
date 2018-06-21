@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name="CoreDataModules",
-    version="0.2.0",
+    version="0.2.3",
     url="https://github.com/AfricasVoices/CoreDataModules",
     packages=["core_data_modules"],
     setup_requires=["pytest-runner"],
-    install_requires=["deprecation", "six", "unicodecsv", "jsonpickle", "pandas"],
+    install_requires=["deprecation", "six", "unicodecsv", "jsonpickle", 'python-dateutil'],
     tests_require=["pytest"]
 )
