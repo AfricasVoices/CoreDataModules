@@ -34,8 +34,8 @@ class Patterns(object):
     eight = r'nane|ng[ia]kankauni|eight'
     nine = r'tisa|ng[ia]kanko+mwon|nine'
 
-    # This patterns English-only because Swahili does not have this irregularity for teens.
-    # Swahili represents these as "ten five".
+    # This pattern is English-only because Swahili does not have this irregularity for teens.
+    # Swahili represents teens as e.g. "ten five".
     eleven = r'eleven'
     twelve = r'twe*lve'
     thirteen = r'thir\s*teen'

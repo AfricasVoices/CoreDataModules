@@ -5,7 +5,7 @@ class Regex(object):
     @staticmethod
     def search(pattern, text, flags=0, case=False):
         """
-        Searches the given text for regions which match a regex constructed from thegiven pattern.
+        Searches the given text for regions which match a regex constructed from the given pattern.
 
         :param pattern: Regex pattern to use
         :type pattern: str
@@ -15,8 +15,8 @@ class Regex(object):
         :type flags: int
         :param case: Whether to match case.
         :type case: bool
-        :return:
-        :rtype: MatchObject TODO: Check
+        :return: regex search results
+        :rtype: MatchObject
         """
         # Note: Design based on str.contains in the pandas library. See:
         # https://github.com/pandas-dev/pandas/blob/a00154dcfe5057cb3fd86653172e74b6893e337d/pandas/core/strings.py#L219

@@ -16,14 +16,14 @@ class DemographicCleaner(object):
 
         :param text: Text to clean.
         :type text: str
-        :param patterns: Dictionary of code/pattern pairs.
+        :param patterns: Dictionary of code: pattern pairs.
         :type patterns: dict of str -> str
-        :return: Code for first matching pattern.
+        :return: Code associated with the first pattern to
         :rtype: str
         """
         for code, pattern in patterns.items():
             if Regex.has_matches(text, pattern):
-                # TODO: This follows what Dreams did, but do we really want to
+                # TODO: This follows what Dreams did, but is it really acceptable to just return the first match?
                 return code
         return Codes.NotCleaned
 
@@ -50,7 +50,7 @@ class DemographicCleaner(object):
     @classmethod
     def clean_number_units(cls, text):
         """
-        Extracts a units-column number word from the given text, and converts that to an integer.
+        Extracts a units-column number expressed in words from the given text, and converts it to an integer.
 
         >>> DemographicCleaner.clean_number_units("tano")
         5
@@ -77,7 +77,7 @@ class DemographicCleaner(object):
     @classmethod
     def clean_number_teens(cls, text):
         """
-        Extract a "teens" number word from the given text.
+        Extract a "teens" number expressed in words from the given text, and converts it to an integer.
 
         >>> DemographicCleaner.clean_number_teens("eleven")
         11
@@ -104,7 +104,7 @@ class DemographicCleaner(object):
     @classmethod
     def clean_number_tens(cls, text):
         """
-        Extract a tens-column number word from the given text, and converts that to an integer.
+        Extract a tens-column number expressed in words from the given text, and converts it to an integer.
 
         >>> DemographicCleaner.clean_number_tens("arobaini")
         40
@@ -158,7 +158,7 @@ class DemographicCleaner(object):
     @classmethod
     def clean_number_words(cls, text):
         """
-        Extracts the number words in the given text and converts them to an integer.
+        Extracts the numbers in the given text that are expressed in words, and converts them to an integer.
 
         Extracts numbers in the range 1 to 99 inclusive.
 
@@ -172,7 +172,7 @@ class DemographicCleaner(object):
         :param text: Text to clean
         :type text: str
         :return: Extracted number
-        :rtype: int | Codes.NotCleaned
+        :rtype: int
         """
         cleaned_units = cls.clean_number_units(text)
         if cleaned_units == Codes.NotCleaned:
