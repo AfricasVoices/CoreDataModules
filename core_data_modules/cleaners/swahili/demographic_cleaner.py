@@ -3,7 +3,7 @@ import re
 from core_data_modules.cleaners import Codes
 from core_data_modules.cleaners import Regex
 
-from .patterns import Patterns
+from .demographic_patterns import Patterns
 
 
 class DemographicCleaner(object):
