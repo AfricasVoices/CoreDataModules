@@ -83,7 +83,7 @@ class TracedDataCodaIO(object):
                 row["deco_codeId"] = codes[code]
                 row["deco_confidence"] = 0.5
                 row["deco_manual"] = "false"
-                row["deco_timestamp"] = None
+                row["deco_timestamp"] = datetime.utcnow().isoformat()
                 row["deco_author"] = None
 
             writer.writerow(row)
