@@ -43,7 +43,7 @@ class TracedDataCodaIO(object):
         headers = [
             "id", "owner", "data",
             "timestamp", "schemeId", "schemeName",
-            "deco_codeValue", "deco_codeId", "deco_confidence", "deco_manual", "deco_timestamp", "deco_author"
+            "deco_codeValue", "deco_codeId", "deco_confidence", "deco_codingMode", "deco_timestamp", "deco_author"
         ]
 
         dialect = csv.excel
@@ -62,28 +62,29 @@ class TracedDataCodaIO(object):
 
         # Export each message to a row in Coda's datafile format.
         codes = dict()
-        x = 0
+        scheme_id = "10"
+        x = 20
         for i, td in enumerate(unique_data):
             row = {
                 "id": i,
                 "owner": i,
                 "data": td[key_of_raw],
+
+                "schemeId": "10",
+                "schemeName": scheme_name
             }
 
             code = td.get(key_of_coded, None)
             if code is not None:
-                row["schemeId"] = "1"
-                row["schemeName"] = scheme_name
-                
                 if code not in codes:
-                    codes[code] = "1-{}".format(x)
+                    codes[code] = "{}-{}".format(scheme_id, x)
                     x += 1
                 
                 row["deco_codeValue"] = code
                 row["deco_codeId"] = codes[code]
-                row["deco_confidence"] = 0.5
-                row["deco_manual"] = "false"
-                row["deco_timestamp"] = None
+                row["deco_confidence"] = "0.95"
+                row["deco_codingMode"] = "external" # if x == 21 else "manual"
+                # row["deco_timestamp"] = "Fri Jun 22 2018 10:53:35 GMT+0100 (British Summer Time)" # datetime.utcnow().isoformat()
                 row["deco_author"] = None
 
             writer.writerow(row)
