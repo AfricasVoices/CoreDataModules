@@ -1,7 +1,7 @@
 import re
 
 
-class Regex(object):
+class RegexUtils(object):
     @staticmethod
     def search(pattern, text, flags=0, case=False):
         """

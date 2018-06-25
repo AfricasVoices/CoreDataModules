@@ -1,7 +1,7 @@
 import re
 
 from core_data_modules.cleaners import Codes
-from core_data_modules.cleaners import Regex
+from core_data_modules.cleaners import RegexUtils
 
 from .demographic_patterns import Patterns
 
@@ -22,7 +22,7 @@ class DemographicCleaner(object):
         :rtype: str
         """
         for code, pattern in patterns.items():
-            if Regex.has_matches(text, pattern):
+            if RegexUtils.has_matches(text, pattern):
                 # TODO: This follows what Dreams did, but is it really acceptable to just return the first match?
                 return code
         return Codes.NotCleaned
