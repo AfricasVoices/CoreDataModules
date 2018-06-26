@@ -1,5 +1,0 @@
-id;timestamp;owner;data;schemeId;schemeName;deco_codeValue;deco_codeId;deco_confidence;deco_manual;deco_timestamp;deco_author
-6469567482;;3885485969;female;1;CodaCodedGender;F;1-48;0.95;true;Fri May 18 2018 12:26:14 GMT+0100 (BST);
-4597828651;;9051968373;m;1;CodaCodedGender;M;1-01;0.95;true;Fri May 18 2018 12:26:13 GMT+0100 (BST);
-1020892817;;2494941557;WoMaN;1;CodaCodedGender;F;1-48;0.95;true;Fri May 18 2018 12:26:12 GMT+0100 (BST);
-8083248450;;7380450267;27;1;CodaCodedGender;;;;;;
