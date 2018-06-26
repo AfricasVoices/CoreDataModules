@@ -25,6 +25,8 @@ class TracedDataCodaIO(object):
 
         Optionally exports only the elements which have not yet been coded.
 
+        Note: This exporter does not support versions of Coda older than "ve42857 at 2018-06-26 11:47"
+
         :param data: TracedData objects to export data to Coda from.
         :type data: iterable of TracedData
         :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
