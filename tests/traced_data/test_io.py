@@ -62,7 +62,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data = list(generate_traced_data_frame())
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
-        file_path = "tests/traced_data/resources/coda_import_data.txt"
+        file_path = "tests/traced_data/resources/coda_import_data.csv"
         with open(file_path, "r") as f:
             data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
                 "test_user", data, "Gender", "Gender_clean", f))
@@ -84,7 +84,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data = list(generate_traced_data_frame())
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
-        file_path = "tests/traced_data/resources/coda_import_data.txt"
+        file_path = "tests/traced_data/resources/coda_import_data.csv"
         with open(file_path, "r") as f:
             data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
                 "test_user", data, "Gender", "Gender_clean", f, True))

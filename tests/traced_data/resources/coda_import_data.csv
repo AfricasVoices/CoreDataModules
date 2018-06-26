@@ -1,0 +1,5 @@
+id;timestamp;owner;data;schemeId;schemeName;deco_codeValue;deco_codeId;deco_confidence;deco_codingMode;deco_timestamp;deco_author
+0;;0;female;1;CodaCodedGender;F;1-88;0.95;manual;Tue Jun 26 2018 12:06:05 GMT+0100 (British Summer Time);
+1;;1;m;1;CodaCodedGender;M;1-01;0.95;manual;Tue Jun 26 2018 12:06:05 GMT+0100 (British Summer Time);
+2;;2;WoMaN;1;CodaCodedGender;F;1-88;0.95;manual;Tue Jun 26 2018 12:06:06 GMT+0100 (British Summer Time);
+3;;3;27;1;CodaCodedGender;;;;;;
