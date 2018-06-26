@@ -1,7 +1,8 @@
 import json
 
 import six
-from core_data_modules.util import SHAUtils, IDUtils
+from core_data_modules.util import IDUtils
+from core_data_modules.util.sha_utils import SHAUtils
 
 
 class MessageUuidTable(object):
