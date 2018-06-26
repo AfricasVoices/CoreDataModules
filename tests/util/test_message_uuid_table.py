@@ -33,21 +33,3 @@ class TestMessageUuidTable(unittest.TestCase):
         self.assertEqual(uuid2, message_table.add_message(self.message2))
 
         self.assertEqual(uuid1, message_table.get_uuid(self.message1))
-
-    def test_dict_repr(self):
-        input_message = {
-            "date-time": "2018-06-02T10:33:00+03:00",
-            "phone": "avf-phone-id-c4fd6565-a743-4b26-9432-3a80b1500194",
-            "msg": "Hello!"
-        }
-
-        expected_repr = {
-            "Date": 1527924780.0,
-            "Sender": "avf-phone-id-c4fd6565-a743-4b26-9432-3a80b1500194",
-            "Message": "Hello!"
-        }
-
-        self.assertDictEqual(
-            expected_repr,
-            MessageUuidTable.dict_repr(input_message, sender_key="phone", date_key="date-time", message_key="msg")
-        )
