@@ -45,7 +45,7 @@ class TracedDataCodaIO(object):
         headers = [
             "id", "owner", "data",
             "timestamp", "schemeId", "schemeName",
-            "deco_codeValue", "deco_codeId", "deco_confidence", "deco_manual", "deco_timestamp", "deco_author"
+            "deco_codeValue", "deco_codeId", "deco_confidence", "deco_codingMode", "deco_timestamp", "deco_author"
         ]
 
         dialect = csv.excel
