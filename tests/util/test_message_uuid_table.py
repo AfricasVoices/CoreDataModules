@@ -1,6 +1,6 @@
 import unittest
 
-from core_data_modules.util.message_uuid_table import MessageUuidTable
+from core_data_modules.util import MessageUuidTable
 
 
 class TestMessageUuidTable(unittest.TestCase):
