@@ -25,6 +25,8 @@ class TracedDataCodaIO(object):
 
         Optionally exports only the elements which have not yet been coded.
 
+        Note: This exporter does not support versions of Coda older than "ve42857 at 2018-06-26 11:47"
+
         :param data: TracedData objects to export data to Coda from.
         :type data: iterable of TracedData
         :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
@@ -69,17 +71,6 @@ class TracedDataCodaIO(object):
             }
 
             writer.writerow(row)
-
-        # Ensure the output file doesn't end with a blank line.
-        # TODO: Delete once the last line issue is fixed in Coda (see https://github.com/AfricasVoices/coda/issues/137)
-        # TODO: Reliance on f.name will break some file-like arguments which are not files.
-        file_path = f.name
-        f.close()
-        with open(file_path, "r") as f:
-            lines = f.readlines()
-        with open(file_path, "w") as f:
-            lines[-1] = lines[-1].strip()
-            f.writelines([item for item in lines if len(item) > 0])
 
     @staticmethod
     def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
