@@ -8,9 +8,9 @@ class MessageUuidTable(object):
     """
     An append-only lookup table of messages to UUIDs.
 
-    Functions which accept messages take dictionaries which must be in some normalised form for the message platform
-    which they come from. For example, they might include a de-identified sender, a timezone independent date, and
-    the message itself.
+    Functions which accept messages require dictionaries representing a message in a normalised form for the
+    message platform which they come from.
+    For example, they might include a de-identified sender, a timezone independent date, and the message text.
     """
 
     def __init__(self, table=None):
