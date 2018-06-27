@@ -54,6 +54,30 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 data, "Gender", f, exclude_coded_with_key="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
+    def test_traced_data_iterable_to_coda_with_scheme(self):
+        file_path = path.join(self.test_dir, "coda_test_codes.csv")
+
+        data = list(generate_traced_data_frame())
+        data[1].append_data({"Gender_clean": "M"}, Metadata("test_user", "cleaner", 11))
+        data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
+        data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 13))
+
+        # Test exporting wrong data type
+        with open(file_path, "w") as f:
+            try:
+                TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                    data[0], "Gender", "Gender_clean", "Gender", f)
+                self.fail("Exporting the wrong data type did not raise an assertion error")
+            except AssertionError as e:
+                self.assertEquals(str(e), _td_type_error_string)
+
+        # Test normal export with specified key
+        with open(file_path, "w") as f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                data, "Gender", "Gender_clean", "Gender", f)
+        self.assertTrue(
+            filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_with_codes.csv"))
+
     def test_import_coda_to_traced_data_iterable(self):
         self._overwrite_false_asserts()
         self._overwrite_true_asserts()
