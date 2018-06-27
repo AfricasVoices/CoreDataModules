@@ -1,13 +1,12 @@
+import time
 from datetime import datetime
 from os import path
 
-from dateutil.parser import isoparse
 import jsonpickle
-import time
 import six
 from core_data_modules.cleaners import CharacterCleaner
-
 from core_data_modules.traced_data import Metadata, TracedData
+from dateutil.parser import isoparse
 
 if six.PY2:
     import unicodecsv as csv
@@ -23,9 +22,12 @@ class TracedDataCodaIO(object):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
 
+        This function does not export codes. For this, use
+        TracedDataCodaIO.export_traced_data_iterable_to_coda_with_codes.
+
         Optionally exports only the elements which have not yet been coded.
 
-        Note: This exporter does not support versions of Coda older than "ve42857 at 2018-06-26 11:47"
+        Note: This exporter does not support versions of Coda older than "vE42857 at 2018-06-26 11:47"
 
         :param data: TracedData objects to export data to Coda from.
         :type data: iterable of TracedData
@@ -45,7 +47,7 @@ class TracedDataCodaIO(object):
         headers = [
             "id", "owner", "data",
             "timestamp", "schemeId", "schemeName",
-            "deco_codeValue", "deco_codeId", "deco_confidence", "deco_manual", "deco_timestamp", "deco_author"
+            "deco_codeValue", "deco_codeId", "deco_confidence", "deco_codingMode", "deco_timestamp", "deco_author"
         ]
 
         dialect = csv.excel
@@ -58,9 +60,13 @@ class TracedDataCodaIO(object):
             # Exclude data items which have been coded.
             data = filter(lambda td: td.get(exclude_coded_with_key) is None, data)
 
-        # Deduplicate messages
+        # Deduplicate raw messages
         seen = set()
-        unique_data = [td for td in data if not (td[key_of_raw] in seen or seen.add(td[key_of_raw]))]
+        unique_data = []
+        for td in data:
+            if not td[key_of_raw] in seen:
+                seen.add(td[key_of_raw])
+                unique_data.append(td)
 
         # Export each message to a row in Coda's datafile format.
         for i, td in enumerate(unique_data):
@@ -69,6 +75,86 @@ class TracedDataCodaIO(object):
                 "owner": i,
                 "data": td[key_of_raw]
             }
+
+            writer.writerow(row)
+
+    @staticmethod
+    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, key_of_coded, scheme_name, f):
+        """
+        Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
+        
+        This function exports a code scheme to Coda. To export raw messages only, use
+        TracedDataCodaIO.export_traced_data_iterable_to_coda.
+
+        Note: This exporter does not support versions of Coda older than "vE42857 at 2018-06-26 11:47"
+
+        :param data: TracedData objects to export data to Coda from.
+        :type data: iterable of TracedData
+        :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
+                           messages before they were coded).
+        :type key_of_raw: str
+        :param key_of_coded: The key in each TracedData object of the codes which have been applied to the messages.
+        :type key_of_coded: str
+        :param scheme_name: Name to give the code scheme in Coda.
+        :type scheme_name: str
+        :param f: File to export to.
+        :type f: file-like
+        """
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
+        headers = [
+            "id", "owner", "data",
+            "timestamp", "schemeId", "schemeName",
+            "deco_codeValue", "deco_codeId", "deco_confidence", "deco_codingMode", "deco_timestamp", "deco_author"
+        ]
+
+        dialect = csv.excel
+        dialect.delimiter = ";"
+
+        writer = csv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
+        writer.writeheader()
+
+        # Deduplicate raw messages, ensuring that identical messages have identical codes.
+        seen = dict()
+        unique_data = []
+        for td in data:
+            if not td[key_of_raw] in seen:
+                seen[td[key_of_raw]] = td.get(key_of_coded)
+                unique_data.append(td)
+            else:
+                assert seen[td[key_of_raw]] == td.get(key_of_coded), \
+                    "Raw message '{}' not uniquely coded.".format(td[key_of_raw])
+
+        # Export each message to a row in Coda's datafile format.
+        scheme_id = "1"
+        code_ids = dict()  # of code -> code id
+        for i, td in enumerate(unique_data):
+            row = {
+                "id": i,
+                "owner": i,
+                "data": td[key_of_raw],
+
+                "schemeId": scheme_id,
+                "schemeName": scheme_name
+                # Not exporting timestamp because this doesn't actually do anything in Coda.
+            }
+
+            # If this item has been coded, export that code.
+            code = td.get(key_of_coded, None)
+            if code is not None:
+                if code not in code_ids:
+                    code_ids[code] = "{}-{}".format(scheme_id, len(code_ids))
+
+                row.update({
+                    "deco_codeValue": code,
+                    "deco_codeId": code_ids[code],
+                    "deco_confidence": 0.95,  # Same confidence as auto-coding in Coda as of ve42857.
+                    "deco_codingMode": "external",
+                    # Not exporting deco_timestamp or deco_author because Coda just overwrites them
+                    # (on load and save respectively), and neither is used anyway.
+                })
 
             writer.writerow(row)
 
