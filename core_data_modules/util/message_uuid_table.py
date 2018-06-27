@@ -1,6 +1,5 @@
 import json
 
-import six
 from core_data_modules.util import IDUtils
 from core_data_modules.util.sha_utils import SHAUtils
 
@@ -8,9 +7,12 @@ from core_data_modules.util.sha_utils import SHAUtils
 class MessageUuidTable(object):
     """
     An append-only lookup table of messages to UUIDs.
-    
-    TODO: Spiel about message representations.
+
+    Functions which accept messages take dictionaries which must be in some normalised form for the message platform
+    which they come from. For example, they might include a de-identified sender, a timezone independent date, and
+    the message itself.
     """
+
     def __init__(self, table=None):
         """
         :param table: An existing dictionary of messages to UUIDs to construct the table from.
@@ -22,11 +24,13 @@ class MessageUuidTable(object):
 
     def add_message(self, message):
         """
+        Adds a new message to this lookup table and returns a new UUID which is now associated with that message.
+        If the message was already in this table, instead returns the existing UUID for that message.
 
-        :param message: Dictionary of minimum set of data
+        :param message: Normalised message to add to the lookup table.
         :type message: dict
-        :return:
-        :rtype:
+        :return: UUID for the given message.
+        :rtype: str
         """
         stringified = SHAUtils.stringify_dict(message)
 
@@ -41,18 +45,22 @@ class MessageUuidTable(object):
         return self.message_to_uuid[stringified]
 
     def get_uuid(self, message):
+        """
+        Returns the UUID of a message in this table.
+        
+        Raises a KeyError if the message was not found in this table.
+        
+        :param message: Normalised message to return the UUID of.
+        :type message: dict
+        :return: UUID
+        :rtype: str
+        """
         stringified = SHAUtils.stringify_dict(message)
         return self.message_to_uuid[stringified]
 
     def __getitem__(self, message):
+        """Alias for get_uuid"""
         return self.get_uuid(message)
-
-    def uuids(self):
-        return self.message_to_uuid.values()
-
-    if six.PY2:
-        def iteruuids(self):
-            return self.message_to_uuid.itervalues()
 
     def dumps(self, sort_keys=False):
         """
