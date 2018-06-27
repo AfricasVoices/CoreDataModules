@@ -1,5 +1,5 @@
 id;owner;data;timestamp;schemeId;schemeName;deco_codeValue;deco_codeId;deco_confidence;deco_codingMode;deco_timestamp;deco_author
-0;0;female;;1;Gender;;;;;;
-1;1;m;;1;Gender;M;1-0;0.95;external;;
-2;2;WoMaN;;1;Gender;F;1-1;0.95;external;;
+0;0;female;;1;Gender;F;1-0;0.95;external;;
+1;1;m;;1;Gender;M;1-1;0.95;external;;
+2;2;WoMaN;;1;Gender;F;1-0;0.95;external;;
 3;3;27;;1;Gender;;;;;;

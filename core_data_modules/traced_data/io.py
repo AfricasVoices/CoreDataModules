@@ -1,13 +1,12 @@
+import time
 from datetime import datetime
 from os import path
 
-from dateutil.parser import isoparse
 import jsonpickle
-import time
 import six
 from core_data_modules.cleaners import CharacterCleaner
-
 from core_data_modules.traced_data import Metadata, TracedData
+from dateutil.parser import isoparse
 
 if six.PY2:
     import unicodecsv as csv
@@ -61,9 +60,13 @@ class TracedDataCodaIO(object):
             # Exclude data items which have been coded.
             data = filter(lambda td: td.get(exclude_coded_with_key) is None, data)
 
-        # Deduplicate messages
+        # Deduplicate raw messages
         seen = set()
-        unique_data = [td for td in data if not (td[key_of_raw] in seen or seen.add(td[key_of_raw]))]
+        unique_data = []
+        for td in data:
+            if not td[key_of_raw] in seen:
+                seen.add(td[key_of_raw])
+                unique_data.append(td)
 
         # Export each message to a row in Coda's datafile format.
         for i, td in enumerate(unique_data):
@@ -113,9 +116,16 @@ class TracedDataCodaIO(object):
         writer = csv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
         writer.writeheader()
 
-        # Deduplicate messages
-        seen = set()
-        unique_data = [td for td in data if not (td[key_of_raw] in seen or seen.add(td[key_of_raw]))]
+        # Deduplicate raw messages, ensuring that identical messages have identical codes.
+        seen = dict()
+        unique_data = []
+        for td in data:
+            if not td[key_of_raw] in seen:
+                seen[td[key_of_raw]] = td.get(key_of_coded)
+                unique_data.append(td)
+            else:
+                assert seen[td[key_of_raw]] == td.get(key_of_coded), \
+                    "Raw message '{}' not uniquely coded.".format(td[key_of_raw])
 
         # Export each message to a row in Coda's datafile format.
         scheme_id = "1"

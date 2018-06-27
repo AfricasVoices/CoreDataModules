@@ -55,12 +55,13 @@ class TestTracedDataCodaIO(unittest.TestCase):
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
     def test_traced_data_iterable_to_coda_with_scheme(self):
-        file_path = path.join(self.test_dir, "coda_test_codes.csv")
+        file_path = path.join(self.test_dir, "coda_test_with_codes.csv")
 
         data = list(generate_traced_data_frame())
-        data[1].append_data({"Gender_clean": "M"}, Metadata("test_user", "cleaner", 11))
-        data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
-        data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 13))
+        data[0].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
+        data[1].append_data({"Gender_clean": "M"}, Metadata("test_user", "cleaner", 12))
+        data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 13))
+        data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 14))
 
         # Test exporting wrong data type
         with open(file_path, "w") as f:
@@ -77,6 +78,16 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 data, "Gender", "Gender_clean", "Gender", f)
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_with_codes.csv"))
+
+        # Test exporting with conflicting codes
+        data[4].append_data({"Gender_clean": "M"}, Metadata("test_user", "cleaner", 15))
+        with open(file_path, "w") as f:
+            try:
+                TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                    data, "Gender", "Gender_clean", "Gender", f)
+                self.fail("Exporting conflicting codes did not raise an assertion error")
+            except AssertionError as e:
+                self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
 
     def test_import_coda_to_traced_data_iterable(self):
         self._overwrite_false_asserts()
