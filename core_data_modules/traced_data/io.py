@@ -16,16 +16,63 @@ if six.PY3:
 _td_type_error_string = "argument 'data' contains an element which is not of type TracedData"
 
 
+class _TracedDataIOUtil(object):
+    """
+    A collection of utility functions used by the IO classes in this file.
+    
+    Not for external use.
+    """
+
+    @staticmethod
+    def distinct_traced_data_iterable_by_key(data, key):
+        """
+        Filters a collection of TracedData objects such that there is only one object with each value for the given key.
+        
+        If there are multiple TracedData objects with the same value for the given key, one of those will be selected
+        arbitrarily; the rest will be dropped.
+        
+        :param data: TracedData objects to process.
+        :type data: iterable of TracedData
+        :param key: Key in TracedData objects which should be distinct.
+        :type key: str
+        :return: TracedData objects distinct by the given key.
+        :rtype: list of TracedData
+        """
+        seen = set()
+        unique_data = []
+        for td in data:
+            if not td[key] in seen:
+                seen.add(td[key])
+                unique_data.append(td)
+                
+        return unique_data
+
+    @staticmethod
+    def exclude_coded_with_key(data, key):
+        """
+        Filters a collection of TracedData objects such that only objects which do not have codes under the given 
+        key are returned.
+
+        :param data: TracedData objects to filter.
+        :type data: iterable of TracedData
+        :param key: Key in TracedData objects of codes.
+        :type key: str
+        :return: TracedData objects which have not been coded under the given key.
+        :rtype: iterable of TracedData
+        """
+        return filter(lambda td: td.get(key) is None, data)
+
+
 class TracedDataCodaIO(object):
     @staticmethod
     def export_traced_data_iterable_to_coda(data, key_of_raw, f, exclude_coded_with_key=None):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
 
-        This function does not export codes. For this, use
+        This function does not export existing codes. For this, use
         TracedDataCodaIO.export_traced_data_iterable_to_coda_with_codes.
 
-        Optionally exports only the elements which have not yet been coded.
+        Optionally exports only the elements which have not yet been coded, using the exclude_coded_with_key parameter.
 
         Note: This exporter does not support versions of Coda older than "vE42857 at 2018-06-26 11:47"
 
@@ -58,15 +105,10 @@ class TracedDataCodaIO(object):
 
         if exclude_coded_with_key is not None:
             # Exclude data items which have been coded.
-            data = filter(lambda td: td.get(exclude_coded_with_key) is None, data)
+            data = _TracedDataIOUtil.exclude_coded_with_key(data, exclude_coded_with_key)
 
-        # Deduplicate raw messages
-        seen = set()
-        unique_data = []
-        for td in data:
-            if not td[key_of_raw] in seen:
-                seen.add(td[key_of_raw])
-                unique_data.append(td)
+        # De-duplicate raw messages
+        unique_data = _TracedDataIOUtil.distinct_traced_data_iterable_by_key(data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
         for i, td in enumerate(unique_data):
@@ -205,21 +247,35 @@ class TracedDataCodaIO(object):
 class TracedDataCodingCSVIO(object):
     @staticmethod
     def export_traced_data_iterable_to_coding_csv(data, key_of_raw, f, exclude_coded_with_key=None):
+        """
+        Exports the elements from a "column" in a collection of TracedData objects to a CSV file for coding.
+
+        This function does not export existing codes. For this, use
+        TracedDataCodingCSVIO.export_traced_data_iterable_to_coding_csv_with_codes.
+
+        Optionally exports only the elements which have not yet been coded, using the exclude_coded_with_key parameter.
+
+        :param data: TracedData objects to export data to a CSV from.
+        :type data: iterable of TracedData
+        :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
+                           messages before they were coded).
+        :type key_of_raw: str
+        :param f: File to export to.
+        :type f: file-like
+        :param exclude_coded_with_key: Set to None to export every item in key_of_raw, or to the key of
+                                       existing codes to exclude items of key_of_raw which have already been coded.
+        :type exclude_coded_with_key: str | None
+        """
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
 
         if exclude_coded_with_key is not None:
             # Exclude data items which have been coded.
-            data = filter(lambda td: td.get(exclude_coded_with_key) is None, data)
+            data = _TracedDataIOUtil.exclude_coded_with_key(data, exclude_coded_with_key)
 
-        # Deduplicate raw messages
-        seen = set()
-        unique_data = []
-        for td in data:
-            if not td[key_of_raw] in seen:
-                seen.add(td[key_of_raw])
-                unique_data.append(td)
+        # De-duplicate raw messages
+        unique_data = _TracedDataIOUtil.distinct_traced_data_iterable_by_key(data, key_of_raw)
 
         TracedDataCSVIO.export_traced_data_iterable_to_csv(unique_data, f, headers=[key_of_raw])
 
