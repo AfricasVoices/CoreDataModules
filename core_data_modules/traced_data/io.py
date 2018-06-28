@@ -239,7 +239,7 @@ class TracedDataCodaIO(object):
         :type key_of_coded: str
         :param f: Coda data file to import codes from.
         :type f: file-like
-        :param overwrite_existing_codes: For messages which are already coded, Whether to replace those codes with
+        :param overwrite_existing_codes: For messages which are already coded, whether to replace those codes with
                                          new codes from the Coda datafile.
         :type overwrite_existing_codes: bool
         :return: TracedData objects with Coda data appended
@@ -334,6 +334,31 @@ class TracedDataCodingCSVIO(object):
     def import_coding_csv_to_traced_data_iterable(user, data, key_of_raw_in_data, key_of_coded_in_data,
                                                   key_of_raw_in_f, key_of_coded_in_f,
                                                   f, overwrite_existing_codes=False):
+        """
+        Codes a "column" of a collection of TracedData objects by using the codes from a Coding CSV file.
+
+        :param user: Identifier of user running this program
+        :type user: str
+        :param data: TracedData objects to be coded using the Coda file.
+        :type data: iterable of TracedData
+        :param key_of_raw_in_data: Key in the TracedData objects of messages which should be coded.
+        :type key_of_raw_in_data: str
+        :param key_of_coded_in_data: Key in the TracedData objects to write imported codes to.
+        :type key_of_coded_in_data: str
+        :param key_of_raw_in_f: Name of column header in f of raw messages.
+        :type key_of_raw_in_f: str
+        :param key_of_coded_in_f: Name of column header in f of codes.
+        :type key_of_coded_in_f: str
+        :param f: Coding CSV file to import codes from.
+        :type f: file-like
+        :param overwrite_existing_codes: For messages which are already coded, whether to replace those codes with
+                                         new codes from the coding CSV file.
+        :type overwrite_existing_codes: bool
+        :return: TracedData objects with the coding CSV data appended
+        :rtype: generator of TracedData
+        """
+        # TODO: This function assumes there is only one code scheme.
+
         imported_csv = TracedDataCSVIO.import_csv_to_traced_data_iterable(user, f)
 
         # Remove rows which still haven't been coded
