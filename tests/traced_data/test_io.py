@@ -188,7 +188,7 @@ class TestTracedDataCodingCSVIO(unittest.TestCase):
         with open(file_path, "w") as f:
             try:
                 TracedDataCodingCSVIO.export_traced_data_iterable_to_coding_csv_with_scheme(
-                    data[0], "Gender", "Gender_clean", "Gender", f)
+                    data[0], "Gender", "Gender_clean", f)
                 self.fail("Exporting the wrong data type did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), _td_type_error_string)
@@ -196,7 +196,7 @@ class TestTracedDataCodingCSVIO(unittest.TestCase):
         # Test normal export with specified key
         with open(file_path, "w") as f:
             TracedDataCodingCSVIO.export_traced_data_iterable_to_coding_csv_with_scheme(
-                data, "Gender", "Gender_clean", "Gender", f)
+                data, "Gender", "Gender_clean", f)
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coding_csv_export_expected_output_with_codes.csv"))
 
@@ -205,7 +205,7 @@ class TestTracedDataCodingCSVIO(unittest.TestCase):
         with open(file_path, "w") as f:
             try:
                 TracedDataCodingCSVIO.export_traced_data_iterable_to_coding_csv_with_scheme(
-                    data, "Gender", "Gender_clean", "Gender", f)
+                    data, "Gender", "Gender_clean", f)
                 self.fail("Exporting conflicting codes did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")

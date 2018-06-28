@@ -24,7 +24,7 @@ class _TracedDataIOUtil(object):
     """
 
     @staticmethod
-    def distinct_traced_data_iterable_by_key(data, key):
+    def unique_messages(data, key):
         """
         Filters a collection of TracedData objects such that there is only one object with each value for the given key.
         
@@ -45,6 +45,20 @@ class _TracedDataIOUtil(object):
                 seen.add(td[key])
                 unique_data.append(td)
                 
+        return unique_data
+
+    @staticmethod
+    def unique_messages_with_code(data, key_of_raw, key_of_coded):
+        seen = dict()
+        unique_data = []
+        for td in data:
+            if not td[key_of_raw] in seen:
+                seen[td[key_of_raw]] = td.get(key_of_coded)
+                unique_data.append(td)
+            else:
+                assert seen[td[key_of_raw]] == td.get(key_of_coded), \
+                    "Raw message '{}' not uniquely coded.".format(td[key_of_raw])
+
         return unique_data
 
     @staticmethod
@@ -108,7 +122,7 @@ class TracedDataCodaIO(object):
             data = _TracedDataIOUtil.exclude_coded_with_key(data, exclude_coded_with_key)
 
         # De-duplicate raw messages
-        unique_data = _TracedDataIOUtil.distinct_traced_data_iterable_by_key(data, key_of_raw)
+        unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
         for i, td in enumerate(unique_data):
@@ -159,15 +173,7 @@ class TracedDataCodaIO(object):
         writer.writeheader()
 
         # Deduplicate raw messages, ensuring that identical messages have identical codes.
-        seen = dict()
-        unique_data = []
-        for td in data:
-            if not td[key_of_raw] in seen:
-                seen[td[key_of_raw]] = td.get(key_of_coded)
-                unique_data.append(td)
-            else:
-                assert seen[td[key_of_raw]] == td.get(key_of_coded), \
-                    "Raw message '{}' not uniquely coded.".format(td[key_of_raw])
+        unique_data = _TracedDataIOUtil.unique_messages_with_code(data, key_of_raw, key_of_coded)
 
         # Export each message to a row in Coda's datafile format.
         scheme_id = "1"
@@ -275,26 +281,18 @@ class TracedDataCodingCSVIO(object):
             data = _TracedDataIOUtil.exclude_coded_with_key(data, exclude_coded_with_key)
 
         # De-duplicate raw messages
-        unique_data = _TracedDataIOUtil.distinct_traced_data_iterable_by_key(data, key_of_raw)
+        unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
         TracedDataCSVIO.export_traced_data_iterable_to_csv(unique_data, f, headers=[key_of_raw])
 
     @staticmethod
-    def export_traced_data_iterable_to_coding_csv_with_scheme(data, key_of_raw, key_of_coded, scheme_name, f):
+    def export_traced_data_iterable_to_coding_csv_with_scheme(data, key_of_raw, key_of_coded, f):
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
 
         # Deduplicate raw messages, ensuring that identical messages have identical codes.
-        seen = dict()
-        unique_data = []
-        for td in data:
-            if not td[key_of_raw] in seen:
-                seen[td[key_of_raw]] = td.get(key_of_coded)
-                unique_data.append(td)
-            else:
-                assert seen[td[key_of_raw]] == td.get(key_of_coded), \
-                    "Raw message '{}' not uniquely coded.".format(td[key_of_raw])
+        unique_data = _TracedDataIOUtil.unique_messages_with_code(data, key_of_raw, key_of_coded)
 
         TracedDataCSVIO.export_traced_data_iterable_to_csv(unique_data, f, headers=[key_of_raw, key_of_coded])
 
