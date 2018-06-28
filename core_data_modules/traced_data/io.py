@@ -202,6 +202,28 @@ class TracedDataCodaIO(object):
             yield td
 
 
+class TracedDataCodingCSVIO(object):
+    @staticmethod
+    def export_traced_data_iterable_to_coding_csv(data, key_of_raw, f, exclude_coded_with_key=None):
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
+        if exclude_coded_with_key is not None:
+            # Exclude data items which have been coded.
+            data = filter(lambda td: td.get(exclude_coded_with_key) is None, data)
+
+        # Deduplicate raw messages
+        seen = set()
+        unique_data = []
+        for td in data:
+            if not td[key_of_raw] in seen:
+                seen.add(td[key_of_raw])
+                unique_data.append(td)
+
+        TracedDataCSVIO.export_traced_data_iterable_to_csv(unique_data, f, headers=[key_of_raw])
+
+
 class TracedDataCSVIO(object):
     @staticmethod
     def export_traced_data_iterable_to_csv(data, f, headers=None):

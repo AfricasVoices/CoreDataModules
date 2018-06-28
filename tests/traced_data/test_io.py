@@ -9,7 +9,7 @@ from os import path
 
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
-    TracedDataTheInterfaceIO, _td_type_error_string
+    TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCodingCSVIO
 
 
 def generate_traced_data_frame():
@@ -136,6 +136,38 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         for x, y in zip(data, expected_data):
             self.assertDictEqual(dict(x.items()), y)
+
+
+class TestTracedDataCodingCSVIO(unittest.TestCase):
+    def test_traced_data_iterable_to_coding_csv(self):
+        file_path = path.join(".", "coding_test.csv")
+
+        # Test exporting wrong data type
+        data = list(generate_traced_data_frame())
+        with open(file_path, "w") as f:
+            try:
+                TracedDataCodaIO.export_traced_data_iterable_to_coda(data[0], "Gender", f)
+                self.fail("Exporting the wrong data type did not raise an assertion error")
+            except AssertionError as e:
+                self.assertEquals(str(e), _td_type_error_string)
+
+        # Test exporting everything
+        data = generate_traced_data_frame()
+        with open(file_path, "w") as f:
+            TracedDataCodingCSVIO.export_traced_data_iterable_to_coding_csv(data, "Gender", f)
+        self.assertTrue(
+            filecmp.cmp(file_path, "tests/traced_data/resources/coding_csv_export_expected_output_coded.csv"))
+
+        # Test exporting only not coded elements
+        data = list(generate_traced_data_frame())
+        data[0].append_data({"Gender_clean": None}, Metadata("test_user", "cleaner", 10))
+        data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
+        data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
+        with open(file_path, "w") as f:
+            TracedDataCodingCSVIO.export_traced_data_iterable_to_coding_csv(
+                data, "Gender", f, exclude_coded_with_key="Gender_clean")
+        self.assertTrue(
+            filecmp.cmp(file_path, "tests/traced_data/resources/coding_csv_export_expected_output_not_coded.csv"))
 
 
 class TestTracedDataCSVIO(unittest.TestCase):
