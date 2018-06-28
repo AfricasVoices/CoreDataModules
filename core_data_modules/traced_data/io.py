@@ -4,9 +4,10 @@ from os import path
 
 import jsonpickle
 import six
+from dateutil.parser import isoparse
+
 from core_data_modules.cleaners import CharacterCleaner
 from core_data_modules.traced_data import Metadata, TracedData
-from dateutil.parser import isoparse
 
 if six.PY2:
     import unicodecsv as csv
@@ -52,7 +53,7 @@ class _TracedDataIOUtil(object):
         """
         Filters a collection of TracedData objects such that there is only one object with each value for the given key,
         checking that all identical messages have been coded in exactly the same way. 
-        Raises an AssertionError if this is not True. 
+        Raises an AssertionError if this is not True.
 
         If there are multiple TracedData objects with the same value for the given key, one of those will be selected
         arbitrarily; the rest will be dropped.
@@ -328,6 +329,32 @@ class TracedDataCodingCSVIO(object):
         unique_data = _TracedDataIOUtil.unique_messages_with_code(data, key_of_raw, key_of_coded)
 
         TracedDataCSVIO.export_traced_data_iterable_to_csv(unique_data, f, headers=[key_of_raw, key_of_coded])
+
+    @staticmethod
+    def import_coding_csv_to_traced_data_iterable(user, data, key_of_raw_in_data, key_of_coded_in_data,
+                                                  key_of_raw_in_f, key_of_coded_in_f,
+                                                  f, overwrite_existing_codes=False):
+        imported_csv = TracedDataCSVIO.import_csv_to_traced_data_iterable(user, f)
+
+        # Remove rows which still haven't been coded
+        coded = list(filter(lambda row: row[key_of_coded_in_f] != "", imported_csv))
+
+        for x in coded:
+            print(x[key_of_raw_in_f], x[key_of_coded_in_f])
+
+        for td in data:
+            if not overwrite_existing_codes and td.get(key_of_coded_in_data) is not None:
+                yield td
+                continue
+
+            code = None
+            for row in coded:
+                if td[key_of_raw_in_data] == row[key_of_raw_in_f]:
+                    code = row[key_of_coded_in_f]
+
+            td.append_data({key_of_coded_in_data: code}, Metadata(user, Metadata.get_call_location(), time.time()))
+
+            yield td
 
 
 class TracedDataCSVIO(object):

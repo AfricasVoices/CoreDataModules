@@ -90,10 +90,10 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
 
     def test_import_coda_to_traced_data_iterable(self):
-        self._overwrite_false_asserts()
-        self._overwrite_true_asserts()
+        self._overwrite_is_false_assert()
+        self._overwrite_is_true_asserts()
 
-    def _overwrite_false_asserts(self):
+    def _overwrite_is_false_assert(self):
         data = list(generate_traced_data_frame())
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
@@ -115,7 +115,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         for x, y in zip(data, expected_data):
             self.assertDictEqual(dict(x.items()), y)
 
-    def _overwrite_true_asserts(self):
+    def _overwrite_is_true_asserts(self):
         data = list(generate_traced_data_frame())
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
@@ -175,7 +175,7 @@ class TestTracedDataCodingCSVIO(unittest.TestCase):
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coding_csv_export_expected_output_not_coded.csv"))
 
-    def test_traced_data_iterable_to_coda_with_scheme(self):
+    def test_traced_data_iterable_to_coding_csv_with_scheme(self):
         file_path = path.join(self.test_dir, "coding_test_with_codes.csv")
 
         data = list(generate_traced_data_frame())
@@ -210,6 +210,54 @@ class TestTracedDataCodingCSVIO(unittest.TestCase):
             except AssertionError as e:
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
 
+    def test_import_coding_csv_to_traced_data_iterable(self):
+        self._overwrite_is_false_assert()
+        self._overwrite_is_true_asserts()
+
+    def _overwrite_is_false_assert(self):
+        data = list(generate_traced_data_frame())
+        data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
+
+        file_path = "tests/traced_data/resources/coding_csv_import_data.csv"
+        with open(file_path, "r") as f:
+            data = list(TracedDataCodingCSVIO.import_coding_csv_to_traced_data_iterable(
+                "test_user", data, "Gender", "Gender_clean", "Gender", "Gender_clean", f))
+
+        expected_data = [
+            {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "X"},
+            {"URN": "+0012345000001", "Gender": "m", "Gender_clean": "M"},
+            {"URN": "+0012345000002", "Gender": "WoMaN", "Gender_clean": "F"},
+            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": None},
+            {"URN": "+0012345000004", "Gender": "female", "Gender_clean": "F"}
+        ]
+
+        self.assertEqual(len(data), len(expected_data))
+
+        for x, y in zip(data, expected_data):
+            self.assertDictEqual(dict(x.items()), y)
+
+    def _overwrite_is_true_asserts(self):
+        data = list(generate_traced_data_frame())
+        data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
+
+        file_path = "tests/traced_data/resources/coding_csv_import_data.csv"
+        with open(file_path, "r") as f:
+            data = list(TracedDataCodingCSVIO.import_coding_csv_to_traced_data_iterable(
+                "test_user", data, "Gender", "Gender_clean", "Gender", "Gender_clean", f, True))
+
+        expected_data = [
+            {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "F"},
+            {"URN": "+0012345000001", "Gender": "m", "Gender_clean": "M"},
+            {"URN": "+0012345000002", "Gender": "WoMaN", "Gender_clean": "F"},
+            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": None},
+            {"URN": "+0012345000004", "Gender": "female", "Gender_clean": "F"}
+        ]
+
+        self.assertEqual(len(data), len(expected_data))
+
+        for x, y in zip(data, expected_data):
+            self.assertDictEqual(dict(x.items()), y)
+                
 
 class TestTracedDataCSVIO(unittest.TestCase):
     def setUp(self):
