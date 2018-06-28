@@ -279,6 +279,25 @@ class TracedDataCodingCSVIO(object):
 
         TracedDataCSVIO.export_traced_data_iterable_to_csv(unique_data, f, headers=[key_of_raw])
 
+    @staticmethod
+    def export_traced_data_iterable_to_coding_csv_with_scheme(data, key_of_raw, key_of_coded, scheme_name, f):
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
+        # Deduplicate raw messages, ensuring that identical messages have identical codes.
+        seen = dict()
+        unique_data = []
+        for td in data:
+            if not td[key_of_raw] in seen:
+                seen[td[key_of_raw]] = td.get(key_of_coded)
+                unique_data.append(td)
+            else:
+                assert seen[td[key_of_raw]] == td.get(key_of_coded), \
+                    "Raw message '{}' not uniquely coded.".format(td[key_of_raw])
+
+        TracedDataCSVIO.export_traced_data_iterable_to_csv(unique_data, f, headers=[key_of_raw, key_of_coded])
+
 
 class TracedDataCSVIO(object):
     @staticmethod
