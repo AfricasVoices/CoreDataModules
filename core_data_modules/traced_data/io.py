@@ -24,31 +24,48 @@ class _TracedDataIOUtil(object):
     """
 
     @staticmethod
-    def unique_messages(data, key):
+    def unique_messages(data, key_of_raw):
         """
         Filters a collection of TracedData objects such that there is only one object with each value for the given key.
         
         If there are multiple TracedData objects with the same value for the given key, one of those will be selected
         arbitrarily; the rest will be dropped.
         
-        :param data: TracedData objects to process.
+        :param data: TracedData objects to select unique messages from.
         :type data: iterable of TracedData
-        :param key: Key in TracedData objects which should be distinct.
-        :type key: str
+        :param key_of_raw: Key in TracedData objects of raw messages which should be unique in output.
+        :type key_of_raw: str
         :return: TracedData objects distinct by the given key.
         :rtype: list of TracedData
         """
         seen = set()
         unique_data = []
         for td in data:
-            if not td[key] in seen:
-                seen.add(td[key])
+            if not td[key_of_raw] in seen:
+                seen.add(td[key_of_raw])
                 unique_data.append(td)
                 
         return unique_data
 
     @staticmethod
     def unique_messages_with_code(data, key_of_raw, key_of_coded):
+        """
+        Filters a collection of TracedData objects such that there is only one object with each value for the given key,
+        checking that all identical messages have been coded in exactly the same way. 
+        Raises an AssertionError if this is not True. 
+
+        If there are multiple TracedData objects with the same value for the given key, one of those will be selected
+        arbitrarily; the rest will be dropped.
+
+        :param data: TracedData objects to select unique messages from.
+        :type data: iterable of TracedData
+        :param key_of_raw: Key in TracedData objects of raw messages which should be unique in output.
+        :type key_of_raw: str
+        :param key_of_coded: Key in TracedData objects of the codes which have been applied to the messages.
+        :type key_of_coded: str
+        :return: TracedData objects distinct by the given key.
+        :rtype: list of TracedData
+        """
         seen = dict()
         unique_data = []
         for td in data:
@@ -287,6 +304,22 @@ class TracedDataCodingCSVIO(object):
 
     @staticmethod
     def export_traced_data_iterable_to_coding_csv_with_scheme(data, key_of_raw, key_of_coded, f):
+        """
+        Exports the elements from a "column" in a collection of TracedData objects to a CSV file for coding.
+
+        This function exports a code scheme to Coda. To export raw messages only, use
+        TracedDataCodingCSVIO.export_traced_data_iterable_to_coda.
+
+        :param data: TracedData objects to export data to a coding CSV from.
+        :type data: iterable of TracedData
+        :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
+                           messages before they were coded).
+        :type key_of_raw: str
+        :param key_of_coded: The key in each TracedData object of the codes which have been applied to the messages.
+        :type key_of_coded: str
+        :param f: File to export to.
+        :type f: file-like
+        """
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
