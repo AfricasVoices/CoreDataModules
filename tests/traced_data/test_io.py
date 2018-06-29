@@ -90,10 +90,10 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
 
     def test_import_coda_to_traced_data_iterable(self):
-        self._overwrite_is_false_assert()
+        self._overwrite_is_false_asserts()
         self._overwrite_is_true_asserts()
 
-    def _overwrite_is_false_assert(self):
+    def _overwrite_is_false_asserts(self):
         data = list(generate_traced_data_frame())
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
@@ -211,10 +211,10 @@ class TestTracedDataCodingCSVIO(unittest.TestCase):
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
 
     def test_import_coding_csv_to_traced_data_iterable(self):
-        self._overwrite_is_false_assert()
+        self._overwrite_is_false_asserts()
         self._overwrite_is_true_asserts()
 
-    def _overwrite_is_false_assert(self):
+    def _overwrite_is_false_asserts(self):
         data = list(generate_traced_data_frame())
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
 
