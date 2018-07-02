@@ -355,9 +355,6 @@ class TracedDataCodingCSVIO(object):
         # Remove rows which still haven't been coded
         coded = list(filter(lambda row: row[key_of_coded_in_f] != "", imported_csv))
 
-        for x in coded:
-            print(x[key_of_raw_in_f], x[key_of_coded_in_f])
-
         for td in data:
             if not overwrite_existing_codes and td.get(key_of_coded_in_data) is not None:
                 yield td
