@@ -1,5 +1,5 @@
 # Core Data Modules
-[![CircleCI](https://circleci.com/gh/AfricasVoices/experimental_CoreDataModules/tree/master.svg?style=shield)](https://circleci.com/gh/AfricasVoices/experimental_CoreDataModules/tree/master)
+[![CircleCI](https://circleci.com/gh/AfricasVoices/CoreDataModules/tree/master.svg?style=shield)](https://circleci.com/gh/AfricasVoices/CoreDataModules/tree/master)
 
 A library of reusable AVF functionality and data structures.
 
