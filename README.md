@@ -10,7 +10,8 @@ for IO and hashing, and the cleaning library.
 CoreDataModules is not available on PyPI, so must instead be installed from this GitHub repository.
 Do so with the following command, setting `<version>` to the tag to install e.g. `v0.0.1`:
 ```
-$ pipenv install -e git+ssh://git@github.com/AfricasVoices/CoreDataModules.git@<version>#egg=CoreDataModules
+$ pipenv install -e git+https://www.github.com/AfricasVoices/CoreDataModules@<version>#egg=CoreDataModules
+
 ```
 
 ## API Overview
@@ -37,8 +38,7 @@ td.append_data({"age": "21"}, Metadata(USER, Metadata.get_call_location(), time.
 print(td["age"])  # 21
 ```
 
-CoreDataModules also provides utilites for converting between in-memory `iterables of TracedData` and Coda, 
-CSV, and JSON files.
+CoreDataModules also provides utilites for converting between in-memory `iterables of TracedData` and JSON, CSV, Coda, Coding CSV, and The Interface files.
 For example, to save and load a list of `TracedData` objects by serializing to and from JSON:
 ```python
 from core_data_modules.traced_data.io import TracedDataJsonIO
@@ -58,7 +58,7 @@ For example:
 ```python
 from core_data_modules.cleaners.english.demographic_cleaner import DemographicCleaner
 
-DemographicCleaner.clean_gender("woman")  # 'F'
+DemographicCleaner.clean_gender("woman")  # 'female'
 DemographicCleaner.clean_gender("aoeu")  # None
 ```
 Note that cleaners which fail to assign a cleaned value return `None`.
