@@ -16,6 +16,12 @@ class PhoneCleaner(object):
         '254123123'
         >>> PhoneCleaner.normalise_phone("0123123")
         '123123'
+        >>> PhoneCleaner.normalise_phone("0-0 0123123")
+        '123123'
+        >>> PhoneCleaner.normalise_phone("tel:+254123123")
+        '254123123'
+        >>> PhoneCleaner.normalise_phone("tel:0123123")
+        '123123'
 
         :param phone: Phone number to normalise
         :type phone: str
