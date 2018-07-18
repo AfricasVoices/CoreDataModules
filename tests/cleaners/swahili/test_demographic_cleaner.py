@@ -19,17 +19,6 @@ class TestDemographicCleaner(unittest.TestCase):
 
         self.run_cleaner_tests(DemographicCleaner.clean_gender, test_cases)
 
-    def test_replace_digit_like_characters(self):
-        test_cases = {
-            "o": "0",
-            " ijzt": " 1127",
-            "o1 z3": "01 23",
-            "O": "0",
-            "HeLLO": "He110"
-        }
-
-        self.run_cleaner_tests(DemographicCleaner.replace_digit_like_characters, test_cases)
-
     def test_clean_number_words(self):
         test_cases = {
             "one": 1,
@@ -46,21 +35,6 @@ class TestDemographicCleaner(unittest.TestCase):
         }
 
         self.run_cleaner_tests(DemographicCleaner.clean_number_words, test_cases)
-
-    def test_clean_number_digits(self):
-        test_cases = {
-            "10": "10",
-            "74": "74",
-            "09": "09",
-            "O2": "02",
-            "9": Codes.NotCleaned,  # TODO: Fail to clean single digits?
-            "100": Codes.NotCleaned,  # TODO: Fail on long numbers?
-            "7 4": Codes.NotCleaned,
-            "63 24": "63",  # TODO: Assume first?
-            "Text text 14 more text": "14"
-        }
-
-        self.run_cleaner_tests(DemographicCleaner.clean_number_digits, test_cases)
 
     def test_clean_number(self):
         test_cases = {
