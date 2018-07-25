@@ -6,27 +6,7 @@ from .demographic_patterns import Patterns
 
 class DemographicCleaner(object):
     @staticmethod
-    def clean_with_patterns(text, patterns):
-        """
-        Attempts to clean a string by applying each of the provided regex patterns to the given text.
-        
-        The code associated with the first pattern to match is returned.
-
-        :param text: Text to clean.
-        :type text: str
-        :param patterns: Dictionary of code: pattern pairs.
-        :type patterns: dict of str -> str
-        :return: Code associated with the first pattern to
-        :rtype: str
-        """
-        for code, pattern in patterns.items():
-            if RegexUtils.has_matches(text, pattern):
-                # TODO: This follows what Dreams did, but is it really acceptable to just return the first match?
-                return code
-        return Codes.NotCleaned
-
-    @classmethod
-    def clean_gender(cls, text):
+    def clean_gender(text):
         """
         Identifies the gender in the given string.
 
@@ -43,10 +23,10 @@ class DemographicCleaner(object):
             Codes.female: Patterns.female
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
-    @classmethod
-    def clean_number_units(cls, text):
+    @staticmethod
+    def clean_number_units(text):
         """
         Extracts a units-column number expressed in words from the given text, and converts it to an integer.
 
@@ -70,10 +50,10 @@ class DemographicCleaner(object):
             9: Patterns.nine,
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
-    @classmethod
-    def clean_number_teens(cls, text):
+    @staticmethod
+    def clean_number_teens(text):
         """
         Extract a "teens" number expressed in words from the given text, and converts it to an integer.
 
@@ -97,10 +77,10 @@ class DemographicCleaner(object):
             19: Patterns.nineteen
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
-    @classmethod
-    def clean_number_tens(cls, text):
+    @staticmethod
+    def clean_number_tens(text):
         """
         Extract a tens-column number expressed in words from the given text, and converts it to an integer.
 
@@ -124,7 +104,7 @@ class DemographicCleaner(object):
             90: Patterns.ninety
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
     @classmethod
     def clean_number_words(cls, text):
