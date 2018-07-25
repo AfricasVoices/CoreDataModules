@@ -1,6 +1,7 @@
 import inspect
 import time
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
+from itertools import chain
 
 import six
 from deprecation import deprecated
@@ -72,6 +73,9 @@ class TracedData(Mapping):
     'f'
     """
 
+    # TODO: Summary implementation spiel which gives an overview of the internal structure,
+    # TODO: particularly
+
     def __init__(self, data, metadata, _prev=None):
         """
         :param data: Dict containing data to insert.
@@ -87,30 +91,73 @@ class TracedData(Mapping):
         self._metadata = metadata
 
     def append_data(self, new_data, new_metadata):
+        """
+        Updates this object with the provided key-value pairs.
+
+        :param new_data: Data to update this object with
+        :type new_data: dict
+        :param new_metadata: TODO
+        :type new_metadata: Metadata
+        """
         self._prev = TracedData(self._data, self._metadata, self._prev)
         self._data = new_data
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
 
+    def append_traced_data(self, key, traced_data, new_metadata):
+        """
+        Updates this object with another traced data object.
+
+        :param key: TODO
+        :type key: str
+        :param traced_data: TracedData object to add to this object
+        :type traced_data: TracedData
+        :param new_metadata: TODO
+        :type new_metadata: Metadata
+        """
+        # TODO: Reject if traced_data contains keys with a different history?
+        common_keys = set(self).intersection(set(traced_data))
+        print(common_keys)
+        print(type(common_keys))
+        # for key in common_keys:
+        #     print(key)
+        #     assert self[key] == traced_data[key]  # TODO: Replace with a custom exception
+
+        self.append_data({key: traced_data}, new_metadata)
+
     @staticmethod
-    def _sha_with_prev(data, prev_sha):
-        return SHAUtils.sha_dict({"data": data, "prev_sha": prev_sha})
+    def _traced_repr(data):  # TODO: Come up with a better name
+        return {k: v if type(v) != TracedData else v._sha for k, v in data.items()}
+
+    @classmethod
+    def _sha_with_prev(cls, data, prev_sha):
+        return SHAUtils.sha_dict({"data": cls._traced_repr(data), "prev_sha": prev_sha})
 
     def __getitem__(self, key):
         if key in self._data:
             return self._data[key]
-        elif self._prev is not None:
+
+        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
+            if key in traced_values:
+                return traced_values[key]
+
+        if self._prev is not None:
             return self._prev[key]
-        else:
-            raise KeyError(key)
+
+        raise KeyError(key)
 
     def get(self, key, default=None):
         if key in self._data:
             return self._data[key]
-        elif self._prev is not None:
+
+        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
+            if key in traced_values:
+                return traced_values[key]
+
+        if self._prev is not None:
             return self._prev.get(key, default)
-        else:
-            return default
+
+        return default
 
     def __len__(self):
         return sum(1 for _ in self)
@@ -118,10 +165,15 @@ class TracedData(Mapping):
     def __contains__(self, key):
         if key in self._data:
             return True
-        elif self._prev is not None:
+
+        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
+            if key in traced_values:
+                return True
+
+        if self._prev is not None:
             return key in self._prev
-        else:
-            return False
+
+        return False
 
     def __iter__(self):
         return _TracedDataKeysIterator(self)
@@ -194,6 +246,8 @@ class TracedData(Mapping):
         history = [] if self._prev is None else self._prev.get_history(key)
         if key in self._data:
             history.append({"sha": self._sha, "value": self._data[key]})
+        else:
+            pass  # TODO
         return history
 
 
@@ -202,7 +256,7 @@ class _TracedDataKeysIterator(Iterator):
     """Iterator over the keys of a TracedData object"""
     def __init__(self, traced_data):
         self.traced_data = traced_data
-        self.next_keys = iter(traced_data._data.keys())
+        self.next_keys = six.iterkeys(traced_data._data)
         self.seen_keys = set()
 
     def __iter__(self):
@@ -214,6 +268,11 @@ class _TracedDataKeysIterator(Iterator):
             try:
                 while True:
                     key = next(self.next_keys)
+
+                    if type(self.traced_data[key]) == TracedData:
+                        self.next_keys = chain(self.next_keys, six.iterkeys(self.traced_data[key]))
+                        continue
+
                     if key not in self.seen_keys:
                         self.seen_keys.add(key)
                         return key
@@ -222,7 +281,7 @@ class _TracedDataKeysIterator(Iterator):
                 self.traced_data = self.traced_data._prev
                 if self.traced_data is None:
                     raise StopIteration()
-                self.next_keys = iter(self.traced_data._data.keys())
+                self.next_keys = six.iterkeys(self.traced_data._data)
 
     if six.PY2:
         def next(self):

@@ -1,6 +1,7 @@
 import collections
 import time
 import unittest
+
 import six
 
 from core_data_modules.traced_data import TracedData, Metadata
@@ -316,3 +317,140 @@ class TestTracedData(unittest.TestCase):
 
         self.assertFalse(td is td_copy)
         self.assertTrue(td == td_copy)
+
+
+class TestTracedDataAppendTracedData(unittest.TestCase):
+    """
+    Test cases for TracedData which has had another set of traced data appended.
+    """
+
+    @staticmethod
+    def generate_message_td():
+        message_data = {"phone": "+441632000001", "message": "Hello AVF!"}
+        message_td = TracedData(message_data, Metadata("test_user", "run_fetcher", time.time()))
+        message_td.append_data({"message": "hello avf"}, Metadata("test_user", "message_cleaner", time.time()))
+
+        return message_td
+
+    @staticmethod
+    def generate_demog_1_td():
+        demog_1_data = {"phone": "+441632000001", "gender": "woman", "age": "twenty"}
+        demog_1_td = TracedData(demog_1_data, Metadata("test_user", "run_fetcher", time.time()))
+        demog_1_td.append_data({"gender": "female", "age": 20}, Metadata("test_user", "demog_cleaner", time.time()))
+
+        return demog_1_td
+
+    @classmethod
+    def generate_test_data(cls):
+        """Returns a new TracedData object with example id, phone, and gender fields"""
+        message_td = cls.generate_message_td()
+
+        demog_1_td = cls.generate_demog_1_td()
+
+        demog_2_data = {"phone": "+441632000001", "country": "Kenyan citizen"}
+        demog_2_td = TracedData(demog_2_data, Metadata("test_user", "run_fetcher", time.time()))
+        demog_2_td.append_data({"country": "Kenya"}, Metadata("test_user", "demog_cleaner", time.time()))
+
+        message_td.append_traced_data("demog_1", demog_1_td, Metadata("test_user", "demog_1_append", time.time()))
+        message_td.append_traced_data("demog_2", demog_2_td, Metadata("test_user", "demog_2_append", time.time()))
+
+        return message_td
+    
+    def test_append_traced_data(self):
+        # Note that this only tests failing appends. Successful appends are tested by the other methods in this suite.
+        message_td = self.generate_message_td()
+        # TODO
+
+    def test__traced_repr(self):
+        demog_1_td = self.generate_demog_1_td()
+
+        self.assertDictEqual(
+            TracedData._traced_repr({"phone": "+441632000001", "demog_1": demog_1_td}),
+            {"phone": "+441632000001", "demog_1": demog_1_td._sha}
+        )
+
+    def test___get_item__(self):
+        td = self.generate_test_data()
+
+        self.assertEqual(td["phone"], "+441632000001")
+        self.assertEqual(td["age"], 20)
+        self.assertEqual(td["country"], "Kenya")
+
+        self.assertRaises(KeyError, lambda: td["education"])
+
+    def test_get(self):
+        td = self.generate_test_data()
+
+        self.assertEqual(td.get("phone"), "+441632000001")
+        self.assertEqual(td.get("age"), 20)
+        self.assertEqual(td.get("country"), "Kenya")
+
+        self.assertEqual(td.get("education"), None)
+        self.assertEqual(td.get("education", "default"), "default")
+
+    def test___len__(self):
+        td = self.generate_test_data()
+
+        self.assertEqual(len(td), 5)
+
+    def test___contains__(self):
+        td = self.generate_test_data()
+
+        self.assertTrue("phone" in td)
+        self.assertTrue("country" in td)
+        self.assertFalse("education" in td)
+
+        self.assertFalse("country" not in td)
+        self.assertTrue("education" not in td)
+
+    def test___iter__(self):
+        td = self.generate_test_data()
+
+        self.assertSetEqual(
+            set(iter(td)),  # Relying on tests in TestTracedData for type checks
+            {"phone", "message", "gender", "age", "country"}
+        )
+
+    def test_keys(self):
+        td = self.generate_test_data()
+
+        self.assertSetEqual(
+            set(td.keys()),  # Relying on tests in TestTracedData for type checks
+            {"phone", "message", "gender", "age", "country"}
+        )
+
+    def test_values(self):
+        td = self.generate_test_data()
+
+        self.assertSetEqual(
+            set(td.values()),  # Relying on tests in TestTracedData for type checks
+            {"+441632000001", "Kenya", "hello avf", "female", 20}
+        )
+
+    def test_items(self):
+        td = self.generate_test_data()
+
+        self.assertDictEqual(
+            dict(td.items()),  # Relying on tests in TestTracedData for type checks
+            {"phone": "+441632000001", "country": "Kenya", "message": "hello avf",
+             "gender": "female", "age": 20}
+        )
+
+    if six.PY2:
+        def test_has_key(self):
+            td = self.generate_test_data()
+
+            self.assertTrue(td.has_key("phone"))
+            self.assertTrue(td.has_key("country"))
+            self.assertFalse(td.has_key("education"))
+
+        # TODO: Test iter and view {keys, values, items}
+
+    def test_copy(self):
+        pass  # TODO
+    
+    def test_get_history(self):
+        td = self.generate_test_data()
+
+        # history = td.get_history("gender")
+        # self.assertListEqual(list(map(lambda x: x["value"], history)), ["woman", "female"])
