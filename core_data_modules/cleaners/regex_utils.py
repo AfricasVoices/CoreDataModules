@@ -1,5 +1,7 @@
 import re
 
+from core_data_modules.cleaners import Codes
+
 
 class RegexUtils(object):
     @staticmethod
@@ -42,3 +44,23 @@ class RegexUtils(object):
         :rtype: bool
         """
         return bool(cls.search(pattern, text, **kwargs))
+
+    @staticmethod
+    def clean_with_patterns(text, patterns):
+        """
+        Attempts to clean a string by applying each of the provided regex patterns to the given text.
+
+        The code associated with the first pattern to match is returned.
+
+        :param text: Text to clean.
+        :type text: str
+        :param patterns: Dictionary of code: pattern pairs.
+        :type patterns: dict of str -> str
+        :return: Code associated with the first pattern to
+        :rtype: str
+        """
+        for code, pattern in patterns.items():
+            if RegexUtils.has_matches(text, pattern):
+                # TODO: This follows what Dreams did, but is it really acceptable to just return the first match?
+                return code
+        return Codes.NotCleaned
