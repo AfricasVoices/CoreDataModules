@@ -17,4 +17,4 @@ class DemographicCleaner(object):
         elif text == "f" or text == "female" or text == "woman":
             return Codes.female
         else:
-            return Codes.NotCleaned
+            return Codes.NotCoded

@@ -2,4 +2,7 @@ class Codes(object):
     male = "male"
     female = "female"
 
-    NotCleaned = None
+    TrueMissing = "NA"
+    Skipped = "NS"
+    NotCoded = "NC"
+

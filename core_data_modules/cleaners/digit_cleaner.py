@@ -50,4 +50,4 @@ class DigitCleaner(object):
         if matches:
             return matches.group(1).strip()
         else:
-            return Codes.NotCleaned
+            return Codes.NotCoded
