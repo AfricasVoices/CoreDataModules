@@ -2,6 +2,10 @@ from core_data_modules.cleaners import Codes
 
 
 class Patterns(object):
+    only_yes_no = r"^\W*(asc|ok)?\W*(ka+l?\W*ka+[kla]*|kalak|kalalak)?\W*ha+h?(ye)?\W*$|^\W*ha+h?(ye)?\W*(ka+l?\W*ka+[kla]*|ka(la)?ak)?\W*$|^\W*(ka+l?\W*ka+[kla]*|ka(la)?lak)?\W*hye\W*$|^\W*(ka+l?\W*ka+l|kalaka?|kalalak)?\W*ma*ya?\W*$"
+
+    noise = r"^\W*(asc|ok)?\W*(ka+l?\W*ka+[kla]*|ka(la)?lak|kal)?\W*(asc|ok)?\W*$|^\W*330\W*$|^\W*mahad\ssanid\W*$|^\W*in\W*[cs]ha+\W*a?l+a*h?(alah)?\W*$|^\W*oke?y?\W*$|^\W*(ka+l?\W*ka+la?|kalaka?|kalalak)?\W*tir\W*tir\W*$|^\W*(hi|hello)\W*$|^\W*thanks\W*$|^\w\w?$|^fuck$|^\W*dal\W*dhis\W*$"
+
     genders = {
         Codes.male: r"\bm[ae]n|ra+[gqk]|wi+l|\bmal+e|\bmeal|\bbo[yi]|\bni+n|oday|rija+l|wa+laduq|a+be|\bna+n\b|\bni+n\b|raju+l|\br[ue]+g|\bwll\b|\bwil\b|brg\b\bmr\b|\bboy\b|(\b|\W)la+[bp][ao]?|kab|la+b|labo+d|\bla[xgpdma]\b|we+l|xasan|sadaam|a[xh]med|calisharif|lobo|laban|mujahid|labbaan|lb|\bl(\sa\s)*b\b|jab|\bm\b|abdi|axmed|cali|laba|\bla[ap]|\ble?b|lobo|\bleb|\bla[gmx]|ahaylab|l\sa\sb|lab[ao]|\b[jl]ab|lab+an+n|mujahid|\bmin|sadaam|\bwe+l|xasan|\blaf|\brag|rajul|wiil",
         Codes.female: r"wom[ae]n|d[aou]+m+[ua]r?|ga+ba*r|f[ae]mal+i*e*|femael|f[ea]m[ae]l[ie]|g[ai]rl|ho+yo|na+g|fahi+ma|famle|ga+ba+dh|ga[pbw]+a+r|ha+ba+r|hawe+n(ay)?|ho+yada\bna+k\b|femayl|caisha\bdum\b|\bdmr\b|hodan|dh*[aei]\s?[dt]+h*[ei][gkq]a*|ladig|dh[aei]g*d*[iu]+[dg]?|dheqdid|maamo|dhidd*ga*|dheed[di]i[gd]|dhe[s.]d*ig|dhig|lidig|d[bh][\si]dig|dakar|nimco|nadik|shadiig|marwo|gbr|giwar|fartun|inan|islan|dh!d!|\bf\b|barwaaqo|ladh?[ei]g|bhadig|cheddig|db[ai]dig|deeqo|d[gh]\sdi?g|dgadig|dh!d!|dh[ae]?\Wd+ig|dh[ae]+b?d+[aei]*g|dhagdd|dhalmabarad|dhaxig|\bdhed|dhe+[djs]+[io]?[dg]|dhid*g|fheddiga|fimel|\bgbr|ghdadig|giwar|iadig|\blan|marwo|\bnag|shadiig|dh[aei]?h?dig|dgedigd|dumar|digili|dnadig|gabadha|ledig|phadig|dhad[ij]g"

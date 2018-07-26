@@ -1,8 +1,16 @@
-from core_data_modules.cleaners import RegexUtils
+from core_data_modules.cleaners import RegexUtils, Codes
 from core_data_modules.cleaners.somali.demographic_patterns import Patterns
 
 
 class DemographicCleaner(object):
+    @staticmethod
+    def is_noise(text):
+        return RegexUtils.has_matches(text, Patterns.noise)
+
+    @staticmethod
+    def is_only_yes_no(text):
+        return RegexUtils.has_matches(text, Patterns.only_yes_no)
+
     @staticmethod
     def clean_gender(text):
         return RegexUtils.clean_with_patterns(text, Patterns.genders)
