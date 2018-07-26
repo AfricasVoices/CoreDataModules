@@ -21,6 +21,37 @@ class Patterns(object):
         Codes.rural: r"vil+ag[er]*|tu+[lt]+[0ou]|tu+lada|tu+l[anu]+|village|tu+rta|to+lu*|biln\sokatir|balcad|wardhi+g\s?le+|ba+diye|tu+led|xera+le|bo+sa+so|\beyl\b|ce+ri\W?ga+bo|rugey|burtile|hodan|guricel|tuvlo|guri?ce+l|hurwa+|barwa+qo|\bg[ae]do\b|lafo+le|badiyo|\btuio\b|mdije+x|dhanqare|wada ?[jri]+|\bhu+sh\b|\bkaran\b|borama|b\W*weyn|26\W?ju+n|a\W+dhagaxa|alaybaday|axmed\sdh?agax|baadiye|bacaadley|badiyaha|badiy[eo]|balcad|balese|bandar\sbayla|barsane|b[ae]y\s?dha+\s?bo|bal?ca+d\sley|ba+d+iy(aha|e|o)|balese|bandar\Wbayla|barsane|barwa+qo|baladxa+wo|biln\sokatir|biya\skulule|bocame|bohol|borama|bulashiq|burtin?le|\bbu+ca|\bbu+la\sbacley|ce+l\sdhe+r|ce+l\sja+le|dacabu+dh|da+bley|dalsan|dhanqare|dhoboolo[bp]|dhu+do|do+lo|fa+rax\so+mar|g\W*de+ble|g\W+liba+x|gacam\sliba+x|garso+r|\bg[ae]do|grada+gwh|hila+c|hodan|hurwa+|hu+sh|jazi+ra+d|johara|karan|maxamu+d\s?haye?be|m\Whaye?be|naga+d|\boog\b|qansaxdhe+re|qoryale|qudbacdhe+r|rasi\scaser|rugey|she+kh\bnu+r|she+q\bmaxa+d|shibi+s|su+qa\sxolaha|t[uv]+l+[eou]|tu+lp|tuluo|wada\s?j[ri]+|wardhi+g\sl[ey]+|xagu+ga|xamar|xerale|marka cadey|\b[bdt]uul?[io]|hantiwadag|miga|xafta calnley|ba+deyeah|baadiye|badhan|baliaxmed|balidhig|\bbeer|beral[ae]y|bulagadu|bul+axa+r|bura+n|ca+dley|cada+y\W*yuru+ra|da+rsala+m|daynu+nay|dega+nka beraha iyo xoolodhaqato|dhahar|durqsi|duulo|gradag|guburah|gu+ra+y|halgan|hergura an ahay|kaaraan|laasgeel|laba xad\W*dhexdood\W*oobanaan|lafoole|mayo+nto|miig|\bmiyi|nasiye|qod qod|qool\W*bu+lale|re+r\W*[bgk]u+ra|re+r m[ai]yi|sabawana+g|san\W*yare|xa+r\W*xa+r|\bxiis|xola ley|xoolo dhaqato+y|rugey"
     }
 
+    numbers = {
+        10: r'ten|towon|teen|\btoba+n',
+        14: r'tobaniyoafaar',
+        15: r'fi[vf]teen|tuban\siyo\sshan',
+        16: r'lex\siyo\stabanjir',
+        17: r'sevente*n|toba*n\siyo\stodobo|totobiyotoban',
+        18: r'sideed\siyo\stoban',
+        19: r'saga+l\si\stowan',
+        20: r'twenty|la[bw]a+\s*tan',
+        22: r'laba+ta+n\siyo\s?labo',
+        23: r'labatad\Wiyo\Wsatax\Wsano',
+        25: r'la[bw]a+\s*ta+n\siyo\shan',
+        30: r'thirty|sod[ao]*n\sjir|sodonjir|3o',
+        31: r'3I',
+        34: r'sodon\Wiyo\Wafar\Wsano',
+        35: r'sodo*n\siyo\shan',
+        40: r'fourty|afartan',
+        45: r'afratan\siyo\sshan',
+        50: r'fifty|5o',
+        1: r'one|mid|\bhal\b',
+        2: r'two|la+ba+',
+        3: r'three|sa+d+[ae]x',
+        4: r'four|[ac]far|afarsano',
+        5: r'five|shan',
+        6: r'six|lix',
+        7: r'seven|todobo',
+        8: r'eight|sided',
+        9: r'nine|sa+ga+l',
+        0.5: r'\bbar\b'
+    }
+
     somalia_districts = {
         "adan yabaal": r"\ba+dan\b|yaba+l",
         "afgooye": r"afa?\s?g[ou]+ye*|\bgo+ye*|afg[io]+|agoye*|afo+ye|afgonye|c[ae]+la*sha*|\bla+fo+le*|afgoa|afkoyo|afio|afoi|la*\sfo+l+e|cay?lasha\W*biyaha|raaxoole|tulada barire|tuulada ceel wareegow|[ao]+wdhe+gle|carbis|[ao]carbis|ce+la\W*biyaha|\bmu+ri|ticsi+le|warmaxan|warmo+ley|afjo+ye|cumarbe+re|jambalul|jasir|af+oye|af\W*go|\bafg\b|afgaaye|agoi",

@@ -113,7 +113,6 @@ class DemographicCleaner(object):
 
         Extracts numbers in the range 1 to 99 inclusive.
 
-        For example:
         >>> DemographicCleaner.clean_number_words("thirteen")
         13
 

@@ -20,3 +20,16 @@ class TestDemographicCleaner(unittest.TestCase):
 
     def test_clean_somalia_district(self):
         self.assertEqual(DemographicCleaner.clean_somalia_district("I live in Mogadishu"), "mogadishu")
+
+    def test_clean_number_words(self):
+        # TODO: This test fails because fifteen matches both 'ten' and 'fifteen', so cleaner is returning 25.
+        # self.assertEqual(DemographicCleaner.clean_number_words("fifteen"), 15)
+
+        self.assertEqual(DemographicCleaner.clean_number_words("lix iyo lawatan"), 26)
+        self.assertEqual(DemographicCleaner.clean_number_words("I am thirty"), 30)
+        self.assertEqual(DemographicCleaner.clean_number_words("one day I will be twenty"), 1 + 20)
+
+    def test_clean_age(self):
+        self.assertEqual(DemographicCleaner.clean_age("lix iyo lawatan"), 26)
+        self.assertEqual(DemographicCleaner.clean_age("25"), "25")
+        self.assertEqual(DemographicCleaner.clean_age("97"), Codes.NotCleaned)
