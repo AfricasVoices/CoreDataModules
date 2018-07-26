@@ -13,7 +13,7 @@ class TestDemographicCleaner(unittest.TestCase):
         self.assertEqual(DemographicCleaner.clean_gender("man"), Codes.male)
         self.assertEqual(DemographicCleaner.clean_gender("woMAn"), Codes.female)
 
-        self.assertEqual(DemographicCleaner.clean_gender(""), Codes.NotCleaned)
-        self.assertEqual(DemographicCleaner.clean_gender("f."), Codes.NotCleaned)
-        self.assertEqual(DemographicCleaner.clean_gender(" f "), Codes.NotCleaned)
-        self.assertEqual(DemographicCleaner.clean_gender("men"), Codes.NotCleaned)
+        self.assertEqual(DemographicCleaner.clean_gender(""), Codes.NotCoded)
+        self.assertEqual(DemographicCleaner.clean_gender("f."), Codes.NotCoded)
+        self.assertEqual(DemographicCleaner.clean_gender(" f "), Codes.NotCoded)
+        self.assertEqual(DemographicCleaner.clean_gender("men"), Codes.NotCoded)

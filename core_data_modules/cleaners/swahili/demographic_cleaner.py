@@ -126,21 +126,21 @@ class DemographicCleaner(object):
         :rtype: int
         """
         cleaned_units = cls.clean_number_units(text)
-        if cleaned_units == Codes.NotCleaned:
+        if cleaned_units == Codes.NotCoded:
             cleaned_units = 0
 
         cleaned_teens = cls.clean_number_teens(text)
-        if cleaned_teens == Codes.NotCleaned:
+        if cleaned_teens == Codes.NotCoded:
             cleaned_teens = 0
             
         cleaned_tens = cls.clean_number_tens(text)
-        if cleaned_tens == Codes.NotCleaned:
+        if cleaned_tens == Codes.NotCoded:
             cleaned_tens = 0
 
         cleaned = cleaned_tens + cleaned_teens + cleaned_units
 
         if cleaned == 0:
-            cleaned = Codes.NotCleaned
+            cleaned = Codes.NotCoded
 
         return cleaned
     
@@ -163,7 +163,7 @@ class DemographicCleaner(object):
         :rtype: str | int  # TODO: depends on which function is called eww.
         """
         cleaned_digits = DigitCleaner.clean_number_digits(text)
-        if cleaned_digits != Codes.NotCleaned:
+        if cleaned_digits != Codes.NotCoded:
             return cleaned_digits
         else:
             return cls.clean_number_words(text)

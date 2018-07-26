@@ -4,4 +4,4 @@ class Codes(object):
 
     TrueMissing = "NA"
     Skipped = "NS"
-    NotCleaned = None  # TODO: Change to "NC"
+    NotCoded = None  # TODO: Change to "NC"

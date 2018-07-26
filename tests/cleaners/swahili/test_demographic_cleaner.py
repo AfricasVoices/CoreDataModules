@@ -23,13 +23,13 @@ class TestDemographicCleaner(unittest.TestCase):
         test_cases = {
             "one": 1,
             "eleven": 11,
-            "zero": Codes.NotCleaned,
+            "zero": Codes.NotCoded,
             "sixty-two": 62,
             "seven thirty": 37,  # TODO: Accept unconventional order?
             "six four twenty eight five": 24,  # TODO: Use lowest observed?
             "some text including the number eighty one and some more text": 81,
 
-            "sifuri": Codes.NotCleaned,  # 0
+            "sifuri": Codes.NotCoded,  # 0
             "ishirini na tatu": 23,
             "kumi na tisa": 19
         }
