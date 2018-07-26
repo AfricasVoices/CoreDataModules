@@ -5,7 +5,7 @@ from core_data_modules.cleaners.somali import DemographicCleaner
 
 
 class TestDemographicCleaner(unittest.TestCase):
-    # Note: These are very much place-holders until we get support from AVF's annotation team.
+    # Note: These are very much place-holders until we work with AVF's annotation team to produce more complete suites.
 
     def test_clean_genders(self):
         self.assertEqual(DemographicCleaner.clean_gender("woman"), Codes.female)
