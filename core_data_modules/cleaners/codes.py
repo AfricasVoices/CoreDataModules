@@ -2,4 +2,6 @@ class Codes(object):
     male = "male"
     female = "female"
 
-    NotCleaned = None
+    TrueMissing = "NA"
+    Skipped = "NS"
+    NotCleaned = None  # TODO: Change to "NC"
