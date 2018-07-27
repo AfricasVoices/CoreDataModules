@@ -8,4 +8,6 @@ class Codes(object):
     urban = "urban"
     rural = "rural"
 
-    NotCleaned = None
+    TRUE_MISSING = "NA"
+    SKIPPED = "NS"
+    NOT_CODED = None  # TODO: Change to "NC"
