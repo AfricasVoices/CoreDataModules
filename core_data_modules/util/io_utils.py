@@ -5,12 +5,24 @@ class IOUtils(object):
     @staticmethod
     def ensure_dirs_exist(path):
         """
-        Creates any directories which do not already exist in the given path.
+        Creates all non-existent directories in the provided path to a directory.
 
-        The path may be to either a directory or to a file.
+        Essentially an implementation of `$ mkdir -p`.
 
-        :param path: Path to create directories for.
+        :param path: Path to a directory
         :type path: str
         """
-        if os.path.dirname(path) is not "" and not os.path.exists(os.path.dirname(path)):
-            os.makedirs(os.path.dirname(path))
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    @classmethod
+    def ensure_dirs_exist_for_file(cls, path):
+        """
+        Creates all non-existent directories in the provided path to a file.
+
+        :param path: Path to a file
+        :type path: str
+        """
+        dir_path = os.path.dirname(path)
+        if dir_path is not "":
+            cls.ensure_dirs_exist(dir_path)
