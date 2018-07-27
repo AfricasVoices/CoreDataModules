@@ -113,7 +113,6 @@ class DemographicCleaner(object):
 
         Extracts numbers in the range 1 to 99 inclusive.
 
-        For example:
         >>> DemographicCleaner.clean_number_words("thirteen")
         13
 
@@ -152,7 +151,7 @@ class DemographicCleaner(object):
         See clean_number_digits and clean_number_words.
 
         >>> DemographicCleaner.clean_number("40")
-        '40'
+        40
 
         >>> DemographicCleaner.clean_number("seventy-six")
         76
@@ -160,7 +159,7 @@ class DemographicCleaner(object):
         :param text: Text to clean
         :type text: str
         :return: Extracted number
-        :rtype: str | int  # TODO: depends on which function is called eww.
+        :rtype: int
         """
         cleaned_digits = DigitCleaner.clean_number_digits(text)
         if cleaned_digits != Codes.NOT_CODED:

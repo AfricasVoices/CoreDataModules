@@ -38,8 +38,8 @@ class TestDemographicCleaner(unittest.TestCase):
 
     def test_clean_number(self):
         test_cases = {
-            "10": "10",
-            "27": "27",
+            "10": 10,
+            "27": 27,
             "thirty-four": 34,
             "ishirini na tisa": 29
         }

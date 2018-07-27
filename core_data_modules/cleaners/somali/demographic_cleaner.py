@@ -1,8 +1,16 @@
-from core_data_modules.cleaners import RegexUtils
+from core_data_modules.cleaners import RegexUtils, Codes, DigitCleaner
 from core_data_modules.cleaners.somali.demographic_patterns import Patterns
 
 
 class DemographicCleaner(object):
+    @staticmethod
+    def is_noise(text):
+        return RegexUtils.has_matches(text, Patterns.noise)
+
+    @staticmethod
+    def is_only_yes_no(text):
+        return RegexUtils.has_matches(text, Patterns.only_yes_no)
+
     @staticmethod
     def clean_gender(text):
         return RegexUtils.clean_with_patterns(text, Patterns.genders)
@@ -18,3 +26,61 @@ class DemographicCleaner(object):
     @staticmethod
     def clean_somalia_district(text):
         return RegexUtils.clean_with_patterns(text, Patterns.somalia_districts)
+    
+    @staticmethod
+    def clean_number_words(text):
+        """
+        Extracts the numbers in the given text that are expressed in words, and converts them to an integer.
+        
+        The strategy employed searches the given string for each number in somali.Patterns.numbers,
+        and returns the sum total of the numbers which matched at least once in the given text.
+
+        >>> DemographicCleaner.clean_number_words("lix iyo lawatan")
+        26
+        >>> DemographicCleaner.clean_number_words("afar shan lix")
+        15
+
+        :param text: Text to clean
+        :type text: str
+        :return: Extracted number
+        :rtype: int
+        """
+        total = 0
+        found_match = False
+
+        for number, pattern in Patterns.numbers.items():
+            if RegexUtils.has_matches(text, pattern):
+                found_match = True
+                total += number
+
+        if found_match:
+            return total
+        else:
+            return Codes.NOT_CODED
+
+    @classmethod
+    def clean_age(cls, text):
+        """
+        Extracts the number from the given text from either digits or words.
+
+        Returns Codes.NotCoded if age <= 10 or age >= 90.
+
+        >>> DemographicCleaner.clean_age("lix iyo lawatan")
+        26
+        >>> DemographicCleaner.clean_age(" 35.")
+        35
+
+        :param text: Text to clean
+        :type text: str
+        :return: Extracted number
+        :rtype: int
+        """
+        cleaned_digits = DigitCleaner.clean_number_digits(text)
+        if cleaned_digits != Codes.NOT_CODED and 10 < int(cleaned_digits) < 90:
+            return cleaned_digits
+
+        cleaned_words = cls.clean_number_words(text)
+        if cleaned_words != Codes.NOT_CODED and 10 < cleaned_words < 90:
+            return cleaned_words
+
+        return Codes.NOT_CODED
