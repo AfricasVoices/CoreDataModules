@@ -63,4 +63,4 @@ class RegexUtils(object):
             if RegexUtils.has_matches(text, pattern):
                 # TODO: This follows what Dreams did, but is it really acceptable to just return the first match?
                 return code
-        return Codes.NotCleaned
+        return Codes.NOT_CODED
