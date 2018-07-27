@@ -43,7 +43,7 @@ class DemographicCleaner(object):
         :param text: Text to clean
         :type text: str
         :return: Extracted number
-        :rtype: int | Codes.NotCleaned
+        :rtype: int
         """
         total = 0
         found_match = False
@@ -56,7 +56,7 @@ class DemographicCleaner(object):
         if found_match:
             return total
         else:
-            return Codes.NotCleaned
+            return Codes.NOT_CODED
 
     @classmethod
     def clean_age(cls, text):
@@ -76,11 +76,11 @@ class DemographicCleaner(object):
         :rtype: int
         """
         cleaned_digits = DigitCleaner.clean_number_digits(text)
-        if cleaned_digits != Codes.NotCleaned and 10 < int(cleaned_digits) < 90:
+        if cleaned_digits != Codes.NOT_CODED and 10 < int(cleaned_digits) < 90:
             return cleaned_digits
 
         cleaned_words = cls.clean_number_words(text)
-        if cleaned_words != Codes.NotCleaned and 10 < cleaned_words < 90:
+        if cleaned_words != Codes.NOT_CODED and 10 < cleaned_words < 90:
             return cleaned_words
 
-        return Codes.NotCleaned
+        return Codes.NOT_CODED
