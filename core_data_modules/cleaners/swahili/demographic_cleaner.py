@@ -19,8 +19,8 @@ class DemographicCleaner(object):
         :rtype: str
         """
         patterns = {
-            Codes.male: Patterns.male,
-            Codes.female: Patterns.female
+            Codes.MALE: Patterns.male,
+            Codes.FEMALE: Patterns.female
         }
 
         return RegexUtils.clean_with_patterns(text, patterns)
