@@ -31,5 +31,5 @@ class TestDemographicCleaner(unittest.TestCase):
 
     def test_clean_age(self):
         self.assertEqual(DemographicCleaner.clean_age("lix iyo lawatan"), 26)
-        self.assertEqual(DemographicCleaner.clean_age("25"), "25")
+        self.assertEqual(DemographicCleaner.clean_age("25"), 25)
         self.assertEqual(DemographicCleaner.clean_age("97"), Codes.NotCleaned)

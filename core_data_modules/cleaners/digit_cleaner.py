@@ -64,17 +64,17 @@ class DigitCleaner(object):
         Extracts the digit (and digit-like characters e.g. 'o') from the given text and converts to an integer.
 
         >>> DigitCleaner.clean_number_digits("I am 2O years old")
-        '20'
+        20
 
         :param text: Text to clean
         :type text: str
         :return: Extracted number
-        :rtype: str  TODO: Are we sure we don't want int?
+        :rtype: int
         """
         text = cls.replace_digit_like_characters(text)
 
         matches = re.search(r"(\b\d{2}\b|\b\d\d\b)", text)  # TODO: This regex only extracts 2-digit numbers
         if matches:
-            return matches.group(1).strip()
+            return int(matches.group(1).strip())
         else:
             return Codes.NotCleaned

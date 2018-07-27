@@ -68,12 +68,12 @@ class DemographicCleaner(object):
         >>> DemographicCleaner.clean_age("lix iyo lawatan")
         26
         >>> DemographicCleaner.clean_age(" 35.")
-        '35'
+        35
 
         :param text: Text to clean
         :type text: str
         :return: Extracted number
-        :rtype: str | int # TODO: depends on which helper function is called
+        :rtype: int
         """
         cleaned_digits = DigitCleaner.clean_number_digits(text)
         if cleaned_digits != Codes.NotCleaned and 10 < int(cleaned_digits) < 90:
