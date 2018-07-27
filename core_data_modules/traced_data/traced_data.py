@@ -248,7 +248,7 @@ class TracedData(Mapping):
                                                "(value from data_1 is '{}', value from " \
                                                "data_2 is '{}')".format(id, key, td_1[key], td_2[key])
 
-            # Append TracedData item from data_2 to a copy of the one from data_1
+            # Append the data from td_2 to a copy of td_1
             # TODO: Preserve history from both trees.
             td_1 = td_1.copy()
             td_1.append_data(
