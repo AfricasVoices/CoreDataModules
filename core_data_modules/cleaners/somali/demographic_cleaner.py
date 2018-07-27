@@ -70,9 +70,9 @@ class DemographicCleaner(object):
         >>> DemographicCleaner.clean_age(" 35.")
         '35'
 
-        :param text:
+        :param text: Text to clean
         :type text: str
-        :return:
+        :return: Extracted number
         :rtype: str | int # TODO: depends on which helper function is called
         """
         cleaned_digits = DigitCleaner.clean_number_digits(text)
