@@ -1,12 +1,12 @@
 class Codes(object):
-    male = "male"
-    female = "female"
+    MALE = "male"
+    FEMALE = "female"
 
-    yes = "yes"
-    no = "no"
+    YES = "yes"
+    NO = "no"
 
-    urban = "urban"
-    rural = "rural"
+    URBAN = "urban"
+    RURAL = "rural"
 
     TRUE_MISSING = "NA"
     SKIPPED = "NS"
