@@ -26,9 +26,9 @@ class TestDigitCleaner(unittest.TestCase):
             "74": "74",
             "09": "09",
             "O2": "02",
-            "9": Codes.NotCoded,  # TODO: Fail to clean single digits?
-            "100": Codes.NotCoded,  # TODO: Fail on long numbers?
-            "7 4": Codes.NotCoded,
+            "9": Codes.NOT_CODED,  # TODO: Fail to clean single digits?
+            "100": Codes.NOT_CODED,  # TODO: Fail on long numbers?
+            "7 4": Codes.NOT_CODED,
             "63 24": "63",  # TODO: Assume first?
             "Text text 14 more text": "14"
         }

@@ -2,6 +2,6 @@ class Codes(object):
     male = "male"
     female = "female"
 
-    TrueMissing = "NA"
-    Skipped = "NS"
-    NotCoded = None  # TODO: Change to "NC"
+    TRUE_MISSING = "NA"
+    SKIPPED = "NS"
+    NOT_CODED = None  # TODO: Change to "NC"
