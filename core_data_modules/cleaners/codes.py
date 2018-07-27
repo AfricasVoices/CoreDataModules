@@ -1,11 +1,13 @@
 class Codes(object):
-    male = "male"
-    female = "female"
+    MALE = "male"
+    FEMALE = "female"
 
-    yes = "yes"
-    no = "no"
+    YES = "yes"
+    NO = "no"
 
-    urban = "urban"
-    rural = "rural"
+    URBAN = "urban"
+    RURAL = "rural"
 
-    NotCleaned = None
+    TRUE_MISSING = "NA"
+    SKIPPED = "NS"
+    NOT_CODED = None  # TODO: Change to "NC"

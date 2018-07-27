@@ -77,4 +77,4 @@ class DigitCleaner(object):
         if matches:
             return int(matches.group(1).strip())
         else:
-            return Codes.NotCleaned
+            return Codes.NOT_CODED
