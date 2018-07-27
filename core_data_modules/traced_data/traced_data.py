@@ -196,6 +196,69 @@ class TracedData(Mapping):
             history.append({"sha": self._sha, "value": self._data[key]})
         return history
 
+    @staticmethod
+    def join_iterables(user, join_on_key, data_1, data_2):
+        """
+        Outer-joins two iterables of TracedData on the given key.
+
+        Note that a particular value of each 'join_on_key' may only appear once in each of data_1 and
+        data_2 (i.e. all 'join_on_key' values must be unique in each iterable)
+        
+        If there are any keys in common between TracedData items sharing the same join_on_key,
+        then these keys must also have the same value in both objects.
+
+        :param user: Identifier of user running this program
+        :type user: str
+        :param join_on_key: Key to join data on
+        :type join_on_key: str
+        :param data_1: TracedData items to join with data2
+        :type data_1: iterable of TracedData
+        :param data_2: TracedData items to join with data1
+        :type data_2: iterable of TracedData
+        :return: data1 outer-joined with data2 on join_on_key
+        :rtype: list of TracedData
+        """
+        data_1_lut = {td[join_on_key]: td for td in data_1}
+        data_2_lut = {td[join_on_key]: td for td in data_2}
+
+        assert len(data_1_lut) == len(data_1), "join_on_key is not unique in data_1"
+        assert len(data_2_lut) == len(data_2), "join_on_key is not unique in data_2"
+
+        data_1_ids = set(data_1_lut.keys())
+        data_2_ids = set(data_2_lut.keys())
+
+        ids_in_data1_only = data_1_ids - data_2_ids
+        ids_in_data2_only = data_2_ids - data_1_ids
+        ids_in_both = data_1_ids.intersection(data_2_ids)
+
+        merged_data = []
+        for id in ids_in_data1_only:
+            merged_data.append(data_1_lut[id])
+        for id in ids_in_data2_only:
+            merged_data.append(data_2_lut[id])
+        for id in ids_in_both:
+            td_1 = data_1_lut[id]
+            td_2 = data_2_lut[id]
+
+            # Assert all keys in common between the two TracedData items here have identical values.
+            common_keys = set(td_1.keys()).intersection(td_2.keys())
+            for key in common_keys:
+                assert td_1[key] == td_2[key], "TracedData items with the same join_on_key value '{}' have " \
+                                               "conflicting values for key '{}' " \
+                                               "(value from data_1 is '{}', value from " \
+                                               "data_2 is '{}')".format(id, key, td_1[key], td_2[key])
+
+            # Append TracedData item from data_2 to a copy of the one from data_1
+            # TODO: Preserve history from both trees.
+            td_1 = td_1.copy()
+            td_1.append_data(
+                dict(td_2.items()),
+                Metadata(user, Metadata.get_call_location(), time.time())
+            )
+            merged_data.append(td_1)
+
+        return merged_data
+
 
 # noinspection PyProtectedMember
 class _TracedDataKeysIterator(Iterator):

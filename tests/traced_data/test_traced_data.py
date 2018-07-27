@@ -1,6 +1,7 @@
 import collections
 import time
 import unittest
+
 import six
 
 from core_data_modules.traced_data import TracedData, Metadata
@@ -316,3 +317,47 @@ class TestTracedData(unittest.TestCase):
 
         self.assertFalse(td is td_copy)
         self.assertTrue(td == td_copy)
+
+    def test_join_iterables(self):
+        data_1 = [
+            TracedData(
+                {"id": "A", "gender": "male", "age": 55},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            ),
+            TracedData(
+                {"id": "B", "age": 19},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            )
+        ]
+
+        data_2 = [
+            TracedData(
+                {"id": "C", "country": "Somalia"},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            ),
+            TracedData(
+                {"id": "A", "country": "Kenya", "gender": "female"},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            )
+        ]
+
+        # Joining should file because item with id 'A' has conflicting genders
+        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2))
+
+        # Fix the gender conflict problem, and test that the join now works as expected.
+        data_2[1].append_data({"gender": "male"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
+        merged = TracedData.join_iterables("test_user", "id", data_1, data_2)
+
+        merged_dicts = map(lambda td: dict(td.items()), merged)
+        expected_dicts = [
+            {"id": "B", "age": 19},
+            {"id": "C", "country": "Somalia"},
+            {"id": "A", "gender": "male", "age": 55, "country": "Kenya"}
+        ]
+
+        for merged, expected in zip(merged_dicts, expected_dicts):
+            self.assertDictEqual(merged, expected)
+
+        # Modify data_1 to include multiple TracedData objects with the same join key, and ensure joining then fails.
+        data_1[0].append_data({"id": "B"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
+        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2))
