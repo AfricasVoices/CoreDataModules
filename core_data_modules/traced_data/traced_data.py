@@ -72,9 +72,6 @@ class TracedData(Mapping):
     'f'
     """
 
-    # TODO: Summary implementation spiel which gives an overview of the internal structure,
-    # TODO: particularly
-
     def __init__(self, data, metadata, _prev=None):
         """
         :param data: Dict containing data to insert.
@@ -117,7 +114,7 @@ class TracedData(Mapping):
         :param new_metadata: Metadata about this update
         :type new_metadata: Metadata
         """
-        # Reject if there are keys in both objects with differing values.
+        # Fail if there are keys in both objects with differing values.
         common_keys = set(self).intersection(set(traced_data))
         for common_key in common_keys:
             assert self[common_key] == traced_data[common_key]
