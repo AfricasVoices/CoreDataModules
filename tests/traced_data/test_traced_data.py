@@ -354,16 +354,21 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
 
         return demog_1_td
 
+    @staticmethod
+    def generate_demog_2_td():
+        demog_2_data = {"phone": "+441632000001", "country": "Kenyan citizen"}
+        demog_2_td = TracedData(demog_2_data, Metadata("test_user", "run_fetcher", time.time()))
+        demog_2_td.append_data({"country": "Kenya"}, Metadata("test_user", "demog_cleaner", time.time()))
+
+        return demog_2_td
+
     @classmethod
     def generate_test_data(cls):
         """Returns a new TracedData object with example id, phone, and gender fields"""
         message_td = cls.generate_message_td()
 
         demog_1_td = cls.generate_demog_1_td()
-
-        demog_2_data = {"phone": "+441632000001", "country": "Kenyan citizen"}
-        demog_2_td = TracedData(demog_2_data, Metadata("test_user", "run_fetcher", time.time()))
-        demog_2_td.append_data({"country": "Kenya"}, Metadata("test_user", "demog_cleaner", time.time()))
+        demog_2_td = cls.generate_demog_2_td()
 
         message_td.append_traced_data("demog_1", demog_1_td, Metadata("test_user", "demog_1_append", time.time()))
         message_td.append_traced_data("demog_2", demog_2_td, Metadata("test_user", "demog_2_append", time.time()))
