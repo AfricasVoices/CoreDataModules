@@ -86,7 +86,7 @@ class TracedData(Mapping):
         """
         self._prev = _prev
         self._data = data
-        self._sha = self._sha_with_prev(data, "" if _prev is None else _prev._sha)
+        self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha)
         self._metadata = metadata
 
     def append_data(self, new_data, new_metadata):
@@ -95,7 +95,7 @@ class TracedData(Mapping):
 
         :param new_data: Data to update this object with
         :type new_data: dict
-        :param new_metadata: TODO
+        :param new_metadata: Metadata about this update
         :type new_metadata: Metadata
         """
         self._prev = TracedData(self._data, self._metadata, self._prev)
@@ -103,33 +103,55 @@ class TracedData(Mapping):
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
 
-    def append_traced_data(self, key, traced_data, new_metadata):
+    def append_traced_data(self, key_of_appended, traced_data, new_metadata):
         """
         Updates this object with another traced data object.
+        
+        After the update, all key-values of 'traced_data', and their histories, become available
+        to this object.
 
-        :param key: TODO
-        :type key: str
+        :param key_of_appended: Key in this object of the joined TracedData
+        :type key_of_appended: str
         :param traced_data: TracedData object to add to this object
         :type traced_data: TracedData
-        :param new_metadata: TODO
+        :param new_metadata: Metadata about this update
         :type new_metadata: Metadata
         """
-        # TODO: Reject if traced_data contains keys with a different history?
-
         # Reject if there are keys in both objects with differing values.
         common_keys = set(self).intersection(set(traced_data))
         for common_key in common_keys:
             assert self[common_key] == traced_data[common_key]
 
-        self.append_data({key: traced_data}, new_metadata)
+        self.append_data({key_of_appended: traced_data}, new_metadata)
 
     @staticmethod
-    def _traced_repr(data):  # TODO: Come up with a better name
+    def _replace_traced_with_sha(data):
+        """
+        Returns a new dictionary containing all the key-value pairs of the input dictionary,
+        but with values of type 'TracedData' replaced with their SHA.
+
+        (This produces a serializable version of the input dict).
+
+        :param data: Dictionary to replace TracedData objects with SHAs in
+        :type data: dict
+        :return: Copy of input dictionary, with TracedData objects replaced with their SHAs
+        :rtype: dict
+        """
         return {k: v if type(v) != TracedData else v._sha for k, v in data.items()}
 
     @classmethod
-    def _sha_with_prev(cls, data, prev_sha):
-        return SHAUtils.sha_dict({"data": cls._traced_repr(data), "prev_sha": prev_sha})
+    def _sha_with_prev(cls, data, prev_sha=""):
+        """
+        Produces a SHA for the given dictionary of key-value pairs and the SHA of a previous TracedData object.
+
+        :param data: TracedData _data to SHA
+        :type data: dict
+        :param prev_sha: SHA of previous TraceData
+        :type prev_sha: str
+        :return: SHA of inputs, as described above
+        :rtype: str
+        """
+        return SHAUtils.sha_dict({"data": cls._replace_traced_with_sha(data), "prev_sha": prev_sha})
 
     def __getitem__(self, key):
         if key in self._data:  # TODO: and self._data[key] is not type TracedData
@@ -231,7 +253,8 @@ class TracedData(Mapping):
     def get_history(self, key):
         """
         Returns the history of all the values a particular key has been set to, along with the
-        hashes of the TracedData object which was updated.
+        hashes of the TracedData object which was updated and the timestamps. The returned list
+        will be sorted in ascending order of timestamp.
 
         :param key: Key to return history of values for.
         :type key: hashable

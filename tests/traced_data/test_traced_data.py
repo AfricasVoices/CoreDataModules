@@ -356,16 +356,22 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
 
         return message_td
     
-    # def test_append_traced_data(self):
-    #     # Note that this only tests failing appends. Successful appends are tested by the other methods in this suite.
-    #     message_td = self.generate_message_td()
-    #     # TODO
+    def test_append_traced_data(self):
+        # Note that this only tests failing appends. Successful appends are tested by the other methods in this suite.
+        message_td = self.generate_message_td()
+
+        demog_1_td = self.generate_demog_1_td()
+        demog_1_td.append_data({"message": "should-fail"}, Metadata("test_user", "conflicting_messasge", time.time()))
+        
+        self.assertRaises(AssertionError,
+                          lambda: message_td.append_traced_data(
+                              "demog_1", demog_1_td, Metadata("test_user", "demog_1_append", time.time())))
 
     def test__traced_repr(self):
         demog_1_td = self.generate_demog_1_td()
 
         self.assertDictEqual(
-            TracedData._traced_repr({"phone": "+441632000001", "demog_1": demog_1_td}),
+            TracedData._replace_traced_with_sha({"phone": "+441632000001", "demog_1": demog_1_td}),
             {"phone": "+441632000001", "demog_1": demog_1_td._sha}
         )
 
@@ -402,6 +408,10 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         self.assertTrue("message" in td)
         self.assertTrue("country" in td)
         self.assertFalse("education" in td)
+
+        # Test that appended TracedData objects are still available
+        self.assertTrue("demog_1" in td)
+        self.assertTrue("demog_2" in td)
 
         self.assertFalse("country" not in td)
         self.assertTrue("education" not in td)
@@ -458,12 +468,7 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
 
     # def test_get_history(self):
     #     td = self.generate_test_data()
-
-        # history = td.get_history("gender")
-        # self.assertListEqual(list(map(lambda x: x["value"], history)), ["woman", "female"])
-
-
-if __name__ == "__main__":
-    td = TestTracedDataAppendTracedData.generate_test_data()
-    pass
-
+    #
+    #     history = td.get_history("gender")
+    #     self.assertListEqual(list(map(lambda x: x["value"], history)), ["woman", "female"])
+    #
