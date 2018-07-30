@@ -12,9 +12,9 @@ class TestDemographicCleaner(unittest.TestCase):
 
     def test_clean_gender(self):
         test_cases = {
-            "kiume": Codes.male,
-            "female": Codes.female,
-            "  KiUme": Codes.male
+            "kiume": Codes.MALE,
+            "female": Codes.FEMALE,
+            "  KiUme": Codes.MALE
         }
 
         self.run_cleaner_tests(DemographicCleaner.clean_gender, test_cases)
@@ -23,13 +23,13 @@ class TestDemographicCleaner(unittest.TestCase):
         test_cases = {
             "one": 1,
             "eleven": 11,
-            "zero": Codes.NotCleaned,
+            "zero": Codes.NOT_CODED,
             "sixty-two": 62,
             "seven thirty": 37,  # TODO: Accept unconventional order?
             "six four twenty eight five": 24,  # TODO: Use lowest observed?
             "some text including the number eighty one and some more text": 81,
 
-            "sifuri": Codes.NotCleaned,  # 0
+            "sifuri": Codes.NOT_CODED,  # 0
             "ishirini na tatu": 23,
             "kumi na tisa": 19
         }
@@ -38,8 +38,8 @@ class TestDemographicCleaner(unittest.TestCase):
 
     def test_clean_number(self):
         test_cases = {
-            "10": "10",
-            "27": "27",
+            "10": 10,
+            "27": 27,
             "thirty-four": 34,
             "ishirini na tisa": 29
         }

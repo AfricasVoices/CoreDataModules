@@ -8,13 +8,13 @@ class DemographicCleaner(object):
         Converts a string describing gender to either male, female, or None.
 
         :param text: Text to be cleaned.
-        :return: Codes.male if male, Codes.female if female, or Codes.NotCleaned if the gender could not automatically be
+        :return: Codes.MALE if male, Codes.FEMALE if female, or Codes.NOT_CODED if the gender could not automatically be
                  identified.
         """
         text = text.lower()
         if text == "m" or text == "male" or text == "man":
-            return Codes.male
+            return Codes.MALE
         elif text == "f" or text == "female" or text == "woman":
-            return Codes.female
+            return Codes.FEMALE
         else:
-            return Codes.NotCleaned
+            return Codes.NOT_CODED

@@ -51,6 +51,15 @@ class TestTracedData(unittest.TestCase):
         history = td.get_history("gender")
         self.assertListEqual(list(map(lambda x: x["value"], history)), ["man", "male"])
 
+    def test__sha_with_prev(self):
+        self.assertEqual(
+            TracedData._sha_with_prev(
+                {"phone": "+441632000001", "age": 20},
+                "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
+            ),
+            "7e7f3e31168dd8587dac8a58858b17d7644c21400b91ae000f3fcb0f6f8017d4"
+        )
+
     def test___len__(self):
         td = self.generate_test_data()
         self.assertEqual(len(td), 3)

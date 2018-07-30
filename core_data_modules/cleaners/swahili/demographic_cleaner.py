@@ -6,27 +6,7 @@ from .demographic_patterns import Patterns
 
 class DemographicCleaner(object):
     @staticmethod
-    def clean_with_patterns(text, patterns):
-        """
-        Attempts to clean a string by applying each of the provided regex patterns to the given text.
-        
-        The code associated with the first pattern to match is returned.
-
-        :param text: Text to clean.
-        :type text: str
-        :param patterns: Dictionary of code: pattern pairs.
-        :type patterns: dict of str -> str
-        :return: Code associated with the first pattern to
-        :rtype: str
-        """
-        for code, pattern in patterns.items():
-            if RegexUtils.has_matches(text, pattern):
-                # TODO: This follows what Dreams did, but is it really acceptable to just return the first match?
-                return code
-        return Codes.NotCleaned
-
-    @classmethod
-    def clean_gender(cls, text):
+    def clean_gender(text):
         """
         Identifies the gender in the given string.
 
@@ -39,14 +19,14 @@ class DemographicCleaner(object):
         :rtype: str
         """
         patterns = {
-            Codes.male: Patterns.male,
-            Codes.female: Patterns.female
+            Codes.MALE: Patterns.male,
+            Codes.FEMALE: Patterns.female
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
-    @classmethod
-    def clean_number_units(cls, text):
+    @staticmethod
+    def clean_number_units(text):
         """
         Extracts a units-column number expressed in words from the given text, and converts it to an integer.
 
@@ -70,10 +50,10 @@ class DemographicCleaner(object):
             9: Patterns.nine,
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
-    @classmethod
-    def clean_number_teens(cls, text):
+    @staticmethod
+    def clean_number_teens(text):
         """
         Extract a "teens" number expressed in words from the given text, and converts it to an integer.
 
@@ -97,10 +77,10 @@ class DemographicCleaner(object):
             19: Patterns.nineteen
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
-    @classmethod
-    def clean_number_tens(cls, text):
+    @staticmethod
+    def clean_number_tens(text):
         """
         Extract a tens-column number expressed in words from the given text, and converts it to an integer.
 
@@ -124,7 +104,7 @@ class DemographicCleaner(object):
             90: Patterns.ninety
         }
 
-        return cls.clean_with_patterns(text, patterns)
+        return RegexUtils.clean_with_patterns(text, patterns)
 
     @classmethod
     def clean_number_words(cls, text):
@@ -133,7 +113,6 @@ class DemographicCleaner(object):
 
         Extracts numbers in the range 1 to 99 inclusive.
 
-        For example:
         >>> DemographicCleaner.clean_number_words("thirteen")
         13
 
@@ -146,21 +125,21 @@ class DemographicCleaner(object):
         :rtype: int
         """
         cleaned_units = cls.clean_number_units(text)
-        if cleaned_units == Codes.NotCleaned:
+        if cleaned_units == Codes.NOT_CODED:
             cleaned_units = 0
 
         cleaned_teens = cls.clean_number_teens(text)
-        if cleaned_teens == Codes.NotCleaned:
+        if cleaned_teens == Codes.NOT_CODED:
             cleaned_teens = 0
             
         cleaned_tens = cls.clean_number_tens(text)
-        if cleaned_tens == Codes.NotCleaned:
+        if cleaned_tens == Codes.NOT_CODED:
             cleaned_tens = 0
 
         cleaned = cleaned_tens + cleaned_teens + cleaned_units
 
         if cleaned == 0:
-            cleaned = Codes.NotCleaned
+            cleaned = Codes.NOT_CODED
 
         return cleaned
     
@@ -172,7 +151,7 @@ class DemographicCleaner(object):
         See clean_number_digits and clean_number_words.
 
         >>> DemographicCleaner.clean_number("40")
-        '40'
+        40
 
         >>> DemographicCleaner.clean_number("seventy-six")
         76
@@ -180,10 +159,10 @@ class DemographicCleaner(object):
         :param text: Text to clean
         :type text: str
         :return: Extracted number
-        :rtype: str | int  # TODO: depends on which function is called eww.
+        :rtype: int
         """
         cleaned_digits = DigitCleaner.clean_number_digits(text)
-        if cleaned_digits != Codes.NotCleaned:
+        if cleaned_digits != Codes.NOT_CODED:
             return cleaned_digits
         else:
             return cls.clean_number_words(text)

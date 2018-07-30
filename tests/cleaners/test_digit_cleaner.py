@@ -22,15 +22,15 @@ class TestDigitCleaner(unittest.TestCase):
 
     def test_clean_number_digits(self):
         test_cases = {
-            "10": "10",
-            "74": "74",
-            "09": "09",
-            "O2": "02",
-            "9": Codes.NotCleaned,  # TODO: Fail to clean single digits?
-            "100": Codes.NotCleaned,  # TODO: Fail on long numbers?
-            "7 4": Codes.NotCleaned,
-            "63 24": "63",  # TODO: Assume first?
-            "Text text 14 more text": "14"
+            "10": 10,
+            "74": 74,
+            "09": 9,
+            "O2": 2,
+            "9": Codes.NOT_CODED,  # TODO: Fail to clean single digits?
+            "100": Codes.NOT_CODED,  # TODO: Fail on long numbers?
+            "7 4": Codes.NOT_CODED,
+            "63 24": 63,  # TODO: Assume first?
+            "Text text 14 more text": 14
         }
 
         self.run_cleaner_tests(DigitCleaner.clean_number_digits, test_cases)
