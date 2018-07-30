@@ -1,7 +1,6 @@
 import inspect
 import time
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
-from itertools import chain
 
 import six
 from deprecation import deprecated
@@ -116,12 +115,11 @@ class TracedData(Mapping):
         :type new_metadata: Metadata
         """
         # TODO: Reject if traced_data contains keys with a different history?
+
+        # Reject if there are keys in both objects with differing values.
         common_keys = set(self).intersection(set(traced_data))
-        print(common_keys)
-        print(type(common_keys))
-        # for key in common_keys:
-        #     print(key)
-        #     assert self[key] == traced_data[key]  # TODO: Replace with a custom exception
+        for common_key in common_keys:
+            assert self[common_key] == traced_data[common_key]
 
         self.append_data({key: traced_data}, new_metadata)
 
@@ -134,7 +132,7 @@ class TracedData(Mapping):
         return SHAUtils.sha_dict({"data": cls._traced_repr(data), "prev_sha": prev_sha})
 
     def __getitem__(self, key):
-        if key in self._data:
+        if key in self._data:  # TODO: and self._data[key] is not type TracedData
             return self._data[key]
 
         for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
@@ -254,10 +252,13 @@ class TracedData(Mapping):
 # noinspection PyProtectedMember
 class _TracedDataKeysIterator(Iterator):
     """Iterator over the keys of a TracedData object"""
-    def __init__(self, traced_data):
+    def __init__(self, traced_data, seen_keys=None):
+        if seen_keys is None:
+            seen_keys = set()
         self.traced_data = traced_data
         self.next_keys = six.iterkeys(traced_data._data)
-        self.seen_keys = set()
+        self.next_traced_datas = []
+        self.seen_keys = seen_keys
 
     def __iter__(self):
         return self
@@ -269,14 +270,24 @@ class _TracedDataKeysIterator(Iterator):
                 while True:
                     key = next(self.next_keys)
 
+                    # If this key points to another TracedData, add that TracedData to a queue of objects to return 
+                    # after returning the other keys
                     if type(self.traced_data[key]) == TracedData:
-                        self.next_keys = chain(self.next_keys, six.iterkeys(self.traced_data[key]))
+                        self.next_traced_datas.append(_TracedDataKeysIterator(self.traced_data[key], self.seen_keys))
                         continue
 
                     if key not in self.seen_keys:
                         self.seen_keys.add(key)
                         return key
             except StopIteration:
+                # We ran out of keys with non-TracedData values.
+                # Now return all the keys from the TracedData values.
+                while len(self.next_traced_datas) > 0:
+                    try:
+                        return next(self.next_traced_datas[0])
+                    except StopIteration:
+                        self.next_traced_datas.pop(0)
+
                 # We ran out of keys which we haven't yet returned. Try the prev TracedData.
                 self.traced_data = self.traced_data._prev
                 if self.traced_data is None:

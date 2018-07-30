@@ -12,7 +12,7 @@ class TestMetadata(unittest.TestCase):
         call_location = Metadata.get_call_location()
         # call_location contains an absolute path, but this only tests the end of that path so that it can run
         # independently of the project's location.
-        self.assertTrue(call_location.endswith("tests/traced_data/test_traced_data.py:11:test_get_call_location"))
+        self.assertTrue(call_location.endswith("tests/traced_data/test_traced_data.py:12:test_get_call_location"))
 
 
 class TestTracedData(unittest.TestCase):
@@ -356,10 +356,10 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
 
         return message_td
     
-    def test_append_traced_data(self):
-        # Note that this only tests failing appends. Successful appends are tested by the other methods in this suite.
-        message_td = self.generate_message_td()
-        # TODO
+    # def test_append_traced_data(self):
+    #     # Note that this only tests failing appends. Successful appends are tested by the other methods in this suite.
+    #     message_td = self.generate_message_td()
+    #     # TODO
 
     def test__traced_repr(self):
         demog_1_td = self.generate_demog_1_td()
@@ -373,6 +373,7 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         td = self.generate_test_data()
 
         self.assertEqual(td["phone"], "+441632000001")
+        self.assertEqual(td["message"], "hello avf")
         self.assertEqual(td["age"], 20)
         self.assertEqual(td["country"], "Kenya")
 
@@ -382,6 +383,7 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         td = self.generate_test_data()
 
         self.assertEqual(td.get("phone"), "+441632000001")
+        self.assertEqual(td.get("message"), "hello avf")
         self.assertEqual(td.get("age"), 20)
         self.assertEqual(td.get("country"), "Kenya")
 
@@ -397,6 +399,7 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         td = self.generate_test_data()
 
         self.assertTrue("phone" in td)
+        self.assertTrue("message" in td)
         self.assertTrue("country" in td)
         self.assertFalse("education" in td)
 
@@ -447,10 +450,20 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         # TODO: Test iter and view {keys, values, items}
 
     def test_copy(self):
-        pass  # TODO
-    
-    def test_get_history(self):
         td = self.generate_test_data()
+        td_copy = td.copy()
+
+        self.assertFalse(td is td_copy)
+        self.assertTrue(td == td_copy)
+
+    # def test_get_history(self):
+    #     td = self.generate_test_data()
 
         # history = td.get_history("gender")
         # self.assertListEqual(list(map(lambda x: x["value"], history)), ["woman", "female"])
+
+
+if __name__ == "__main__":
+    td = TestTracedDataAppendTracedData.generate_test_data()
+    pass
+
