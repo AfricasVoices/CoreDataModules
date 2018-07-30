@@ -348,7 +348,7 @@ class TestTracedDataJsonIO(unittest.TestCase):
 
         # Test export for appended TracedData
         data = [generate_appended_traced_data()]
-        with open("test.json", "w") as f:
+        with open(file_path, "w") as f:
             TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
         self.assertTrue(filecmp.cmp(
                 file_path, "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
