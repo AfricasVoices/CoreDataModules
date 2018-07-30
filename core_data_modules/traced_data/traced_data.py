@@ -140,21 +140,24 @@ class TracedData(Mapping):
         return {k: v if type(v) != TracedData else v._sha for k, v in data.items()}
 
     @classmethod
-    def _sha_with_prev(cls, data, prev_sha=""):
+    def _sha_with_prev(cls, data, prev_sha=None):
         """
         Produces a SHA for the given dictionary of key-value pairs and the SHA of a previous TracedData object.
 
         :param data: TracedData _data to SHA
         :type data: dict
-        :param prev_sha: SHA of previous TraceData
-        :type prev_sha: str
+        :param prev_sha: SHA of previous TraceData (optional). If no prev_sha is provided, uses an empty string
+        :type prev_sha: str | None
         :return: SHA of inputs, as described above
         :rtype: str
         """
+        if prev_sha is None:
+            prev_sha = ""
+
         return SHAUtils.sha_dict({"data": cls._replace_traced_with_sha(data), "prev_sha": prev_sha})
 
     def __getitem__(self, key):
-        if key in self._data:  # TODO: and self._data[key] is not type TracedData
+        if key in self._data:
             return self._data[key]
 
         for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
