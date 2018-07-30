@@ -485,9 +485,21 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         self.assertFalse(td is td_copy)
         self.assertTrue(td == td_copy)
 
-    # def test_get_history(self):
-    #     td = self.generate_test_data()
-    #
-    #     history = td.get_history("gender")
-    #     self.assertListEqual(list(map(lambda x: x["value"], history)), ["woman", "female"])
-    #
+    def test_get_history(self):
+        td = self.generate_test_data()
+
+        history = td.get_history("gender")
+        self.assertListEqual(list(map(lambda x: x["value"], history)), ["woman", "female"])
+
+        # Test diverging histories
+        td = self.generate_demog_1_td()
+
+        td_2 = self.generate_demog_2_td()
+        td_2.append_data({"gender": "girl"}, Metadata("test_user", "gender_input", time.time()))
+        td_2.append_data({"gender": "female"}, Metadata("test_user", "gender_cleaner", time.time()))
+
+        td.append_traced_data("demog_2", td_2, Metadata("test_user", "demog_2_append", time.time()))
+
+        history = td.get_history("gender")
+        self.assertEqual(list(map(lambda x: x["value"], history)), ["woman", "female", "girl", "female"])
+

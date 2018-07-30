@@ -262,16 +262,21 @@ class TracedData(Mapping):
         :param key: Key to return history of values for.
         :type key: hashable
         :return: List containing the value history for this key, sorted oldest to newest.
-                 Each element is a dictionary with the keys {"sha", "value"}.
-                 The "sha" field gives the hash of the TracedData object when this value was set.
-                 The "value" field gives what this value was actually set to.
-        :rtype: list of dict of (hashable, any)
+                 Each element is a dictionary with the keys {"sha", "value", "time"}.
+                 The "sha" field contains the hash of the TracedData object when this value was set.
+                 The "value" field contains what this value was actually set to.
+                 The "timestamp" field contains when this update was made, using the timestamp from the update Metadata
+        :rtype: list of dict
         """
         history = [] if self._prev is None else self._prev.get_history(key)
+
+        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
+            history.extend(traced_values.get_history(key))
+
         if key in self._data:
-            history.append({"sha": self._sha, "value": self._data[key]})
-        else:
-            pass  # TODO
+            history.append({"sha": self._sha, "value": self._data[key], "timestamp": self._metadata.timestamp})
+
+        history.sort(key=lambda x: x["timestamp"])
         return history
 
 
