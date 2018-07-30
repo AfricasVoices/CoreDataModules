@@ -12,7 +12,7 @@ class TestMetadata(unittest.TestCase):
         call_location = Metadata.get_call_location()
         # call_location contains an absolute path, but this only tests the end of that path so that it can run
         # independently of the project's location.
-        self.assertTrue(call_location.endswith("tests/traced_data/test_traced_data.py:11:test_get_call_location"))
+        self.assertTrue(call_location.endswith("tests/traced_data/test_traced_data.py:12:test_get_call_location"))
 
 
 class TestTracedData(unittest.TestCase):
