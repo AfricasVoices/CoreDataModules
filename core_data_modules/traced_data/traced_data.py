@@ -246,8 +246,17 @@ class TracedData(Mapping):
             return ItemsView(self)
 
     def __eq__(self, other):
-        return self._data == other._data and self._metadata == other._metadata and \
-               self._sha == other._sha and self._prev == other._prev
+        if type(other) != TracedData:
+            return False
+
+        if set(self._data.keys()) != set(other._data.keys()):
+            return False
+
+        for key in self._data.keys():
+            if self._data[key] != other._data[key]:
+                return False
+
+        return self._metadata == other._metadata and self._sha == other._sha and self._prev == other._prev
 
     def copy(self):
         # Data, Metadata, and prev are read only so no need to recursively copy those.
@@ -283,6 +292,7 @@ class TracedData(Mapping):
 # noinspection PyProtectedMember
 class _TracedDataKeysIterator(Iterator):
     """Iterator over the keys of a TracedData object"""
+
     def __init__(self, traced_data, seen_keys=None):
         if seen_keys is None:
             seen_keys = set()

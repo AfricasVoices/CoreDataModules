@@ -365,13 +365,13 @@ class TestTracedDataJsonIO(unittest.TestCase):
         self.assertListEqual(expected, imported)
 
         # Test appended TracedData case
-        # file_path = "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
-        # expected = list(generate_appended_traced_data())
-        #
-        # with open(file_path, "r") as f:
-        #     imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
-        #
-        # self.assertListEqual(expected, imported)
+        file_path = "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
+        expected = [generate_appended_traced_data()]
+
+        with open(file_path, "r") as f:
+            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+
+        self.assertListEqual(expected, imported)
 
 
 class TestTracedDataTheInterfaceIO(unittest.TestCase):

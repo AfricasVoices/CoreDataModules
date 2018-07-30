@@ -476,8 +476,6 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
             self.assertTrue(td.has_key("country"))
             self.assertFalse(td.has_key("education"))
 
-        # TODO: Test iter and view {keys, values, items}
-
     def test_copy(self):
         td = self.generate_test_data()
         td_copy = td.copy()
