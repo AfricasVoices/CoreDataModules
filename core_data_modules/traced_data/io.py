@@ -246,7 +246,7 @@ class TracedDataCodaIO(object):
                 })
 
             writer.writerow(row)
-            i + = 1
+            i += 1
 
     @staticmethod
     def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
