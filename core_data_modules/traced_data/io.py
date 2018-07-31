@@ -164,6 +164,9 @@ class TracedDataCodaIO(object):
         :type scheme_name: str
         :param f: File to export to.
         :type f: file-like
+        :param prev_f: An optional previous version of the Coda file. If this argument is provided, the referenced file
+                       will be copied to the output file 'f', and any new codes will be appended.
+        :type prev_f: file-like | None.
         """
         data = list(data)
         for td in data:
@@ -184,14 +187,31 @@ class TracedDataCodaIO(object):
         _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
+        # Export each message to a row in Coda's datafile format.
+        scheme_id = "1"
+        code_ids = dict()  # of code -> code id
+
         if prev_f is not None:
             prev_rows = list(csv.DictReader(prev_f, delimiter=";"))
             prev_data = set(map(lambda row: row["data"], prev_rows))
             unique_data = list(filter(lambda td: td[key_of_raw] not in prev_data, unique_data))
 
-        # Export each message to a row in Coda's datafile format.
-        scheme_id = "1"
-        code_ids = dict()  # of code -> code id
+            # Rebuild code_ids dict from prev Coda file.
+            # TODO: Cope with multiple scheme ids
+            for row in prev_rows:
+                prev_code_value = row["deco_codeValue"]
+                prev_code_id = row["deco_codeId"]
+
+                if prev_code_value not in code_ids:
+                    code_ids[prev_code_value] = prev_code_id
+                else:
+                    assert code_ids[prev_code_value] == row["deco_codeId"]
+
+            # TODO: Detect scheme_id from prev file.
+
+            for row in prev_rows:
+                writer.writerow(row)
+
         for i, td in enumerate(unique_data):
             row = {
                 "id": i,

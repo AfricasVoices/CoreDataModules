@@ -79,14 +79,15 @@ class TestTracedDataCodaIO(unittest.TestCase):
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_with_codes.csv"))
 
-        # Test updating that file
+        # Test updating a file with new codes.
+        prev_file_path = path.join("tests/traced_data/resources/coda_export_for_append.csv")
+        extended_file_path = file_path
         data.append(TracedData({"URN": "+0012345000008", "Gender": "girl"}, Metadata("test_user", "data_generator", 10)))
         data.append(TracedData({"URN": "+0012345000008", "Gender": "27"}, Metadata("test_user", "data_generator", 10)))
-        with open(file_path + "2.csv", "w") as f, open(file_path, "r") as update_f:
+        with open(extended_file_path, "w") as f, open(prev_file_path, "r") as prev_f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                data, "Gender", "Gender_clean", "Gender", f, update_f)
-
-        self.fail()
+                data, "Gender", "Gender_clean", "Gender", f, prev_f)
+        self.assertTrue(filecmp.cmp(extended_file_path, "tests/traced_data/resources/coda_export_expected_append.csv"))
 
         # Test exporting with conflicting codes
         data[4].append_data({"Gender_clean": "M"}, Metadata("test_user", "cleaner", 15))
