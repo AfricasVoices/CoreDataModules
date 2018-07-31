@@ -190,6 +190,7 @@ class TracedDataCodaIO(object):
         # Export each message to a row in Coda's datafile format.
         scheme_id = "1"
         code_ids = dict()  # of code -> code id
+        i = 0
 
         if prev_f is not None:
             prev_rows = list(csv.DictReader(prev_f, delimiter=";"))
@@ -209,12 +210,18 @@ class TracedDataCodaIO(object):
 
             # TODO: Detect scheme_id from prev file.
 
+            max_id = 0
+            for row in prev_rows:
+                prev_id = int(row["id"])
+                max_id = max(max_id, prev_id)
+            i = max_id + 1
+
             for row in prev_rows:
                 writer.writerow(row)
 
-        for i, td in enumerate(unique_data):
+        for td in unique_data:
             row = {
-                "id": i,
+                "id": i,  # TODO: update i
                 "owner": i,
                 "data": td[key_of_raw],
 
@@ -239,6 +246,7 @@ class TracedDataCodaIO(object):
                 })
 
             writer.writerow(row)
+            i + = 1
 
     @staticmethod
     def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
