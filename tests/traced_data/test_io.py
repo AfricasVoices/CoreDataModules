@@ -26,7 +26,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_traced_data_iterable_to_coda(self):
+    def test_export_traced_data_iterable_to_coda(self):
         file_path = path.join(self.test_dir, "coda_test.csv")
 
         # Test exporting wrong data type
@@ -54,8 +54,8 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 data, "Gender", f, exclude_coded_with_key="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
-    def test_traced_data_iterable_to_coda_with_scheme(self):
-        file_path = path.join(self.test_dir, "coda_test_with_codes.csv")
+    def test_export_traced_data_iterable_to_coda_with_scheme(self):
+        file_path = path.join(".", "coda_test_with_codes.csv")
 
         data = list(generate_traced_data_frame())
         data[0].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
@@ -78,6 +78,15 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 data, "Gender", "Gender_clean", "Gender", f)
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_with_codes.csv"))
+
+        # Test updating that file
+        data.append(TracedData({"URN": "+0012345000008", "Gender": "girl"}, Metadata("test_user", "data_generator", 10)))
+        data.append(TracedData({"URN": "+0012345000008", "Gender": "27"}, Metadata("test_user", "data_generator", 10)))
+        with open(file_path + "2.csv", "w") as f, open(file_path, "r") as update_f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                data, "Gender", "Gender_clean", "Gender", f, update_f)
+
+        self.fail()
 
         # Test exporting with conflicting codes
         data[4].append_data({"Gender_clean": "M"}, Metadata("test_user", "cleaner", 15))

@@ -144,7 +144,7 @@ class TracedDataCodaIO(object):
             writer.writerow(row)
 
     @staticmethod
-    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, key_of_coded, scheme_name, f):
+    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, key_of_coded, scheme_name, f, prev_f=None):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
         
@@ -183,6 +183,11 @@ class TracedDataCodaIO(object):
 
         _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
+
+        if prev_f is not None:
+            prev_rows = list(csv.DictReader(prev_f, delimiter=";"))
+            prev_data = set(map(lambda row: row["data"], prev_rows))
+            unique_data = list(filter(lambda td: td[key_of_raw] not in prev_data, unique_data))
 
         # Export each message to a row in Coda's datafile format.
         scheme_id = "1"
