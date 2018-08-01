@@ -332,6 +332,50 @@ class TestTracedData(unittest.TestCase):
         self.assertFalse(td is td_copy)
         self.assertTrue(td == td_copy)
 
+    def test_join_iterables(self):
+        data_1 = [
+            TracedData(
+                {"id": "A", "gender": "male", "age": 55},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            ),
+            TracedData(
+                {"id": "B", "age": 19},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            )
+        ]
+
+        data_2 = [
+            TracedData(
+                {"id": "C", "country": "Somalia"},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            ),
+            TracedData(
+                {"id": "A", "country": "Kenya", "gender": "female"},
+                Metadata("test_user", Metadata.get_call_location(), time.time())
+            )
+        ]
+
+        # Joining should file because item with id 'A' has conflicting genders
+        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2))
+
+        # Fix the gender conflict problem, and test that the join now works as expected.
+        data_2[1].append_data({"gender": "male"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
+        merged = TracedData.join_iterables("test_user", "id", data_1, data_2)
+
+        merged_dicts = map(lambda td: dict(td.items()), merged)
+        expected_dicts = [
+            {"id": "B", "age": 19},
+            {"id": "C", "country": "Somalia"},
+            {"id": "A", "gender": "male", "age": 55, "country": "Kenya"}
+        ]
+
+        for merged, expected in zip(merged_dicts, expected_dicts):
+            self.assertDictEqual(merged, expected)
+
+        # Modify data_1 to include multiple TracedData objects with the same join key, and ensure joining then fails.
+        data_1[0].append_data({"id": "B"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
+        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2))
+
 
 class TestTracedDataAppendTracedData(unittest.TestCase):
     """
@@ -374,14 +418,14 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         message_td.append_traced_data("demog_2", demog_2_td, Metadata("test_user", "demog_2_append", time.time()))
 
         return message_td
-    
+
     def test_append_traced_data(self):
         # Note that this only tests failing appends. Successful appends are tested by the other methods in this suite.
         message_td = self.generate_message_td()
 
         demog_1_td = self.generate_demog_1_td()
         demog_1_td.append_data({"message": "should-fail"}, Metadata("test_user", "conflicting_messasge", time.time()))
-        
+
         self.assertRaises(AssertionError,
                           lambda: message_td.append_traced_data(
                               "demog_1", demog_1_td, Metadata("test_user", "demog_1_append", time.time())))
