@@ -165,7 +165,8 @@ class TracedDataCodaIO(object):
         :param f: File to export to.
         :type f: file-like
         :param prev_f: An optional previous version of the Coda file. If this argument is provided, the referenced file
-                       will be copied to the output file 'f', and any new codes will be appended.
+                       will be copied to the output file 'f', then any new data/codes will be appended.
+                       No edits are made to any of the items which are copied through to 'f'.
         :type prev_f: file-like | None.
         """
         data = list(data)
@@ -193,12 +194,20 @@ class TracedDataCodaIO(object):
         i = 0
 
         if prev_f is not None:
+            # Read the previously coded Coda file
             prev_rows = list(csv.DictReader(prev_f, delimiter=";"))
+            
+            # Exclude items in unique_data which are in the previously coded file.
             prev_data = set(map(lambda row: row["data"], prev_rows))
             unique_data = list(filter(lambda td: td[key_of_raw] not in prev_data, unique_data))
 
-            # Rebuild code_ids dict from prev Coda file.
-            # TODO: Cope with multiple scheme ids
+            # Detect scheme_id from the previously coded file, and ensure that the previous file had only one scheme id.
+            # TODO: Update this function to support importing multiple coding schemes.
+            scheme_ids = {row["schemeId"] for row in prev_rows if row["schemeId"] != ""}
+            assert len(scheme_ids) == 1, "Cannot import a Coda file with multiple scheme ids"
+            scheme_id = scheme_ids.pop()
+
+            # Rebuild code_ids dict from the previously coded file.
             for row in prev_rows:
                 prev_code_value = row["deco_codeValue"]
                 prev_code_id = row["deco_codeId"]
@@ -208,20 +217,20 @@ class TracedDataCodaIO(object):
                 else:
                     assert code_ids[prev_code_value] == row["deco_codeId"]
 
-            # TODO: Detect scheme_id from prev file.
-
+            # Detect the highest row id in the previously coded file. New row ids will increment from here.
             max_id = 0
             for row in prev_rows:
                 prev_id = int(row["id"])
                 max_id = max(max_id, prev_id)
             i = max_id + 1
 
+            # Write the contents of the previously coded file through to the new output file.
             for row in prev_rows:
                 writer.writerow(row)
 
         for td in unique_data:
             row = {
-                "id": i,  # TODO: update i
+                "id": i,
                 "owner": i,
                 "data": td[key_of_raw],
 
