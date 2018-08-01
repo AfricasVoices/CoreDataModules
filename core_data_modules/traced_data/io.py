@@ -144,7 +144,7 @@ class TracedDataCodaIO(object):
             writer.writerow(row)
 
     @staticmethod
-    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, key_of_coded, scheme_name, f):
+    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, keys_for_schemes, f):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
         
@@ -168,6 +168,9 @@ class TracedDataCodaIO(object):
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
+
+        key_of_coded = list(keys_for_schemes.keys())[0]
+        scheme_name = keys_for_schemes[key_of_coded]
 
         headers = [
             "id", "owner", "data",
@@ -198,7 +201,7 @@ class TracedDataCodaIO(object):
                 # Not exporting timestamp because this doesn't actually do anything in Coda.
             }
 
-            # If this item has been coded, export that code.
+            # If this item has been coded under each scheme, export that code.
             code = td.get(key_of_coded, None)
             if code is not None:
                 if code not in code_ids:
