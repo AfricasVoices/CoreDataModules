@@ -158,19 +158,15 @@ class TracedDataCodaIO(object):
         :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
                            messages before they were coded).
         :type key_of_raw: str
-        :param key_of_coded: The key in each TracedData object of the codes which have been applied to the messages.
-        :type key_of_coded: str
-        :param scheme_name: Name to give the code scheme in Coda.
-        :type scheme_name: str
+        :param keys_for_schemes: Dictionary of the key in TracedData objects of each coded field to export to
+                                 the name to give thet key when exported to Coda.
+        :type keys_for_schemes: dict of str -> str
         :param f: File to export to.
         :type f: file-like
         """
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
-
-        key_of_coded = list(keys_for_schemes.keys())[0]
-        scheme_name = keys_for_schemes[key_of_coded]
 
         headers = [
             "id", "owner", "data",
@@ -184,39 +180,44 @@ class TracedDataCodaIO(object):
         writer = csv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
         writer.writeheader()
 
-        _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
+        for key_of_coded in keys_for_schemes.keys():
+            _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
-        scheme_id = "1"
         code_ids = dict()  # of code -> code id
-        for i, td in enumerate(unique_data):
-            row = {
-                "id": i,
-                "owner": i,
-                "data": td[key_of_raw],
+        item_id = 0
+        for owner_id, td in enumerate(unique_data):
+            scheme_id = 1
+            for key_of_coded, scheme_name in keys_for_schemes.items():
+                row = {
+                    "id": item_id,
+                    "owner": owner_id,
+                    "data": td[key_of_raw],
 
-                "schemeId": scheme_id,
-                "schemeName": scheme_name
-                # Not exporting timestamp because this doesn't actually do anything in Coda.
-            }
+                    "schemeId": scheme_id,
+                    "schemeName": scheme_name
+                    # Not exporting timestamp because this doesn't actually do anything in Coda.
+                }
 
-            # If this item has been coded under each scheme, export that code.
-            code = td.get(key_of_coded, None)
-            if code is not None:
-                if code not in code_ids:
-                    code_ids[code] = "{}-{}".format(scheme_id, len(code_ids))
+                # If this item has been coded under each scheme, export that code.
+                code = td.get(key_of_coded, None)
+                if code is not None:
+                    if code not in code_ids:
+                        code_ids[code] = "{}-{}".format(scheme_id, len(code_ids))
 
-                row.update({
-                    "deco_codeValue": code,
-                    "deco_codeId": code_ids[code],
-                    "deco_confidence": 0.95,  # Same confidence as auto-coding in Coda as of ve42857.
-                    "deco_codingMode": "external",
-                    # Not exporting deco_timestamp or deco_author because Coda just overwrites them
-                    # (on load and save respectively), and neither is used anyway.
-                })
+                    row.update({
+                        "deco_codeValue": code,
+                        "deco_codeId": code_ids[code],
+                        "deco_confidence": 0.95,  # Same confidence as auto-coding in Coda as of ve42857.
+                        "deco_codingMode": "external",
+                        # Not exporting deco_timestamp or deco_author because Coda just overwrites them
+                        # (on load and save respectively), and neither is used anyway.
+                    })
 
-            writer.writerow(row)
+                writer.writerow(row)
+                item_id += 1
+                scheme_id += 1
 
     @staticmethod
     def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):

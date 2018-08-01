@@ -107,19 +107,20 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
 
         # Test exporting multiple code schemes
-        # data_dicts = [
-        #     {"Value": "man", "Gender_clean": "male"},
-        #     {"Value": "woman", "Gender_clean": "female"},
-        #     {"Value": "twenty", "Age_clean": 20},
-        #     {"Value": "hello"},
-        #     {"Value": "44F", "Gender_clean": "female", "Age_Clean": 44},
-        #     {"Value": "33", "Age_Clean": 33}
-        # ]
-        # data = map(lambda i, d: TracedData(d, Metadata("test_user", "data_generator", i)), data_dicts)
-        # with open(file_path, "w") as f:
-        #     TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-        #         data, "Value", {"Gender_clean": "Gender", "Age_clean": "Age"}, f)
-
+        data_dicts = [
+            {"Value": "man", "Gender_clean": "male"},
+            {"Value": "woman", "Gender_clean": "female"},
+            {"Value": "twenty", "Age_clean": 20},
+            {"Value": "hello"},
+            {"Value": "44F", "Gender_clean": "female", "Age_clean": 44},
+            {"Value": "33", "Age_clean": 33}
+        ]
+        data = [TracedData(d, Metadata("test_user", "data_generator", i)) for i, d in enumerate(data_dicts)]
+        with open(file_path, "w") as f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                data, "Value", {"Gender_clean": "Gender", "Age_clean": "Age"}, f)
+        self.assertTrue(
+            filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_multiple_schemes.csv"))
 
     def test_import_coda_to_traced_data_iterable(self):
         self._overwrite_is_false_asserts()
