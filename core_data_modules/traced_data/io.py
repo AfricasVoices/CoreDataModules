@@ -144,7 +144,7 @@ class TracedDataCodaIO(object):
             writer.writerow(row)
 
     @staticmethod
-    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, keys_for_schemes, f):
+    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, scheme_keys, f):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
         
@@ -158,9 +158,10 @@ class TracedDataCodaIO(object):
         :param key_of_raw: The key in each TracedData object which should have its values exported (i.e. the key of the
                            messages before they were coded).
         :type key_of_raw: str
-        :param keys_for_schemes: Dictionary of the key in TracedData objects of each coded field to export to
-                                 the name to give thet key when exported to Coda.
-        :type keys_for_schemes: dict of str -> str
+        :param scheme_keys: Dictionary of Coda scheme name to the key in each TracedData object of existing codes.
+                            TracedData objects missing that key will have their raw value exported, but no pre-existing
+                            code.
+        :type scheme_keys: dict of str -> str
         :param f: File to export to.
         :type f: file-like
         """
@@ -180,7 +181,7 @@ class TracedDataCodaIO(object):
         writer = csv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
         writer.writeheader()
 
-        for key_of_coded in keys_for_schemes.keys():
+        for key_of_coded in scheme_keys.values():
             _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
@@ -189,7 +190,7 @@ class TracedDataCodaIO(object):
         item_id = 0
         for owner_id, td in enumerate(unique_data):
             scheme_id = 1
-            for key_of_coded, scheme_name in keys_for_schemes.items():
+            for scheme_name, key_of_coded in scheme_keys.items():
                 row = {
                     "id": item_id,
                     "owner": owner_id,

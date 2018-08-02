@@ -84,7 +84,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         with open(file_path, "w") as f:
             try:
                 TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                    data[0], "Gender", {"Gender_clean": "Gender"}, f)
+                    data[0], "Gender", {"Gender": "Gender_clean"}, f)
                 self.fail("Exporting the wrong data type did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), _td_type_error_string)
@@ -92,7 +92,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         # Test normal export with specified key
         with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                data, "Gender", {"Gender_clean": "Gender"}, f)
+                data, "Gender", {"Gender": "Gender_clean"}, f)
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_with_codes.csv"))
 
@@ -101,7 +101,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         with open(file_path, "w") as f:
             try:
                 TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                    data, "Gender", {"Gender_clean": "Gender"}, f)
+                    data, "Gender", {"Gender": "Gender_clean"}, f)
                 self.fail("Exporting conflicting codes did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
@@ -118,7 +118,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         data = [TracedData(d, Metadata("test_user", "data_generator", i)) for i, d in enumerate(data_dicts)]
         with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                data, "Value", {"Gender_clean": "Gender", "Age_clean": "Age"}, f)
+                data, "Value", {"Gender": "Gender_clean", "Age": "Age_clean"}, f)
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_multiple_schemes.csv"))
 
