@@ -348,6 +348,34 @@ class TracedData(Mapping):
 
         return merged_data
 
+    @staticmethod
+    def update_iterable(user, update_id_key, to_update, updates):
+        """
+        Updates each TracedData in an iterable with the TracedData which has the same id in another iterable.
+
+        :param user: Identifier of user running this program.
+        :type user: str
+        :param update_id_key: Key of identifier in both iterables to match TracedData objects on.
+        :type update_id_key: str
+        :param to_update: Objects to update.
+        :type to_update: iterable of TracedData
+        :param updates: Objects containing updated data.
+        :type updates: iterable of TracedData
+        """
+        updates_lut = {update_td[update_id_key]: update_td for update_td in updates}
+        assert len(updates_lut) == len(updates), "update_id_key is not unique in argument 'updates'"
+
+        for td in to_update:
+            if td[update_id_key] not in updates_lut:
+                continue
+
+            update_td = updates_lut[td[update_id_key]]
+            # TODO: Preserve history from 'updates'
+            td.append_data(
+                dict(update_td.items()),
+                Metadata(user, Metadata.get_call_location(), time.time())
+            )
+
 
 # noinspection PyProtectedMember
 class _TracedDataKeysIterator(Iterator):
