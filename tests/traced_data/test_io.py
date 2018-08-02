@@ -123,8 +123,35 @@ class TestTracedDataCodaIO(unittest.TestCase):
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_multiple_schemes.csv"))
 
     def test_import_coda_to_traced_data_iterable(self):
+        # Test single schemes, with and without overwrite_existing_codes set to True
         self._overwrite_is_false_asserts()
         self._overwrite_is_true_asserts()
+
+        # Test importing multiple code schemes
+        data_dicts = [
+            {"Value": "man", "Gender_clean": "female"},
+            {"Value": "woman"},
+            {"Value": "twenty", "Age_clean": 20},
+            {"Value": "hello"},
+            {"Value": "44F", "Gender_clean": "female", "Age_clean": 4},
+            {"Value": "33", "Age_clean": 33}
+        ]
+        data = [TracedData(d, Metadata("test_user", "data_generator", i)) for i, d in enumerate(data_dicts)]
+        with open("tests/traced_data/resources/coda_export_expected_multiple_schemes.csv", "r") as f:
+            data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
+                "test_user", data, "Value", {"Gender": "Gender_clean", "Age": "Age_clean"}, f, True))
+
+        expected_data_dicts = [
+            {"Value": "man", "Gender_clean": "male", "Age_clean": None},
+            {"Value": "woman", "Gender_clean": "female", "Age_clean": None},
+            {"Value": "twenty", "Gender_clean": None, "Age_clean": "20"},
+            {"Value": "hello", "Gender_clean": None, "Age_clean": None},
+            {"Value": "44F", "Gender_clean": "female", "Age_clean": "44"},
+            {"Value": "33", "Gender_clean": None, "Age_clean": "33"}
+        ]
+
+        for imported_td, expected in zip(data, expected_data_dicts):
+            self.assertDictEqual(dict(imported_td.items()), expected)
 
     def _overwrite_is_false_asserts(self):
         data = list(generate_traced_data_iterable())
@@ -133,7 +160,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         file_path = "tests/traced_data/resources/coda_import_data.csv"
         with open(file_path, "r") as f:
             data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
-                "test_user", data, "Gender", "Gender_clean", f))
+                "test_user", data, "Gender", {"CodaCodedGender": "Gender_clean"}, f))
 
         expected_data = [
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "X"},
@@ -155,7 +182,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         file_path = "tests/traced_data/resources/coda_import_data.csv"
         with open(file_path, "r") as f:
             data = list(TracedDataCodaIO.import_coda_to_traced_data_iterable(
-                "test_user", data, "Gender", "Gender_clean", f, True))
+                "test_user", data, "Gender", {"CodaCodedGender": "Gender_clean"}, f, True))
 
         expected_data = [
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "F"},
