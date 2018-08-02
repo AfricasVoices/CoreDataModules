@@ -233,8 +233,6 @@ class TracedDataCodaIO(object):
         :param overwrite_existing_codes: For messages which are already coded, whether to replace those codes with
                                          new codes from the Coda datafile.
         :type overwrite_existing_codes: bool
-        :return: TracedData objects with Coda data appended
-        :rtype: generator of TracedData
         """
         # TODO: This function assumes there is only one code scheme.
 
@@ -246,7 +244,6 @@ class TracedDataCodaIO(object):
 
         for td in data:
             if not overwrite_existing_codes and td.get(key_of_coded) is not None:
-                yield td
                 continue
 
             code = None
@@ -255,8 +252,6 @@ class TracedDataCodaIO(object):
                     code = row["deco_codeValue"]
 
             td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
-
-            yield td
 
 
 class TracedDataCodingCSVIO(object):
