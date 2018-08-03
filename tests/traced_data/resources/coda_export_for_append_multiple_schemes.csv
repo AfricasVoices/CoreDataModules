@@ -1,0 +1,9 @@
+id;timestamp;owner;data;schemeId;schemeName;deco_codeValue;deco_codeId;deco_confidence;deco_codingMode;deco_timestamp;deco_author
+0;;0;female;3;Gender;F;1-0;0.95;external;Wed Aug 01 2018 12:03:18 GMT+0100 (British Summer Time);
+0;;0;female;59;Age;;;;;;
+1;;1;m;3;Gender;M;1-1;0.95;manual;Wed Aug 01 2018 12:03:18 GMT+0100 (British Summer Time);
+1;;1;m;59;Age;;;;;;
+2;;2;WoMaN;3;Gender;F;1-0;0.95;external;Wed Aug 01 2018 12:03:18 GMT+0100 (British Summer Time);
+2;;2;WoMaN;59;Age;;;;;;
+3;;3;27;3;Gender;;;;;;
+3;;3;27;59;Age;25-35;59-46;0.95;manual;Wed Aug 01 2018 12:03:35 GMT+0100 (British Summer Time);
