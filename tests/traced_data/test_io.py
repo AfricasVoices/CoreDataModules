@@ -43,7 +43,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_traced_data_iterable_to_coda(self):
+    def test_export_traced_data_iterable_to_coda(self):
         file_path = path.join(self.test_dir, "coda_test.csv")
 
         # Test exporting wrong data type
@@ -71,7 +71,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 data, "Gender", f, exclude_coded_with_key="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
-    def test_traced_data_iterable_to_coda_with_scheme(self):
+    def test_export_traced_data_iterable_to_coda_with_scheme(self):
         file_path = path.join(".", "coda_test_with_codes.csv")
 
         data = list(generate_traced_data_iterable())
@@ -95,6 +95,34 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 data, "Gender", {"Gender": "Gender_clean"}, f)
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_with_codes.csv"))
+
+        # Test updating a file with multiple code schemes
+        prev_file_path = path.join("tests/traced_data/resources/coda_export_for_append_multiple_schemes.csv")
+        extended_file_path = file_path
+        with open(extended_file_path, "w") as f, open(prev_file_path, "r") as prev_f:
+            try:
+                TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                    data, "Gender", {"Gender": "Gender_clean"}, f, prev_f)
+            except AssertionError as e:
+                self.assertEquals(str(e), "Cannot import a Coda file with multiple scheme ids")
+
+        # Test updating a file with new codes.
+        prev_file_path = path.join("tests/traced_data/resources/coda_export_for_append.csv")
+        extended_file_path = file_path
+
+        data.append(TracedData(
+            {"URN": "+0012345000008", "Gender": "girl", "Gender_clean": "F"},
+            Metadata("test_user", "data_generator", 10)
+        ))
+        data.append(TracedData(
+            {"URN": "+0012345000008", "Gender": "27"},
+            Metadata("test_user", "data_generator", 10)
+        ))
+
+        with open(extended_file_path, "w") as f, open(prev_file_path, "r") as prev_f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                data, "Gender", {"Gender": "Gender_clean"}, f, prev_f)
+        self.assertTrue(filecmp.cmp(extended_file_path, "tests/traced_data/resources/coda_export_expected_append.csv"))
 
         # Test exporting with conflicting codes
         data[4].append_data({"Gender_clean": "M"}, Metadata("test_user", "cleaner", 15))

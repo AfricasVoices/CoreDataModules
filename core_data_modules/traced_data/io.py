@@ -88,6 +88,13 @@ class _TracedDataIOUtil(object):
 
 class TracedDataCodaIO(object):
     @staticmethod
+    def _generate_new_coda_id(existing_ids):
+        for i in range(1, 100):
+            if i not in existing_ids:
+                return i
+        assert False, "Unable to generate a new Coda id. Report this error to the project developers."
+
+    @staticmethod
     def export_traced_data_iterable_to_coda(data, key_of_raw, f, exclude_coded_with_key=None):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
@@ -143,8 +150,8 @@ class TracedDataCodaIO(object):
 
             writer.writerow(row)
 
-    @staticmethod
-    def export_traced_data_iterable_to_coda_with_scheme(data, key_of_raw, scheme_keys, f):
+    @classmethod
+    def export_traced_data_iterable_to_coda_with_scheme(cls, data, key_of_raw, scheme_keys, f, prev_f=None):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
         
@@ -164,6 +171,10 @@ class TracedDataCodaIO(object):
         :type scheme_keys: dict of str -> str
         :param f: File to export to.
         :type f: file-like
+        :param prev_f: An optional previous version of the Coda file. If this argument is provided, the referenced file
+                       will be copied to the output file 'f', then any new data/codes will be appended.
+                       No edits are made to any of the items which are copied through to 'f'.
+        :type prev_f: file-like | None.
         """
         data = list(data)
         for td in data:
@@ -186,17 +197,61 @@ class TracedDataCodaIO(object):
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
+        scheme_ids = dict()  # of scheme name -> scheme id
         code_ids = dict()  # of code -> code id
         item_id = 0
-        for owner_id, td in enumerate(unique_data):
-            scheme_id = 1
+        owner_id = 0
+
+        if prev_f is not None:
+            # Read the previously coded Coda file
+            prev_rows = list(csv.DictReader(prev_f, delimiter=";"))
+
+            # Exclude items in unique_data which are in the previously coded file.
+            prev_data = set(map(lambda row: row["data"], prev_rows))
+            unique_data = [td for td in unique_data if td[key_of_raw] not in prev_data]
+
+            # Rebuild scheme_ids dict from the previously coded file.
+            scheme_ids = {row["schemeName"]: row["schemeId"] for row in prev_rows if row["schemeId"] != ""}
+
+            # Rebuild code_ids dict from the previously coded file.
+            for row in prev_rows:
+                prev_code_value = row["deco_codeValue"]
+                prev_code_id = row["deco_codeId"]
+
+                if prev_code_value == "":
+                    continue
+
+                if prev_code_value not in code_ids:
+                    code_ids[prev_code_value] = prev_code_id
+                else:
+                    assert code_ids[prev_code_value] == row["deco_codeId"]
+
+            # Detect the highest row/owner ids in the previously coded file. New row ids will increment from these.
+            max_prev_item_id = 0
+            max_prev_owner_id = 0
+            for row in prev_rows:
+                max_prev_item_id = max(max_prev_item_id, int(row["id"]))
+                max_prev_owner_id = max(max_prev_owner_id, int(row["owner"]))
+            item_id = max_prev_item_id + 1
+            owner_id = max_prev_owner_id + 1
+
+            # Write the contents of the previously coded file through to the new output file.
+            for row in prev_rows:
+                writer.writerow(row)
+
+        # Populate scheme_ids dict
+        for scheme_name, key_of_coded in scheme_keys.items():
+            if scheme_name not in scheme_ids:
+                scheme_ids[scheme_name] = cls._generate_new_coda_id(scheme_ids.values())
+
+        for td in unique_data:
             for scheme_name, key_of_coded in scheme_keys.items():
                 row = {
                     "id": item_id,
                     "owner": owner_id,
                     "data": td[key_of_raw],
 
-                    "schemeId": scheme_id,
+                    "schemeId": scheme_ids[scheme_name],
                     "schemeName": scheme_name
                     # Not exporting timestamp because this doesn't actually do anything in Coda.
                 }
@@ -205,7 +260,9 @@ class TracedDataCodaIO(object):
                 code = td.get(key_of_coded, None)
                 if code is not None:
                     if code not in code_ids:
-                        code_ids[code] = "{}-{}".format(scheme_id, len(code_ids))
+                        # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
+                        new_code_id = cls._generate_new_coda_id([id.split("-")[1] for id in code_ids.values()])
+                        code_ids[code] = "{}-{}".format(scheme_ids[scheme_name], new_code_id)
 
                     row.update({
                         "deco_codeValue": code,
@@ -218,7 +275,7 @@ class TracedDataCodaIO(object):
 
                 writer.writerow(row)
                 item_id += 1
-                scheme_id += 1
+            owner_id += 1
 
     @staticmethod
     def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
