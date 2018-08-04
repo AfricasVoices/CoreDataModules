@@ -362,7 +362,7 @@ class TestTracedData(unittest.TestCase):
         data_2[1].append_data({"gender": "male"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
         merged = TracedData.join_iterables("test_user", "id", data_1, data_2)
 
-        merged_dicts = map(lambda td: dict(td.items()), merged)
+        merged_dicts = [dict(td.items()) for td in merged]
         expected_dicts = [
             {"id": "B", "age": 19},
             {"id": "C", "country": "Somalia"},
@@ -382,13 +382,19 @@ class TestTracedData(unittest.TestCase):
             {"id": "B", "message": "hello", "gender": "woman"},
             {"id": "A", "message": "hi"}
         ]
-        data = list(map(lambda d: TracedData(d, Metadata("test_user", "data_generator", time.time())), data_dicts))
+        data = [
+            TracedData(d, Metadata("test_user", "data_generator", time.time()))
+            for d in data_dicts
+        ]
 
         updates_dicts = [
             {"id": "A", "gender": "male"},
             {"id": "B", "gender": "female", "age": 20}
         ]
-        updates = list(map(lambda d: TracedData(d, Metadata("test_user", "data_generator", time.time())), updates_dicts))
+        updates = [
+            TracedData(d, Metadata("test_user", "data_generator", time.time()))
+            for d in updates_dicts
+        ]
 
         TracedData.update_iterable("test_user", "id", data, updates)
 
