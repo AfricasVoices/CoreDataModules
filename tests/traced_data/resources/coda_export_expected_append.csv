@@ -1,0 +1,6 @@
+id;owner;data;timestamp;schemeId;schemeName;deco_codeValue;deco_codeId;deco_confidence;deco_codingMode;deco_timestamp;deco_author
+0;0;female;;3;Gender;F;1-0;0.95;external;;
+1;1;m;;3;Gender;M;1-1;0.95;manual;Tue Jul 31 2018 19:17:59 GMT+0100 (British Summer Time);
+2;2;WoMaN;;3;Gender;F;1-0;0.95;external;;
+3;3;27;;3;Gender;;;;;;
+4;4;girl;;3;Gender;F;1-0;0.95;external;;
