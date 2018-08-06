@@ -278,7 +278,7 @@ class TracedDataCodaIO(object):
             owner_id += 1
 
     @staticmethod
-    def import_coda_to_traced_data_iterable(user, data, key_of_raw, key_of_coded, f, overwrite_existing_codes=False):
+    def import_coda_to_traced_data_iterable(user, data, key_of_raw, scheme_keys, f, overwrite_existing_codes=False):
         """
         Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
@@ -288,8 +288,9 @@ class TracedDataCodaIO(object):
         :type data: iterable of TracedData
         :param key_of_raw: Key in the TracedData objects of messages which should be coded.
         :type key_of_raw: str
-        :param key_of_coded: Key in the TracedData objects to write imported codes to.
-        :type key_of_coded: str
+        :param scheme_keys: Dictionary of Coda scheme name to the key in each TracedData object of coded data
+                            for that scheme.
+        :type scheme_keys: dict of str -> str
         :param f: Coda data file to import codes from.
         :type f: file-like
         :param overwrite_existing_codes: For messages which are already coded, whether to replace those codes with
@@ -298,8 +299,6 @@ class TracedDataCodaIO(object):
         :return: TracedData objects with Coda data appended
         :rtype: generator of TracedData
         """
-        # TODO: This function assumes there is only one code scheme.
-
         # TODO: Test when running on a machine set to German.
         imported_csv = csv.DictReader(f, delimiter=";")
 
@@ -307,16 +306,16 @@ class TracedDataCodaIO(object):
         coded = list(filter(lambda row: row["deco_codeValue"] != "", imported_csv))
 
         for td in data:
-            if not overwrite_existing_codes and td.get(key_of_coded) is not None:
-                yield td
-                continue
+            for scheme_name, key_of_coded in scheme_keys.items():
+                if not overwrite_existing_codes and td.get(key_of_coded) is not None:
+                    continue
 
-            code = None
-            for row in coded:
-                if td[key_of_raw] == row["data"]:
-                    code = row["deco_codeValue"]
+                code = None
+                for row in coded:
+                    if td[key_of_raw] == row["data"] and row["schemeName"] == scheme_name:
+                        code = row["deco_codeValue"]
 
-            td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
+                td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
             yield td
 
