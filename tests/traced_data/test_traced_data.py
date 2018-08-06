@@ -362,7 +362,7 @@ class TestTracedData(unittest.TestCase):
         data_2[1].append_data({"gender": "male"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
         merged = TracedData.join_iterables("test_user", "id", data_1, data_2)
 
-        merged_dicts = map(lambda td: dict(td.items()), merged)
+        merged_dicts = [dict(td.items()) for td in merged]
         expected_dicts = [
             {"id": "B", "age": 19},
             {"id": "C", "country": "Somalia"},
@@ -375,6 +375,37 @@ class TestTracedData(unittest.TestCase):
         # Modify data_1 to include multiple TracedData objects with the same join key, and ensure joining then fails.
         data_1[0].append_data({"id": "B"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
         self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2))
+
+    def test_update_iterable(self):
+        data_dicts = [
+            {"id": "A", "message": "hello"},
+            {"id": "B", "message": "hello", "gender": "woman"},
+            {"id": "A", "message": "hi"}
+        ]
+        data = [
+            TracedData(d, Metadata("test_user", "data_generator", time.time()))
+            for d in data_dicts
+        ]
+
+        updates_dicts = [
+            {"id": "A", "gender": "male"},
+            {"id": "B", "gender": "female", "age": 20}
+        ]
+        updates = [
+            TracedData(d, Metadata("test_user", "data_generator", time.time()))
+            for d in updates_dicts
+        ]
+
+        TracedData.update_iterable("test_user", "id", data, updates)
+
+        expected_dicts = [
+            {"id": "A", "message": "hello", "gender": "male"},
+            {"id": "B", "message": "hello", "gender": "female", "age": 20},
+            {"id": "A", "message": "hi", "gender": "male"}
+        ]
+
+        for td, expected_dict in zip(data, expected_dicts):
+            self.assertDictEqual(dict(td.items()), expected_dict)
 
 
 class TestTracedDataAppendTracedData(unittest.TestCase):
