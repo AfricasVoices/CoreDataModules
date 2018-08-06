@@ -1,0 +1,13 @@
+id;owner;data;timestamp;schemeId;schemeName;deco_codeValue;deco_codeId;deco_confidence;deco_codingMode;deco_timestamp;deco_author
+0;0;man;;1;Gender;male;1-1;0.95;external;;
+1;0;man;;2;Age;;;;;;
+2;1;woman;;1;Gender;female;1-1;0.95;external;;
+3;1;woman;;2;Age;;;;;;
+4;2;twenty;;1;Gender;;;;;;
+5;2;twenty;;2;Age;20;2-1;0.95;external;;
+6;3;hello;;1;Gender;;;;;;
+7;3;hello;;2;Age;;;;;;
+8;4;44F;;1;Gender;female;1-1;0.95;external;;
+9;4;44F;;2;Age;44;2-1;0.95;external;;
+10;5;33;;1;Gender;;;;;;
+11;5;33;;2;Age;33;2-1;0.95;external;;

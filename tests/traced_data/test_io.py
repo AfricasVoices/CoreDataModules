@@ -84,7 +84,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         with open(file_path, "w") as f:
             try:
                 TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                    data[0], "Gender", "Gender_clean", "Gender", f)
+                    data[0], "Gender", {"Gender": "Gender_clean"}, f)
                 self.fail("Exporting the wrong data type did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), _td_type_error_string)
@@ -92,7 +92,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         # Test normal export with specified key
         with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                data, "Gender", "Gender_clean", "Gender", f)
+                data, "Gender", {"Gender": "Gender_clean"}, f)
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_with_codes.csv"))
 
@@ -102,7 +102,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         with open(extended_file_path, "w") as f, open(prev_file_path, "r") as prev_f:
             try:
                 TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                    data, "Gender", "Gender_clean", "Gender", f, prev_f)
+                    data, "Gender", {"Gender": "Gender_clean"}, f, prev_f)
             except AssertionError as e:
                 self.assertEquals(str(e), "Cannot import a Coda file with multiple scheme ids")
 
@@ -121,7 +121,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         with open(extended_file_path, "w") as f, open(prev_file_path, "r") as prev_f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                data, "Gender", "Gender_clean", "Gender", f, prev_f)
+                data, "Gender", {"Gender": "Gender_clean"}, f, prev_f)
         self.assertTrue(filecmp.cmp(extended_file_path, "tests/traced_data/resources/coda_export_expected_append.csv"))
 
         # Test exporting with conflicting codes
@@ -129,10 +129,26 @@ class TestTracedDataCodaIO(unittest.TestCase):
         with open(file_path, "w") as f:
             try:
                 TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-                    data, "Gender", "Gender_clean", "Gender", f)
+                    data, "Gender", {"Gender": "Gender_clean"}, f)
                 self.fail("Exporting conflicting codes did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), "Raw message 'female' not uniquely coded.")
+
+        # Test exporting multiple code schemes
+        data_dicts = [
+            {"Value": "man", "Gender_clean": "male"},
+            {"Value": "woman", "Gender_clean": "female"},
+            {"Value": "twenty", "Age_clean": 20},
+            {"Value": "hello"},
+            {"Value": "44F", "Gender_clean": "female", "Age_clean": 44},
+            {"Value": "33", "Age_clean": 33}
+        ]
+        data = [TracedData(d, Metadata("test_user", "data_generator", i)) for i, d in enumerate(data_dicts)]
+        with open(file_path, "w") as f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                data, "Value", {"Gender": "Gender_clean", "Age": "Age_clean"}, f)
+        self.assertTrue(
+            filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_multiple_schemes.csv"))
 
     def test_import_coda_to_traced_data_iterable(self):
         self._overwrite_is_false_asserts()
