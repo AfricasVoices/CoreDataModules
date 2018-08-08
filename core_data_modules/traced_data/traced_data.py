@@ -286,7 +286,7 @@ class TracedData(Mapping):
         return history
 
     @staticmethod
-    def join_iterables(user, join_on_key, data_1, data_2):
+    def join_iterables(user, join_on_key, data_1, data_2, data_2_label):
         """
         Outer-joins two iterables of TracedData on the given key.
 
@@ -304,14 +304,17 @@ class TracedData(Mapping):
         :type data_1: iterable of TracedData
         :param data_2: TracedData items to join with data1
         :type data_2: iterable of TracedData
+        :param data_2_label: Identifier to use for 'data_2' objects in the appended TracedData.
+                             See the 'key_of_appended' argument of append_traced_data for details
+        :type data_2_label: str
         :return: data1 outer-joined with data2 on join_on_key
         :rtype: list of TracedData
         """
         data_1_lut = {td[join_on_key]: td for td in data_1}
         data_2_lut = {td[join_on_key]: td for td in data_2}
 
-        assert len(data_1_lut) == len(data_1), "join_on_key is not unique in data_1"
-        assert len(data_2_lut) == len(data_2), "join_on_key is not unique in data_2"
+        assert len(data_1_lut) == len(data_1), "'join_on_key' is not unique in 'data_1'"
+        assert len(data_2_lut) == len(data_2), "'join_on_key' is not unique in 'data_2'"
 
         data_1_ids = set(data_1_lut.keys())
         data_2_ids = set(data_2_lut.keys())
@@ -338,20 +341,22 @@ class TracedData(Mapping):
                                                "data_2 is '{}')".format(id, key, td_1[key], td_2[key])
 
             # Append the data from td_2 to a copy of td_1
-            # TODO: Preserve history from both trees.
             td_1 = td_1.copy()
-            td_1.append_data(
-                dict(td_2.items()),
+            td_1.append_traced_data(
+                data_2_label,
+                td_2,
                 Metadata(user, Metadata.get_call_location(), time.time())
             )
-            merged_data.append(td_1)
 
         return merged_data
 
     @staticmethod
-    def update_iterable(user, update_id_key, to_update, updates):
+    def update_iterable(user, update_id_key, to_update, updates, updates_label):
         """
         Updates each TracedData in an iterable with the TracedData which has the same id in another iterable.
+
+        If there are any keys in common between TracedData items sharing the same join_on_key,
+        then these keys must also have the same value in both objects.
 
         :param user: Identifier of user running this program.
         :type user: str
@@ -361,18 +366,21 @@ class TracedData(Mapping):
         :type to_update: iterable of TracedData
         :param updates: Objects containing updated data.
         :type updates: iterable of TracedData
+        :param updates_label: Identifier to use for 'update' objects in the appended TracedData.
+                              See the 'key_of_appended' argument of append_traced_data for details.
+        :type updates_label: str
         """
         updates_lut = {update_td[update_id_key]: update_td for update_td in updates}
-        assert len(updates_lut) == len(updates), "update_id_key is not unique in argument 'updates'"
+        assert len(updates_lut) == len(updates), "'update_id_key' is not unique in argument 'updates'"
 
         for td in to_update:
             if td[update_id_key] not in updates_lut:
                 continue
 
             update_td = updates_lut[td[update_id_key]]
-            # TODO: Preserve history from 'updates'
-            td.append_data(
-                dict(update_td.items()),
+            td.append_traced_data(
+                updates_label,
+                update_td,
                 Metadata(user, Metadata.get_call_location(), time.time())
             )
 
