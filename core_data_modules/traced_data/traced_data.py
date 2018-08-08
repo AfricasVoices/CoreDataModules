@@ -348,6 +348,8 @@ class TracedData(Mapping):
                 Metadata(user, Metadata.get_call_location(), time.time())
             )
 
+            merged_data.append(td_1)
+
         return merged_data
 
     @staticmethod

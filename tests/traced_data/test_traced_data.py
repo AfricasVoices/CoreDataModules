@@ -368,6 +368,8 @@ class TestTracedData(unittest.TestCase):
             {"id": "C", "country": "Somalia"},
             {"id": "A", "gender": "male", "age": 55, "country": "Kenya"}
         ]
+        
+        self.assertEquals(len(merged_dicts), len(expected_dicts))
 
         for merged, expected in zip(merged_dicts, expected_dicts):
             self.assertDictEqual(merged, expected)
