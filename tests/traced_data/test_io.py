@@ -72,7 +72,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
     def test_export_traced_data_iterable_to_coda_with_scheme(self):
-        file_path = path.join(".", "coda_test_with_codes.csv")
+        file_path = path.join(self.test_dir, "coda_test_with_codes.csv")
 
         data = list(generate_traced_data_iterable())
         data[0].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
@@ -105,13 +105,12 @@ class TestTracedDataCodaIO(unittest.TestCase):
                     data, "Gender", {"Gender": "Gender_clean"}, f, prev_f)
             except AssertionError as e:
                 self.assertEquals(str(e), "Cannot import a Coda file with multiple scheme ids")
-
         # Test updating a file with new codes.
         prev_file_path = path.join("tests/traced_data/resources/coda_export_for_append.csv")
         extended_file_path = file_path
 
         data.append(TracedData(
-            {"URN": "+0012345000008", "Gender": "girl", "Gender_clean": "F"},
+            {"URN": "+0012345000008", "Gender": "girl", "Gender_clean": "f"},
             Metadata("test_user", "data_generator", 10)
         ))
         data.append(TracedData(

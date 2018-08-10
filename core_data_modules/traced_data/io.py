@@ -198,9 +198,8 @@ class TracedDataCodaIO(object):
 
         # Export each message to a row in Coda's datafile format.
         scheme_ids = dict()  # of scheme name -> scheme id
-        code_ids = dict()  # of code -> code id
+        code_ids = dict()  # of scheme name -> (dict of code -> code id)
         item_id = 0
-        owner_id = 0
 
         if prev_f is not None:
             # Read the previously coded Coda file
@@ -215,25 +214,27 @@ class TracedDataCodaIO(object):
 
             # Rebuild code_ids dict from the previously coded file.
             for row in prev_rows:
+                prev_scheme_name = row["schemeName"]
                 prev_code_value = row["deco_codeValue"]
                 prev_code_id = row["deco_codeId"]
 
                 if prev_code_value == "":
                     continue
 
-                if prev_code_value not in code_ids:
-                    code_ids[prev_code_value] = prev_code_id
+                if prev_scheme_name not in code_ids:
+                    code_ids[prev_scheme_name] = dict()
+
+                scheme_code_ids = code_ids[prev_scheme_name]
+                if prev_code_value not in scheme_code_ids:
+                    scheme_code_ids[prev_code_value] = prev_code_id
                 else:
-                    assert code_ids[prev_code_value] == row["deco_codeId"]
+                    assert scheme_code_ids[prev_code_value] == row["deco_codeId"]
 
             # Detect the highest row/owner ids in the previously coded file. New row ids will increment from these.
             max_prev_item_id = 0
-            max_prev_owner_id = 0
             for row in prev_rows:
                 max_prev_item_id = max(max_prev_item_id, int(row["id"]))
-                max_prev_owner_id = max(max_prev_owner_id, int(row["owner"]))
             item_id = max_prev_item_id + 1
-            owner_id = max_prev_owner_id + 1
 
             # Write the contents of the previously coded file through to the new output file.
             for row in prev_rows:
@@ -248,7 +249,7 @@ class TracedDataCodaIO(object):
             for scheme_name, key_of_coded in scheme_keys.items():
                 row = {
                     "id": item_id,
-                    "owner": owner_id,
+                    "owner": item_id,
                     "data": td[key_of_raw],
 
                     "schemeId": scheme_ids[scheme_name],
@@ -258,15 +259,23 @@ class TracedDataCodaIO(object):
 
                 # If this item has been coded under each scheme, export that code.
                 code = td.get(key_of_coded, None)
+
+                if scheme_name not in code_ids:
+                    code_ids[scheme_name] = dict()
+                scheme_code_ids = code_ids[scheme_name]
+
                 if code is not None:
-                    if code not in code_ids:
+                    if code not in scheme_code_ids:
                         # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
-                        new_code_id = cls._generate_new_coda_id([id.split("-")[1] for id in code_ids.values()])
-                        code_ids[code] = "{}-{}".format(scheme_ids[scheme_name], new_code_id)
+                        new_code_id = cls._generate_new_coda_id([int(id.split("-")[1]) for id in scheme_code_ids.values()])
+                        new_scheme_code_id = "{}-{}".format(scheme_ids[scheme_name], new_code_id)
+                        assert new_scheme_code_id not in scheme_code_ids.values(), \
+                            "Failed to generate a new, unique code id for code '{}'".format(code)
+                        scheme_code_ids[code] = new_scheme_code_id
 
                     row.update({
                         "deco_codeValue": code,
-                        "deco_codeId": code_ids[code],
+                        "deco_codeId": scheme_code_ids[code],
                         "deco_confidence": 0.95,  # Same confidence as auto-coding in Coda as of ve42857.
                         "deco_codingMode": "external",
                         # Not exporting deco_timestamp or deco_author because Coda just overwrites them
@@ -274,8 +283,7 @@ class TracedDataCodaIO(object):
                     })
 
                 writer.writerow(row)
-                item_id += 1
-            owner_id += 1
+            item_id += 1
 
     @staticmethod
     def import_coda_to_traced_data_iterable(user, data, key_of_raw, scheme_keys, f, overwrite_existing_codes=False):
