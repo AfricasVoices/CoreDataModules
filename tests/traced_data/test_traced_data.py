@@ -356,11 +356,11 @@ class TestTracedData(unittest.TestCase):
         ]
 
         # Joining should file because item with id 'A' has conflicting genders
-        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2))
+        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2, "data_2"))
 
         # Fix the gender conflict problem, and test that the join now works as expected.
         data_2[1].append_data({"gender": "male"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
-        merged = TracedData.join_iterables("test_user", "id", data_1, data_2)
+        merged = TracedData.join_iterables("test_user", "id", data_1, data_2, "data_2")
 
         merged_dicts = [dict(td.items()) for td in merged]
         expected_dicts = [
@@ -368,18 +368,20 @@ class TestTracedData(unittest.TestCase):
             {"id": "C", "country": "Somalia"},
             {"id": "A", "gender": "male", "age": 55, "country": "Kenya"}
         ]
+        
+        self.assertEquals(len(merged_dicts), len(expected_dicts))
 
         for merged, expected in zip(merged_dicts, expected_dicts):
             self.assertDictEqual(merged, expected)
 
         # Modify data_1 to include multiple TracedData objects with the same join key, and ensure joining then fails.
         data_1[0].append_data({"id": "B"}, Metadata("test_user", Metadata.get_call_location(), time.time()))
-        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2))
+        self.assertRaises(AssertionError, lambda: TracedData.join_iterables("test_user", "id", data_1, data_2, "data_2"))
 
     def test_update_iterable(self):
         data_dicts = [
             {"id": "A", "message": "hello"},
-            {"id": "B", "message": "hello", "gender": "woman"},
+            {"id": "B", "message": "hello"},
             {"id": "A", "message": "hi"}
         ]
         data = [
@@ -396,7 +398,7 @@ class TestTracedData(unittest.TestCase):
             for d in updates_dicts
         ]
 
-        TracedData.update_iterable("test_user", "id", data, updates)
+        TracedData.update_iterable("test_user", "id", data, updates, "demographics")
 
         expected_dicts = [
             {"id": "A", "message": "hello", "gender": "male"},
@@ -455,7 +457,7 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
         message_td = self.generate_message_td()
 
         demog_1_td = self.generate_demog_1_td()
-        demog_1_td.append_data({"message": "should-fail"}, Metadata("test_user", "conflicting_messasge", time.time()))
+        demog_1_td.append_data({"message": "should-fail"}, Metadata("test_user", "conflicting_message", time.time()))
 
         self.assertRaises(AssertionError,
                           lambda: message_td.append_traced_data(
