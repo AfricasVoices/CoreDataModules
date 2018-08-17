@@ -553,7 +553,7 @@ class TracedDataTheInterfaceIO(object):
 
     @staticmethod
     def _clean_interface_message(message):
-        return message # CharacterCleaner.fold_lines(message)
+        return CharacterCleaner.fold_lines(message)
 
     @staticmethod
     def _age_to_age_group(age):
