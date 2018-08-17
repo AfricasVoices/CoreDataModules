@@ -10,4 +10,5 @@ class Codes(object):
 
     TRUE_MISSING = "NA"
     SKIPPED = "NS"
+    NOT_LOGICAL = "NL"
     NOT_CODED = None  # TODO: Change to "NC"
