@@ -6,7 +6,6 @@ import jsonpickle
 import six
 from dateutil.parser import isoparse
 
-from core_data_modules.cleaners import CharacterCleaner
 from core_data_modules.traced_data import Metadata, TracedData
 
 if six.PY2:
@@ -554,7 +553,7 @@ class TracedDataTheInterfaceIO(object):
 
     @staticmethod
     def _clean_interface_message(message):
-        return CharacterCleaner.fold_lines(CharacterCleaner.clean_text(message))
+        return message # CharacterCleaner.fold_lines(message)
 
     @staticmethod
     def _age_to_age_group(age):
