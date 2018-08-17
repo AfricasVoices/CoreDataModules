@@ -6,6 +6,7 @@ import jsonpickle
 import six
 from dateutil.parser import isoparse
 
+from core_data_modules.cleaners import CharacterCleaner
 from core_data_modules.traced_data import Metadata, TracedData
 
 if six.PY2:
