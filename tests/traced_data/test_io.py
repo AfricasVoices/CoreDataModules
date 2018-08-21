@@ -191,10 +191,10 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 "test_user", data, "Response", {"Reason 1", "Reason 2"}, f)
 
         expected_data_dicts = [
-            {"Response": "AC", "a": "1", "b": "0", "c": "1", "NC": "0"},  # TODO: Is this the right way to parse 'NC'?
-            {"Response": "B",  "a": "0", "b": "1", "c": "0", "NC": "0"},
-            {"Response": "Z",  "a": "0", "b": "0", "c": "0", "NC": "1"},
-            {"Response": "BC", "a": "0", "b": "1", "c": "1", "NC": "0"}
+            {"Response": "AC", "a": "1", "b": "0", "c": "1"},  # TODO: Is this the right way to parse 'NC'?
+            {"Response": "B",  "a": "0", "b": "1", "c": "0"},
+            {"Response": "Z",  "a": "0", "b": "0", "c": "0"},
+            {"Response": "CB", "a": "0", "b": "1", "c": "1"}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):
@@ -210,10 +210,10 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 "test_user", data, "Response", {"Reason 1", "Reason 2"}, f, "response_coded_")
 
         expected_data_dicts = [
-            {"Response": "AC", "response_coded_a": "1", "response_coded_b": "0", "response_coded_c": "1", "response_coded_NC": "0"},
-            {"Response": "B",  "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "0", "response_coded_NC": "0"},
-            {"Response": "Z",  "response_coded_a": "0", "response_coded_b": "0", "response_coded_c": "0", "response_coded_NC": "1"},
-            {"Response": "BC", "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "1", "response_coded_NC": "0"}
+            {"Response": "AC", "response_coded_a": "1", "response_coded_b": "0", "response_coded_c": "1"},
+            {"Response": "B",  "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "0"},
+            {"Response": "Z",  "response_coded_a": "0", "response_coded_b": "0", "response_coded_c": "0"},
+            {"Response": "CB", "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "1"}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):

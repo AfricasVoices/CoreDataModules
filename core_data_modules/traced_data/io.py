@@ -368,7 +368,7 @@ class TracedDataCodaIO(object):
             for coda_key in coda_keys:
                 for row in coded:
                     if td[key_of_raw] == row["data"] and row["schemeName"] == coda_key:
-                        td_matrix_keys.add(coda_key)
+                        td_matrix_keys.add(row["deco_codeValue"])
 
             # Construct and set the matrix accordingly.
             td_matrix_data = \
