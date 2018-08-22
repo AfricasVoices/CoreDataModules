@@ -327,7 +327,7 @@ class TracedDataCodaIO(object):
     @staticmethod
     def import_coda_to_traced_data_iterable_as_matrix(user, data, key_of_raw, coda_keys, f, key_of_coded_prefix=""):
         # TODO: Add option for not overwriting existing codes? This exists in import_coda_to_traced_data_iterable,
-        # TODO: but has never been used.
+        # TODO: but has always been set to True.
         """
         Codes a collection of TracedData objects by interpreting the specified schemes in a Coda file as
         multiple-select answers.
@@ -370,10 +370,12 @@ class TracedDataCodaIO(object):
                     if td[key_of_raw] == row["data"] and row["schemeName"] == coda_key:
                         td_matrix_keys.add(row["deco_codeValue"])
 
-            # Construct and set the matrix accordingly.
-            td_matrix_data = \
-                {"{}{}".format(key_of_coded_prefix, matrix_key): "1" if matrix_key in td_matrix_keys else "0"
-                 for matrix_key in all_matrix_keys}
+            # Construct and set the matrix for this TracedData item accordingly.
+            td_matrix_data = dict()
+            for matrix_key in all_matrix_keys:
+                output_key = "{}{}".format(key_of_coded_prefix, matrix_key)
+                td_matrix_data[output_key] = "1" if matrix_key in td_matrix_keys else "0"
+            
             td.append_data(td_matrix_data, Metadata(user, Metadata.get_call_location(), time.time()))
 
 
