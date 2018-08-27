@@ -45,7 +45,7 @@ class _TracedDataIOUtil(object):
             if not td[key_of_raw] in seen:
                 seen.add(td[key_of_raw])
                 unique_data.append(td)
-                
+
         return unique_data
 
     @staticmethod
@@ -267,7 +267,8 @@ class TracedDataCodaIO(object):
                 if code is not None:
                     if code not in scheme_code_ids:
                         # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
-                        new_code_id = cls._generate_new_coda_id([int(id.split("-")[1]) for id in scheme_code_ids.values()])
+                        new_code_id = cls._generate_new_coda_id(
+                            [int(id.split("-")[1]) for id in scheme_code_ids.values()])
                         new_scheme_code_id = "{}-{}".format(scheme_ids[scheme_name], new_code_id)
                         assert new_scheme_code_id not in scheme_code_ids.values(), \
                             "Failed to generate a new, unique code id for code '{}'".format(code)
@@ -322,6 +323,61 @@ class TracedDataCodaIO(object):
                         code = row["deco_codeValue"]
 
                 td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
+
+    @staticmethod
+    def import_coda_to_traced_data_iterable_as_matrix(user, data, key_of_raw, coda_keys, f, key_of_coded_prefix=""):
+        # TODO: Add option for not overwriting existing codes? This exists in import_coda_to_traced_data_iterable,
+        # TODO: but has always been set to True.
+        """
+        Codes a collection of TracedData objects by interpreting the specified schemes in a Coda file as
+        multiple-select answers.
+
+        Coda data is imported by adding a key in each TracedData object for each of the code values observed in the
+        specified `coda_keys`, and setting the value of each added key to either "1" or "0" depending on whether or not
+        that code exists on that message.
+
+        For example, a Coda file with the coda_keys "reason 1" and "reason 2", which collectively contain the options
+        "water", "food", and "clothes", will append the keys "water", "food", and "clothes" to each TracedData item,
+        each set to "1" if that value was present in "reason 1" or in "reason 2" for that TracedData item's raw
+        data; "0" otherwise.
+
+        :param user: Identifier of user running this program
+        :type user: str
+        :param data: TracedData objects to be coded using the Coda file.
+        :type data: iterable of TracedData
+        :param key_of_raw: Key in the TracedData objects of messages which should be coded.
+        :type key_of_raw: str
+        :param coda_keys: Names of the code schemes in the Coda file to import.
+        :type coda_keys: iterable of str
+        :param f: Coda data file to import codes from.
+        :type f: file-like
+        :param key_of_coded_prefix: String to prefix keys appended to each TracedData object with.
+        :type key_of_coded_prefix: str
+        """
+        imported_csv = csv.DictReader(f, delimiter=";")
+
+        # Remove rows which still haven't been coded.
+        coded = [row for row in imported_csv if row["deco_codeValue"] != ""]
+
+        # Determine the available matrix headings from examination of all the code values which have been set
+        # across all the specified coda keys.
+        all_matrix_keys = {row["deco_codeValue"] for row in coded if row["schemeName"] in coda_keys}
+
+        for td in data:
+            # Determine which matrix keys have been set for this TracedData item.
+            td_matrix_keys = set()
+            for coda_key in coda_keys:
+                for row in coded:
+                    if td[key_of_raw] == row["data"] and row["schemeName"] == coda_key:
+                        td_matrix_keys.add(row["deco_codeValue"])
+
+            # Construct and set the matrix for this TracedData item accordingly.
+            td_matrix_data = dict()
+            for matrix_key in all_matrix_keys:
+                output_key = "{}{}".format(key_of_coded_prefix, matrix_key)
+                td_matrix_data[output_key] = "1" if matrix_key in td_matrix_keys else "0"
+            
+            td.append_data(td_matrix_data, Metadata(user, Metadata.get_call_location(), time.time()))
 
 
 class TracedDataCodingCSVIO(object):
@@ -634,7 +690,7 @@ class TracedDataTheInterfaceIO(object):
 
             writer = csv.DictWriter(f, fieldnames=headers, delimiter="\t")
             writer.writeheader()
-            
+
             exported_ids = set()
             for td in data:
                 if td[phone_key] in exported_ids:

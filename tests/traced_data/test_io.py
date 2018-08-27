@@ -180,6 +180,47 @@ class TestTracedDataCodaIO(unittest.TestCase):
         for imported_td, expected in zip(data, expected_data_dicts):
             self.assertDictEqual(dict(imported_td.items()), expected)
 
+    def test_import_coda_to_traced_data_iterable_as_matrix(self):
+        # Test normal usage
+        responses = ["AC", "B", "Z", "CB"]
+        data = [TracedData({"Response": response}, Metadata("test_user", Metadata.get_call_location(), time.time()))
+                for response in responses]
+
+        with open("tests/traced_data/resources/coda_import_as_matrix_data.csv", "r") as f:
+            TracedDataCodaIO.import_coda_to_traced_data_iterable_as_matrix(
+                "test_user", data, "Response", {"Reason 1", "Reason 2"}, f)
+
+        expected_data_dicts = [
+            {"Response": "AC", "a": "1", "b": "0", "c": "1"},
+            {"Response": "B",  "a": "0", "b": "1", "c": "0"},
+            {"Response": "Z",  "a": "0", "b": "0", "c": "0"},
+            {"Response": "CB", "a": "0", "b": "1", "c": "1"}
+        ]
+
+        for imported_td, expected in zip(data, expected_data_dicts):
+            self.assertDictEqual(dict(imported_td.items()), expected)
+
+        # Test setting a prefix
+        responses = ["AC", "B", "Z", "CB"]
+        data = [TracedData({"Response": response}, Metadata("test_user", Metadata.get_call_location(), time.time()))
+                for response in responses]
+
+        with open("tests/traced_data/resources/coda_import_as_matrix_data.csv", "r") as f:
+            TracedDataCodaIO.import_coda_to_traced_data_iterable_as_matrix(
+                "test_user", data, "Response", {"Reason 1", "Reason 2"}, f, "response_coded_")
+
+        expected_data_dicts = [
+            {"Response": "AC", "response_coded_a": "1", "response_coded_b": "0", "response_coded_c": "1"},
+            {"Response": "B",  "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "0"},
+            {"Response": "Z",  "response_coded_a": "0", "response_coded_b": "0", "response_coded_c": "0"},
+            {"Response": "CB", "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "1"}
+        ]
+
+        for imported_td, expected in zip(data, expected_data_dicts):
+            self.assertDictEqual(dict(imported_td.items()), expected)
+
+        # TODO: Test optional overwrite_existing_codes flag if we decide to implement.
+
     def _overwrite_is_false_asserts(self):
         data = list(generate_traced_data_iterable())
         data[0].append_data({"Gender_clean": "X"}, Metadata("test_user", "cleaner", 20))
