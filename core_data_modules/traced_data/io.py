@@ -680,7 +680,7 @@ class TracedDataTheInterfaceIO(object):
                 }
 
                 if tag_messages:
-                    row["message"] = "{} {}".format(message_key, row["message"])
+                    row["message"] = u"{} {}".format(message_key, row["message"])
 
                 writer.writerow(row)
 
