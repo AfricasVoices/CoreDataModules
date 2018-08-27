@@ -89,7 +89,7 @@ class _TracedDataIOUtil(object):
 class TracedDataCodaIO(object):
     @staticmethod
     def _generate_new_coda_id(existing_ids):
-        for i in range(1, 100):
+        for i in range(1, 1000):
             if i not in existing_ids:
                 return i
         assert False, "Unable to generate a new Coda id. Report this error to the project developers."
