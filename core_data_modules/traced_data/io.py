@@ -332,8 +332,9 @@ class TracedDataCodaIO(object):
         Codes a collection of TracedData objects by interpreting the specified schemes in a Coda file as
         multiple-select answers.
 
-        Coda data is imported by adding a column in each TracedData object for all the values observed in the
-        specified `coda_keys`, and setting each value to "1" or "0".
+        Coda data is imported by adding a key in each TracedData object for each of the code values observed in the
+        specified `coda_keys`, and setting the value of each added key to either "1" or "0" depending on whether or not
+        that code exists on that message.
 
         For example, a Coda file with the coda_keys "reason 1" and "reason 2", which collectively contain the options
         "water", "food", and "clothes", will append the keys "water", "food", and "clothes" to each TracedData item,
