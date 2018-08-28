@@ -309,7 +309,7 @@ class TracedDataCodaIO(object):
         # TODO: Test when running on a machine set to German.
         imported_csv = csv.DictReader(f, delimiter=";")
 
-        # Build a lookup table of rows that have been coded
+        # Build a lookup table of (raw_data, schemeName) -> row for only the rows which have been coded.
         coded = {(row["data"], row["schemeName"]): row for row in imported_csv if row["deco_codeValue"] != ""}
 
         for td in data:
@@ -317,9 +317,9 @@ class TracedDataCodaIO(object):
                 if not overwrite_existing_codes and td.get(key_of_coded) is not None:
                     continue
 
-                k = (td[key_of_raw], scheme_name)
-                if k in coded:
-                    code = coded[k]["deco_codeValue"]
+                coded_lookup_key = (td[key_of_raw], scheme_name)
+                if coded_lookup_key in coded:
+                    code = coded[coded_lookup_key]["deco_codeValue"]
                 else:
                     code = None
 
