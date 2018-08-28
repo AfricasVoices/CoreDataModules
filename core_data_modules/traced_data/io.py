@@ -309,18 +309,19 @@ class TracedDataCodaIO(object):
         # TODO: Test when running on a machine set to German.
         imported_csv = csv.DictReader(f, delimiter=";")
 
-        # Remove rows which still haven't been coded.
-        coded = list(filter(lambda row: row["deco_codeValue"] != "", imported_csv))
+        # Build a lookup table of rows that have been coded
+        coded = {(row["data"], row["schemeName"]): row for row in imported_csv if row["deco_codeValue"] != ""}
 
         for td in data:
             for scheme_name, key_of_coded in scheme_keys.items():
                 if not overwrite_existing_codes and td.get(key_of_coded) is not None:
                     continue
 
-                code = None
-                for row in coded:
-                    if td[key_of_raw] == row["data"] and row["schemeName"] == scheme_name:
-                        code = row["deco_codeValue"]
+                k = (td[key_of_raw], scheme_name)
+                if k in coded:
+                    code = coded[k]["deco_codeValue"]
+                else:
+                    code = None
 
                 td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
