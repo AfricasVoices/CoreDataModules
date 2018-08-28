@@ -610,7 +610,7 @@ class TracedDataTheInterfaceIO(object):
 
     @staticmethod
     def _clean_interface_message(message):
-        return CharacterCleaner.fold_lines(CharacterCleaner.clean_text(message))
+        return CharacterCleaner.fold_lines(message)
 
     @staticmethod
     def _age_to_age_group(age):
@@ -680,7 +680,7 @@ class TracedDataTheInterfaceIO(object):
                 }
 
                 if tag_messages:
-                    row["message"] = "{} {}".format(message_key, row["message"])
+                    row["message"] = u"{} {}".format(message_key, row["message"])
 
                 writer.writerow(row)
 
