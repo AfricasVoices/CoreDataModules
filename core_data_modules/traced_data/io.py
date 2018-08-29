@@ -87,6 +87,10 @@ class _TracedDataIOUtil(object):
 
 
 class TracedDataCodaIO(object):
+    coda_data_col = "data"
+    coda_scheme_name_col = "schemeName"
+    coda_code_value_col = "deco_codeValue"
+
     @staticmethod
     def _generate_new_coda_id(existing_ids):
         for i in range(1, 1000):
@@ -286,8 +290,8 @@ class TracedDataCodaIO(object):
                 writer.writerow(row)
             item_id += 1
 
-    @staticmethod
-    def import_coda_to_traced_data_iterable(user, data, key_of_raw, scheme_keys, f, overwrite_existing_codes=False):
+    @classmethod
+    def import_coda_to_traced_data_iterable(cls, user, data, key_of_raw, scheme_keys, f, overwrite_existing_codes=False):
         """
         Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
@@ -309,8 +313,9 @@ class TracedDataCodaIO(object):
         # TODO: Test when running on a machine set to German.
         imported_csv = csv.DictReader(f, delimiter=";")
 
-        # Build a lookup table of (raw_data, schemeName) -> row for only the rows which have been coded.
-        coded = {(row["data"], row["schemeName"]): row for row in imported_csv if row["deco_codeValue"] != ""}
+        # Build a lookup table of (raw_data, scheme_name) -> row containing only the rows which have been coded.
+        coded = {(row[cls.coda_data_col], row[cls.coda_scheme_name_col]): row
+                 for row in imported_csv if row[cls.coda_code_value_col] != ""}
 
         for td in data:
             for scheme_name, key_of_coded in scheme_keys.items():
@@ -319,14 +324,15 @@ class TracedDataCodaIO(object):
 
                 coded_lookup_key = (td[key_of_raw], scheme_name)
                 if coded_lookup_key in coded:
-                    code = coded[coded_lookup_key]["deco_codeValue"]
+                    code = coded[coded_lookup_key][cls.coda_code_value_col]
                 else:
                     code = None
 
                 td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
-    @staticmethod
-    def import_coda_to_traced_data_iterable_as_matrix(user, data, key_of_raw, coda_keys, f, key_of_coded_prefix=""):
+    @classmethod
+    def import_coda_to_traced_data_iterable_as_matrix(cls, user, data, key_of_raw, coda_keys, f,
+                                                      key_of_coded_prefix=""):
         # TODO: Add option for not overwriting existing codes? This exists in import_coda_to_traced_data_iterable,
         # TODO: but has always been set to True.
         """
@@ -358,19 +364,19 @@ class TracedDataCodaIO(object):
         imported_csv = csv.DictReader(f, delimiter=";")
 
         # Remove rows which still haven't been coded.
-        coded = [row for row in imported_csv if row["deco_codeValue"] != ""]
+        coded = [row for row in imported_csv if row[cls.coda_code_value_col] != ""]
 
         # Determine the available matrix headings from examination of all the code values which have been set
         # across all the specified coda keys.
-        all_matrix_keys = {row["deco_codeValue"] for row in coded if row["schemeName"] in coda_keys}
+        all_matrix_keys = {row[cls.coda_code_value_col] for row in coded if row[cls.coda_scheme_name_col] in coda_keys}
 
         for td in data:
             # Determine which matrix keys have been set for this TracedData item.
             td_matrix_keys = set()
             for coda_key in coda_keys:
                 for row in coded:
-                    if td[key_of_raw] == row["data"] and row["schemeName"] == coda_key:
-                        td_matrix_keys.add(row["deco_codeValue"])
+                    if td[key_of_raw] == row[cls.coda_data_col] and row[cls.coda_scheme_name_col] == coda_key:
+                        td_matrix_keys.add(row[cls.coda_code_value_col])
 
             # Construct and set the matrix for this TracedData item accordingly.
             td_matrix_data = dict()
