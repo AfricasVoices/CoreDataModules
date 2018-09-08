@@ -149,6 +149,23 @@ class TestTracedDataCodaIO(unittest.TestCase):
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_multiple_schemes.csv"))
 
+        # Test exporting with exclude_coded_with_keys set
+        with open(file_path, "w") as f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                data, "Value", {"Gender": "Gender_clean", "Age": "Age_clean"}, f,
+                exclude_coded_with_keys=["Gender_clean"])
+        self.assertTrue(
+            filecmp.cmp(file_path,
+                        "tests/traced_data/resources/coda_export_expected_multiple_schemes_exclude_coded_1.csv"))
+
+        with open(file_path, "w") as f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+                data, "Value", {"Gender": "Gender_clean", "Age": "Age_clean"}, f,
+                exclude_coded_with_keys=["Gender_clean", "Age_clean"])
+        self.assertTrue(
+            filecmp.cmp(file_path,
+                        "tests/traced_data/resources/coda_export_expected_multiple_schemes_exclude_coded_2.csv"))
+
     def test_import_coda_to_traced_data_iterable(self):
         # Test single schemes, with and without overwrite_existing_codes set to True
         self._overwrite_is_false_asserts()

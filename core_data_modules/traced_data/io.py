@@ -71,19 +71,27 @@ class _TracedDataIOUtil(object):
                     "Raw message '{}' not uniquely coded.".format(td[key_of_raw])
 
     @staticmethod
-    def exclude_coded_with_key(data, key):
+    def exclude_coded_with_keys(data, keys):
         """
         Filters a collection of TracedData objects such that only objects which do not have codes under the given 
-        key are returned.
+        keys are returned.
 
         :param data: TracedData objects to filter.
         :type data: iterable of TracedData
-        :param key: Key in TracedData objects of codes.
-        :type key: str
+        :param keys: Keys in TracedData objects of codes.
+        :type keys: list of str
         :return: TracedData objects which have not been coded under the given key.
         :rtype: iterable of TracedData
         """
-        return filter(lambda td: td.get(key) is None, data)
+        not_coded_data = []
+
+        for td in data:
+            for key in keys:
+                if td.get(key) is None:
+                    not_coded_data.append(td)
+                    continue
+
+        return not_coded_data
 
 
 class TracedDataCodaIO(object):
@@ -139,7 +147,7 @@ class TracedDataCodaIO(object):
 
         if exclude_coded_with_key is not None:
             # Exclude data items which have been coded.
-            data = _TracedDataIOUtil.exclude_coded_with_key(data, exclude_coded_with_key)
+            data = _TracedDataIOUtil.exclude_coded_with_keys(data, [exclude_coded_with_key])
 
         # De-duplicate raw messages
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
@@ -155,7 +163,8 @@ class TracedDataCodaIO(object):
             writer.writerow(row)
 
     @classmethod
-    def export_traced_data_iterable_to_coda_with_scheme(cls, data, key_of_raw, scheme_keys, f, prev_f=None):
+    def export_traced_data_iterable_to_coda_with_scheme(cls, data, key_of_raw, scheme_keys, f,
+                                                        prev_f=None, exclude_coded_with_keys=None):
         """
         Exports the elements from a "column" in a collection of TracedData objects to a file in Coda's data format.
         
@@ -179,6 +188,10 @@ class TracedDataCodaIO(object):
                        will be copied to the output file 'f', then any new data/codes will be appended.
                        No edits are made to any of the items which are copied through to 'f'.
         :type prev_f: file-like | None.
+        :param exclude_coded_with_keys: Set to None to export every item in key_of_raw to Coda, or to the keys of
+                                        existing codes to exclude items of key_of_raw which have already been coded
+                                        under all the keys listed here.
+        :type exclude_coded_with_keys: list of str
         """
         data = list(data)
         for td in data:
@@ -195,6 +208,9 @@ class TracedDataCodaIO(object):
 
         writer = csv.DictWriter(f, fieldnames=headers, dialect=dialect, lineterminator="\n")
         writer.writeheader()
+
+        if exclude_coded_with_keys is not None:
+            data = _TracedDataIOUtil.exclude_coded_with_keys(data, exclude_coded_with_keys)
 
         for key_of_coded in scheme_keys.values():
             _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
@@ -415,7 +431,7 @@ class TracedDataCodingCSVIO(object):
 
         if exclude_coded_with_key is not None:
             # Exclude data items which have been coded.
-            data = _TracedDataIOUtil.exclude_coded_with_key(data, exclude_coded_with_key)
+            data = _TracedDataIOUtil.exclude_coded_with_keys(data, [exclude_coded_with_key])
 
         # De-duplicate raw messages
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
