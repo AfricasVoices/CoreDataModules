@@ -15,12 +15,12 @@ class Code(object):
 
 
 class CodeScheme(object):
-    def __init__(self, scheme_id=1, name="default", code_names=None, add_codes_for_missing=True):
+    def __init__(self, scheme_id=1, name="default", code_names=None, add_codes_for_missing=False):
         """
         :param codes: Names of codees this scheme should contain
         :type codes: iterable of str
         """
-        self.scheme_id = scheme_id
+        self.scheme_id = scheme_id # TODO: Change to 'id'
         self.name = name
 
         if code_names is None:

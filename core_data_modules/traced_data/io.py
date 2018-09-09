@@ -186,7 +186,9 @@ class TracedDataCodaIO(object):
             assert isinstance(td, TracedData), _td_type_error_string
 
         # Convert scheme_keys which are strings to CodeSchemes.
-        scheme_keys = {CodeScheme(name=k) if type(k) == str else k: v for k, v in scheme_keys.items()}
+        scheme_keys = {
+            scheme_name if type(scheme_name) == CodeScheme else CodeScheme(name=scheme_name, scheme_id=None): key_of_coded
+            for scheme_name, key_of_coded in scheme_keys.items()}
         scheme_lut = {scheme.name: scheme for scheme in scheme_keys.keys()}
 
         headers = [
@@ -206,7 +208,6 @@ class TracedDataCodaIO(object):
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
-        scheme_ids = dict()  # of scheme name -> scheme id
         code_ids = dict()  # of scheme name -> (dict of code -> code id)
         item_id = 0
 
@@ -218,8 +219,13 @@ class TracedDataCodaIO(object):
             prev_data = set(map(lambda row: row["data"], prev_rows))
             unique_data = [td for td in unique_data if td[key_of_raw] not in prev_data]
 
-            # Rebuild scheme_ids dict from the previously coded file.
-            scheme_ids = {row["schemeName"]: row["schemeId"] for row in prev_rows if row["schemeId"] != ""}
+            # Update scheme ids from the previously coded file.
+            for row in prev_rows:
+                scheme = scheme_lut[row["schemeName"]]
+                if len(scheme.codes) == 0:
+                    scheme.scheme_id = row["schemeId"]
+                else:
+                    assert row["schemeId"] == scheme.scheme_id  # TODO: Error message
 
             # Rebuild code_ids dict from the previously coded file.
             for row in prev_rows:
@@ -250,9 +256,11 @@ class TracedDataCodaIO(object):
                 writer.writerow(row)
 
         # Populate scheme_ids dict
-        for scheme, key_of_coded in scheme_keys.items():
-            if scheme.name not in scheme_ids:
-                scheme_ids[scheme.name] = cls._generate_new_coda_id(scheme_ids.values())
+        for scheme in scheme_keys.keys():
+            if scheme.scheme_id is None:
+                existing_scheme_ids = [scheme.scheme_id for scheme in scheme_keys.keys() if
+                                       scheme.scheme_id is not None]
+                scheme.scheme_id = cls._generate_new_coda_id(existing_scheme_ids)
 
         for td in unique_data:
             for scheme, key_of_coded in scheme_keys.items():
@@ -261,7 +269,7 @@ class TracedDataCodaIO(object):
                     "owner": item_id,
                     "data": td[key_of_raw],
 
-                    "schemeId": scheme_ids[scheme.name],
+                    "schemeId": scheme.scheme_id,
                     "schemeName": scheme.name
                     # Not exporting timestamp because this doesn't actually do anything in Coda.
                 }
@@ -278,7 +286,7 @@ class TracedDataCodaIO(object):
                         # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
                         new_code_id = cls._generate_new_coda_id(
                             [int(id.split("-")[1]) for id in scheme_code_ids.values()])
-                        new_scheme_code_id = "{}-{}".format(scheme_ids[scheme.name], new_code_id)
+                        new_scheme_code_id = "{}-{}".format(scheme.scheme_id, new_code_id)
                         assert new_scheme_code_id not in scheme_code_ids.values(), \
                             "Failed to generate a new, unique code id for code '{}'".format(code)
                         scheme_code_ids[code] = new_scheme_code_id
@@ -296,7 +304,8 @@ class TracedDataCodaIO(object):
             item_id += 1
 
     @classmethod
-    def import_coda_to_traced_data_iterable(cls, user, data, key_of_raw, scheme_keys, f, overwrite_existing_codes=False):
+    def import_coda_to_traced_data_iterable(cls, user, data, key_of_raw, scheme_keys, f,
+                                            overwrite_existing_codes=False):
         """
         Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
@@ -388,7 +397,7 @@ class TracedDataCodaIO(object):
             for matrix_key in all_matrix_keys:
                 output_key = "{}{}".format(key_of_coded_prefix, matrix_key)
                 td_matrix_data[output_key] = "1" if matrix_key in td_matrix_keys else "0"
-            
+
             td.append_data(td_matrix_data, Metadata(user, Metadata.get_call_location(), time.time()))
 
 

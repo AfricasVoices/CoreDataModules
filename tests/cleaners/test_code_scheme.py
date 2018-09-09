@@ -15,7 +15,7 @@ class TestCodeScheme(unittest.TestCase):
         shutil.rmtree(self.test_dir)
 
     def test_export_to_coda_scheme_file(self):
-        file_path = path.join(self.test_dir, "coda_scheme_export_test.csv")
+        file_path = path.join(".", "coda_scheme_export_test.csv")
 
         code_scheme = CodeScheme(scheme_id=2, name="YesNo", code_names=["yes", "no"])
         with open(file_path, "w") as f:
