@@ -223,7 +223,7 @@ class TracedDataCodaIO(object):
                 if len(scheme.codes) == 0:
                     scheme.id = row["schemeId"]
                 else:
-                    assert row["schemeId"] == scheme.id  # TODO: Error message
+                    assert row["schemeId"] == scheme.id, "{}, {}".format(row["schemeId"], scheme.id)
 
             # Rebuild code_ids dict from the previously coded file.
             for row in prev_rows:
@@ -254,7 +254,7 @@ class TracedDataCodaIO(object):
         for scheme in scheme_keys.keys():
             if scheme.id is None:
                 existing_ids = [scheme.id for scheme in scheme_keys.keys() if
-                                       scheme.id is not None]
+                                scheme.id is not None]
                 scheme.id = cls._generate_new_coda_id(existing_ids)
 
         # Export each message to a row in Coda's datafile format.
