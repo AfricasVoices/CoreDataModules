@@ -50,12 +50,6 @@ class CodeScheme(object):
     def get_code_with_name(self, code_name):
         return {code.name: code for code in self.codes}[code_name]
 
-    def get_code_id(self, code_name):
-        return self.get_code_with_name(code_name).id
-
-    def set_code_id(self, code_name, code_id):
-        self.get_code_with_name(code_name).id = code_id
-
     def export_to_coda_scheme_file(self, f):
         """
         Exports this CodeScheme object to a CSV which can be uploaded to Coda.

@@ -238,7 +238,7 @@ class TracedDataCodaIO(object):
                 if prev_code_value not in scheme.code_names():
                     scheme.add_code(Code(prev_code_value, prev_code_id))
                 else:
-                    assert scheme.get_code_id(prev_code_value) == row["deco_codeId"]
+                    assert scheme.get_code_with_name(prev_code_value).id == row["deco_codeId"]
 
             # Detect the highest row/owner ids in the previously coded file. New row ids will increment from these.
             max_prev_item_id = 0
@@ -284,7 +284,7 @@ class TracedDataCodaIO(object):
 
                     row.update({
                         "deco_codeValue": code_value,
-                        "deco_codeId": scheme.get_code_id(code_value),
+                        "deco_codeId": scheme.get_code_with_name(code_value).id,
                         "deco_confidence": 0.95,  # Same confidence as auto-coding in Coda as of ve42857.
                         "deco_codingMode": "external",
                         # Not exporting deco_timestamp or deco_author because Coda just overwrites them
