@@ -207,7 +207,6 @@ class TracedDataCodaIO(object):
             _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
-        # Export each message to a row in Coda's datafile format.
         item_id = 0
 
         if prev_f is not None:
@@ -258,6 +257,7 @@ class TracedDataCodaIO(object):
                                        scheme.scheme_id is not None]
                 scheme.scheme_id = cls._generate_new_coda_id(existing_scheme_ids)
 
+        # Export each message to a row in Coda's datafile format.
         for td in unique_data:
             for scheme, key_of_coded in scheme_keys.items():
                 row = {
@@ -272,7 +272,6 @@ class TracedDataCodaIO(object):
 
                 # If this item has been coded under each scheme, export that code.
                 code_value = td.get(key_of_coded, None)
-
                 if code_value is not None:
                     if code_value not in scheme.code_names():
                         # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
