@@ -1,1 +1,3 @@
 from .demographic_cleaner import DemographicCleaner
+from .demographic_patterns import DemographicPatterns
+from .demographic_schemes import DemographicSchemes

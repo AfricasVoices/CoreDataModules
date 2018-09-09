@@ -12,3 +12,4 @@ class Codes(object):
     SKIPPED = "NS"
     NOT_LOGICAL = "NL"
     NOT_CODED = None  # TODO: Change to "NC"
+    STOP = "stop"

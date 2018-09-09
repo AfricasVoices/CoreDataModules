@@ -1,7 +1,7 @@
 from core_data_modules.cleaners import Codes
 
 
-class Patterns(object):
+class DemographicPatterns(object):
     only_yes_no = r"^\W*(asc|ok)?\W*(ka+l?\W*ka+[kla]*|kalak|kalalak)?\W*ha+h?(ye)?\W*$|^\W*ha+h?(ye)?\W*(ka+l?\W*ka+[kla]*|ka(la)?ak)?\W*$|^\W*(ka+l?\W*ka+[kla]*|ka(la)?lak)?\W*hye\W*$|^\W*(ka+l?\W*ka+l|kalaka?|kalalak)?\W*ma*ya?\W*$"
 
     noise = r"^\W*(asc|ok)?\W*(ka+l?\W*ka+[kla]*|ka(la)?lak|kal)?\W*(asc|ok)?\W*$|^\W*330\W*$|^\W*mahad\ssanid\W*$|^\W*in\W*[cs]ha+\W*a?l+a*h?(alah)?\W*$|^\W*oke?y?\W*$|^\W*(ka+l?\W*ka+la?|kalaka?|kalalak)?\W*tir\W*tir\W*$|^\W*(hi|hello)\W*$|^\W*thanks\W*$|^\w\w?$|^fuck$|^\W*dal\W*dhis\W*$"
