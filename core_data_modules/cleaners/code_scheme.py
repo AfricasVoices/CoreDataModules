@@ -15,13 +15,19 @@ class Code(object):
 
 
 class CodeScheme(object):
-    def __init__(self, scheme_id=1, scheme_name="default", code_names=None):
+    def __init__(self, scheme_id=1, scheme_name="default", code_names=None, add_codes_for_missing=True):
         """
         :param codes: Names of codees this scheme should contain
         :type codes: iterable of str
         """
         self.scheme_id = scheme_id
         self.scheme_name = scheme_name
+
+        code_names = list(code_names)
+
+        if add_codes_for_missing:
+            code_names.append("NC")  # TODO: Change to Codes.NOT_CODED
+            code_names.append(Codes.STOP)
 
         self.codes = []
         if code_names is None:
@@ -30,14 +36,6 @@ class CodeScheme(object):
         for code_name in code_names:
             self.codes.append(Code(code_name, "{}-{}".format(scheme_id, next_code_id)))
             next_code_id += 1
-
-    @classmethod
-    def with_missing_codes(cls, code_names, scheme_id=1, scheme_name="default"):
-        code_names = list(code_names)
-        code_names.append("NC")  # TODO: Change to Codes.NOT_CODED
-        code_names.append(Codes.STOP)
-
-        return cls(scheme_id=scheme_id, scheme_name=scheme_name, code_names=code_names)
 
     def export_to_coda_scheme_file(self, f):
         """
