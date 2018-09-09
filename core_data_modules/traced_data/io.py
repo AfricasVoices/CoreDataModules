@@ -186,7 +186,8 @@ class TracedDataCodaIO(object):
             assert isinstance(td, TracedData), _td_type_error_string
 
         # Convert scheme_keys which are strings to CodeSchemes.
-        scheme_keys = {CodeScheme(scheme_name=k) if type(k) == str else k: v for k, v in scheme_keys.items()}
+        scheme_keys = {CodeScheme(name=k) if type(k) == str else k: v for k, v in scheme_keys.items()}
+        scheme_lut = {scheme.name: scheme for scheme in scheme_keys.keys()}
 
         headers = [
             "id", "owner", "data",
@@ -250,14 +251,14 @@ class TracedDataCodaIO(object):
 
         # Populate scheme_ids dict
         for code_scheme, key_of_coded in scheme_keys.items():
-            scheme_name = code_scheme.scheme_name
+            scheme_name = code_scheme.name
 
             if scheme_name not in scheme_ids:
                 scheme_ids[scheme_name] = cls._generate_new_coda_id(scheme_ids.values())
 
         for td in unique_data:
             for code_scheme, key_of_coded in scheme_keys.items():
-                scheme_name = code_scheme.scheme_name
+                scheme_name = code_scheme.name
 
                 row = {
                     "id": item_id,

@@ -15,13 +15,13 @@ class Code(object):
 
 
 class CodeScheme(object):
-    def __init__(self, scheme_id=1, scheme_name="default", code_names=None, add_codes_for_missing=True):
+    def __init__(self, scheme_id=1, name="default", code_names=None, add_codes_for_missing=True):
         """
         :param codes: Names of codees this scheme should contain
         :type codes: iterable of str
         """
         self.scheme_id = scheme_id
-        self.scheme_name = scheme_name
+        self.name = name
 
         if code_names is None:
             code_names = []
@@ -65,7 +65,7 @@ class CodeScheme(object):
         for code in self.codes:
             writer.writerow({
                 "scheme_id": self.scheme_id,
-                "scheme_name": self.scheme_name,
+                "scheme_name": self.name,
                 "code_id": code.id,
                 "code_value": code.name,
                 "code_colour": "",
