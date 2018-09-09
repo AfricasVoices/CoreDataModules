@@ -223,7 +223,7 @@ class TracedDataCodaIO(object):
                 if len(scheme.codes) == 0:
                     scheme.id = row["schemeId"]
                 else:
-                    assert row["schemeId"] == scheme.id, "{}, {}".format(row["schemeId"], scheme.id)
+                    assert row["schemeId"] == str(scheme.id), "{}, {}".format(row["schemeId"], scheme.id)
 
             # Rebuild code_ids dict from the previously coded file.
             for row in prev_rows:
