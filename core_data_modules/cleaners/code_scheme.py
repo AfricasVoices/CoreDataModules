@@ -37,6 +37,13 @@ class CodeScheme(object):
             self.codes.append(Code(code_name, "{}-{}".format(scheme_id, next_code_id)))
             next_code_id += 1
 
+    def add_code_name(self, code_name):
+        pass
+
+    def add_code(self, code, position=None):
+        # TODO: Implement position (and rename to 'append_code' or 'insert_code' etc.?)
+        self.codes.append(code)
+
     def export_to_coda_scheme_file(self, f):
         """
         Exports this CodeScheme object to a CSV which can be uploaded to Coda.
