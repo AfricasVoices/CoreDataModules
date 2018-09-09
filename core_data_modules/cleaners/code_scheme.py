@@ -48,6 +48,8 @@ class CodeScheme(object):
         """
         Exports this CodeScheme object to a CSV which can be uploaded to Coda.
 
+        Note: This exporter does not support versions of Coda older than "vE42857 at 2018-06-26 11:47"  # TODO: Re-release Coda and update
+
         :param f: File to write code scheme to.
         :type f: file-like
         """
