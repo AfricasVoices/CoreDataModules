@@ -7,6 +7,7 @@ import six
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import CharacterCleaner
+from core_data_modules.cleaners.code_scheme import CodeScheme
 from core_data_modules.traced_data import Metadata, TracedData
 
 if six.PY2:
@@ -172,7 +173,7 @@ class TracedDataCodaIO(object):
         :param scheme_keys: Dictionary of Coda scheme name to the key in each TracedData object of existing codes.
                             TracedData objects missing that key will have their raw value exported, but no pre-existing
                             code.
-        :type scheme_keys: dict of str -> str
+        :type scheme_keys: dict of (str | CodeScheme) -> str
         :param f: File to export to.
         :type f: file-like
         :param prev_f: An optional previous version of the Coda file. If this argument is provided, the referenced file
@@ -183,6 +184,9 @@ class TracedDataCodaIO(object):
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
+
+        # Convert scheme_keys which are strings to CodeSchemes.
+        scheme_keys = {CodeScheme(scheme_name=k) if type(k) == str else k: v for k, v in scheme_keys.items()}
 
         headers = [
             "id", "owner", "data",
@@ -245,12 +249,16 @@ class TracedDataCodaIO(object):
                 writer.writerow(row)
 
         # Populate scheme_ids dict
-        for scheme_name, key_of_coded in scheme_keys.items():
+        for code_scheme, key_of_coded in scheme_keys.items():
+            scheme_name = code_scheme.scheme_name
+
             if scheme_name not in scheme_ids:
                 scheme_ids[scheme_name] = cls._generate_new_coda_id(scheme_ids.values())
 
         for td in unique_data:
-            for scheme_name, key_of_coded in scheme_keys.items():
+            for code_scheme, key_of_coded in scheme_keys.items():
+                scheme_name = code_scheme.scheme_name
+
                 row = {
                     "id": item_id,
                     "owner": item_id,

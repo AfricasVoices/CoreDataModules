@@ -23,6 +23,8 @@ class CodeScheme(object):
         self.scheme_id = scheme_id
         self.scheme_name = scheme_name
 
+        if code_names is None:
+            code_names = []
         code_names = list(code_names)
 
         if add_codes_for_missing:
@@ -30,8 +32,6 @@ class CodeScheme(object):
             code_names.append(Codes.STOP)
 
         self.codes = []
-        if code_names is None:
-            code_names = []
         next_code_id = 1
         for code_name in code_names:
             self.codes.append(Code(code_name, "{}-{}".format(scheme_id, next_code_id)))
