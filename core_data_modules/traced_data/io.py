@@ -250,39 +250,35 @@ class TracedDataCodaIO(object):
                 writer.writerow(row)
 
         # Populate scheme_ids dict
-        for code_scheme, key_of_coded in scheme_keys.items():
-            scheme_name = code_scheme.name
-
-            if scheme_name not in scheme_ids:
-                scheme_ids[scheme_name] = cls._generate_new_coda_id(scheme_ids.values())
+        for scheme, key_of_coded in scheme_keys.items():
+            if scheme.name not in scheme_ids:
+                scheme_ids[scheme.name] = cls._generate_new_coda_id(scheme_ids.values())
 
         for td in unique_data:
-            for code_scheme, key_of_coded in scheme_keys.items():
-                scheme_name = code_scheme.name
-
+            for scheme, key_of_coded in scheme_keys.items():
                 row = {
                     "id": item_id,
                     "owner": item_id,
                     "data": td[key_of_raw],
 
-                    "schemeId": scheme_ids[scheme_name],
-                    "schemeName": scheme_name
+                    "schemeId": scheme_ids[scheme.name],
+                    "schemeName": scheme.name
                     # Not exporting timestamp because this doesn't actually do anything in Coda.
                 }
 
                 # If this item has been coded under each scheme, export that code.
                 code = td.get(key_of_coded, None)
 
-                if scheme_name not in code_ids:
-                    code_ids[scheme_name] = dict()
-                scheme_code_ids = code_ids[scheme_name]
+                if scheme.name not in code_ids:
+                    code_ids[scheme.name] = dict()
+                scheme_code_ids = code_ids[scheme.name]
 
                 if code is not None:
                     if code not in scheme_code_ids:
                         # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
                         new_code_id = cls._generate_new_coda_id(
                             [int(id.split("-")[1]) for id in scheme_code_ids.values()])
-                        new_scheme_code_id = "{}-{}".format(scheme_ids[scheme_name], new_code_id)
+                        new_scheme_code_id = "{}-{}".format(scheme_ids[scheme.name], new_code_id)
                         assert new_scheme_code_id not in scheme_code_ids.values(), \
                             "Failed to generate a new, unique code id for code '{}'".format(code)
                         scheme_code_ids[code] = new_scheme_code_id
