@@ -238,7 +238,7 @@ class TracedDataCodaIO(object):
                 if prev_code_value not in scheme.code_names():
                     scheme.add_code(Code(prev_code_value, prev_code_id))
                 else:
-                    assert scheme.get_code_with_name(prev_code_value).id == row["deco_codeId"]
+                    assert str(scheme.get_code_with_name(prev_code_value).id) == row["deco_codeId"], "{}, {}".format(scheme.get_code_with_name(prev_code_value).id, row["deco_codeId"])
 
             # Detect the highest row/owner ids in the previously coded file. New row ids will increment from these.
             max_prev_item_id = 0
