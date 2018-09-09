@@ -98,12 +98,12 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         # Test updating a file with multiple code schemes
         # TODO: Decide whether to continue addressing this/re-enable this test
-        # prev_file_path = path.join("tests/traced_data/resources/coda_export_for_append_multiple_schemes.csv")
-        # extended_file_path = file_path
+        prev_file_path = path.join("tests/traced_data/resources/coda_export_for_append_multiple_schemes.csv")
+        extended_file_path = file_path
         # with open(extended_file_path, "w") as f, open(prev_file_path, "r") as prev_f:
-        #     try:
-        #         TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
-        #             data, "Gender", {"Gender": "Gender_clean"}, f, prev_f)
+            # try:
+            #     TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
+            #         data, "Gender", {"Gender": "Gender_clean"}, f, prev_f)
         #         self.fail()
         #     except AssertionError as e:
         #         print(str(e))

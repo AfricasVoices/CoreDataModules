@@ -37,12 +37,24 @@ class CodeScheme(object):
             self.codes.append(Code(code_name, "{}-{}".format(scheme_id, next_code_id)))
             next_code_id += 1
 
-    def add_code_name(self, code_name):
-        pass
-
     def add_code(self, code, position=None):
         # TODO: Implement position (and rename to 'append_code' or 'insert_code' etc.?)
         self.codes.append(code)
+
+    def code_names(self):
+        return [code.name for code in self.codes]
+
+    def code_ids(self):
+        return [code.id for code in self.codes]
+
+    def get_code_with_name(self, code_name):
+        return {code.name: code for code in self.codes}[code_name]
+
+    def get_code_id(self, code_name):
+        return self.get_code_with_name(code_name).id
+
+    def set_code_id(self, code_name, code_id):
+        self.get_code_with_name(code_name).id = code_id
 
     def export_to_coda_scheme_file(self, f):
         """

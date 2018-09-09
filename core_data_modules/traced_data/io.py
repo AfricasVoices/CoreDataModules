@@ -7,7 +7,7 @@ import six
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import CharacterCleaner
-from core_data_modules.cleaners.code_scheme import CodeScheme
+from core_data_modules.cleaners.code_scheme import CodeScheme, Code
 from core_data_modules.traced_data import Metadata, TracedData
 
 if six.PY2:
@@ -208,7 +208,6 @@ class TracedDataCodaIO(object):
         unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
-        code_ids = dict()  # of scheme name -> (dict of code -> code id)
         item_id = 0
 
         if prev_f is not None:
@@ -229,21 +228,18 @@ class TracedDataCodaIO(object):
 
             # Rebuild code_ids dict from the previously coded file.
             for row in prev_rows:
-                prev_scheme_name = row["schemeName"]
                 prev_code_value = row["deco_codeValue"]
                 prev_code_id = row["deco_codeId"]
+                prev_scheme_name = row["schemeName"]
 
                 if prev_code_value == "":
                     continue
 
-                if prev_scheme_name not in code_ids:
-                    code_ids[prev_scheme_name] = dict()
-
-                scheme_code_ids = code_ids[prev_scheme_name]
-                if prev_code_value not in scheme_code_ids:
-                    scheme_code_ids[prev_code_value] = prev_code_id
+                scheme = scheme_lut[prev_scheme_name]
+                if prev_code_value not in scheme.code_names():
+                    scheme.add_code(Code(prev_code_value, prev_code_id))
                 else:
-                    assert scheme_code_ids[prev_code_value] == row["deco_codeId"]
+                    assert scheme.get_code_id(prev_code_value) == row["deco_codeId"]
 
             # Detect the highest row/owner ids in the previously coded file. New row ids will increment from these.
             max_prev_item_id = 0
@@ -275,25 +271,21 @@ class TracedDataCodaIO(object):
                 }
 
                 # If this item has been coded under each scheme, export that code.
-                code = td.get(key_of_coded, None)
+                code_value = td.get(key_of_coded, None)
 
-                if scheme.name not in code_ids:
-                    code_ids[scheme.name] = dict()
-                scheme_code_ids = code_ids[scheme.name]
-
-                if code is not None:
-                    if code not in scheme_code_ids:
+                if code_value is not None:
+                    if code_value not in scheme.code_names():
                         # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
                         new_code_id = cls._generate_new_coda_id(
-                            [int(id.split("-")[1]) for id in scheme_code_ids.values()])
+                            [int(id.split("-")[1]) for id in scheme.code_ids()])
                         new_scheme_code_id = "{}-{}".format(scheme.scheme_id, new_code_id)
-                        assert new_scheme_code_id not in scheme_code_ids.values(), \
-                            "Failed to generate a new, unique code id for code '{}'".format(code)
-                        scheme_code_ids[code] = new_scheme_code_id
+                        assert new_scheme_code_id not in scheme.code_ids(), \
+                            "Failed to generate a new, unique code id for code '{}'".format(code_value)
+                        scheme.add_code(Code(code_value, new_scheme_code_id))
 
                     row.update({
-                        "deco_codeValue": code,
-                        "deco_codeId": scheme_code_ids[code],
+                        "deco_codeValue": code_value,
+                        "deco_codeId": scheme.get_code_id(code_value),
                         "deco_confidence": 0.95,  # Same confidence as auto-coding in Coda as of ve42857.
                         "deco_codingMode": "external",
                         # Not exporting deco_timestamp or deco_author because Coda just overwrites them
