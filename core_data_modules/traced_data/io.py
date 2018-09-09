@@ -187,7 +187,7 @@ class TracedDataCodaIO(object):
 
         # Convert scheme_keys which are strings to CodeSchemes.
         scheme_keys = {
-            scheme_name if type(scheme_name) == CodeScheme else CodeScheme(name=scheme_name, scheme_id=None): key_of_coded
+            scheme_name if type(scheme_name) == CodeScheme else CodeScheme(name=scheme_name, id=None): key_of_coded
             for scheme_name, key_of_coded in scheme_keys.items()}
         scheme_lut = {scheme.name: scheme for scheme in scheme_keys.keys()}
 
@@ -221,9 +221,9 @@ class TracedDataCodaIO(object):
             for row in prev_rows:
                 scheme = scheme_lut[row["schemeName"]]
                 if len(scheme.codes) == 0:
-                    scheme.scheme_id = row["schemeId"]
+                    scheme.id = row["schemeId"]
                 else:
-                    assert row["schemeId"] == scheme.scheme_id  # TODO: Error message
+                    assert row["schemeId"] == scheme.id  # TODO: Error message
 
             # Rebuild code_ids dict from the previously coded file.
             for row in prev_rows:
@@ -250,12 +250,12 @@ class TracedDataCodaIO(object):
             for row in prev_rows:
                 writer.writerow(row)
 
-        # Populate scheme_ids dict
+        # Populate ids dict
         for scheme in scheme_keys.keys():
-            if scheme.scheme_id is None:
-                existing_scheme_ids = [scheme.scheme_id for scheme in scheme_keys.keys() if
-                                       scheme.scheme_id is not None]
-                scheme.scheme_id = cls._generate_new_coda_id(existing_scheme_ids)
+            if scheme.id is None:
+                existing_ids = [scheme.id for scheme in scheme_keys.keys() if
+                                       scheme.id is not None]
+                scheme.id = cls._generate_new_coda_id(existing_ids)
 
         # Export each message to a row in Coda's datafile format.
         for td in unique_data:
@@ -265,7 +265,7 @@ class TracedDataCodaIO(object):
                     "owner": item_id,
                     "data": td[key_of_raw],
 
-                    "schemeId": scheme.scheme_id,
+                    "schemeId": scheme.id,
                     "schemeName": scheme.name
                     # Not exporting timestamp because this doesn't actually do anything in Coda.
                 }
@@ -277,7 +277,7 @@ class TracedDataCodaIO(object):
                         # Note: This assumes Coda code ids always take the form '<scheme-id>-<code-id>'
                         new_code_id = cls._generate_new_coda_id(
                             [int(id.split("-")[1]) for id in scheme.code_ids()])
-                        new_scheme_code_id = "{}-{}".format(scheme.scheme_id, new_code_id)
+                        new_scheme_code_id = "{}-{}".format(scheme.id, new_code_id)
                         assert new_scheme_code_id not in scheme.code_ids(), \
                             "Failed to generate a new, unique code id for code '{}'".format(code_value)
                         scheme.add_code(Code(code_value, new_scheme_code_id))

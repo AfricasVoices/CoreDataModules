@@ -155,7 +155,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_multiple_schemes.csv"))
 
         # Test exporting a code scheme where the scheme is pre-defined
-        gender_scheme = CodeScheme(scheme_id=1, name="Gender", code_names=["male", "female"])
+        gender_scheme = CodeScheme(id=1, name="Gender", code_names=["male", "female"])
         with open(file_path, "w") as f:
             TracedDataCodaIO.export_traced_data_iterable_to_coda_with_scheme(
                 data, "Value", {gender_scheme: "Gender_clean", "Age": "Age_clean"}, f)
