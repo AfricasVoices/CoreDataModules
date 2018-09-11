@@ -3,9 +3,22 @@ from core_data_modules.cleaners.somali.demographic_patterns import Patterns
 
 
 class DemographicCleaner(object):
-    @staticmethod
-    def is_noise(text):
-        return RegexUtils.has_matches(text, Patterns.noise)
+    @classmethod
+    def is_noise(cls, text):
+        # Note: Testing is_only_yes_no AND clean_yes_no because
+        # is_only_yes_no == True does not imply clean_yes_no does not return Codes.NOT_CODED
+        is_demographic = False
+        if cls.is_only_yes_no(text) or \
+                cls.clean_gender(text) is not Codes.NOT_CODED or \
+                cls.clean_yes_no(text) is not Codes.NOT_CODED or \
+                cls.clean_urban_rural(text) is not Codes.NOT_CODED or \
+                cls.clean_somalia_district(text) is not Codes.NOT_CODED or \
+                cls.clean_age(text) is not Codes.NOT_CODED:
+            is_demographic = True
+
+        is_noise_by_regex = RegexUtils.has_matches(text, Patterns.noise)
+
+        return is_noise_by_regex and not is_demographic
 
     @staticmethod
     def is_only_yes_no(text):

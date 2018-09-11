@@ -7,12 +7,27 @@ from core_data_modules.cleaners.somali import DemographicCleaner
 class TestDemographicCleaner(unittest.TestCase):
     # Note: These are very much place-holders until we work with AVF's annotation team to produce more complete suites.
 
+    def test_is_noise(self):
+        noise = ["kalkaal", "hi", "kal kaal asc", "KALKAL"]
+        not_noise = ["my", "ha", "24"]
+
+        for noise_test in noise:
+            self.assertTrue(DemographicCleaner.is_noise(noise_test))
+        for not_noise_test in not_noise:
+            self.assertFalse(DemographicCleaner.is_noise(not_noise_test))
+
+    def test_clean_is_only_yes_no(self):
+        self.assertTrue(DemographicCleaner.is_only_yes_no("ha"))
+        self.assertTrue(DemographicCleaner.is_only_yes_no("my"))
+
     def test_clean_genders(self):
         self.assertEqual(DemographicCleaner.clean_gender("woman"), Codes.FEMALE)
 
     def test_clean_yes_no(self):
         self.assertEqual(DemographicCleaner.clean_yes_no("haa"), Codes.YES)
+        # self.assertEqual(DemographicCleaner.clean_yes_no("ha"), Codes.YES)  # TODO: Test fails
         self.assertEqual(DemographicCleaner.clean_yes_no("mayo"), Codes.NO)
+        # self.assertEqual(DemographicCleaner.clean_yes_no("my"), Codes.NO)  # TODO: Test fails
 
     def test_clean_urban_rural(self):
         self.assertEqual(DemographicCleaner.clean_urban_rural("maalo"), Codes.URBAN)
