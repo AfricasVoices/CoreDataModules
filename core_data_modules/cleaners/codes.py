@@ -12,3 +12,10 @@ class Codes(object):
     SKIPPED = "NS"
     NOT_LOGICAL = "NL"
     NOT_CODED = None  # TODO: Change to "NC"
+
+    # Somali mobile phone network operators
+    GOLIS = "golis"
+    HORMUD = "hormud"
+    NATIONLINK = "nationlink"
+    SOMTEL = "somtel"
+    TELESOM = "telesom"
