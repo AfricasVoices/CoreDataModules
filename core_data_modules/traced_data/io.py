@@ -232,7 +232,9 @@ class TracedDataCodaIO(object):
                 if prev_code_value not in scheme_code_ids:
                     scheme_code_ids[prev_code_value] = prev_code_id
                 else:
-                    assert scheme_code_ids[prev_code_value] == row["deco_codeId"]
+                    assert scheme_code_ids[prev_code_value] == row["deco_codeId"], \
+                        "Error: Code value '{}' has conflicting scheme ids (observed ids '{}' and " \
+                        "'{}')".format(prev_code_value, scheme_code_ids[prev_code_value], row["deco_codeId"])
 
             # Detect the highest row/owner ids in the previously coded file. New row ids will increment from these.
             max_prev_item_id = 0
