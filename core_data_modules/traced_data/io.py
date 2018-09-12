@@ -713,7 +713,7 @@ class TracedDataTheInterfaceIO(object):
                     "county": cls._get_demographic(td, county_key)
                 }
 
-                if row["age"] != "NA":
-                    row["age"] = cls._age_to_age_group(row["age"])
+                # if row["age"] != "NA":
+                #     row["age"] = cls._age_to_age_group(row["age"])
 
                 writer.writerow(row)
