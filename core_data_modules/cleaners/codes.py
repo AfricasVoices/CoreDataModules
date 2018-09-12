@@ -1,4 +1,7 @@
 class Codes(object):
+    TRUE = "true"
+    FALSE = "false"
+
     MALE = "male"
     FEMALE = "female"
 
