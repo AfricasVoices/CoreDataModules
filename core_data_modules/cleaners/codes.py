@@ -1,3 +1,6 @@
+from core_data_modules.cleaners import somali
+
+
 class Codes(object):
     TRUE = "true"
     FALSE = "false"
@@ -10,6 +13,27 @@ class Codes(object):
 
     URBAN = "urban"
     RURAL = "rural"
+    
+    SOMALIA_DISTRICTS = somali.DemographicPatterns.somalia_districts.keys()
+    MOGADISHU_DISTRICTS = [
+        "mogadishu",
+        "boondheere",
+        "cabdiasis",
+        "daynile",
+        "dharkenley",
+        "heliwa",
+        "hodan",
+        "hawl wadaag",
+        "karaan",
+        "shangaani",
+        "shibis",
+        "waaberi",
+        "wadajir",
+        "wardhiigleey",
+        "xamar jajab",
+        "xamar weyn",
+        "yaaqshid"
+    ]
 
     TRUE_MISSING = "NA"
     SKIPPED = "NS"
