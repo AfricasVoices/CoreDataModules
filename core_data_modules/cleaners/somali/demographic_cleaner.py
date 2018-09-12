@@ -99,16 +99,16 @@ class DemographicCleaner(object):
         return Codes.NOT_CODED
 
     @staticmethod
-    def clean_age_range(age, min_age_inclusive=10, max_age_inclusive=99):
+    def clean_age_within_range(age, min_age_inclusive=10, max_age_inclusive=99):
         """
         Returns age if age is between the specified min and max acceptable ages, otherwise returns Codes.NOT_CODED
 
-        >>> DemographicCleaner.clean_age_range(24)
+        >>> DemographicCleaner.clean_age_within_range(24)
         24
-        >>> DemographicCleaner.clean_age_range("24")
+        >>> DemographicCleaner.clean_age_within_range("24")
         24
-        >>> DemographicCleaner.clean_age_range(102)
-        >>> DemographicCleaner.clean_age_range(30, min_age_inclusive=45, max_age_inclusive=55)
+        >>> DemographicCleaner.clean_age_within_range(102)
+        >>> DemographicCleaner.clean_age_within_range(30, min_age_inclusive=45, max_age_inclusive=55)
 
         :param age: Age to clamp to the given range.
         :type age: str | int
