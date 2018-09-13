@@ -1,6 +1,7 @@
 import re
 
 from core_data_modules.cleaners import Codes
+from core_data_modules.cleaners.codes.somalia_codes import SomaliaCodes
 
 
 class PhoneCleaner(object):
@@ -52,16 +53,16 @@ class PhoneCleaner(object):
         :rtype: str
         """
         somalia_operator_prefixes = {
-            "25261": Codes.HORMUD,
-            "25262": Codes.SOMTEL,
-            "25263": Codes.TELESOM,
-            "25264": Codes.HORMUD,
-            "25265": Codes.SOMTEL,
-            "25266": Codes.SOMTEL,
-            "25267": Codes.NATIONLINK,
-            "25268": Codes.NATIONLINK,
-            "25269": Codes.NATIONLINK,
-            "25290": Codes.GOLIS
+            "25261": SomaliaCodes.HORMUD,
+            "25262": SomaliaCodes.SOMTEL,
+            "25263": SomaliaCodes.TELESOM,
+            "25264": SomaliaCodes.HORMUD,
+            "25265": SomaliaCodes.SOMTEL,
+            "25266": SomaliaCodes.SOMTEL,
+            "25267": SomaliaCodes.NATIONLINK,
+            "25268": SomaliaCodes.NATIONLINK,
+            "25269": SomaliaCodes.NATIONLINK,
+            "25290": SomaliaCodes.GOLIS
         }
 
         normalised_phone_number = cls.normalise_phone(phone_number)

@@ -1,5 +1,5 @@
 from core_data_modules.cleaners import RegexUtils, Codes, DigitCleaner
-from core_data_modules.cleaners.somali.demographic_patterns import Patterns
+from core_data_modules.cleaners.somali.demographic_patterns import DemographicPatterns
 
 
 class DemographicCleaner(object):
@@ -16,29 +16,29 @@ class DemographicCleaner(object):
                 cls.clean_age(text) is not Codes.NOT_CODED:
             is_demographic = True
 
-        is_noise_by_regex = RegexUtils.has_matches(text, Patterns.noise)
+        is_noise_by_regex = RegexUtils.has_matches(text, DemographicPatterns.noise)
 
         return is_noise_by_regex and not is_demographic
 
     @staticmethod
     def is_only_yes_no(text):
-        return RegexUtils.has_matches(text, Patterns.only_yes_no)
+        return RegexUtils.has_matches(text, DemographicPatterns.only_yes_no)
 
     @staticmethod
     def clean_gender(text):
-        return RegexUtils.clean_with_patterns(text, Patterns.genders)
+        return RegexUtils.clean_with_patterns(text, DemographicPatterns.genders)
 
     @staticmethod
     def clean_yes_no(text):
-        return RegexUtils.clean_with_patterns(text, Patterns.yes_no)
+        return RegexUtils.clean_with_patterns(text, DemographicPatterns.yes_no)
 
     @staticmethod
     def clean_urban_rural(text):
-        return RegexUtils.clean_with_patterns(text, Patterns.urban_rural)
+        return RegexUtils.clean_with_patterns(text, DemographicPatterns.urban_rural)
 
     @staticmethod
     def clean_somalia_district(text):
-        return RegexUtils.clean_with_patterns(text, Patterns.somalia_districts)
+        return RegexUtils.clean_with_patterns(text, DemographicPatterns.somalia_districts)
     
     @staticmethod
     def clean_number_words(text):
@@ -61,7 +61,7 @@ class DemographicCleaner(object):
         total = 0
         found_match = False
 
-        for number, pattern in Patterns.numbers.items():
+        for number, pattern in DemographicPatterns.numbers.items():
             if RegexUtils.has_matches(text, pattern):
                 found_match = True
                 total += number
