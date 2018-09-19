@@ -4,7 +4,7 @@ from core_data_modules.cleaners.somali.demographic_patterns import DemographicPa
 
 class DemographicCleaner(object):
     @classmethod
-    def is_noise(cls, text):
+    def is_noise(cls, text, min_length=-1):
         # Note: Testing is_only_yes_no AND clean_yes_no because
         # is_only_yes_no == True does not imply clean_yes_no does not return Codes.NOT_CODED
         is_demographic = False
@@ -17,8 +17,9 @@ class DemographicCleaner(object):
             is_demographic = True
 
         is_noise_by_regex = RegexUtils.has_matches(text, DemographicPatterns.noise)
+        is_noise_by_compexity = min_length > 0 and len(text) < min_length
 
-        return is_noise_by_regex and not is_demographic
+        return (is_noise_by_regex or is_noise_by_compexity) and not is_demographic
 
     @staticmethod
     def is_only_yes_no(text):
