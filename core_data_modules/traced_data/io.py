@@ -372,13 +372,21 @@ class TracedDataCodaIO(object):
         # across all the specified coda keys.
         all_matrix_keys = {row[cls.coda_code_value_col] for row in coded if row[cls.coda_scheme_name_col] in coda_keys}
 
+        # Find codes assigned to each row of the coded data
+        coded_matrix_keys = dict()
+        for row in coded:
+            if row[cls.coda_scheme_name_col] not in coda_keys:
+                continue
+
+            key = row[cls.coda_data_col]
+            if key not in coded_matrix_keys:
+                coded_matrix_keys[key] = set()
+            coded_matrix_keys[key].add(row[cls.coda_code_value_col])
+
+        # Apply the codes to each td in data
         for td in data:
             # Determine which matrix keys have been set for this TracedData item.
-            td_matrix_keys = set()
-            for coda_key in coda_keys:
-                for row in coded:
-                    if td[key_of_raw] == row[cls.coda_data_col] and row[cls.coda_scheme_name_col] == coda_key:
-                        td_matrix_keys.add(row[cls.coda_code_value_col])
+            td_matrix_keys = coded_matrix_keys.get(td[key_of_raw], set())
 
             # Construct and set the matrix for this TracedData item accordingly.
             td_matrix_data = dict()
