@@ -182,7 +182,6 @@ class SomaliaCodes(object):
         JARIIBAN,
         JOWHAR,
         JILIB,
-        KARAAN,
         KISMAYO,
         KURTUNWAAREY,
         LAAS_CAANOD,
@@ -198,22 +197,14 @@ class SomaliaCodes(object):
         RAB_DHUURE,
         SAAKOW,
         SABLAALE,
-        SHANGAANI,
         SHEIKH,
-        SHIBIS,
         TALEEX,
         TAYEEGLOW,
-        WAABERI,
         WAAJID,
-        WADAJIR,
-        WARDHIIGLEEY,
         WANLA_WEYNE,
-        XAMAR_JAABJAB,
-        XAMAR_WEYNE,
         XARARDHEERE,
         XUDUN,
         XUDUR,
-        YAAQSHID,
         ZEYLAC,
         MOGADISHU
     ]
@@ -326,11 +317,34 @@ class SomaliaCodes(object):
         JILIB: MIDDLE_JUBA,
         JOWHAR: MIDDLE_SHABELLE,
         KISMAYO: LOWER_JUBA,
-        KURTUNWAAREY: LOWER_SHABELLE
+        KURTUNWAAREY: LOWER_SHABELLE,
+        LAAS_CAANOD: SOOL,  # TODO: Correct to LASS_CAANOOD?
+        LAASQORAY: SANAAG,  # TODO: Correct to LASQOORAY?
+        LUGHAYE: AWDAL,
+        LUUQ: GEDO,
+        MARKA: LOWER_SHABELLE,
+        MOGADISHU: BANADIR,
+        OWDWEYNE: TOGDHEER,
+        QANDALA: BARI,
+        QANSAX_DHEERE: BAY,
+        QARDHO: BARI,
+        QORYOOLEY: LOWER_SHABELLE,
+        RAB_DHUURE: BAKOOL,
+        SAAKOW: MIDDLE_JUBA,
+        SABLAALE: LOWER_SHABELLE,
+        SHEIKH: TOGDHEER,
+        TALEEX: SOOL,
+        TAYEEGLOW: BAKOOL,
+        WAAJID: BAKOOL,
+        WANLA_WEYNE: LOWER_SHABELLE,  # TODO: Correct to WANLA_WEYN?
+        XARARDHEERE: MUDUG,
+        XUDUN: SOOL,
+        XUDUR: BAKOOL,
+        ZEYLAC: AWDAL
     }
 
-    # for d in SOMALIA_DISTRICTS:
-    #     assert d in DISTRICT_TO_REGION_MAP, "Missing district: '{}'".format(d)
+    for d in SOMALIA_DISTRICTS:
+        assert d in DISTRICT_TO_REGION_MAP, "Missing district: '{}'".format(d)
 
     REGION_TO_STATE_MAP = {
         LOWER_SHABELLE: SOUTH_WEST_STATE,
