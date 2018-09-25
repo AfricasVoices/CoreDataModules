@@ -146,7 +146,6 @@ class SomaliaCodes(object):
         BELET_WEYNE,
         BELET_XAAWO,
         BERBERA,
-        BOONDHEERE,
         BORAMA,
         BOSSASO,
         BUAALE,
@@ -284,8 +283,33 @@ class SomaliaCodes(object):
 
     DISTRICT_TO_REGION_MAP = {
         ADAN_YABAAL: MIDDLE_SHABELLE,
-        AFGOOYE: LOWER_SHABELLE
+        AFGOOYE: LOWER_SHABELLE,
+        AFMADOW: LOWER_JUBA,
+        BAARDHEERE: GEDO,
+        BADHAADHE: LOWER_JUBA,
+        BAIDOA: BAY,
+        BAKI: AWDAL,
+        BALCAD: MIDDLE_SHABELLE,
+        BANDARBAYLA: BARI,
+        BARAAWE: LOWER_SHABELLE,
+        BELET_WEYNE: HIRAAN,
+        BELET_XAAWO: GEDO,
+        BERBERA: WOQOOYI_GALBEED,
+        BORAMA: AWDAL,
+        BOSSASO: BARI,
+        BUAALE: MIDDLE_JUBA,
+        BULO_BURTO: HIRAAN,
+        BURCO: TOGDHEER,
+        BURTINLE: NUGAAL,
+        BUUHOODLE: TOGDHEER,
+        BUUR_HAKABA: BAY,
+        CABUDWAAQ: GALGADUUD,
+        CADAADO: GALGADUUD,
+        CADALE: MIDDLE_SHABELLE
     }
+
+    # for d in SOMALIA_DISTRICTS:
+    #     assert d in DISTRICT_TO_REGION_MAP, "Missing district: '{}'".format(d)
 
     REGION_TO_STATE_MAP = {
         LOWER_SHABELLE: SOUTH_WEST_STATE,
