@@ -1,4 +1,5 @@
 from core_data_modules.cleaners import RegexUtils, Codes, DigitCleaner
+from core_data_modules.cleaners.codes import SomaliaCodes
 from core_data_modules.cleaners.somali.demographic_patterns import DemographicPatterns
 
 
@@ -130,3 +131,52 @@ class DemographicCleaner(object):
             return Codes.NOT_CODED
 
         return age
+
+    @staticmethod
+    def get_region(location):
+        """
+        Returns the region for the provided Somalia location code.
+        
+        The provided code may be a district or a region.
+
+        >>> DemographicCleaner.get_region(SomaliaCodes.ADAN_YABAAL)
+        'middle shabelle'
+        >>> DemographicCleaner.get_region(SomaliaCodes.LOWER_SHABELLE)
+        'lower shabelle'
+
+        :param location: A Somalia district or region code
+        :type location: str
+        :return: Region or Codes.NOT_CODED
+        :rtype: str
+        """
+        if location in SomaliaCodes.DISTRICT_TO_REGION_MAP:
+            return SomaliaCodes.DISTRICT_TO_REGION_MAP[location]
+
+        if location in SomaliaCodes.SOMALIA_REGIONS:
+            return location
+
+        return Codes.NOT_CODED
+
+    @classmethod
+    def get_state(cls, location):
+        """
+
+        >>> DemographicCleaner.get_state(SomaliaCodes.ADAN_YABAAL)
+        'hir-shabelle'
+
+        :param location:
+        :type location:
+        :return:
+        :rtype:
+        """
+        region = cls.get_region(location)
+        if region != Codes.NOT_CODED:
+            location = region
+        
+        if location in SomaliaCodes.REGION_TO_STATE_MAP:
+            return SomaliaCodes.REGION_TO_STATE_MAP[location]
+        
+        if location in SomaliaCodes.SOMALIA_STATES:
+            return location
+
+        return Codes.NOT_CODED

@@ -287,3 +287,13 @@ class SomaliaCodes(object):
         AFGOOYE: LOWER_SHABELLE
     }
 
+    REGION_TO_STATE_MAP = {
+        LOWER_SHABELLE: SOUTH_WEST_STATE,
+        MIDDLE_SHABELLE: HIR_SHABELLE
+    }
+
+    STATE_TO_ZONE_MAP = {
+        HIR_SHABELLE: SCZ,
+        MIDDLE_SHABELLE: SCZ,
+        SOUTH_WEST_STATE: SCZ
+    }
