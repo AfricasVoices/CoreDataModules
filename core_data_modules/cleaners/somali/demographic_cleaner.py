@@ -187,3 +187,17 @@ class DemographicCleaner(object):
             return location
 
         return Codes.NOT_CODED
+
+    @classmethod
+    def get_zone(cls, location):
+        state = cls.get_state(location)
+        if location != Codes.NOT_CODED:
+            location = state
+
+        if location in SomaliaCodes.STATE_TO_ZONE_MAP:
+            return SomaliaCodes.STATE_TO_ZONE_MAP[location]
+
+        if location in SomaliaCodes.SOMALIA_ZONES:
+            return location
+
+        return Codes.NOT_CODED
