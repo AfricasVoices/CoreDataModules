@@ -91,6 +91,40 @@ class SomaliaCodes(object):
     ZEYLAC = "zeylac"
     MOGADISHU = "mogadishu"
 
+    # Regions
+    AWDAL = "awdal"
+    BAKOOL = "bakool"
+    BANADIR = "banadir"
+    BARI = "bari"
+    BAY = "bay"
+    GALGADUUD = "galgaduud"
+    GEDO = "gedo"
+    HIRAAN = "hiraan"
+    LOWER_JUBA = "lower juba"
+    LOWER_SHABELLE = "lower shabelle"
+    MIDDLE_JUBA = "middle juba"
+    MIDDLE_SHABELLE = "middle shabelle"
+    MUDUG = "mudug"
+    NUGAAL = "nugaal"
+    SANAAG = "sanaag"
+    SOOL = "sool"
+    TOGDHEER = "togdheer"
+    WOQOOYI_GALBEED = "woqooyi galbeed"
+
+    # States
+    # BANADIR, as defined above
+    GALMUDUG = "galmudug"
+    HIR_SHABELLE = "hir-shabelle"
+    JUBBALAND = "jubbaland"
+    PUNTLAND = "puntland"
+    SOMALILAND = "somaliland"
+    SOUTH_WEST_STATE = "south west state"
+
+    # Zones
+    NEZ = "NEZ"
+    NWZ = "NWZ"
+    SCZ = "SCZ"
+
     # Mobile phone network operators
     GOLIS = "golis"
     HORMUD = "hormud"
@@ -211,4 +245,45 @@ class SomaliaCodes(object):
         YAAQSHID
     ]
 
+    SOMALIA_REGIONS = [
+        AWDAL,
+        BAKOOL,
+        BANADIR,
+        BARI,
+        BAY,
+        GALGADUUD,
+        GEDO,
+        HIRAAN,
+        LOWER_JUBA,
+        LOWER_SHABELLE,
+        MIDDLE_JUBA,
+        MIDDLE_SHABELLE,
+        MUDUG,
+        NUGAAL,
+        SANAAG,
+        SOOL,
+        TOGDHEER,
+        WOQOOYI_GALBEED
+    ]
+
+    SOMALIA_STATES = [
+        BANADIR,
+        GALMUDUG,
+        HIR_SHABELLE,
+        JUBBALAND,
+        PUNTLAND,
+        SOMALILAND,
+        SOUTH_WEST_STATE
+    ]
+
+    SOMALIA_ZONES = [
+        NEZ,
+        NWZ,
+        SCZ
+    ]
+
+    DISTRICT_TO_REGION_MAP = {
+        ADAN_YABAAL: MIDDLE_SHABELLE,
+        AFGOOYE: LOWER_SHABELLE
+    }
 
