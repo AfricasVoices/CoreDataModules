@@ -131,6 +131,13 @@ class DemographicCleaner(object):
             return Codes.NOT_CODED
 
         return age
+    
+    @staticmethod
+    def get_district(location):
+        if location in SomaliaCodes.SOMALIA_DISTRICTS:
+            return location
+        
+        return Codes.NOT_CODED
 
     @staticmethod
     def get_region(location):
