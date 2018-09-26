@@ -209,7 +209,7 @@ class SomaliaCodes(object):
         MOGADISHU
     ]
 
-    MOGADISHU_DISTRICTS = [
+    MOGADISHU_SUB_DISTRICTS = [
         MOGADISHU,
         BOONDHEERE,
         CABDLCASIIS,
