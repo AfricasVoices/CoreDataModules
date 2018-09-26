@@ -347,12 +347,32 @@ class SomaliaCodes(object):
         assert d in DISTRICT_TO_REGION_MAP, "Missing district: '{}'".format(d)
 
     REGION_TO_STATE_MAP = {
+        AWDAL: SOMALILAND,
+        BAKOOL: SOUTH_WEST_STATE,
+        BANADIR: BANADIR,
+        BARI: PUNTLAND,
+        BAY: SOUTH_WEST_STATE,
+        GALGADUUD: GALMUDUG,
+        GEDO: JUBBALAND,
+        HIRAAN: HIR_SHABELLE,
+        LOWER_JUBA: JUBBALAND,
         LOWER_SHABELLE: SOUTH_WEST_STATE,
-        MIDDLE_SHABELLE: HIR_SHABELLE
+        MIDDLE_JUBA: JUBBALAND,
+        MIDDLE_SHABELLE: HIR_SHABELLE,
+        MUDUG: GALMUDUG,
+        NUGAAL: PUNTLAND,
+        SANAAG: SOMALILAND,
+        SOOL: SOMALILAND,
+        TOGDHEER: SOMALILAND,
+        WOQOOYI_GALBEED: SOMALILAND
     }
 
     STATE_TO_ZONE_MAP = {
+        BANADIR: SCZ,
+        GALMUDUG: SCZ,
         HIR_SHABELLE: SCZ,
-        MIDDLE_SHABELLE: SCZ,
+        JUBBALAND: SCZ,
+        PUNTLAND: NEZ,
+        SOMALILAND: NWZ,
         SOUTH_WEST_STATE: SCZ
     }
