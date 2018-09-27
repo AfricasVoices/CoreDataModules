@@ -45,7 +45,7 @@ class SomaliaCodes(object):
     GARBAHAAREY = "garbahaarey"
     GAROWE = "garowe"
     GEBILEY = "gebiley"
-    HARGEISA = "hargeisa"
+    HARGEYSA = "hargeysa"
     HAWL_WADAAG = "hawl wadaag"
     HELIWA = "heliwa"
     HOBYO = "hobyo"
@@ -59,8 +59,8 @@ class SomaliaCodes(object):
     KARAAN = "karaan"
     KISMAYO = "kismayo"
     KURTUNWAAREY = "kurtunwaarey"
-    LAAS_CAANOD = "laas caanod"
-    LAASQORAY = "laasqoray"
+    LAAS_CAANOOD = "laas caanood"
+    LAASQOORAY = "laasqooray"
     LUGHAYE = "lughaye"
     LUUQ = "luuq"
     MARKA = "marka"
@@ -81,7 +81,7 @@ class SomaliaCodes(object):
     WAAJID = "waajid"
     WADAJIR = "wadajir"
     WARDHIIGLEEY = "wardhiigleey"
-    WANLA_WEYNE = "wanla weyne"
+    WANLA_WEYN = "wanla weyn"
     XAMAR_JAABJAB = "xamar jaabjab"
     XAMAR_WEYNE = "xamar weyne"
     XARARDHEERE = "xarardheere"
@@ -174,7 +174,7 @@ class SomaliaCodes(object):
         GARBAHAAREY,
         GAROWE,
         GEBILEY,
-        HARGEISA,
+        HARGEYSA,
         HOBYO,
         ISKUSHUBAN,
         JALALAQSI,
@@ -184,8 +184,8 @@ class SomaliaCodes(object):
         JILIB,
         KISMAYO,
         KURTUNWAAREY,
-        LAAS_CAANOD,
-        LAASQORAY,
+        LAAS_CAANOOD,
+        LAASQOORAY,
         LUGHAYE,
         LUUQ,
         MARKA,
@@ -201,7 +201,7 @@ class SomaliaCodes(object):
         TALEEX,
         TAYEEGLOW,
         WAAJID,
-        WANLA_WEYNE,
+        WANLA_WEYN,
         XARARDHEERE,
         XUDUN,
         XUDUR,
@@ -308,7 +308,7 @@ class SomaliaCodes(object):
         GARBAHAAREY: GEDO,
         GAROWE: NUGAAL,
         GEBILEY: WOQOOYI_GALBEED,
-        HARGEISA: WOQOOYI_GALBEED,  # TODO: Correct to HARGEYSA?
+        HARGEYSA: WOQOOYI_GALBEED,
         HOBYO: MUDUG,
         ISKUSHUBAN: BARI,
         JALALAQSI: HIRAAN,
@@ -318,8 +318,8 @@ class SomaliaCodes(object):
         JOWHAR: MIDDLE_SHABELLE,
         KISMAYO: LOWER_JUBA,
         KURTUNWAAREY: LOWER_SHABELLE,
-        LAAS_CAANOD: SOOL,  # TODO: Correct to LASS_CAANOOD?
-        LAASQORAY: SANAAG,  # TODO: Correct to LASQOORAY?
+        LAAS_CAANOOD: SOOL,
+        LAASQOORAY: SANAAG,
         LUGHAYE: AWDAL,
         LUUQ: GEDO,
         MARKA: LOWER_SHABELLE,
@@ -336,15 +336,12 @@ class SomaliaCodes(object):
         TALEEX: SOOL,
         TAYEEGLOW: BAKOOL,
         WAAJID: BAKOOL,
-        WANLA_WEYNE: LOWER_SHABELLE,  # TODO: Correct to WANLA_WEYN?
+        WANLA_WEYN: LOWER_SHABELLE,
         XARARDHEERE: MUDUG,
         XUDUN: SOOL,
         XUDUR: BAKOOL,
         ZEYLAC: AWDAL
     }
-
-    for d in SOMALIA_DISTRICTS:
-        assert d in DISTRICT_TO_REGION_MAP, "Missing district: '{}'".format(d)
 
     REGION_TO_STATE_MAP = {
         AWDAL: SOMALILAND,
