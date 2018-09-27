@@ -157,8 +157,8 @@ class DemographicCleaner(object):
 
         return Codes.NOT_CODED
 
-    @staticmethod
-    def get_region(location):
+    @classmethod
+    def get_region(cls, location):
         """
         Returns the region for the provided Somalia location code.
         
@@ -174,6 +174,10 @@ class DemographicCleaner(object):
         :return: Somali region or Codes.NOT_CODED
         :rtype: str
         """
+        district = cls.get_district(location)
+        if district != Codes.NOT_CODED:
+            location = district
+
         if location in SomaliaCodes.DISTRICT_TO_REGION_MAP:
             return SomaliaCodes.DISTRICT_TO_REGION_MAP[location]
 
