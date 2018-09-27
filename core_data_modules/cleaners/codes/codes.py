@@ -17,3 +17,4 @@ class Codes(object):
     SKIPPED = "NS"
     NOT_LOGICAL = "NL"
     NOT_CODED = None  # TODO: Change to "NC"
+    NOT_REVIEWED = "NR"
