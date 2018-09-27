@@ -170,12 +170,12 @@ class TestTracedDataCodaIO(unittest.TestCase):
                "test_user", data, "Value", {"Gender": "Gender_clean", "Age": "Age_clean"}, f, True)
 
         expected_data_dicts = [
-            {"Value": "man", "Gender_clean": "male", "Age_clean": None},
-            {"Value": "woman", "Gender_clean": "female", "Age_clean": None},
-            {"Value": "twenty", "Gender_clean": None, "Age_clean": "20"},
-            {"Value": "hello", "Gender_clean": None, "Age_clean": None},
+            {"Value": "man", "Gender_clean": "male", "Age_clean": Codes.NOT_REVIEWED},
+            {"Value": "woman", "Gender_clean": "female", "Age_clean": Codes.NOT_REVIEWED},
+            {"Value": "twenty", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": "20"},
+            {"Value": "hello", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": Codes.NOT_REVIEWED},
             {"Value": "44F", "Gender_clean": "female", "Age_clean": "44"},
-            {"Value": "33", "Gender_clean": None, "Age_clean": "33"}
+            {"Value": "33", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": "33"}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):
@@ -236,7 +236,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "X"},
             {"URN": "+0012345000001", "Gender": "m", "Gender_clean": "M"},
             {"URN": "+0012345000002", "Gender": "WoMaN", "Gender_clean": "F"},
-            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": None},
+            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": Codes.NOT_REVIEWED},
             {"URN": "+0012345000004", "Gender": "female", "Gender_clean": "F"}
         ]
 
@@ -258,7 +258,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "F"},
             {"URN": "+0012345000001", "Gender": "m", "Gender_clean": "M"},
             {"URN": "+0012345000002", "Gender": "WoMaN", "Gender_clean": "F"},
-            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": None},
+            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": Codes.NOT_REVIEWED},
             {"URN": "+0012345000004", "Gender": "female", "Gender_clean": "F"}
         ]
 
