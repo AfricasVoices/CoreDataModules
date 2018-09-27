@@ -178,7 +178,7 @@ class DemographicCleaner(object):
         if district != Codes.NOT_CODED:
             location = district
 
-        if location in SomaliaCodes.DISTRICT_TO_REGION_MAP:
+        if location in SomaliaCodes.DISTRICTS:
             return SomaliaCodes.DISTRICT_TO_REGION_MAP[location]
 
         if location in SomaliaCodes.REGIONS:
@@ -205,7 +205,7 @@ class DemographicCleaner(object):
         if region != Codes.NOT_CODED:
             location = region
 
-        if location in SomaliaCodes.REGION_TO_STATE_MAP:
+        if location in SomaliaCodes.REGIONS:
             return SomaliaCodes.REGION_TO_STATE_MAP[location]
 
         if location in SomaliaCodes.STATES:
@@ -229,7 +229,7 @@ class DemographicCleaner(object):
         if location != Codes.NOT_CODED:
             location = state
 
-        if location in SomaliaCodes.STATE_TO_ZONE_MAP:
+        if location in SomaliaCodes.STATES:
             return SomaliaCodes.STATE_TO_ZONE_MAP[location]
 
         if location in SomaliaCodes.ZONES:
