@@ -121,9 +121,9 @@ class SomaliaCodes(object):
     SOUTH_WEST_STATE = "south west state"
 
     # Zones
-    NEZ = "NEZ"
-    NWZ = "NWZ"
-    SCZ = "SCZ"
+    NEZ = "nez"
+    NWZ = "nwz"
+    SCZ = "scz"
 
     # Mobile phone network operators
     GOLIS = "golis"
@@ -131,83 +131,6 @@ class SomaliaCodes(object):
     NATIONLINK = "nationlink"
     SOMTEL = "somtel"
     TELESOM = "telesom"
-
-    SOMALIA_DISTRICTS = [
-        ADAN_YABAAL,
-        AFGOOYE,
-        AFMADOW,
-        BAARDHEERE,
-        BADHAADHE,
-        BAIDOA,
-        BAKI,
-        BALCAD,
-        BANDARBAYLA,
-        BARAAWE,
-        BELET_WEYNE,
-        BELET_XAAWO,
-        BERBERA,
-        BORAMA,
-        BOSSASO,
-        BUAALE,
-        BULO_BURTO,
-        BURCO,
-        BURTINLE,
-        BUUHOODLE,
-        BUUR_HAKABA,
-        CABUDWAAQ,
-        CADAADO,
-        CADALE,
-        CALUULA,
-        CAYNABO,
-        CEEL_AFWEYN,
-        CEEL_BARDE,
-        CEEL_BUUR,
-        CEEL_DHEER,
-        CEEL_WAAQ,
-        CEERIGAABO,
-        DHUUSAMARREEB,
-        DIINSOOR,
-        DOOLOW,
-        EYL,
-        GAALKACYO,
-        GALDOGOB,
-        GARBAHAAREY,
-        GAROWE,
-        GEBILEY,
-        HARGEYSA,
-        HOBYO,
-        ISKUSHUBAN,
-        JALALAQSI,
-        JAMAAME,
-        JARIIBAN,
-        JOWHAR,
-        JILIB,
-        KISMAYO,
-        KURTUNWAAREY,
-        LAAS_CAANOOD,
-        LAASQOORAY,
-        LUGHAYE,
-        LUUQ,
-        MARKA,
-        OWDWEYNE,
-        QANDALA,
-        QANSAX_DHEERE,
-        QARDHO,
-        QORYOOLEY,
-        RAB_DHUURE,
-        SAAKOW,
-        SABLAALE,
-        SHEIKH,
-        TALEEX,
-        TAYEEGLOW,
-        WAAJID,
-        WANLA_WEYN,
-        XARARDHEERE,
-        XUDUN,
-        XUDUR,
-        ZEYLAC,
-        MOGADISHU
-    ]
 
     MOGADISHU_SUB_DISTRICTS = [
         MOGADISHU,
@@ -227,43 +150,6 @@ class SomaliaCodes(object):
         XAMAR_JAABJAB,
         XAMAR_WEYNE,
         YAAQSHID
-    ]
-
-    SOMALIA_REGIONS = [
-        AWDAL,
-        BAKOOL,
-        BANADIR,
-        BARI,
-        BAY,
-        GALGADUUD,
-        GEDO,
-        HIRAAN,
-        LOWER_JUBA,
-        LOWER_SHABELLE,
-        MIDDLE_JUBA,
-        MIDDLE_SHABELLE,
-        MUDUG,
-        NUGAAL,
-        SANAAG,
-        SOOL,
-        TOGDHEER,
-        WOQOOYI_GALBEED
-    ]
-
-    SOMALIA_STATES = [
-        BANADIR,
-        GALMUDUG,
-        HIR_SHABELLE,
-        JUBBALAND,
-        PUNTLAND,
-        SOMALILAND,
-        SOUTH_WEST_STATE
-    ]
-
-    SOMALIA_ZONES = [
-        NEZ,
-        NWZ,
-        SCZ
     ]
 
     DISTRICT_TO_REGION_MAP = {
@@ -373,3 +259,8 @@ class SomaliaCodes(object):
         SOMALILAND: NWZ,
         SOUTH_WEST_STATE: SCZ
     }
+
+    DISTRICTS = list(DISTRICT_TO_REGION_MAP.keys())
+    REGIONS = list(REGION_TO_STATE_MAP.keys())
+    STATES = list(STATE_TO_ZONE_MAP.keys())
+    ZONES = [NEZ, NWZ, SCZ]
