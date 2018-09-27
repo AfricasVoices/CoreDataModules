@@ -6,7 +6,7 @@ import jsonpickle
 import six
 from dateutil.parser import isoparse
 
-from core_data_modules.cleaners import CharacterCleaner
+from core_data_modules.cleaners import CharacterCleaner, Codes
 from core_data_modules.traced_data import Metadata, TracedData
 
 if six.PY2:
@@ -371,6 +371,7 @@ class TracedDataCodaIO(object):
         # Determine the available matrix headings from examination of all the code values which have been set
         # across all the specified coda keys.
         all_matrix_keys = {row[cls.coda_code_value_col] for row in coded if row[cls.coda_scheme_name_col] in coda_keys}
+        all_matrix_keys.add(Codes.NOT_REVIEWED)
 
         # Find codes assigned to each row of the coded data
         coded_matrix_keys = dict()  # of message -> set of codes assigned
@@ -386,8 +387,10 @@ class TracedDataCodaIO(object):
 
         # Apply the codes to each td in data
         for td in data:
-            # Determine which matrix keys have been set for this TracedData item.
-            td_matrix_keys = coded_matrix_keys.get(td[key_of_raw], set())
+            # Determine which matrix keys have been set for this TracedData item,
+            # by using the dictionary coded_matrix_keys as set above if this message was found in the Coda file,
+            # otherwise by using Codes.NOT_REVIEWED
+            td_matrix_keys = coded_matrix_keys.get(td[key_of_raw], {Codes.NOT_REVIEWED})
 
             # Construct and set the matrix for this TracedData item accordingly.
             td_matrix_data = dict()
