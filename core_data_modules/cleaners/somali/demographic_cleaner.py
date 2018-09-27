@@ -240,6 +240,8 @@ class DemographicCleaner(object):
     @classmethod
     def is_location(cls, location):
         """
+        Returns True if the given location argument matches a Mogadishu sub-district code, or a Somali 
+        district, region, state, or zone code, False otherwise.
 
         >>> DemographicCleaner.is_location('hodan')
         True
@@ -250,9 +252,9 @@ class DemographicCleaner(object):
         >>> DemographicCleaner.is_location('male')
         False
 
-        :param location:
-        :type location:
-        :return: Whether or not location is a
+        :param location: Code to test
+        :type location: str
+        :return: Whether or not location matches a known Somalia location code
         :rtype: bool
         """
         return location in SomaliaCodes.MOGADISHU_SUB_DISTRICTS or \
