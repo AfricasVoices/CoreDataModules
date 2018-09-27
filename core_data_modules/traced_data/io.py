@@ -91,6 +91,8 @@ class TracedDataCodaIO(object):
     coda_scheme_name_col = "schemeName"
     coda_code_value_col = "deco_codeValue"
 
+    overwritable_codes = {None, Codes.NOT_CODED, Codes.NOT_REVIEWED}  # Codes which may always be overwritten on import
+
     @staticmethod
     def _generate_new_coda_id(existing_ids):
         for i in range(1, 1000):
@@ -323,7 +325,7 @@ class TracedDataCodaIO(object):
 
         for td in data:
             for scheme_name, key_of_coded in scheme_keys.items():
-                if not overwrite_existing_codes and td.get(key_of_coded) not in {None, Codes.NOT_REVIEWED}:
+                if not overwrite_existing_codes and td.get(key_of_coded) not in cls.overwritable_codes:
                     continue
 
                 coded_lookup_key = (td[key_of_raw], scheme_name)
@@ -352,7 +354,7 @@ class TracedDataCodaIO(object):
         each set to "1" if that value was present in "reason 1" or in "reason 2" for that TracedData item's raw
         data; "0" otherwise.
 
-        Data which is has not been assigned a code in the Coda file will have <key_of_coded_prefix>_NR set to "1"
+        Data which is has not been assigned a code in the Coda file will have <key_of_coded_prefix>NR set to "1"
 
         :param user: Identifier of user running this program
         :type user: str
