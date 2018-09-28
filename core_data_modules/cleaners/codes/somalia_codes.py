@@ -94,9 +94,10 @@ class SomaliaCodes(object):
     # Alternative district names
     # See CANONICAL_DISTRICT_MAP below for corresponding canonical names
     BADHAN = "badhan"
+    BUAALE_NO_PUNCTUATION = "buaale"
     BULO_MARER = "bulo marer"
     GURICEEL = "guriceel"
-    MAHADY = "mahady"
+    MAHADAY = "mahaday"
     MATABAAN = "matabaan"
     WARSHEIKH = "warsheikh"
 
@@ -145,8 +146,9 @@ class SomaliaCodes(object):
     CANONICAL_DISTRICT_MAP = {
         BADHAN: JARIIBAN,
         BULO_MARER: MARKA,
+        BUAALE_NO_PUNCTUATION: BUAALE,
         GURICEEL: DHUUSAMARREEB,
-        MAHADY: JOWHAR,
+        MAHADAY: JOWHAR,
         MATABAAN: BELET_WEYNE,
         WARSHEIKH: BALCAD
     }
