@@ -1,5 +1,5 @@
 class SomaliaCodes(object):
-    # Districts
+    # Canonical district names
     ADAN_YABAAL = "adan yabaal"
     AFGOOYE = "afgooye"
     AFMADOW = "afmadow"
@@ -92,6 +92,7 @@ class SomaliaCodes(object):
     MOGADISHU = "mogadishu"
 
     # Alternative district names
+    # See CANONICAL_DISTRICT_MAP below for corresponding canonical names
     BADHAN = "badhan"
     BULO_MARER = "bulo marer"
     GURICEEL = "guriceel"
@@ -140,7 +141,7 @@ class SomaliaCodes(object):
     SOMTEL = "somtel"
     TELESOM = "telesom"
 
-    # Map alternative district names to their canonical names
+    # Map of alternative district names to their canonical names
     CANONICAL_DISTRICT_MAP = {
         BADHAN: JARIIBAN,
         BULO_MARER: MARKA,
