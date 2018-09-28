@@ -246,6 +246,21 @@ class DemographicCleaner(object):
         return Codes.NOT_CODED
 
     @classmethod
+    def get_zone_from_operator(cls, operator):
+        """
+        Returns the zone for the provided Somalia operator code.
+
+        >>> DemographicCleaner.get_zone_from_operator(SomaliaCodes.TELESOM)
+        'nwz'
+
+        :param operator: Somalia operator code to return the zone for
+        :type operator: str
+        :return: Somali zone or Codes.NOT_CODED
+        :rtype: str
+        """
+        return SomaliaCodes.OPERATOR_TO_ZONE_MAP.get(operator, Codes.NOT_CODED)
+
+    @classmethod
     def is_location(cls, location):
         """
         Returns True if the given location argument matches a Mogadishu sub-district code, or a Somali 

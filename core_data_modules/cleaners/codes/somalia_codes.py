@@ -276,6 +276,12 @@ class SomaliaCodes(object):
         SOUTH_WEST_STATE: SCZ
     }
 
+    OPERATOR_TO_ZONE_MAP = {
+        GOLIS: NEZ,
+        HORMUD: SCZ,
+        TELESOM: NWZ
+    }
+
     DISTRICTS = list(DISTRICT_TO_REGION_MAP.keys())
     DISTRICTS.extend(CANONICAL_DISTRICT_MAP.keys())
 
