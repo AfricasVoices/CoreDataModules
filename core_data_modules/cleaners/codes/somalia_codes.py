@@ -45,7 +45,7 @@ class SomaliaCodes(object):
     GARBAHAAREY = "garbahaarey"
     GAROWE = "garowe"
     GEBILEY = "gebiley"
-    HARGEISA = "hargeisa"
+    HARGEYSA = "hargeysa"
     HAWL_WADAAG = "hawl wadaag"
     HELIWA = "heliwa"
     HOBYO = "hobyo"
@@ -59,8 +59,8 @@ class SomaliaCodes(object):
     KARAAN = "karaan"
     KISMAYO = "kismayo"
     KURTUNWAAREY = "kurtunwaarey"
-    LAAS_CAANOD = "laas caanod"
-    LAASQORAY = "laasqoray"
+    LAAS_CAANOOD = "laas caanood"
+    LAASQOORAY = "laasqooray"
     LUGHAYE = "lughaye"
     LUUQ = "luuq"
     MARKA = "marka"
@@ -81,7 +81,7 @@ class SomaliaCodes(object):
     WAAJID = "waajid"
     WADAJIR = "wadajir"
     WARDHIIGLEEY = "wardhiigleey"
-    WANLA_WEYNE = "wanla weyne"
+    WANLA_WEYN = "wanla weyn"
     XAMAR_JAABJAB = "xamar jaabjab"
     XAMAR_WEYNE = "xamar weyne"
     XARARDHEERE = "xarardheere"
@@ -91,6 +91,40 @@ class SomaliaCodes(object):
     ZEYLAC = "zeylac"
     MOGADISHU = "mogadishu"
 
+    # Regions
+    AWDAL = "awdal"
+    BAKOOL = "bakool"
+    BANADIR = "banadir"
+    BARI = "bari"
+    BAY = "bay"
+    GALGADUUD = "galgaduud"
+    GEDO = "gedo"
+    HIRAAN = "hiraan"
+    LOWER_JUBA = "lower juba"
+    LOWER_SHABELLE = "lower shabelle"
+    MIDDLE_JUBA = "middle juba"
+    MIDDLE_SHABELLE = "middle shabelle"
+    MUDUG = "mudug"
+    NUGAAL = "nugaal"
+    SANAAG = "sanaag"
+    SOOL = "sool"
+    TOGDHEER = "togdheer"
+    WOQOOYI_GALBEED = "woqooyi galbeed"
+
+    # States
+    # BANADIR, as defined above
+    GALMUDUG = "galmudug"
+    HIR_SHABELLE = "hir-shabelle"
+    JUBBALAND = "jubbaland"
+    PUNTLAND = "puntland"
+    SOMALILAND = "somaliland"
+    SOUTH_WEST_STATE = "south west state"
+
+    # Zones
+    NEZ = "nez"
+    NWZ = "nwz"
+    SCZ = "scz"
+
     # Mobile phone network operators
     GOLIS = "golis"
     HORMUD = "hormud"
@@ -98,100 +132,7 @@ class SomaliaCodes(object):
     SOMTEL = "somtel"
     TELESOM = "telesom"
 
-    SOMALIA_DISTRICTS = [
-        ADAN_YABAAL,
-        AFGOOYE,
-        AFMADOW,
-        BAARDHEERE,
-        BADHAADHE,
-        BAIDOA,
-        BAKI,
-        BALCAD,
-        BANDARBAYLA,
-        BARAAWE,
-        BELET_WEYNE,
-        BELET_XAAWO,
-        BERBERA,
-        BOONDHEERE,
-        BORAMA,
-        BOSSASO,
-        BUAALE,
-        BULO_BURTO,
-        BURCO,
-        BURTINLE,
-        BUUHOODLE,
-        BUUR_HAKABA,
-        CABDLCASIIS,
-        CABUDWAAQ,
-        CADAADO,
-        CADALE,
-        CALUULA,
-        CAYNABO,
-        CEEL_AFWEYN,
-        CEEL_BARDE,
-        CEEL_BUUR,
-        CEEL_DHEER,
-        CEEL_WAAQ,
-        CEERIGAABO,
-        DAYNILE,
-        DHARKENLEY,
-        DHUUSAMARREEB,
-        DIINSOOR,
-        DOOLOW,
-        EYL,
-        GAALKACYO,
-        GALDOGOB,
-        GARBAHAAREY,
-        GAROWE,
-        GEBILEY,
-        HARGEISA,
-        HAWL_WADAAG,
-        HELIWA,
-        HOBYO,
-        HODAN,
-        ISKUSHUBAN,
-        JALALAQSI,
-        JAMAAME,
-        JARIIBAN,
-        JOWHAR,
-        JILIB,
-        KARAAN,
-        KISMAYO,
-        KURTUNWAAREY,
-        LAAS_CAANOD,
-        LAASQORAY,
-        LUGHAYE,
-        LUUQ,
-        MARKA,
-        OWDWEYNE,
-        QANDALA,
-        QANSAX_DHEERE,
-        QARDHO,
-        QORYOOLEY,
-        RAB_DHUURE,
-        SAAKOW,
-        SABLAALE,
-        SHANGAANI,
-        SHEIKH,
-        SHIBIS,
-        TALEEX,
-        TAYEEGLOW,
-        WAABERI,
-        WAAJID,
-        WADAJIR,
-        WARDHIIGLEEY,
-        WANLA_WEYNE,
-        XAMAR_JAABJAB,
-        XAMAR_WEYNE,
-        XARARDHEERE,
-        XUDUN,
-        XUDUR,
-        YAAQSHID,
-        ZEYLAC,
-        MOGADISHU
-    ]
-
-    MOGADISHU_DISTRICTS = [
+    MOGADISHU_SUB_DISTRICTS = [
         MOGADISHU,
         BOONDHEERE,
         CABDLCASIIS,
@@ -211,4 +152,115 @@ class SomaliaCodes(object):
         YAAQSHID
     ]
 
+    DISTRICT_TO_REGION_MAP = {
+        ADAN_YABAAL: MIDDLE_SHABELLE,
+        AFGOOYE: LOWER_SHABELLE,
+        AFMADOW: LOWER_JUBA,
+        BAARDHEERE: GEDO,
+        BADHAADHE: LOWER_JUBA,
+        BAIDOA: BAY,
+        BAKI: AWDAL,
+        BALCAD: MIDDLE_SHABELLE,
+        BANDARBAYLA: BARI,
+        BARAAWE: LOWER_SHABELLE,
+        BELET_WEYNE: HIRAAN,
+        BELET_XAAWO: GEDO,
+        BERBERA: WOQOOYI_GALBEED,
+        BORAMA: AWDAL,
+        BOSSASO: BARI,
+        BUAALE: MIDDLE_JUBA,
+        BULO_BURTO: HIRAAN,
+        BURCO: TOGDHEER,
+        BURTINLE: NUGAAL,
+        BUUHOODLE: TOGDHEER,
+        BUUR_HAKABA: BAY,
+        CABUDWAAQ: GALGADUUD,
+        CADAADO: GALGADUUD,
+        CADALE: MIDDLE_SHABELLE,
+        CALUULA: BARI,
+        CAYNABO: SOOL,
+        CEEL_AFWEYN: SANAAG,
+        CEEL_BARDE: BAKOOL,
+        CEEL_BUUR: GALGADUUD,
+        CEEL_DHEER: GALGADUUD,
+        CEEL_WAAQ: GEDO,
+        CEERIGAABO: SANAAG,
+        DHUUSAMARREEB: GALGADUUD,
+        DIINSOOR: BAY,
+        DOOLOW: GEDO,
+        EYL: NUGAAL,
+        GAALKACYO: MUDUG,
+        GALDOGOB: MUDUG,
+        GARBAHAAREY: GEDO,
+        GAROWE: NUGAAL,
+        GEBILEY: WOQOOYI_GALBEED,
+        HARGEYSA: WOQOOYI_GALBEED,
+        HOBYO: MUDUG,
+        ISKUSHUBAN: BARI,
+        JALALAQSI: HIRAAN,
+        JAMAAME: LOWER_JUBA,
+        JARIIBAN: MUDUG,
+        JILIB: MIDDLE_JUBA,
+        JOWHAR: MIDDLE_SHABELLE,
+        KISMAYO: LOWER_JUBA,
+        KURTUNWAAREY: LOWER_SHABELLE,
+        LAAS_CAANOOD: SOOL,
+        LAASQOORAY: SANAAG,
+        LUGHAYE: AWDAL,
+        LUUQ: GEDO,
+        MARKA: LOWER_SHABELLE,
+        MOGADISHU: BANADIR,
+        OWDWEYNE: TOGDHEER,
+        QANDALA: BARI,
+        QANSAX_DHEERE: BAY,
+        QARDHO: BARI,
+        QORYOOLEY: LOWER_SHABELLE,
+        RAB_DHUURE: BAKOOL,
+        SAAKOW: MIDDLE_JUBA,
+        SABLAALE: LOWER_SHABELLE,
+        SHEIKH: TOGDHEER,
+        TALEEX: SOOL,
+        TAYEEGLOW: BAKOOL,
+        WAAJID: BAKOOL,
+        WANLA_WEYN: LOWER_SHABELLE,
+        XARARDHEERE: MUDUG,
+        XUDUN: SOOL,
+        XUDUR: BAKOOL,
+        ZEYLAC: AWDAL
+    }
 
+    REGION_TO_STATE_MAP = {
+        AWDAL: SOMALILAND,
+        BAKOOL: SOUTH_WEST_STATE,
+        BANADIR: BANADIR,
+        BARI: PUNTLAND,
+        BAY: SOUTH_WEST_STATE,
+        GALGADUUD: GALMUDUG,
+        GEDO: JUBBALAND,
+        HIRAAN: HIR_SHABELLE,
+        LOWER_JUBA: JUBBALAND,
+        LOWER_SHABELLE: SOUTH_WEST_STATE,
+        MIDDLE_JUBA: JUBBALAND,
+        MIDDLE_SHABELLE: HIR_SHABELLE,
+        MUDUG: GALMUDUG,
+        NUGAAL: PUNTLAND,
+        SANAAG: SOMALILAND,
+        SOOL: SOMALILAND,
+        TOGDHEER: SOMALILAND,
+        WOQOOYI_GALBEED: SOMALILAND
+    }
+
+    STATE_TO_ZONE_MAP = {
+        BANADIR: SCZ,
+        GALMUDUG: SCZ,
+        HIR_SHABELLE: SCZ,
+        JUBBALAND: SCZ,
+        PUNTLAND: NEZ,
+        SOMALILAND: NWZ,
+        SOUTH_WEST_STATE: SCZ
+    }
+
+    DISTRICTS = list(DISTRICT_TO_REGION_MAP.keys())
+    REGIONS = list(REGION_TO_STATE_MAP.keys())
+    STATES = list(STATE_TO_ZONE_MAP.keys())
+    ZONES = [NEZ, NWZ, SCZ]

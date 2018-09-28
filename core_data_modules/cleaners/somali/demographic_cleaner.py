@@ -1,4 +1,5 @@
 from core_data_modules.cleaners import RegexUtils, Codes, DigitCleaner
+from core_data_modules.cleaners.codes import SomaliaCodes
 from core_data_modules.cleaners.somali.demographic_patterns import DemographicPatterns
 
 
@@ -40,7 +41,7 @@ class DemographicCleaner(object):
     @staticmethod
     def clean_somalia_district(text):
         return RegexUtils.clean_with_patterns(text, DemographicPatterns.somalia_districts)
-    
+
     @staticmethod
     def clean_number_words(text):
         """
@@ -130,3 +131,134 @@ class DemographicCleaner(object):
             return Codes.NOT_CODED
 
         return age
+
+    @staticmethod
+    def get_district(location):
+        """
+        Returns the district for the provided Somalia location code.
+
+        The provided code may be a Mogadishu sub-district or a district.
+
+        >>> DemographicCleaner.get_district(SomaliaCodes.MOGADISHU)
+        'mogadishu'
+        >>> DemographicCleaner.get_district(SomaliaCodes.KARAAN)
+        'mogadishu'
+
+        :param location: A Somalia district code
+        :type location: str
+        :return: Somali district or Codes.NOT_CODED
+        :rtype: str
+        """
+        if location in SomaliaCodes.MOGADISHU_SUB_DISTRICTS:
+            return SomaliaCodes.MOGADISHU
+
+        if location in SomaliaCodes.DISTRICTS:
+            return location
+
+        return Codes.NOT_CODED
+
+    @classmethod
+    def get_region(cls, location):
+        """
+        Returns the region for the provided Somalia location code.
+        
+        The provided code may be a Mogadishu sub-district, a district or a region.
+
+        >>> DemographicCleaner.get_region(SomaliaCodes.ADAN_YABAAL)
+        'middle shabelle'
+        >>> DemographicCleaner.get_region(SomaliaCodes.LOWER_SHABELLE)
+        'lower shabelle'
+
+        :param location: A Somalia district or region code
+        :type location: str
+        :return: Somali region or Codes.NOT_CODED
+        :rtype: str
+        """
+        district = cls.get_district(location)
+        if district != Codes.NOT_CODED:
+            location = district
+
+        if location in SomaliaCodes.DISTRICTS:
+            return SomaliaCodes.DISTRICT_TO_REGION_MAP[location]
+
+        if location in SomaliaCodes.REGIONS:
+            return location
+
+        return Codes.NOT_CODED
+
+    @classmethod
+    def get_state(cls, location):
+        """
+        Returns the state for the provided Somalia location code.
+
+        The provided code may be a Mogadishu sub-district, a district, a region, or a state.
+
+        >>> DemographicCleaner.get_state(SomaliaCodes.ADAN_YABAAL)
+        'hir-shabelle'
+
+        :param location: A Somalia district, region, or state code
+        :type location: str
+        :return: Somali state or Codes.NOT_CODED
+        :rtype: str
+        """
+        region = cls.get_region(location)
+        if region != Codes.NOT_CODED:
+            location = region
+
+        if location in SomaliaCodes.REGIONS:
+            return SomaliaCodes.REGION_TO_STATE_MAP[location]
+
+        if location in SomaliaCodes.STATES:
+            return location
+
+        return Codes.NOT_CODED
+
+    @classmethod
+    def get_zone(cls, location):
+        """
+        Returns the zone for the provided Somalia location code.
+
+        The provided code may be a Mogadishu sub-district, a district, a region, a state, or a zone.
+
+        :param location: A Somalia district, region, state, or zone code
+        :type location: str
+        :return: Somali zone or Codes.NOT_CODED
+        :rtype: str
+        """
+        state = cls.get_state(location)
+        if location != Codes.NOT_CODED:
+            location = state
+
+        if location in SomaliaCodes.STATES:
+            return SomaliaCodes.STATE_TO_ZONE_MAP[location]
+
+        if location in SomaliaCodes.ZONES:
+            return location
+
+        return Codes.NOT_CODED
+
+    @classmethod
+    def is_location(cls, location):
+        """
+        Returns True if the given location argument matches a Mogadishu sub-district code, or a Somali 
+        district, region, state, or zone code, False otherwise.
+
+        >>> DemographicCleaner.is_location('hodan')
+        True
+        >>> DemographicCleaner.is_location('mogadishu')
+        True
+        >>> DemographicCleaner.is_location('scz')
+        True
+        >>> DemographicCleaner.is_location('male')
+        False
+
+        :param location: Code to test
+        :type location: str
+        :return: Whether or not location matches a known Somalia location code
+        :rtype: bool
+        """
+        return location in SomaliaCodes.MOGADISHU_SUB_DISTRICTS or \
+            location in SomaliaCodes.DISTRICTS or \
+            location in SomaliaCodes.REGIONS or \
+            location in SomaliaCodes.STATES or \
+            location in SomaliaCodes.ZONES
