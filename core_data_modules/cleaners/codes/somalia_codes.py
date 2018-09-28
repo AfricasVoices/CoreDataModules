@@ -91,6 +91,13 @@ class SomaliaCodes(object):
     ZEYLAC = "zeylac"
     MOGADISHU = "mogadishu"
 
+    # Alternative district names
+    BADHAN = "badhan"
+    BULO_MARER = "bulo marer"
+    MAHADY = "mahady"
+    MATABAAN = "matabaan"
+    WARSHEIKH = "warsheikh"
+
     # Regions
     AWDAL = "awdal"
     BAKOOL = "bakool"
@@ -131,6 +138,15 @@ class SomaliaCodes(object):
     NATIONLINK = "nationlink"
     SOMTEL = "somtel"
     TELESOM = "telesom"
+
+    # Map alternative district names to their canonical names
+    CANONICAL_DISTRICT_MAP = {
+        BADHAN: JARIIBAN,
+        BULO_MARER: MARKA,
+        MAHADY: JOWHAR,
+        MATABAAN: BELET_WEYNE,
+        WARSHEIKH: BALCAD
+    }
 
     MOGADISHU_SUB_DISTRICTS = [
         MOGADISHU,
@@ -261,6 +277,10 @@ class SomaliaCodes(object):
     }
 
     DISTRICTS = list(DISTRICT_TO_REGION_MAP.keys())
+    DISTRICTS.extend(CANONICAL_DISTRICT_MAP.keys())
+
     REGIONS = list(REGION_TO_STATE_MAP.keys())
+
     STATES = list(STATE_TO_ZONE_MAP.keys())
+
     ZONES = [NEZ, NWZ, SCZ]
