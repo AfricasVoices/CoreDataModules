@@ -114,7 +114,7 @@ class DemographicPatterns(object):
         SomaliaCodes.KISMAYO: r"k[ia]s[ai]*\W*ma+yo*|kisma+n?w?\W*yo|\bkis*[mw]a*yo|go+bwayn|dalxi+ska|dalxi*s|go+bw[ea]yn|chisma[yi]o|ki?s\s?mayo|cabdi dh?oore|kisma*n?yo|cabdala\sbiro+le|qod\W*qod|be+rxa+n|bula?\W*gadu|cabdala\W*biro+le|dhasheg\W*wa+mo|qa+m\W*qa+m|qod\W*qod|kismo|alanley|be+r\W*xa+n|cabdi\W*dho+re|farjano|jana+\W*cabdala|kha+m\W*kha+m|kima+nyo|kismio|\bkisyo|\bksm\b|mayondo|xa+r\W*xa+r|ksma+yo|\bkis\b",
         SomaliaCodes.KURTUNWAAREY: r"kur*n*tu+n*wa+r[ae]y|kl?W*warey|klwarey|kunta\W*wa+rey|bu+lmare+r|daca+ro|kur[nt]un\W*wa+rey|k\W*warey",
         SomaliaCodes.LAAS_CAANOOD: r"la+sc*a+no+d|la+s\W*[ca]+a+no|la+sasurud|yeyle|kala?b[ae]+y|sa+xdhe+r|casu+ra|yeyle|las\W*nod|xa+ji\W*hi+rad",
-        SomaliaCodes.LAASQOORAY: r"la+shorey|la+s\W*qo+\W*ray|\b(la)*s*k\s*ho+rey*|badhan|dhahar|bu+ra+n|ce+la+yo|bo+da\W*cad|durduri|\bhilo|moholin|ulxe+d",
+        SomaliaCodes.LASQOORAY: r"la+shorey|la+s\W*qo+\W*ray|\b(la)*s*k\s*ho+rey*|badhan|dhahar|bu+ra+n|ce+la+yo|bo+da\W*cad|durduri|\bhilo|moholin|ulxe+d",
         SomaliaCodes.LUGHAYE: r"lugh*a[iy][ea]|carmale",
         SomaliaCodes.LUUQ: r"\blu+[qkg]h*|\blu+[pq]|degmadalu+\W*q",
         SomaliaCodes.MARKA: r"\bm[ae]+r[ck][oa]*\b|jana+le|bulo\W*mare+r|caga+ran|h[ou]r\W*se+d|sh l m b t|shalambo+",

@@ -60,7 +60,7 @@ class SomaliaCodes(object):
     KISMAYO = "kismayo"
     KURTUNWAAREY = "kurtunwaarey"
     LAAS_CAANOOD = "laas caanood"
-    LAASQOORAY = "laasqooray"
+    LASQOORAY = "lasqooray"
     LUGHAYE = "lughaye"
     LUUQ = "luuq"
     MARKA = "marka"
@@ -224,7 +224,7 @@ class SomaliaCodes(object):
         KISMAYO: LOWER_JUBA,
         KURTUNWAAREY: LOWER_SHABELLE,
         LAAS_CAANOOD: SOOL,
-        LAASQOORAY: SANAAG,
+        LASQOORAY: SANAAG,
         LUGHAYE: AWDAL,
         LUUQ: GEDO,
         MARKA: LOWER_SHABELLE,
