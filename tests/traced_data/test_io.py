@@ -64,7 +64,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         # Test exporting only not coded elements
         data = list(generate_traced_data_iterable())
-        data[0].append_data({"Gender_clean": None}, Metadata("test_user", "cleaner", 10))
+        data[0].append_data({"Gender_clean": Codes.NOT_CODED}, Metadata("test_user", "cleaner", 10))
         data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
         data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
         with open(file_path, "w") as f:
@@ -296,7 +296,7 @@ class TestTracedDataCodingCSVIO(unittest.TestCase):
 
         # Test exporting only not coded elements
         data = list(generate_traced_data_iterable())
-        data[0].append_data({"Gender_clean": None}, Metadata("test_user", "cleaner", 10))
+        data[0].append_data({"Gender_clean": Codes.NOT_CODED}, Metadata("test_user", "cleaner", 10))
         data[2].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 11))
         data[4].append_data({"Gender_clean": "F"}, Metadata("test_user", "cleaner", 12))
         with open(file_path, "w") as f:

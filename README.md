@@ -59,9 +59,9 @@ For example:
 from core_data_modules.cleaners.english.demographic_cleaner import DemographicCleaner
 
 DemographicCleaner.clean_gender("woman")  # 'female'
-DemographicCleaner.clean_gender("aoeu")  # None
+DemographicCleaner.clean_gender("aoeu")  # Codes.NOT_CODED
 ```
-Note that cleaners which fail to assign a cleaned value return `None`.
+Note that cleaners which fail to assign a cleaned value return `Codes.NOT_CODED`.
 
 ## Development
 

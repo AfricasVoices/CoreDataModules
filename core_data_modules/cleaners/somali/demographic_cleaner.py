@@ -109,7 +109,9 @@ class DemographicCleaner(object):
         >>> DemographicCleaner.clean_age_within_range("24")
         24
         >>> DemographicCleaner.clean_age_within_range(102)
+        'NC'
         >>> DemographicCleaner.clean_age_within_range(30, min_age_inclusive=45, max_age_inclusive=55)
+        'NC'
 
         :param age: Age to clamp to the given range.
         :type age: str | int

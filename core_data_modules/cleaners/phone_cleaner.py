@@ -45,6 +45,7 @@ class PhoneCleaner(object):
         >>> PhoneCleaner.clean_operator("  a 252 624 000")
         'somtel'
         >>> PhoneCleaner.clean_operator("not a phone number")
+        'NC'
 
         :param phone_number: Phone number to determine the operator of.
                              This does not need to be normalised, but must start with the country code.
