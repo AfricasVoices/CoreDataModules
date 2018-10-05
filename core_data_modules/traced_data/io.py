@@ -6,7 +6,7 @@ import jsonpickle
 import six
 from dateutil.parser import isoparse
 
-from core_data_modules.cleaners import CharacterCleaner
+from core_data_modules.cleaners import CharacterCleaner, Codes
 from core_data_modules.traced_data import Metadata, TracedData
 
 if six.PY2:
@@ -90,6 +90,8 @@ class TracedDataCodaIO(object):
     coda_data_col = "data"
     coda_scheme_name_col = "schemeName"
     coda_code_value_col = "deco_codeValue"
+
+    overwritable_codes = {None, Codes.NOT_CODED, Codes.NOT_REVIEWED}  # Codes which may always be overwritten on import
 
     @staticmethod
     def _generate_new_coda_id(existing_ids):
@@ -297,6 +299,8 @@ class TracedDataCodaIO(object):
         """
         Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
+        Data which is has not been assigned a code in the Coda file is coded as Codes.NOT_REVIEWED.
+
         :param user: Identifier of user running this program
         :type user: str
         :param data: TracedData objects to be coded using the Coda file.
@@ -321,14 +325,14 @@ class TracedDataCodaIO(object):
 
         for td in data:
             for scheme_name, key_of_coded in scheme_keys.items():
-                if not overwrite_existing_codes and td.get(key_of_coded) is not None:
+                if not overwrite_existing_codes and td.get(key_of_coded) not in cls.overwritable_codes:
                     continue
 
                 coded_lookup_key = (td[key_of_raw], scheme_name)
                 if coded_lookup_key in coded:
                     code = coded[coded_lookup_key][cls.coda_code_value_col]
                 else:
-                    code = None
+                    code = Codes.NOT_REVIEWED
 
                 td.append_data({key_of_coded: code}, Metadata(user, Metadata.get_call_location(), time.time()))
 
@@ -349,6 +353,8 @@ class TracedDataCodaIO(object):
         "water", "food", and "clothes", will append the keys "water", "food", and "clothes" to each TracedData item,
         each set to "1" if that value was present in "reason 1" or in "reason 2" for that TracedData item's raw
         data; "0" otherwise.
+
+        Data which is has not been assigned a code in the Coda file will have <key_of_coded_prefix>NR set to "1"
 
         :param user: Identifier of user running this program
         :type user: str
@@ -371,6 +377,7 @@ class TracedDataCodaIO(object):
         # Determine the available matrix headings from examination of all the code values which have been set
         # across all the specified coda keys.
         all_matrix_keys = {row[cls.coda_code_value_col] for row in coded if row[cls.coda_scheme_name_col] in coda_keys}
+        all_matrix_keys.add(Codes.NOT_REVIEWED)
 
         # Find codes assigned to each row of the coded data
         coded_matrix_keys = dict()  # of message -> set of codes assigned
@@ -386,8 +393,10 @@ class TracedDataCodaIO(object):
 
         # Apply the codes to each td in data
         for td in data:
-            # Determine which matrix keys have been set for this TracedData item.
-            td_matrix_keys = coded_matrix_keys.get(td[key_of_raw], set())
+            # Determine which matrix keys have been set for this TracedData item,
+            # by using the dictionary coded_matrix_keys as set above if this message was found in the Coda file,
+            # otherwise by using Codes.NOT_REVIEWED
+            td_matrix_keys = coded_matrix_keys.get(td[key_of_raw], {Codes.NOT_REVIEWED})
 
             # Construct and set the matrix for this TracedData item accordingly.
             td_matrix_data = dict()

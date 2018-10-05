@@ -6,6 +6,7 @@ import time
 import unittest
 from os import path
 
+from core_data_modules.cleaners import Codes
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
     TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCodingCSVIO
@@ -169,12 +170,12 @@ class TestTracedDataCodaIO(unittest.TestCase):
                "test_user", data, "Value", {"Gender": "Gender_clean", "Age": "Age_clean"}, f, True)
 
         expected_data_dicts = [
-            {"Value": "man", "Gender_clean": "male", "Age_clean": None},
-            {"Value": "woman", "Gender_clean": "female", "Age_clean": None},
-            {"Value": "twenty", "Gender_clean": None, "Age_clean": "20"},
-            {"Value": "hello", "Gender_clean": None, "Age_clean": None},
+            {"Value": "man", "Gender_clean": "male", "Age_clean": Codes.NOT_REVIEWED},
+            {"Value": "woman", "Gender_clean": "female", "Age_clean": Codes.NOT_REVIEWED},
+            {"Value": "twenty", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": "20"},
+            {"Value": "hello", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": Codes.NOT_REVIEWED},
             {"Value": "44F", "Gender_clean": "female", "Age_clean": "44"},
-            {"Value": "33", "Gender_clean": None, "Age_clean": "33"}
+            {"Value": "33", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": "33"}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):
@@ -191,10 +192,10 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 "test_user", data, "Response", {"Reason 1", "Reason 2"}, f)
 
         expected_data_dicts = [
-            {"Response": "AC", "a": "1", "b": "0", "c": "1"},
-            {"Response": "B",  "a": "0", "b": "1", "c": "0"},
-            {"Response": "Z",  "a": "0", "b": "0", "c": "0"},
-            {"Response": "CB", "a": "0", "b": "1", "c": "1"}
+            {"Response": "AC", "a": "1", "b": "0", "c": "1", Codes.NOT_REVIEWED: "0"},
+            {"Response": "B",  "a": "0", "b": "1", "c": "0", Codes.NOT_REVIEWED: "0"},
+            {"Response": "Z",  "a": "0", "b": "0", "c": "0", Codes.NOT_REVIEWED: "1"},
+            {"Response": "CB", "a": "0", "b": "1", "c": "1", Codes.NOT_REVIEWED: "0"}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):
@@ -209,11 +210,12 @@ class TestTracedDataCodaIO(unittest.TestCase):
             TracedDataCodaIO.import_coda_to_traced_data_iterable_as_matrix(
                 "test_user", data, "Response", {"Reason 1", "Reason 2"}, f, "response_coded_")
 
+        nr_key = "response_coded_{}".format(Codes.NOT_REVIEWED)
         expected_data_dicts = [
-            {"Response": "AC", "response_coded_a": "1", "response_coded_b": "0", "response_coded_c": "1"},
-            {"Response": "B",  "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "0"},
-            {"Response": "Z",  "response_coded_a": "0", "response_coded_b": "0", "response_coded_c": "0"},
-            {"Response": "CB", "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "1"}
+            {"Response": "AC", "response_coded_a": "1", "response_coded_b": "0", "response_coded_c": "1", nr_key: "0"},
+            {"Response": "B",  "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "0", nr_key: "0"},
+            {"Response": "Z",  "response_coded_a": "0", "response_coded_b": "0", "response_coded_c": "0", nr_key: "1"},
+            {"Response": "CB", "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "1", nr_key: "0"}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):
@@ -234,7 +236,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "X"},
             {"URN": "+0012345000001", "Gender": "m", "Gender_clean": "M"},
             {"URN": "+0012345000002", "Gender": "WoMaN", "Gender_clean": "F"},
-            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": None},
+            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": Codes.NOT_REVIEWED},
             {"URN": "+0012345000004", "Gender": "female", "Gender_clean": "F"}
         ]
 
@@ -256,7 +258,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"URN": "+0012345000000", "Gender": "female", "Gender_clean": "F"},
             {"URN": "+0012345000001", "Gender": "m", "Gender_clean": "M"},
             {"URN": "+0012345000002", "Gender": "WoMaN", "Gender_clean": "F"},
-            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": None},
+            {"URN": "+0012345000003", "Gender": "27", "Gender_clean": Codes.NOT_REVIEWED},
             {"URN": "+0012345000004", "Gender": "female", "Gender_clean": "F"}
         ]
 
