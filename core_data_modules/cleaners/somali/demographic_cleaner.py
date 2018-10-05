@@ -143,6 +143,8 @@ class DemographicCleaner(object):
         'mogadishu'
         >>> DemographicCleaner.get_district(SomaliaCodes.KARAAN)
         'mogadishu'
+        >>> DemographicCleaner.get_district(SomaliaCodes.MATABAAN)
+        'belet weyne'
 
         :param location: A Somalia district code
         :type location: str
@@ -151,6 +153,9 @@ class DemographicCleaner(object):
         """
         if location in SomaliaCodes.MOGADISHU_SUB_DISTRICTS:
             return SomaliaCodes.MOGADISHU
+
+        if location in SomaliaCodes.CANONICAL_DISTRICT_MAP:
+            location = SomaliaCodes.CANONICAL_DISTRICT_MAP[location]
 
         if location in SomaliaCodes.DISTRICTS:
             return location
@@ -161,7 +166,7 @@ class DemographicCleaner(object):
     def get_region(cls, location):
         """
         Returns the region for the provided Somalia location code.
-        
+
         The provided code may be a Mogadishu sub-district, a district or a region.
 
         >>> DemographicCleaner.get_region(SomaliaCodes.ADAN_YABAAL)
@@ -220,6 +225,9 @@ class DemographicCleaner(object):
 
         The provided code may be a Mogadishu sub-district, a district, a region, a state, or a zone.
 
+        >>> DemographicCleaner.get_zone(SomaliaCodes.MATABAAN)
+        'scz'
+
         :param location: A Somalia district, region, state, or zone code
         :type location: str
         :return: Somali zone or Codes.NOT_CODED
@@ -238,6 +246,21 @@ class DemographicCleaner(object):
         return Codes.NOT_CODED
 
     @classmethod
+    def get_zone_from_operator(cls, operator):
+        """
+        Returns the zone for the provided Somalia operator code.
+
+        >>> DemographicCleaner.get_zone_from_operator(SomaliaCodes.TELESOM)
+        'nwz'
+
+        :param operator: Somalia operator code to return the zone for
+        :type operator: str
+        :return: Somali zone or Codes.NOT_CODED
+        :rtype: str
+        """
+        return SomaliaCodes.OPERATOR_TO_ZONE_MAP.get(operator, Codes.NOT_CODED)
+
+    @classmethod
     def is_location(cls, location):
         """
         Returns True if the given location argument matches a Mogadishu sub-district code, or a Somali 
@@ -246,6 +269,8 @@ class DemographicCleaner(object):
         >>> DemographicCleaner.is_location('hodan')
         True
         >>> DemographicCleaner.is_location('mogadishu')
+        True
+        >>> DemographicCleaner.is_location("matabaan")
         True
         >>> DemographicCleaner.is_location('scz')
         True

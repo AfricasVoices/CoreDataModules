@@ -1,5 +1,5 @@
 class SomaliaCodes(object):
-    # Districts
+    # Canonical district names
     ADAN_YABAAL = "adan yabaal"
     AFGOOYE = "afgooye"
     AFMADOW = "afmadow"
@@ -60,7 +60,7 @@ class SomaliaCodes(object):
     KISMAYO = "kismayo"
     KURTUNWAAREY = "kurtunwaarey"
     LAAS_CAANOOD = "laas caanood"
-    LAASQOORAY = "laasqooray"
+    LASQOORAY = "lasqooray"
     LUGHAYE = "lughaye"
     LUUQ = "luuq"
     MARKA = "marka"
@@ -90,6 +90,16 @@ class SomaliaCodes(object):
     YAAQSHID = "yaaqshid"
     ZEYLAC = "zeylac"
     MOGADISHU = "mogadishu"
+
+    # Alternative district names
+    # See CANONICAL_DISTRICT_MAP below for corresponding canonical names
+    BADHAN = "badhan"
+    BUAALE_NO_PUNCTUATION = "buaale"
+    BULO_MARER = "bulo marer"
+    GURICEEL = "guriceel"
+    MAHADAY = "mahaday"
+    MATABAAN = "matabaan"
+    WARSHEIKH = "warsheikh"
 
     # Regions
     AWDAL = "awdal"
@@ -131,6 +141,17 @@ class SomaliaCodes(object):
     NATIONLINK = "nationlink"
     SOMTEL = "somtel"
     TELESOM = "telesom"
+
+    # Map of alternative district names to their canonical names
+    CANONICAL_DISTRICT_MAP = {
+        BADHAN: JARIIBAN,
+        BULO_MARER: MARKA,
+        BUAALE_NO_PUNCTUATION: BUAALE,
+        GURICEEL: DHUUSAMARREEB,
+        MAHADAY: JOWHAR,
+        MATABAAN: BELET_WEYNE,
+        WARSHEIKH: BALCAD
+    }
 
     MOGADISHU_SUB_DISTRICTS = [
         MOGADISHU,
@@ -205,7 +226,7 @@ class SomaliaCodes(object):
         KISMAYO: LOWER_JUBA,
         KURTUNWAAREY: LOWER_SHABELLE,
         LAAS_CAANOOD: SOOL,
-        LAASQOORAY: SANAAG,
+        LASQOORAY: SANAAG,
         LUGHAYE: AWDAL,
         LUUQ: GEDO,
         MARKA: LOWER_SHABELLE,
@@ -260,7 +281,17 @@ class SomaliaCodes(object):
         SOUTH_WEST_STATE: SCZ
     }
 
+    OPERATOR_TO_ZONE_MAP = {
+        GOLIS: NEZ,
+        HORMUD: SCZ,
+        TELESOM: NWZ
+    }
+
     DISTRICTS = list(DISTRICT_TO_REGION_MAP.keys())
+    DISTRICTS.extend(CANONICAL_DISTRICT_MAP.keys())
+
     REGIONS = list(REGION_TO_STATE_MAP.keys())
+
     STATES = list(STATE_TO_ZONE_MAP.keys())
+
     ZONES = [NEZ, NWZ, SCZ]
