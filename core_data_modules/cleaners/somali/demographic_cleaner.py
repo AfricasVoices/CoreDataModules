@@ -40,7 +40,7 @@ class DemographicCleaner(object):
     @staticmethod
     def clean_somalia_district(text):
         return RegexUtils.clean_with_patterns(text, DemographicPatterns.somalia_districts)
-    
+
     @staticmethod
     def clean_number_words(text):
         """
