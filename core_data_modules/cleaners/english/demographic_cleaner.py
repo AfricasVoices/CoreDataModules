@@ -5,7 +5,7 @@ class DemographicCleaner(object):
     @staticmethod
     def clean_gender(text):
         """
-        Converts a string describing gender to either male, female, or None.
+        Converts a string describing gender to either male, female, or Codes.NOT_CODED.
 
         :param text: Text to be cleaned.
         :return: Codes.MALE if male, Codes.FEMALE if female, or Codes.NOT_CODED if the gender could not automatically be

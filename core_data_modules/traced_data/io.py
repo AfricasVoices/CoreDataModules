@@ -83,7 +83,7 @@ class _TracedDataIOUtil(object):
         :return: TracedData objects which have not been coded under the given key.
         :rtype: iterable of TracedData
         """
-        return filter(lambda td: td.get(key) is None, data)
+        return [td for td in data if td.get(key, Codes.NOT_CODED) in {Codes.NOT_CODED, Codes.NOT_REVIEWED}]
 
 
 class TracedDataCodaIO(object):
@@ -91,7 +91,7 @@ class TracedDataCodaIO(object):
     coda_scheme_name_col = "schemeName"
     coda_code_value_col = "deco_codeValue"
 
-    overwritable_codes = {None, Codes.NOT_CODED, Codes.NOT_REVIEWED}  # Codes which may always be overwritten on import
+    overwritable_codes = {Codes.NOT_CODED, Codes.NOT_REVIEWED}  # Codes which may always be overwritten on import
 
     @staticmethod
     def _generate_new_coda_id(existing_ids):
@@ -325,7 +325,7 @@ class TracedDataCodaIO(object):
 
         for td in data:
             for scheme_name, key_of_coded in scheme_keys.items():
-                if not overwrite_existing_codes and td.get(key_of_coded) not in cls.overwritable_codes:
+                if not overwrite_existing_codes and td.get(key_of_coded, Codes.NOT_CODED) not in cls.overwritable_codes:
                     continue
 
                 coded_lookup_key = (td[key_of_raw], scheme_name)
