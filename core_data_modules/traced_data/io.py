@@ -281,9 +281,6 @@ class TracedDataCodaIO(object):
                 scheme_ids[scheme_name] = cls._generate_new_coda_id(scheme_ids.values())
 
         for td in unique_data:
-            if td[key_of_raw] in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
-                continue
-
             for scheme_name, key_of_coded in scheme_keys.items():
                 row = {
                     "id": item_id,
