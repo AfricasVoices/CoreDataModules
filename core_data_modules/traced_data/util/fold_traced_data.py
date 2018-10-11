@@ -246,10 +246,12 @@ class FoldTracedData(object):
         return folded_td
 
     @classmethod
-    def fold_iterable_of_traced_data(cls, user, data, group_id_fn, equal_keys, concat_keys, matrix_keys, bool_keys,
+    def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys, concat_keys, matrix_keys, bool_keys,
                                      concat_delimiter=";"):
         """
-        Folds an iterable of TracedData TODO
+        Folds an iterable of TracedData into a new iterable of TracedData.
+
+        Objects with the same fold id (as determined by 'fold_id_fn') are folded together into a new TracedData object.
 
         Use the '*_keys' parameters to control how different parameters should be reconciled when folding.
         Keys not included in any of these parameters will be set to the value 'MERGED'.
@@ -258,8 +260,9 @@ class FoldTracedData(object):
         :type user: str
         :param data: TracedData objects to fold.
         :type data: iterable of TracedData
-        :param group_id_fn: TODO
-        :type group_id_fn: function of TracedData -> hashable
+        :param fold_id_fn: Function which generates a fold id for a TracedData object.
+                           TracedData objects with the same fold id will be folded into a single, new TracedData object.
+        :type fold_id_fn: function of TracedData -> hashable
         :param equal_keys: Keys to assert are equal, using FoldTracedData.assert_equal_keys_equal
         :type equal_keys: iterable of str
         :param concat_keys: Keys to fold by string concatenation, using FoldTracedData.reconcile_keys_by_concatenation.
@@ -275,7 +278,7 @@ class FoldTracedData(object):
         :rtype: iterable of TracedData
         """
         return cls.fold_groups(
-            cls.group_by(data, group_id_fn),
+            cls.group_by(data, fold_id_fn),
             lambda td_1, td_2: cls.fold_traced_data(
                 user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, concat_delimiter)
         )
