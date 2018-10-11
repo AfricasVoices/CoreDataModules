@@ -72,6 +72,16 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 data, "Gender", f, exclude_coded_with_key="Gender_clean")
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_not_coded.csv"))
 
+        # Test that missing data is not exported
+        data = list(generate_traced_data_iterable())
+        missing_td = TracedData({"Gender": Codes.TRUE_MISSING},
+                                Metadata("test_user", Metadata.get_call_location(), time.time()))
+        data.insert(2, missing_td)
+        with open(file_path, "w") as f:
+            TracedDataCodaIO.export_traced_data_iterable_to_coda(
+                data, "Gender", f, exclude_coded_with_key="Gender_clean")
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_export_expected_output_missing.csv"))
+
     def test_export_traced_data_iterable_to_coda_with_scheme(self):
         file_path = path.join(self.test_dir, "coda_test_with_codes.csv")
 
@@ -162,6 +172,9 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"Value": "twenty", "Age_clean": 20},
             {"Value": "hello"},
             {"Value": "44F", "Gender_clean": "female", "Age_clean": 4},
+            {"Value": Codes.TRUE_MISSING},
+            {"Value": Codes.SKIPPED},
+            {"Value": Codes.NOT_LOGICAL},
             {"Value": "33", "Age_clean": 33}
         ]
         data = [TracedData(d, Metadata("test_user", "data_generator", i)) for i, d in enumerate(data_dicts)]
@@ -175,6 +188,9 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"Value": "twenty", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": "20"},
             {"Value": "hello", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": Codes.NOT_REVIEWED},
             {"Value": "44F", "Gender_clean": "female", "Age_clean": "44"},
+            {"Value": Codes.TRUE_MISSING, "Gender_clean": Codes.TRUE_MISSING, "Age_clean": Codes.TRUE_MISSING},
+            {"Value": Codes.SKIPPED, "Gender_clean": Codes.SKIPPED, "Age_clean": Codes.SKIPPED},
+            {"Value": Codes.NOT_LOGICAL, "Gender_clean": Codes.NOT_LOGICAL, "Age_clean": Codes.NOT_LOGICAL},
             {"Value": "33", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": "33"}
         ]
 
@@ -182,6 +198,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
             self.assertDictEqual(dict(imported_td.items()), expected)
 
     def test_import_coda_to_traced_data_iterable_as_matrix(self):
+        # TODO: Move this function to below self._overwrite_is_true_asserts
         # Test normal usage
         responses = ["AC", "B", "Z", "CB"]
         data = [TracedData({"Response": response}, Metadata("test_user", Metadata.get_call_location(), time.time()))

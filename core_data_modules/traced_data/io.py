@@ -25,6 +25,21 @@ class _TracedDataIOUtil(object):
     """
 
     @staticmethod
+    def exclude_missing(data, key_of_raw):
+        """
+        Filters a collection of TracedData objects to remove those where the value for 'key_of_raw' is 
+        Codes.TRUE_MISSING, Codes.SKIPPED, or Codes.NOT_LOGICAL.
+
+        :param data: TracedData objects to filter.
+        :type data: iterable of TracedData
+        :param key_of_raw: Key in TracedData objects of raw messages to filter on.
+        :type key_of_raw: str
+        :return: Filtered TracedData objects.
+        :rtype: iterable of TracedData
+        """
+        return [td for td in data if td[key_of_raw] not in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}]
+
+    @staticmethod
     def unique_messages(data, key_of_raw):
         """
         Filters a collection of TracedData objects such that there is only one object with each value for the given key.
@@ -109,6 +124,8 @@ class TracedDataCodaIO(object):
         TracedDataCodaIO.export_traced_data_iterable_to_coda_with_codes.
 
         Optionally exports only the elements which have not yet been coded, using the exclude_coded_with_key parameter.
+        
+        Missing data (Codes.TRUE_MISSING, .SKIPPED, and .NOT_LOGICAL) are not exported to Coda.
 
         Note: This exporter does not support versions of Coda older than "vE42857 at 2018-06-26 11:47"
 
@@ -143,8 +160,11 @@ class TracedDataCodaIO(object):
             # Exclude data items which have been coded.
             data = _TracedDataIOUtil.exclude_coded_with_key(data, exclude_coded_with_key)
 
+        # Filter out TracedData objects with missing data for this column
+        not_missing_data = _TracedDataIOUtil.exclude_missing(data, key_of_raw)
+
         # De-duplicate raw messages
-        unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
+        unique_data = _TracedDataIOUtil.unique_messages(not_missing_data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
         for i, td in enumerate(unique_data):
@@ -163,6 +183,8 @@ class TracedDataCodaIO(object):
         
         This function exports a code scheme to Coda. To export raw messages only, use
         TracedDataCodaIO.export_traced_data_iterable_to_coda.
+
+        Missing data (Codes.TRUE_MISSING, .SKIPPED, and .NOT_LOGICAL) are not exported to Coda.
 
         Note: This exporter does not support versions of Coda older than "vE42857 at 2018-06-26 11:47"
 
@@ -200,7 +222,12 @@ class TracedDataCodaIO(object):
 
         for key_of_coded in scheme_keys.values():
             _TracedDataIOUtil.assert_uniquely_coded(data, key_of_raw, key_of_coded)
-        unique_data = _TracedDataIOUtil.unique_messages(data, key_of_raw)
+
+        # Filter out TracedData objects with missing data for this column
+        not_missing_data = _TracedDataIOUtil.exclude_missing(data, key_of_raw)
+
+        # De-duplicate raw messages
+        unique_data = _TracedDataIOUtil.unique_messages(not_missing_data, key_of_raw)
 
         # Export each message to a row in Coda's datafile format.
         scheme_ids = dict()  # of scheme name -> scheme id
@@ -254,6 +281,9 @@ class TracedDataCodaIO(object):
                 scheme_ids[scheme_name] = cls._generate_new_coda_id(scheme_ids.values())
 
         for td in unique_data:
+            if td[key_of_raw] in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
+                continue
+
             for scheme_name, key_of_coded in scheme_keys.items():
                 row = {
                     "id": item_id,
@@ -299,7 +329,8 @@ class TracedDataCodaIO(object):
         """
         Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
-        Data which is has not been assigned a code in the Coda file is coded as Codes.NOT_REVIEWED.
+        Raw values which are Codes.TRUE_MISSING, Codes.SKIPPED, or Codes.NOT_LOGICAL are copied through to the
+        coded keys. Data which is has not been assigned a code in the Coda file is coded as Codes.NOT_REVIEWED.
 
         :param user: Identifier of user running this program
         :type user: str
@@ -329,7 +360,9 @@ class TracedDataCodaIO(object):
                     continue
 
                 coded_lookup_key = (td[key_of_raw], scheme_name)
-                if coded_lookup_key in coded:
+                if td[key_of_raw] in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
+                    code = td[key_of_raw]
+                elif coded_lookup_key in coded:
                     code = coded[coded_lookup_key][cls.coda_code_value_col]
                 else:
                     code = Codes.NOT_REVIEWED
