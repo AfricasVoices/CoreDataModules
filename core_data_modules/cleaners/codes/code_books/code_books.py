@@ -2,9 +2,9 @@ from core_data_modules.cleaners import Codes
 
 
 class CodeBooks(object):
-    urban_rural = {
-        Codes.RURAL: 1,
-        Codes.URBAN: 2
+    gender = {
+        Codes.MALE: 1,
+        Codes.FEMALE: 2
     }
 
     yes_no = {
@@ -12,9 +12,9 @@ class CodeBooks(object):
         Codes.YES: 2
     }
 
-    gender = {
-        Codes.MALE: 1,
-        Codes.FEMALE: 2
+    urban_rural = {
+        Codes.RURAL: 1,
+        Codes.URBAN: 2
     }
 
     missing = {
