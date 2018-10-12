@@ -22,7 +22,7 @@ class TestCodeBooks(unittest.TestCase):
             "Urban/Rural": CodeBooks.URBAN_RURAL
         }
 
-        CodeBooks.apply("test_user", data, code_books)
+        CodeBooks.apply_code_books_to_traced_data_iterable("test_user", data, code_books)
 
         self.assertDictEqual(dict(data[0].items()), {"Gender": 2, "Urban/Rural": 1})
         self.assertDictEqual(dict(data[1].items()), {"Gender": 2, "Urban/Rural": 2})

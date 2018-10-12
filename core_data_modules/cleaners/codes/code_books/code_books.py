@@ -36,7 +36,7 @@ class CodeBooks(object):
     }
 
     @classmethod
-    def apply_code_book(cls, code_book, code):
+    def apply_code_book_to_code(cls, code_book, code):
         if code in code_book:
             return code_book[code]
         elif code in cls.MISSING:
@@ -45,13 +45,13 @@ class CodeBooks(object):
             assert False, "Code '{}' not in the provided code book or in CodeBooks.MISSING".format(code)
 
     @classmethod
-    def apply_missing_code_book(cls, code):
-        return cls.apply_code_book(dict(), code)
+    def apply_missing_code_book_to_code(cls, code):
+        return cls.apply_code_book_to_code(dict(), code)
 
     @classmethod
-    def apply(cls, user, data, code_books):
+    def apply_code_books_to_traced_data_iterable(cls, user, data, code_books):
         for td in data:
             code_book_dict = dict()
             for coded_key, code_book in code_books.items():
-                code_book_dict[coded_key] = cls.apply_code_book(code_book, td[coded_key])
+                code_book_dict[coded_key] = cls.apply_code_book_to_code(code_book, td[coded_key])
             td.append_data(code_book_dict, Metadata(user, Metadata.get_call_location(), time.time()))
