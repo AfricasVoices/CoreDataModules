@@ -4,7 +4,7 @@ from core_data_modules.cleaners import Codes
 from core_data_modules.traced_data import Metadata
 
 
-class Consent(object):
+class ConsentUtils(object):
     @staticmethod
     def td_has_stop_code(td, keys):
         """
