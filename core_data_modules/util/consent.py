@@ -28,7 +28,7 @@ class Consent(object):
         Determines whether consent has been withdrawn, by searching for Codes.STOP in the given list of keys.
 
         TracedData objects where a stop code is found will have the key-value pair <withdrawn_key>: Codes.TRUE
-        appended. Codes which do not will have the air <withdrawn_key>: Codes.False appended instead.
+        appended. Objects where a stop code is not found are not modified.
         
         Note that this does not actually set any other keys to Codes.STOP. Use Consent.set_stopped for this purpose.
 
@@ -42,12 +42,11 @@ class Consent(object):
         :type withdrawn_key: str
         """
         for td in data:
-            # TODO: Only set withdrawn_key: False if it is not already TRUE.
-            # TODO: Or, just don't set it at all.
-            td.append_data(
-                {withdrawn_key: Codes.TRUE if cls.td_has_stop_code(td, keys) else Codes.FALSE},
-                Metadata(user, Metadata.get_call_location(), time.time())
-            )
+            if cls.td_has_stop_code(td, keys):
+                td.append_data(
+                    {withdrawn_key: Codes.TRUE},
+                    Metadata(user, Metadata.get_call_location(), time.time())
+                )
 
     @staticmethod
     def set_stopped(user, data, withdrawn_key="consent_withdrawn"):
@@ -55,10 +54,6 @@ class Consent(object):
         For each TracedData object in an iterable whose 'withdrawn_key' is Codes.True, sets every other key to
         Codes.STOP. If there is no withdrawn_key, or the value is not Codes.True, that TracedData object is not modified.
         
-        Note that this requires the 'withdrawn_key' to have been set for all the TracedData iterables.
-        This may be done using Consent.determine_consent_withdrawn.
-        TODO: Implement the above TODO in determine_consent_withdrawn then remove/alter this note.
-
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
         :param data: TracedData objects to set to stopped if consent has been withdrawn.
@@ -67,8 +62,6 @@ class Consent(object):
         :type withdrawn_key: str
         """
         for td in data:
-            if td[withdrawn_key] == Codes.TRUE:
-                stop_dict = dict()
-                for key in set(td.keys()) - {withdrawn_key}:
-                    stop_dict[key] = Codes.STOP
+            if td.get(withdrawn_key) == Codes.TRUE:
+                stop_dict = {key: Codes.STOP for key in td.keys() if key != withdrawn_key}
                 td.append_data(stop_dict, Metadata(user, Metadata.get_call_location(), time.time()))
