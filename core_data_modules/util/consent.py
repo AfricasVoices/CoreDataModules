@@ -52,13 +52,13 @@ class Consent(object):
     def set_stopped(user, data, withdrawn_key="consent_withdrawn"):
         """
         For each TracedData object in an iterable whose 'withdrawn_key' is Codes.True, sets every other key to
-        Codes.STOP. If there is no withdrawn_key, or the value is not Codes.True, that TracedData object is not modified.
+        Codes.STOP. If there is no withdrawn_key or the value is not Codes.True, that TracedData object is not modified.
         
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
         :param data: TracedData objects to set to stopped if consent has been withdrawn.
         :type data: iterable of TracedData
-        :param withdrawn_key: Key to TODO
+        :param withdrawn_key: Key in each TracedData object which indicates whether consent has been withdrawn.
         :type withdrawn_key: str
         """
         for td in data:
