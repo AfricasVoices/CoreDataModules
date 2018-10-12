@@ -2,6 +2,11 @@ from core_data_modules.cleaners import Codes
 
 
 class CodeBooks(object):
+    true_false = {
+        Codes.TRUE: 1,
+        Codes.FALSE: 2
+    }
+
     gender = {
         Codes.MALE: 1,
         Codes.FEMALE: 2
