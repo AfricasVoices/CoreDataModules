@@ -2,27 +2,27 @@ from core_data_modules.cleaners import Codes
 
 
 class CodeBooks(object):
-    true_false = {
+    TRUE_FALSE = {
         Codes.TRUE: 1,
         Codes.FALSE: 2
     }
 
-    gender = {
+    GENDER = {
         Codes.MALE: 1,
         Codes.FEMALE: 2
     }
 
-    yes_no = {
+    YES_NO = {
         Codes.NO: 1,
         Codes.YES: 2
     }
 
-    urban_rural = {
+    URBAN_RURAL = {
         Codes.RURAL: 1,
         Codes.URBAN: 2
     }
 
-    missing = {
+    MISSING = {
         Codes.TRUE_MISSING: -10,
         Codes.SKIPPED: -20,
         Codes.NOT_CODED: -30,
