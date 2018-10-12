@@ -69,6 +69,6 @@ class Consent(object):
         for td in data:
             if td[withdrawn_key] == Codes.TRUE:
                 stop_dict = dict()
-                for key in td.keys():
+                for key in set(td.keys()) - {withdrawn_key}:
                     stop_dict[key] = Codes.STOP
                 td.append_data(stop_dict, Metadata(user, Metadata.get_call_location(), time.time()))
