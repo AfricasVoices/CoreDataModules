@@ -43,6 +43,11 @@ class CodeBooks(object):
         
         If the provided code is not in the code book and is not a missing/stop code, raises an AssertionError.
 
+        >>> CodeBooks.apply_code_book_to_code(CodeBooks.YES_NO, Codes.YES)
+        2
+        >>> CodeBooks.apply_code_book_to_code(CodeBooks.YES_NO, Codes.TRUE_MISSING)
+        -10
+
         :param code_book: Code book to lookup 'code' in.
         :type code_book: dict of str -> number
         :param code: Code to look up in 'code_book'.
