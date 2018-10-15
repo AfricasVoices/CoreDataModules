@@ -58,10 +58,6 @@ class CodeBooks(object):
             assert False, "Code '{}' not in the provided code book or in CodeBooks.MISSING".format(code)
 
     @classmethod
-    def apply_missing_code_book_to_code(cls, code):
-        return cls.apply_code_book_to_code(dict(), code)
-
-    @classmethod
     def apply_code_books_to_traced_data_iterable(cls, user, data, code_books):
         for td in data:
             code_book_dict = dict()
