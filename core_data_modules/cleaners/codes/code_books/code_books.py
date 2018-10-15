@@ -37,6 +37,19 @@ class CodeBooks(object):
 
     @classmethod
     def apply_code_book_to_code(cls, code_book, code):
+        """
+        Converts the given code to an integer using the given code book, or the CodeBooks.MISSING code book if 
+        the code is a form of missing or stop code.
+        
+        If the provided code is not in the code book and is not a missing/stop code, raises an AssertionError.
+
+        :param code_book: Code book to lookup 'code' in.
+        :type code_book: dict of str -> number
+        :param code: Code to look up in 'code_book'.
+        :type code: str
+        :return: Integer for this code.
+        :rtype: number
+        """
         if code in code_book:
             return code_book[code]
         elif code in cls.MISSING:
