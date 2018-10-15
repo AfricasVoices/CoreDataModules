@@ -6,7 +6,7 @@ from core_data_modules.traced_data import TracedData, Metadata
 
 
 class TestCodeBooks(unittest.TestCase):
-    def test_apply(self):
+    def test_apply_code_books_to_traced_data_iterable(self):
         data_dicts = [
             {"Gender": Codes.FEMALE, "Urban/Rural": Codes.RURAL},
             {"Gender": Codes.FEMALE, "Urban/Rural": Codes.URBAN},
