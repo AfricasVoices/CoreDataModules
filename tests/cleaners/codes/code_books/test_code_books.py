@@ -6,6 +6,11 @@ from core_data_modules.traced_data import TracedData, Metadata
 
 
 class TestCodeBooks(unittest.TestCase):
+    def test_apply_missing_code_book_to_code(self):
+        self.assertEqual(CodeBooks.apply_missing_code_book_to_code(Codes.TRUE_MISSING), -10)
+        self.assertEqual(CodeBooks.apply_missing_code_book_to_code(Codes.NOT_LOGICAL), -50)
+        self.assertEqual(CodeBooks.apply_missing_code_book_to_code(Codes.STOP), Codes.STOP)
+
     def test_apply_code_books_to_traced_data_iterable(self):
         data_dicts = [
             {"Gender": Codes.FEMALE, "Urban/Rural": Codes.RURAL},
