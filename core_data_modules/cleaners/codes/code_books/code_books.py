@@ -64,6 +64,16 @@ class CodeBooks(object):
 
     @classmethod
     def apply_code_books_to_traced_data_iterable(cls, user, data, code_books):
+        """
+        Applies the given code books to an iterable of TracedData.
+
+        :param user: Identifier of the user running this program, for TracedData Metadata.
+        :type user: str
+        :param data: TracedData objects to apply code_books to.
+        :type data: iterable of TracedData
+        :param code_books: Dictionary of keys of coded values to code books.
+        :type code_books: dict of str -> (dict of str -> number)
+        """
         for td in data:
             code_book_dict = dict()
             for coded_key, code_book in code_books.items():
