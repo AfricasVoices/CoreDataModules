@@ -209,7 +209,7 @@ class TestFoldTracedData(unittest.TestCase):
             }
         )
 
-        # Fold only some keys
+        # Test folding only some keys
         folded_td = FoldTracedData.fold_traced_data(
             "test_user", td_1, td_2, matrix_keys={"matrix_1"}, bool_keys={"bool_1", "bool_2"}
         )
