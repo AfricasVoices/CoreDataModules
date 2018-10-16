@@ -208,3 +208,19 @@ class TestFoldTracedData(unittest.TestCase):
                 "other_1": "MERGED", "other_2": "MERGED"
             }
         )
+
+        # Fold only some keys
+        folded_td = FoldTracedData.fold_traced_data(
+            "test_user", td_1, td_2, matrix_keys={"matrix_1"}, bool_keys={"bool_1", "bool_2"}
+        )
+
+        self.assertDictEqual(
+            dict(folded_td.items()),
+            {
+                "equal_1": "MERGED", "equal_2": "MERGED",
+                "concat": "MERGED",
+                "matrix_1": Codes.MATRIX_1, "matrix_2": "MERGED",
+                "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
+                "other_1": "MERGED", "other_2": "MERGED"
+            }
+        )

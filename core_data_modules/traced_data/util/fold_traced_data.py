@@ -196,8 +196,8 @@ class FoldTracedData(object):
         td.append_data({key: value for key in keys}, Metadata(user, Metadata.get_call_location(), time.time()))
 
     @classmethod
-    def fold_traced_data(cls, user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, concat_delimiter=";"):
-        # TODO: Make all of the *_keys arguments optional (defaulting to empty set)
+    def fold_traced_data(cls, user, td_1, td_2, equal_keys=frozenset(), concat_keys=frozenset(),
+                         matrix_keys=frozenset(), bool_keys=frozenset(), concat_delimiter=";"):
         """
         Folds two TracedData object into a new TracedData object.
 
@@ -246,8 +246,8 @@ class FoldTracedData(object):
         return folded_td
 
     @classmethod
-    def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys, concat_keys, matrix_keys, bool_keys,
-                                     concat_delimiter=";"):
+    def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys=frozenset(), concat_keys=frozenset(),
+                                     matrix_keys=frozenset(), bool_keys=frozenset(), concat_delimiter=";"):
         """
         Folds an iterable of TracedData into a new iterable of TracedData.
 
