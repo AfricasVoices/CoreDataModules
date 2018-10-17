@@ -18,6 +18,6 @@ class Codes(object):
 
     TRUE_MISSING = "NA"
     SKIPPED = "NS"
-    NOT_LOGICAL = "NL"
-    NOT_REVIEWED = "NR"
     NOT_CODED = "NC"
+    NOT_REVIEWED = "NR"
+    NOT_LOGICAL = "NL"
