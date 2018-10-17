@@ -192,10 +192,10 @@ class TestTracedDataCodaIO(unittest.TestCase):
                 "test_user", data, "Response", {"Reason 1", "Reason 2"}, f)
 
         expected_data_dicts = [
-            {"Response": "AC", "a": "1", "b": "0", "c": "1", Codes.NOT_REVIEWED: "0"},
-            {"Response": "B",  "a": "0", "b": "1", "c": "0", Codes.NOT_REVIEWED: "0"},
-            {"Response": "Z",  "a": "0", "b": "0", "c": "0", Codes.NOT_REVIEWED: "1"},
-            {"Response": "CB", "a": "0", "b": "1", "c": "1", Codes.NOT_REVIEWED: "0"}
+            {"Response": "AC", "a": Codes.MATRIX_1, "b": Codes.MATRIX_0, "c": Codes.MATRIX_1, Codes.NOT_REVIEWED: Codes.MATRIX_0},
+            {"Response": "B",  "a": Codes.MATRIX_0, "b": Codes.MATRIX_1, "c": Codes.MATRIX_0, Codes.NOT_REVIEWED: Codes.MATRIX_0},
+            {"Response": "Z",  "a": Codes.MATRIX_0, "b": Codes.MATRIX_0, "c": Codes.MATRIX_0, Codes.NOT_REVIEWED: Codes.MATRIX_1},
+            {"Response": "CB", "a": Codes.MATRIX_0, "b": Codes.MATRIX_1, "c": Codes.MATRIX_1, Codes.NOT_REVIEWED: Codes.MATRIX_0}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):
@@ -212,10 +212,10 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         nr_key = "response_coded_{}".format(Codes.NOT_REVIEWED)
         expected_data_dicts = [
-            {"Response": "AC", "response_coded_a": "1", "response_coded_b": "0", "response_coded_c": "1", nr_key: "0"},
-            {"Response": "B",  "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "0", nr_key: "0"},
-            {"Response": "Z",  "response_coded_a": "0", "response_coded_b": "0", "response_coded_c": "0", nr_key: "1"},
-            {"Response": "CB", "response_coded_a": "0", "response_coded_b": "1", "response_coded_c": "1", nr_key: "0"}
+            {"Response": "AC", "response_coded_a": Codes.MATRIX_1, "response_coded_b": Codes.MATRIX_0, "response_coded_c": Codes.MATRIX_1, nr_key: Codes.MATRIX_0},
+            {"Response": "B",  "response_coded_a": Codes.MATRIX_0, "response_coded_b": Codes.MATRIX_1, "response_coded_c": Codes.MATRIX_0, nr_key: Codes.MATRIX_0},
+            {"Response": "Z",  "response_coded_a": Codes.MATRIX_0, "response_coded_b": Codes.MATRIX_0, "response_coded_c": Codes.MATRIX_0, nr_key: Codes.MATRIX_1},
+            {"Response": "CB", "response_coded_a": Codes.MATRIX_0, "response_coded_b": Codes.MATRIX_1, "response_coded_c": Codes.MATRIX_1, nr_key: Codes.MATRIX_0}
         ]
 
         for imported_td, expected in zip(data, expected_data_dicts):
