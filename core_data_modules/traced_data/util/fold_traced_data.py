@@ -217,6 +217,7 @@ class FoldTracedData(object):
         Sets the given keys in two TracedData objects to the same yes/no/both value, using the logic given below.
 
         The value set for each key is:
+         - Codes.STOP if either value is Codes.STOP
          - Codes.BOTH if either value is Codes.BOTH
          - Codes.BOTH if one value is Codes.YES and the other value is Codes.NO
          - Codes.YES if both values are Codes.YES
@@ -237,7 +238,9 @@ class FoldTracedData(object):
         yes_no_dict = dict()
 
         for key in keys:
-            if td_1.get(key) == Codes.BOTH or td_2.get(key) == Codes.BOTH:
+            if td_1.get(key) == Codes.STOP or td_2.get(key) == Codes.STOP:
+                yes_no_dict[key] = Codes.STOP
+            elif td_1.get(key) == Codes.BOTH or td_2.get(key) == Codes.BOTH:
                 yes_no_dict[key] = Codes.BOTH
             elif td_1.get(key) in {Codes.YES, Codes.NO} and td_2.get(key) in {Codes.YES, Codes.NO}:
                 yes_no_dict[key] = td_1[key] if td_1[key] == td_2[key] else Codes.BOTH
