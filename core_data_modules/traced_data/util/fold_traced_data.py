@@ -73,9 +73,9 @@ class FoldTracedData(object):
     @staticmethod
     def reconcile_missing_values(value_1, value_2):
         """
-        Reconciles two missing values.
+        Reconciles two missing values, by choosing the form of missing value with the highest precedence.
 
-        Precedence order is as follows (highest precedence listed first):
+        The precedence order for missing values is defined as follows (highest precedence listed first):
          - Codes.STOP
          - Codes.NOT_REVIEWED
          - Codes.NOT_CODE
@@ -91,7 +91,7 @@ class FoldTracedData(object):
         :return: Reconciled code.
         :rtype: str
         """
-        # Precedence order in case of conflicts; most significant first
+        # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL, None
         ]
@@ -218,11 +218,11 @@ class FoldTracedData(object):
 
         The value set for each key is:
          - Codes.BOTH if either value is Codes.BOTH
-         - Codes.BOTH if one value is Codes.YES and the other is NO
+         - Codes.BOTH if one value is Codes.YES and the other value is Codes.NO
          - Codes.YES if both values are Codes.YES
          - Codes.NO if both values are Codes.NO
-         - value 1 if value 1 is Codes.YES or Codes.NO, and value 2 is neither Codes.YES no Codes.NO
-         - value 2 if value 2 is Codes.YES or Codes.NO, and value 1 is neither Codes.YES no Codes.NO
+         - value 1 if value 1 is Codes.YES or Codes.NO, and value 2 is neither Codes.YES nor Codes.NO
+         - value 2 if value 2 is Codes.YES or Codes.NO, and value 1 is neither Codes.YES nor Codes.NO
         If none of the above conditions are true, the logic of FoldTracedData.reconcile_missing_values is applied.
 
         :param user: Identifier of the user running this program, for TracedData Metadata.
