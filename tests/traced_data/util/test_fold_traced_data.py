@@ -92,6 +92,10 @@ class TestFoldTracedData(unittest.TestCase):
                              "Key 'eq2' should be the same in both td_1 and td_2 but is "
                              "different (has values '6' and '7' respectively)")
 
+    def test_reconcile_missing_values(self):
+        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
+        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
+
     def test_reconcile_keys_by_concatenation(self):
         def make_tds():
             td_1 = TracedData(
@@ -155,6 +159,26 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertDictEqual(dict(td_1.items()), expected_dict)
         self.assertDictEqual(dict(td_2.items()), expected_dict)
 
+    def test_reconcile_yes_no_keys(self):
+        td_1 = TracedData(
+            {"a": Codes.YES, "b": Codes.NO, "c": Codes.YES, "d": Codes.NO, "e": Codes.NOT_CODED, "f": Codes.NOT_CODED,
+             "g": Codes.BOTH},
+            Metadata("test_user", Metadata.get_call_location(), 0)
+        )
+
+        td_2 = TracedData(
+            {"a": Codes.YES, "b": Codes.YES, "c": Codes.NO, "d": Codes.NO, "e": Codes.YES, "f": Codes.NOT_CODED,
+             "g": Codes.YES},
+            Metadata("test_user", Metadata.get_call_location(), 1)
+        )
+
+        FoldTracedData.reconcile_yes_no_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e", "f", "g"})
+
+        expected_dict = {"a": Codes.YES, "b": Codes.BOTH, "c": Codes.BOTH, "d": Codes.NO, "e": Codes.YES,
+                         "f": Codes.NOT_CODED, "g": Codes.BOTH}
+        self.assertDictEqual(dict(td_1.items()), expected_dict)
+        self.assertDictEqual(dict(td_2.items()), expected_dict)
+
     def test_set_keys_to_value(self):
         td = TracedData(
             {"msg1": "abc", "msg2": "xy", "x": 4},
@@ -173,6 +197,7 @@ class TestFoldTracedData(unittest.TestCase):
                 "concat": "abc",
                 "matrix_1": Codes.MATRIX_0, "matrix_2": Codes.STOP,
                 "bool_1": Codes.FALSE, "bool_2": Codes.TRUE,
+                "yes_no_1": Codes.YES, "yes_no_2": Codes.YES,
                 "other_1": "other 1", "other_2": "other 2"
              }
 
@@ -181,6 +206,7 @@ class TestFoldTracedData(unittest.TestCase):
                 "concat": "def",
                 "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.MATRIX_0,
                 "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
+                "yes_no_1": Codes.YES, "yes_no_2": Codes.NO,
                 "other_1": "other",
             }
 
@@ -189,7 +215,7 @@ class TestFoldTracedData(unittest.TestCase):
 
         folded_td = FoldTracedData.fold_traced_data(
             "test_user", td_1, td_2, equal_keys={"equal_1", "equal_2"}, concat_keys={"concat"},
-            matrix_keys={"matrix_1", "matrix_2"}, bool_keys={"bool_1", "bool_2"},
+            matrix_keys={"matrix_1", "matrix_2"}, bool_keys={"bool_1", "bool_2"}, yes_no_keys={"yes_no_1", "yes_no_2"},
             concat_delimiter=". "
         )
 
@@ -205,6 +231,7 @@ class TestFoldTracedData(unittest.TestCase):
                 "concat": "abc. def",
                 "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.STOP,
                 "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
+                "yes_no_1": Codes.YES, "yes_no_2": Codes.BOTH,
                 "other_1": "MERGED", "other_2": "MERGED"
             }
         )
@@ -221,6 +248,7 @@ class TestFoldTracedData(unittest.TestCase):
                 "concat": "MERGED",
                 "matrix_1": Codes.MATRIX_1, "matrix_2": "MERGED",
                 "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
+                "yes_no_1": "MERGED", "yes_no_2": "MERGED",
                 "other_1": "MERGED", "other_2": "MERGED"
             }
         )
