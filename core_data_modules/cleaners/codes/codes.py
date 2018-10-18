@@ -11,6 +11,9 @@ class Codes(object):
     URBAN = "urban"
     RURAL = "rural"
 
+    MATRIX_0 = "0"
+    MATRIX_1 = "1"
+
     STOP = "stop"
 
     TRUE_MISSING = "NA"

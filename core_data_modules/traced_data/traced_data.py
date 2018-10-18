@@ -299,7 +299,7 @@ class TracedData(Mapping):
         If there are any keys in common between TracedData items sharing the same join_on_key,
         then these keys must also have the same value in both objects.
 
-        :param user: Identifier of user running this program
+        :param user: Identifier of the user running this program, for TracedData Metadata
         :type user: str
         :param join_on_key: Key to join data on
         :type join_on_key: str
@@ -363,7 +363,7 @@ class TracedData(Mapping):
         If there are any keys in common between TracedData items sharing the same join_on_key,
         then these keys must also have the same value in both objects.
 
-        :param user: Identifier of user running this program.
+        :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
         :param update_id_key: Key of identifier in both iterables to match TracedData objects on.
         :type update_id_key: str

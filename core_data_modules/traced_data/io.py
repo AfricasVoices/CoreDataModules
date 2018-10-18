@@ -376,15 +376,16 @@ class TracedDataCodaIO(object):
         multiple-select answers.
 
         Coda data is imported by adding a key in each TracedData object for each of the code values observed in the
-        specified `coda_keys`, and setting the value of each added key to either "1" or "0" depending on whether or not
-        that code exists on that message.
+        specified `coda_keys`, and setting the value of each added key to either Codes.MATRIX_1 or Codes.MATRIX_0
+        depending on whether or not that code exists on that message.
 
         For example, a Coda file with the coda_keys "reason 1" and "reason 2", which collectively contain the options
         "water", "food", and "clothes", will append the keys "water", "food", and "clothes" to each TracedData item,
-        each set to "1" if that value was present in "reason 1" or in "reason 2" for that TracedData item's raw
-        data; "0" otherwise.
+        each set to Codes.MATRIX_1 if that value was present in "reason 1" or in "reason 2" for that TracedData item's
+        raw data; Codes.MATRIX_0 otherwise.
 
-        Data which is has not been assigned a code in the Coda file will have <key_of_coded_prefix>NR set to "1"
+        Data which is has not been assigned a code in the Coda file will have <key_of_coded_prefix>NR set to
+        Codes.MATRIX_1.
 
         :param user: Identifier of user running this program
         :type user: str
@@ -432,7 +433,7 @@ class TracedDataCodaIO(object):
             td_matrix_data = dict()
             for matrix_key in all_matrix_keys:
                 output_key = "{}{}".format(key_of_coded_prefix, matrix_key)
-                td_matrix_data[output_key] = "1" if matrix_key in td_matrix_keys else "0"
+                td_matrix_data[output_key] = Codes.MATRIX_1 if matrix_key in td_matrix_keys else Codes.MATRIX_0
             
             td.append_data(td_matrix_data, Metadata(user, Metadata.get_call_location(), time.time()))
 
