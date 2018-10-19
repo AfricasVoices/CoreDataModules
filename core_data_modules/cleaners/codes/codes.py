@@ -7,6 +7,7 @@ class Codes(object):
 
     YES = "yes"
     NO = "no"
+    BOTH = "both"
 
     URBAN = "urban"
     RURAL = "rural"
