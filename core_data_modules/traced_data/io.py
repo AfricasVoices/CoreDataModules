@@ -442,6 +442,23 @@ class TracedDataCodaIO(object):
 class TracedDataCoda2IO(object):
     @classmethod
     def import_coda_to_traced_data_iterable(cls, user, data, data_message_id_key, scheme_keys, f):
+        """
+        Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
+
+        Data which is has not been assigned a code in the Coda file is coded using the NR code from the provided scheme.
+
+        :param user: Identifier of user running this program.
+        :type user: str
+        :param data: TracedData objects to be coded using the Coda file.
+        :type data: iterable of TracedData
+        :param data_message_id_key: Key in TracedData objects of the message ids.
+        :type data_message_id_key: str
+        :param scheme_keys: Dictionary of of the key in each TracedData object of coded data for a scheme to
+                            a Coda 2 scheme object.
+        :type scheme_keys: dict of str -> list of dict
+        :param f: Coda data file to import codes from.
+        :type f: file-like
+        """
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
         for msg in json.load(f):
