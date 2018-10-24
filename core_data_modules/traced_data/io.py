@@ -1,3 +1,4 @@
+import json
 import time
 from datetime import datetime
 from os import path
@@ -436,6 +437,48 @@ class TracedDataCodaIO(object):
                 td_matrix_data[output_key] = Codes.MATRIX_1 if matrix_key in td_matrix_keys else Codes.MATRIX_0
             
             td.append_data(td_matrix_data, Metadata(user, Metadata.get_call_location(), time.time()))
+
+
+class TracedDataCoda2IO(object):
+    @classmethod
+    def import_coda_to_traced_data_iterable(cls, user, data, data_message_id_key, scheme_keys, f):
+        coda_messages_dataset = json.load(f)
+
+        # Construct a 2d lookup table of MessageID -> (Scheme ID -> TracedData)
+        traced_coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> TracedData)
+        for msg in coda_messages_dataset:
+            traced_schemes = dict()  # of SchemeID -> TracedData
+            traced_coda_dataset[msg["MessageID"]] = traced_schemes
+            msg["Labels"].reverse()
+            for label in msg["Labels"]:
+                scheme_id = label["SchemeID"]
+                if scheme_id not in traced_schemes:
+                    traced_schemes[scheme_id] = TracedData(
+                        label, Metadata(user, Metadata.get_call_location(), time.time()))
+                else:
+                    traced_schemes[scheme_id].append_data(
+                        label, Metadata(user, Metadata.get_call_location(), time.time()))
+
+        # Apply the labels and history from Coda to the input data set.
+        for td in data:
+            for key_of_coded, scheme in scheme_keys.items():
+                traced_scheme = traced_coda_dataset.get(td[data_message_id_key], dict()).get(scheme["SchemeID"])
+                if traced_scheme is None:
+                    not_reviewed_code_id = \
+                        [code["CodeID"] for code in scheme["Codes"] if code["CodeID"].startswith("code-NR")][0]
+                    td.append_data(
+                        {key_of_coded: not_reviewed_code_id},
+                        Metadata(user, Metadata.get_call_location(), time.time())
+                    )
+                else:
+                    td.append_traced_data(
+                        "{}_coda_history".format(key_of_coded), traced_scheme,
+                        Metadata(user, Metadata.get_call_location(), time.time())
+                    )
+                    td.append_data(
+                        {key_of_coded: traced_scheme["CodeID"]},
+                        Metadata(user, Metadata.get_call_location(), time.time())
+                    )
 
 
 class TracedDataCodingCSVIO(object):
