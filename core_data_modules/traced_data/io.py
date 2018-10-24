@@ -442,43 +442,40 @@ class TracedDataCodaIO(object):
 class TracedDataCoda2IO(object):
     @classmethod
     def import_coda_to_traced_data_iterable(cls, user, data, data_message_id_key, scheme_keys, f):
-        coda_messages_dataset = json.load(f)
-
-        # Construct a 2d lookup table of MessageID -> (Scheme ID -> TracedData)
-        traced_coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> TracedData)
-        for msg in coda_messages_dataset:
-            traced_schemes = dict()  # of SchemeID -> TracedData
-            traced_coda_dataset[msg["MessageID"]] = traced_schemes
+        # Build a lookup table of MessageID -> SchemeID -> Labels
+        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+        for msg in json.load(f):
+            schemes = dict()  # of SchemeID -> list of Label
+            coda_dataset[msg["MessageID"]] = schemes
             msg["Labels"].reverse()
             for label in msg["Labels"]:
                 scheme_id = label["SchemeID"]
-                if scheme_id not in traced_schemes:
-                    traced_schemes[scheme_id] = TracedData(
-                        label, Metadata(user, Metadata.get_call_location(), time.time()))
-                else:
-                    traced_schemes[scheme_id].append_data(
-                        label, Metadata(user, Metadata.get_call_location(), time.time()))
+                if scheme_id not in schemes:
+                    schemes[scheme_id] = []
+                schemes[scheme_id].append(label)
 
-        # Apply the labels and history from Coda to the input data set.
+        # Apply the labels from Coda to each TracedData item in data
         for td in data:
             for key_of_coded, scheme in scheme_keys.items():
-                traced_scheme = traced_coda_dataset.get(td[data_message_id_key], dict()).get(scheme["SchemeID"])
-                if traced_scheme is None:
+                labels = coda_dataset.get(td[data_message_id_key], dict()).get(scheme["SchemeID"])
+                if labels is None:
                     not_reviewed_code_id = \
                         [code["CodeID"] for code in scheme["Codes"] if code["CodeID"].startswith("code-NR")][0]
                     td.append_data(
-                        {key_of_coded: not_reviewed_code_id},
+                        {key_of_coded: {
+                            "CodeID": not_reviewed_code_id,
+                            "SchemeID": scheme["SchemeID"]
+                            # TODO: Set the other keys which label would have had here had they come from Coda?
+                        }},
                         Metadata(user, Metadata.get_call_location(), time.time())
                     )
                 else:
-                    td.append_traced_data(
-                        "{}_coda_history".format(key_of_coded), traced_scheme,
-                        Metadata(user, Metadata.get_call_location(), time.time())
-                    )
-                    td.append_data(
-                        {key_of_coded: traced_scheme["CodeID"]},
-                        Metadata(user, Metadata.get_call_location(), time.time())
-                    )
+                    for label in labels:
+                        td.append_data(
+                            {key_of_coded: label},
+                            Metadata(label["Origin"]["OriginID"], Metadata.get_call_location(),
+                                     isoparse(label["DateTimeUTC"]).timestamp())
+                        )
 
 
 class TracedDataCodingCSVIO(object):
