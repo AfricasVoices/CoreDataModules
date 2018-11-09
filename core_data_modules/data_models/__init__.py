@@ -1,1 +1,1 @@
-from .data_models import Scheme, Code
+from .scheme import Scheme, Code
