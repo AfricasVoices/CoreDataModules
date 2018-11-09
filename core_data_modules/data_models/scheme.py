@@ -1,4 +1,4 @@
-import validators
+import core_data_modules.data_models.validators
 
 class Scheme(object):
     scheme_id = None
