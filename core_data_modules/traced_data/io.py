@@ -4,11 +4,14 @@ from datetime import datetime
 from os import path
 
 import jsonpickle
+import pytz as pytz
 import six
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import CharacterCleaner, Codes
+from core_data_modules.data_models import Message
 from core_data_modules.traced_data import Metadata, TracedData
+from core_data_modules.util import SHAUtils
 
 if six.PY2:
     import unicodecsv as csv
@@ -323,7 +326,8 @@ class TracedDataCodaIO(object):
             item_id += 1
 
     @classmethod
-    def import_coda_to_traced_data_iterable(cls, user, data, key_of_raw, scheme_keys, f, overwrite_existing_codes=False):
+    def import_coda_to_traced_data_iterable(cls, user, data, key_of_raw, scheme_keys, f,
+                                            overwrite_existing_codes=False):
         """
         Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
@@ -435,13 +439,53 @@ class TracedDataCodaIO(object):
             for matrix_key in all_matrix_keys:
                 output_key = "{}{}".format(key_of_coded_prefix, matrix_key)
                 td_matrix_data[output_key] = Codes.MATRIX_1 if matrix_key in td_matrix_keys else Codes.MATRIX_0
-            
+
             td.append_data(td_matrix_data, Metadata(user, Metadata.get_call_location(), time.time()))
 
 
 class TracedDataCoda2IO(object):
     @classmethod
-    def import_coda_to_traced_data_iterable(cls, user, data, data_message_id_key, scheme_keys, f):
+    def add_message_ids(cls, user, data, raw_key, message_id_key):
+        for td in data:
+            td.append_data(
+                {message_id_key: SHAUtils.sha_string(td[raw_key])},
+                Metadata(user, Metadata.get_call_location(), time.time())
+            )
+            
+    @staticmethod
+    def _is_coded_as_missing(code_ids):
+        if len(code_ids) == 1:
+            code_id = code_ids.pop()
+            if code_id.startswith("code-NA") or code_id.startswith("code-NS") or code_id.startswith("code-NL"):
+                return True
+        return False
+
+    @classmethod
+    def export_traced_data_iterable_to_coda_2(cls, data, raw_key, time_key, data_message_id_key, keys_of_coded, f):
+        messages = []
+        for td in data:
+            # Skip messages which have been coded as true missing, skipped, or not logical across all keys_of_coded
+            if cls._is_coded_as_missing({td[key_of_coded]["CodeID"] for key_of_coded in keys_of_coded}):
+                continue
+
+            # Export a message for this row
+            message = Message()
+            message.message_id = td[data_message_id_key]
+            message.text = td[raw_key]
+            message.creation_date_time_utc = isoparse(td[time_key]).astimezone(pytz.utc).isoformat()
+            message.labels = []
+
+            # Export codes for this row which are not Codes.NOT_CODED
+            for key_of_coded in keys_of_coded:
+                if not td[key_of_coded]["CodeID"].startswith("code-NC"):
+                    message.labels.append(td[key_of_coded])
+
+            messages.append(message)
+
+        json.dump([m.to_dict() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
+
+    @classmethod
+    def import_coda_2_to_traced_data_iterable(cls, user, data, data_message_id_key, scheme_keys, nr_label, f):
         """
         Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
 
@@ -473,26 +517,28 @@ class TracedDataCoda2IO(object):
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
-            for key_of_coded, scheme in scheme_keys.items():
-                labels = coda_dataset.get(td[data_message_id_key], dict()).get(scheme["SchemeID"])
-                if labels is None:
-                    not_reviewed_code_id = \
-                        [code["CodeID"] for code in scheme["Codes"] if code["CodeID"].startswith("code-NR")][0]
-                    td.append_data(
-                        {key_of_coded: {
-                            "CodeID": not_reviewed_code_id,
-                            "SchemeID": scheme["SchemeID"]
-                            # TODO: Set the other keys which label would have had here had they come from Coda?
-                        }},
-                        Metadata(user, Metadata.get_call_location(), time.time())
-                    )
-                else:
+            for key_of_coded, scheme_id in scheme_keys.items():
+                labels = coda_dataset.get(td[data_message_id_key], dict()).get(scheme_id)
+                if labels is not None:
                     for label in labels:
+                        # TODO: Check not duplicating previous history?
                         td.append_data(
                             {key_of_coded: label},
                             Metadata(label["Origin"]["OriginID"], Metadata.get_call_location(),
-                                     isoparse(label["DateTimeUTC"]).timestamp())
+                                     (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
+                                                                                tzinfo=pytz.utc)).total_seconds())
                         )
+
+                    if td[key_of_coded]["Origin"]["OriginType"] != "Manual":
+                        td.append_data(
+                            {key_of_coded: nr_label.to_dict()},
+                            Metadata(user, Metadata.get_call_location(), time.time())
+                        )
+                elif not cls._is_coded_as_missing({td[key_of_coded]["CodeID"]}):
+                    td.append_data(
+                        {key_of_coded: nr_label.to_dict()},
+                        Metadata(user, Metadata.get_call_location(), time.time())
+                    )
 
 
 class TracedDataCodingCSVIO(object):
