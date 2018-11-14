@@ -520,6 +520,7 @@ class TracedDataCoda2IO(object):
         Data which is has not been assigned a code in the Coda file is coded using the NR code from the provided scheme.
 
         TODO: Data which has been assigned a code under one scheme but none of the others needs to coded as NC not NR
+        TODO: Or, do this in Coda so as to remove ambiguity from the perspective of the RAs?
 
         :param user: Identifier of user running this program.
         :type user: str

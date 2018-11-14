@@ -7,7 +7,8 @@ import unittest
 from os import path
 
 from core_data_modules.cleaners import Codes, english
-from core_data_modules.cleaners.code_translators import CodeTranslators
+from core_data_modules.cleaners.cleaning_utils import CleaningUtils
+from core_data_modules.cleaners.code_translators import GenderTranslator
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
     TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCodingCSVIO, TracedDataCoda2IO
@@ -287,73 +288,52 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
 
 class TestTracedDataCoda2IO(unittest.TestCase):
-    def test_export_traced_data_iterable_to_coda_2(self):
+    def test_export_import(self):
+        # Build raw input data
         message_dicts = [
-            {"gender_raw": "I am a woman", "gender_coded": "female", "sent_on": "2018-11-01T07:13:04+03:00"},
-            {"gender_raw": " ", "gender_coded": Codes.TRUE_MISSING, "sent_on": "2018-11-01T07:17:04+03:00"},
-            {"gender_raw": "hiya", "gender_coded": Codes.NOT_CODED, "sent_on": "2018-11-01T07:19:04+03:00"},
-            {"gender_raw": "boy", "gender_coded": "male", "sent_on": "2018-11-02T19:00:29+03:00"},
+            {"gender_raw": "woman", "sent_on": "2018-11-01T07:13:04+03:00"},
+            {"gender_raw": "", "sent_on": "2018-11-01T07:17:04+03:00"},
+            {"gender_raw": "hiya", "sent_on": "2018-11-01T07:19:04+03:00"},
+            {"gender_raw": "boy", "sent_on": "2018-11-02T19:00:29+03:00"},
         ]
-
         messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
                     for i, d in enumerate(message_dicts)]
 
+        # Add message ids
         TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_id")
 
+        # Set TRUE_MISSING codes
         for td in messages:
-            scheme_id = CodeTranslators.gender_scheme_id()
-            code_id = CodeTranslators.gender_code_id(td["gender_coded"])
-            cleaner = Metadata.get_function_location(english.DemographicCleaner.clean_gender)
+            scheme_id = GenderTranslator.SCHEME_ID
+            code_id = GenderTranslator.code_id(Codes.TRUE_MISSING)
+            na_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Auto-Missing")
 
-            gender_label = CodeTranslators.make_auto_coded_label(scheme_id, code_id, cleaner)
-            td.append_data({"gender_coded": gender_label.to_dict()},
-                           Metadata("test_user", Metadata.get_call_location(), 10))
+            if td["gender_raw"] == "":
+                td.append_data({"gender_coded": na_label.to_dict()},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
 
+        # Apply the gender cleaner
+        CleaningUtils.apply_cleaner_to_traced_data_iterable(
+            "test_user", messages, "gender_raw", "gender_coded", english.DemographicCleaner.clean_gender,
+            GenderTranslator.SCHEME_ID, GenderTranslator.code_id)
+
+        # Export to a Coda 2 messages file
         with open("test.json", "w") as f:
             TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
                 messages, "gender_raw", "sent_on", "gender_id", {"gender_coded"}, f)
 
-        # MARK: Begin testing the importer
+        # Import manually coded data
         with open("test_coded.json", "r") as f:
-            scheme_id = CodeTranslators.gender_scheme_id()
-            code_id = CodeTranslators.gender_code_id(Codes.NOT_REVIEWED)
-            nr_label = CodeTranslators.make_auto_coded_label(scheme_id, code_id, "Coda Importer")
+            scheme_id = GenderTranslator.SCHEME_ID
+            code_id = GenderTranslator.code_id(Codes.NOT_REVIEWED)
+            nr_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Coda Importer")
 
             TracedDataCoda2IO.import_coda_2_to_traced_data_iterable(
-                "test_user", messages, "gender_id", {"gender_coded": CodeTranslators.gender_scheme_id()}, nr_label, f)
+                "test_user", messages, "gender_id", {"gender_coded": GenderTranslator.SCHEME_ID}, nr_label, f)
 
+        # Output coded TracedData
         with open("imported.json", "w") as f:
             TracedDataJsonIO.export_traced_data_iterable_to_json(messages, f, pretty_print=True)
-
-    def test_import_coda_2_to_traced_data_iterable(self):
-        pass
-
-        # with open("tests/traced_data/resources/coda2_books_messages.json", "r") as f:
-        #     json_data = json.load(f)
-        #
-        # with open("tests/traced_data/resources/coda2_books_scheme_books.json", "r") as f:
-        #     books_scheme = json.load(f)
-        #
-        # with open("tests/traced_data/resources/coda2_books_scheme_gender.json", "r") as f:
-        #     gender_scheme = json.load(f)
-        #
-        # data = []
-        # for d in json_data:
-        #     td = TracedData({
-        #         "MessageID": d["MessageID"],
-        #         "Text": d["Text"],
-        #         "CreationDateTimeUTC": d["CreationDateTimeUTC"]
-        #     }, Metadata("test_user", Metadata.get_call_location(), time.time()))
-        #
-        #     data.append(td)
-        #
-        # with open("tests/traced_data/resources/coda2_books_messages.json", "r") as f:
-        #     TracedDataCoda2IO.import_coda_2_to_traced_data_iterable(
-        #         "test_user", data, "MessageID", {"Book_Coded": books_scheme, "Gender_Coded": gender_scheme}, f)
-        #
-        # with open("books_out.json", "w") as f:
-        #     TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-        pass
 
 
 class TestTracedDataCodingCSVIO(unittest.TestCase):
