@@ -14,6 +14,15 @@ class TestMetadata(unittest.TestCase):
         # independently of the project's location.
         self.assertTrue(call_location.endswith("tests/traced_data/test_traced_data.py:12:test_get_call_location"))
 
+    def dummy_function(self, a):
+        pass
+
+    def test_get_function_location(self):
+        function_location = Metadata.get_function_location(self.dummy_function)
+        # call_location contains an absolute path, but this only tests the end of that path so that it can run
+        # independently of the project's location.
+        self.assertTrue(function_location.endswith("tests/traced_data/test_traced_data.py:17:dummy_function"))
+
 
 class TestTracedData(unittest.TestCase):
     @staticmethod
