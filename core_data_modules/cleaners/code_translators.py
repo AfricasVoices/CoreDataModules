@@ -28,7 +28,8 @@ class CodeTranslators(object):
         return "Scheme-12cb6f95"
 
     @staticmethod
-    def make_auto_coded_label(scheme_id, code_id, auto_code_fn_name, date_time_utc=None):
+    def make_auto_coded_label(scheme_id, code_id, auto_code_id, auto_code_name="Pipeline Auto-Coder",
+                              date_time_utc=None):
         if date_time_utc is None:
             date_time_utc = datetime.now().astimezone(pytz.utc).isoformat()
 
@@ -39,11 +40,11 @@ class CodeTranslators(object):
         label.checked = False
         label.confidence = 0  # TODO
         # Skipping label_set for now
-        origin = Origin()
-        origin.origin_id = "data-pipeline"  # TODO
-        origin.name = auto_code_fn_name
-        origin.origin_type = "External"
 
+        origin = Origin()
+        origin.origin_id = auto_code_id
+        origin.name = auto_code_name
+        origin.origin_type = "External"
         label.origin = origin
 
         return label

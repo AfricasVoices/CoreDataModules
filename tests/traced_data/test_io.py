@@ -6,7 +6,7 @@ import time
 import unittest
 from os import path
 
-from core_data_modules.cleaners import Codes
+from core_data_modules.cleaners import Codes, english
 from core_data_modules.cleaners.code_translators import CodeTranslators
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
@@ -303,8 +303,9 @@ class TestTracedDataCoda2IO(unittest.TestCase):
         for td in messages:
             scheme_id = CodeTranslators.gender_scheme_id()
             code_id = CodeTranslators.gender_code_id(td["gender_coded"])
-            gender_label = CodeTranslators.make_auto_coded_label(scheme_id, code_id, "Pipeline Auto-Coder")
+            cleaner = Metadata.get_function_location(english.DemographicCleaner.clean_gender)
 
+            gender_label = CodeTranslators.make_auto_coded_label(scheme_id, code_id, cleaner)
             td.append_data({"gender_coded": gender_label.to_dict()},
                            Metadata("test_user", Metadata.get_call_location(), 10))
 
