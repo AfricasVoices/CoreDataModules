@@ -454,29 +454,57 @@ class TracedDataCoda2IO(object):
             
     @staticmethod
     def _is_coded_as_missing(code_ids):
-        if len(code_ids) == 1:
+        """
+        Returns whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
+
+        :param code_ids: Code ids to check.
+        :type code_ids: iterable of str
+        :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
+        :rtype: bool
+        """
+        if len(set(code_ids)) == 1:
             code_id = code_ids.pop()
             if code_id.startswith("code-NA") or code_id.startswith("code-NS") or code_id.startswith("code-NL"):
                 return True
         return False
 
     @classmethod
-    def export_traced_data_iterable_to_coda_2(cls, data, raw_key, time_key, data_message_id_key, keys_of_coded, f):
+    def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, data_message_id_key, coded_keys, f):
+        """
+        Exports an iterable of TracedData to a messages json file suitable for upload into Coda V2.
+
+        Data which has been coded as True Missing, Skipped, or Not Logical will not be exported.
+        Data which has been coded as Not Coded will be exported without the Not Coded label.
+        
+        :param data: Data to export to Coda V2.
+        :type data: iterable of TracedData
+        :param raw_key: Key in TracedData objects of the raw messages.
+        :type raw_key: str
+        :param creation_date_time_key: Key in TracedData objects of when the message was created
+        :type creation_date_time_key: str
+        :param data_message_id_key: Key in TracedData objects of the message id.
+                                    Message Ids can be set using TracedDataCoda2IO.add_message_ids.
+        :type data_message_id_key: str
+        :param coded_keys: Keys in TracedData objects of existing labels to export.  
+        :type coded_keys: iterable of str
+        :param f: File to write exported JSON file to.
+        :type f: file-like
+        """
         messages = []
         for td in data:
-            # Skip messages which have been coded as true missing, skipped, or not logical across all keys_of_coded
-            if cls._is_coded_as_missing({td[key_of_coded]["CodeID"] for key_of_coded in keys_of_coded}):
+            # Skip messages which have been coded as true missing, skipped, or not logical across all coded_keys
+            if cls._is_coded_as_missing({td[coded_key]["CodeID"] for coded_key in coded_keys}):
                 continue
 
             # Export a message for this row
             message = Message()
             message.message_id = td[data_message_id_key]
             message.text = td[raw_key]
-            message.creation_date_time_utc = isoparse(td[time_key]).astimezone(pytz.utc).isoformat()
+            message.creation_date_time_utc = isoparse(td[creation_date_time_key]).astimezone(pytz.utc).isoformat()
             message.labels = []
 
             # Export codes for this row which are not Codes.NOT_CODED
-            for key_of_coded in keys_of_coded:
+            for key_of_coded in coded_keys:
                 if not td[key_of_coded]["CodeID"].startswith("code-NC"):
                     message.labels.append(td[key_of_coded])
 
@@ -487,9 +515,11 @@ class TracedDataCoda2IO(object):
     @classmethod
     def import_coda_2_to_traced_data_iterable(cls, user, data, data_message_id_key, scheme_keys, nr_label, f):
         """
-        Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
+        Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
         Data which is has not been assigned a code in the Coda file is coded using the NR code from the provided scheme.
+
+        TODO: Data which has been assigned a code under one scheme but none of the others needs to coded as NC not NR
 
         :param user: Identifier of user running this program.
         :type user: str
@@ -500,6 +530,8 @@ class TracedDataCoda2IO(object):
         :param scheme_keys: Dictionary of of the key in each TracedData object of coded data for a scheme to
                             a Coda 2 scheme object.
         :type scheme_keys: dict of str -> list of dict
+        :param nr_label: Label to apply to messages which haven't been reviewed yet.
+        :type nr_label: core_data_modules.data_models.Label
         :param f: Coda data file to import codes from.
         :type f: file-like
         """
