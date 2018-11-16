@@ -492,8 +492,19 @@ class TracedDataCoda2IO(object):
         """
         messages = []
         for td in data:
+            # Filter for coded_keys present in this TracedData object
+            td_coded_keys = [k for k in coded_keys if k in td]
+
             # Skip messages which have been coded as true missing, skipped, or not logical across all coded_keys
-            if cls._is_coded_as_missing({td[coded_key]["CodeID"] for coded_key in coded_keys}):
+            code_ids = set()
+            for coded_key in td_coded_keys:
+                codes = td.get(coded_key)
+                if codes is not None:
+                    if type(codes) == dict:
+                        code_ids.add(codes["CodeID"])
+                    else:
+                        code_ids.update([code["CodeID"] for code in codes])
+            if cls._is_coded_as_missing(code_ids):
                 continue
 
             # Export a message for this row
@@ -504,9 +515,9 @@ class TracedDataCoda2IO(object):
             message.labels = []
 
             # Export codes for this row which are not Codes.NOT_CODED
-            for key_of_coded in coded_keys:
-                if not td[key_of_coded]["CodeID"].startswith("code-NC"):
-                    message.labels.append(td[key_of_coded])
+            for coded_key in td_coded_keys:
+                if not td[coded_key]["CodeID"].startswith("code-NC"):
+                    message.labels.append(td[coded_key])
 
             messages.append(message)
 
@@ -529,8 +540,8 @@ class TracedDataCoda2IO(object):
         :param data_message_id_key: Key in TracedData objects of the message ids.
         :type data_message_id_key: str
         :param scheme_keys: Dictionary of of the key in each TracedData object of coded data for a scheme to
-                            a Coda 2 scheme object.
-        :type scheme_keys: dict of str -> list of dict
+                            a Coda 2 scheme id.
+        :type scheme_keys: dict of str -> str
         :param nr_label: Label to apply to messages which haven't been reviewed yet.
         :type nr_label: core_data_modules.data_models.Label
         :param f: Coda data file to import codes from.
@@ -572,6 +583,87 @@ class TracedDataCoda2IO(object):
                         {key_of_coded: nr_label.to_dict()},
                         Metadata(user, Metadata.get_call_location(), time.time())
                     )
+
+    @classmethod
+    def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, data_message_id_key, scheme_keys, nr_label, f):
+        """
+        Codes a "column" of a collection of TracedData objects by using the codes from a Coda data-file.
+
+        Data which is has not been assigned a code in the Coda file is coded using the NR code from the provided scheme.
+
+        :param user: Identifier of user running this program.
+        :type user: str
+        :param data: TracedData objects to be coded using the Coda file.
+        :type data: iterable of TracedData
+        :param data_message_id_key: Key in TracedData objects of the message ids.
+        :type data_message_id_key: str
+        :param scheme_keys: Dictionary of of the key in each TracedData object of coded data for a scheme to
+                            a list of Coda 2 scheme ids.  # TODO: Rewrite to be readable
+        :type scheme_keys: dict of str -> list of str
+        :param f: Coda data file to import codes from.
+        :type f: file-like
+        """
+        # Build a lookup table of MessageID -> SchemeID -> Labels
+        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+        for msg in json.load(f):
+            schemes = dict()  # of SchemeID -> list of Label
+            coda_dataset[msg["MessageID"]] = schemes
+            msg["Labels"].reverse()
+            for label in msg["Labels"]:
+                scheme_id = label["SchemeID"]
+                if scheme_id not in schemes:
+                    schemes[scheme_id] = []
+                schemes[scheme_id].append(label)
+
+        # Apply the labels from Coda to each TracedData item in data
+        for td in data:
+            for key_of_coded in scheme_keys.keys():
+                # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
+                # and sort oldest first.
+                labels = []
+                for scheme_id in scheme_keys[key_of_coded]:
+                    labels.extend(coda_dataset.get(td[data_message_id_key], dict()).get(scheme_id, []))
+                labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
+
+                # Get the currently assigned list of codes for this multi-coded scheme
+                td_codes = td.get(key_of_coded, [])
+                td_codes_lut = {code["SchemeID"]: code for code in td_codes}
+
+                if labels is not None:
+                    for label in labels:
+                        # Update the relevant label in this traced data's list of labels with the new label,
+                        # and append the whole new list to the traced data.
+                        td_codes_lut[label["SchemeID"]] = label
+                        td_codes = list(td_codes_lut.values())
+                        td.append_data({key_of_coded: td_codes},
+                                       Metadata(user, Metadata.get_call_location(), time.time()))
+
+            
+            # for key_of_coded, scheme_ids in scheme_keys.items():
+            #     labels = coda_dataset.get(td[data_message_id_key], dict()).get(scheme_id)
+            #     if labels is not None:
+            #         for scheme_id in scheme_ids:
+            #             pass
+            #
+            #             for label in labels:
+            #                 # TODO: Check not duplicating previous history?
+            #                 td.append_data(
+            #                     {key_of_coded: label},
+            #                     Metadata(label["Origin"]["OriginID"], Metadata.get_call_location(),
+            #                              (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
+            #                                                                         tzinfo=pytz.utc)).total_seconds())
+            #                 )
+            #
+            #             if td[key_of_coded]["Origin"]["OriginType"] != "Manual":
+            #                 td.append_data(
+            #                     {key_of_coded: nr_label.to_dict()},
+            #                     Metadata(user, Metadata.get_call_location(), time.time())
+            #                 )
+            #     elif not cls._is_coded_as_missing({td[key_of_coded]["CodeID"]}):
+            #         td.append_data(
+            #             {key_of_coded: nr_label.to_dict()},
+            #             Metadata(user, Metadata.get_call_location(), time.time())
+            #         )
 
 
 class TracedDataCodingCSVIO(object):

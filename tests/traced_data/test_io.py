@@ -335,6 +335,50 @@ class TestTracedDataCoda2IO(unittest.TestCase):
         with open("imported.json", "w") as f:
             TracedDataJsonIO.export_traced_data_iterable_to_json(messages, f, pretty_print=True)
 
+    def test_export_import_multi_code(self):
+        # Build raw input data
+        message_dicts = [
+            {"advisors_raw": "parents", "sent_on": "2018-11-01T07:13:04+03:00"},
+            {"advisors_raw": "", "sent_on": "2018-11-01T07:17:04+03:00"},
+            {"advisors_raw": "doctor + god", "sent_on": "2018-11-01T07:19:04+03:00"},
+            {"advisors_raw": "hi", "sent_on": "2018-11-01T07:19:04+03:00"},
+            {"advisors_raw": "family", "sent_on": "2018-11-01T07:19:04+03:00"},
+        ]
+        messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
+                    for i, d in enumerate(message_dicts)]
+
+        # Add message ids
+        TracedDataCoda2IO.add_message_ids("test_user", messages, "advisors_raw", "advisors_id")
+
+        # Set TRUE_MISSING codes
+        for td in messages:
+            scheme_id = GenderTranslator.SCHEME_ID
+            code_id = GenderTranslator.code_id(Codes.TRUE_MISSING)
+            na_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Auto-Missing")
+
+            if td["advisors_raw"] == "":
+                td.append_data({"advisors_coded": [na_label.to_dict()]},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
+
+        # Export to a Coda 2 messages file
+        with open("test_multi.json", "w") as f:
+            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                messages, "advisors_raw", "sent_on", "advisors_id", {"advisors_coded"}, f)
+
+        # Import manually coded data
+        with open("test_multi_coded.json", "r") as f:
+            scheme_id = GenderTranslator.SCHEME_ID
+            code_id = GenderTranslator.code_id(Codes.NOT_REVIEWED)
+            nr_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Coda Importer")
+
+            TracedDataCoda2IO.import_coda_2_to_traced_data_iterable_multi_coded(
+                "test_user", messages, "advisors_id", {"advisors_coded": {"Scheme-2fff4d02", "Scheme-af78df67"}},
+                nr_label, f)
+            
+        # Output coded TracedData
+        with open("imported_multi.json", "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(messages, f, pretty_print=True)
+
 
 class TestTracedDataCodingCSVIO(unittest.TestCase):
     def setUp(self):
