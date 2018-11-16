@@ -464,12 +464,13 @@ class TracedDataCoda2IO(object):
         """
         if len(set(code_ids)) == 1:
             code_id = code_ids.pop()
-            if code_id.startswith("code-NA") or code_id.startswith("code-NS") or code_id.startswith("code-NL"):
+            if code_id.get("ControlCode") in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
                 return True
         return False
 
     @classmethod
-    def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, data_message_id_key, coded_keys, f):
+    def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, data_message_id_key,
+                                              coded_keys, f):
         """
         Exports an iterable of TracedData to a messages json file suitable for upload into Coda V2.
 
@@ -599,6 +600,8 @@ class TracedDataCoda2IO(object):
         :type data_message_id_key: str
         :param scheme_keys: Dictionary of of the key in each TracedData object of coded data for a scheme to
                             a list of Coda 2 scheme ids.  # TODO: Rewrite to be readable
+        :param nr_label: Label to apply to messages which haven't been reviewed yet.
+        :type nr_label: core_data_modules.data_models.Label
         :type scheme_keys: dict of str -> list of str
         :param f: Coda data file to import codes from.
         :type f: file-like

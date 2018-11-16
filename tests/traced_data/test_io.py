@@ -373,7 +373,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
 
             TracedDataCoda2IO.import_coda_2_to_traced_data_iterable_multi_coded(
                 "test_user", messages, "advisors_id", {"advisors_coded": {"Scheme-2fff4d02", "Scheme-af78df67"}},
-                nr_label, f)
+                nr_label, f)  # TODO: Passing in an NR label like this means the timestamp will always be the same
             
         # Output coded TracedData
         with open("imported_multi.json", "w") as f:

@@ -3,6 +3,7 @@ from datetime import datetime
 
 import pytz
 
+from core_data_modules.cleaners import Codes
 from core_data_modules.data_models import Origin, Label
 from core_data_modules.traced_data import Metadata
 
@@ -34,7 +35,8 @@ class CleaningUtils(object):
     def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme_id, code_id_fn):
         for td in data:
             # Don't clean missing data
-            if td.get(clean_key) is not None and td[clean_key].get("CodeID")[:7] in {"code-NA", "code-NS", "code-NL"}:
+            if td.get(clean_key) is not None and \
+                    td[clean_key].get("ControlCode") in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
                 continue
 
             code = cleaner(td[raw_key])
