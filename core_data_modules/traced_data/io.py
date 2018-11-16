@@ -617,53 +617,53 @@ class TracedDataCoda2IO(object):
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
-            for key_of_coded in scheme_keys.keys():
+            for coded_key in scheme_keys.keys():
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
-                for scheme_id in scheme_keys[key_of_coded]:
+                for scheme_id in scheme_keys[coded_key]:
                     labels.extend(coda_dataset.get(td[data_message_id_key], dict()).get(scheme_id, []))
                 labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
 
                 # Get the currently assigned list of codes for this multi-coded scheme
-                td_codes = td.get(key_of_coded, [])
+                td_codes = td.get(coded_key, [])
                 td_codes_lut = {code["SchemeID"]: code for code in td_codes}
 
-                if labels is not None:
-                    for label in labels:
-                        # Update the relevant label in this traced data's list of labels with the new label,
-                        # and append the whole new list to the traced data.
-                        td_codes_lut[label["SchemeID"]] = label
-                        td_codes = list(td_codes_lut.values())
-                        td.append_data({key_of_coded: td_codes},
-                                       Metadata(user, Metadata.get_call_location(), time.time()))
+                for label in labels:
+                    # Update the relevant label in this traced data's list of labels with the new label,
+                    # and append the whole new list to the traced data.
+                    td_codes_lut[label["SchemeID"]] = label
 
-            
-            # for key_of_coded, scheme_ids in scheme_keys.items():
-            #     labels = coda_dataset.get(td[data_message_id_key], dict()).get(scheme_id)
-            #     if labels is not None:
-            #         for scheme_id in scheme_ids:
-            #             pass
-            #
-            #             for label in labels:
-            #                 # TODO: Check not duplicating previous history?
-            #                 td.append_data(
-            #                     {key_of_coded: label},
-            #                     Metadata(label["Origin"]["OriginID"], Metadata.get_call_location(),
-            #                              (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
-            #                                                                         tzinfo=pytz.utc)).total_seconds())
-            #                 )
-            #
-            #             if td[key_of_coded]["Origin"]["OriginType"] != "Manual":
-            #                 td.append_data(
-            #                     {key_of_coded: nr_label.to_dict()},
-            #                     Metadata(user, Metadata.get_call_location(), time.time())
-            #                 )
-            #     elif not cls._is_coded_as_missing({td[key_of_coded]["CodeID"]}):
-            #         td.append_data(
-            #             {key_of_coded: nr_label.to_dict()},
-            #             Metadata(user, Metadata.get_call_location(), time.time())
-            #         )
+                    if len(td_codes_lut) > 1:
+                        for key, code in td_codes_lut.items():
+                            if code.get("ControlCode") == Codes.NOT_CODED:
+                                del td_codes_lut[key]
+
+                    td_codes = list(td_codes_lut.values())
+                    td.append_data({coded_key: td_codes},
+                                   Metadata(user, Metadata.get_call_location(), time.time()))
+
+                manual_codes_count = 0
+                codes = td.get(coded_key)
+                if codes is not None:
+                    for code in codes:
+                        if code["Origin"]["OriginType"] == "Manual":
+                            manual_codes_count += 1
+
+                code_ids = set()
+                codes = td.get(coded_key)
+                if codes is not None:
+                    if type(codes) == dict:
+                        code_ids.add(codes["CodeID"])
+                    else:
+                        code_ids.update([code["CodeID"] for code in codes])
+                coded_as_missing = cls._is_coded_as_missing(code_ids)
+
+                if manual_codes_count == 0 and not coded_as_missing:
+                    td.append_data(
+                        {coded_key: [nr_label.to_dict()]},
+                        Metadata(user, Metadata.get_call_location(), time.time())
+                    )
 
 
 class TracedDataCodingCSVIO(object):
