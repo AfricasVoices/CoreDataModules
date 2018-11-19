@@ -495,6 +495,10 @@ class TracedDataCoda2IO(object):
         """
         messages = []
         for td in data:
+            # Skip items which don't have a value for this key
+            if raw_key not in td:
+                continue
+
             # Filter for coded_keys present in this TracedData object
             td_coded_keys = [k for k in coded_keys if k in td]
 
