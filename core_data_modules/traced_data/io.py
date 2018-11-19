@@ -447,10 +447,11 @@ class TracedDataCoda2IO(object):
     @classmethod
     def add_message_ids(cls, user, data, raw_key, message_id_key):
         for td in data:
-            td.append_data(
-                {message_id_key: SHAUtils.sha_string(td[raw_key])},
-                Metadata(user, Metadata.get_call_location(), time.time())
-            )
+            if raw_key in td:
+                td.append_data(
+                    {message_id_key: SHAUtils.sha_string(td[raw_key])},
+                    Metadata(user, Metadata.get_call_location(), time.time())
+                )
 
     @staticmethod
     def _is_coded_as_missing(labels):
