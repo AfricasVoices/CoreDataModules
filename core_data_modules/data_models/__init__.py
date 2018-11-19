@@ -25,9 +25,8 @@ class Label(object):
     confidence = None
     # Note: Not supporting label_set
     origin = None
-
-    def default(self, o):
-        return self.to_dict(o)
+    control_code = None
+    code_type = None
 
     def to_dict(self):
         return {
@@ -36,7 +35,9 @@ class Label(object):
             "DateTimeUTC": self.date_time_utc,
             "Checked": self.checked,
             "Confidence": self.confidence,
-            "Origin": self.origin.to_dict()
+            "Origin": self.origin.to_dict(),
+            "ControlCode": self.control_code,
+            "CodeType": self.code_type
         }
 
 
