@@ -494,9 +494,14 @@ class TracedDataCoda2IO(object):
         :type f: file-like
         """
         messages = []
+        exported_message_ids = set()
         for td in data:
             # Skip items which don't have a value for this key
             if raw_key not in td:
+                continue
+                
+            # Skip items which have already been exported
+            if td[data_message_id_key] in exported_message_ids:
                 continue
 
             # Filter for coded_keys present in this TracedData object
@@ -527,6 +532,7 @@ class TracedDataCoda2IO(object):
                     message.labels.append(td[coded_key])
 
             messages.append(message)
+            exported_message_ids.add(message.message_id)
 
         json.dump([m.to_dict() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
