@@ -476,6 +476,8 @@ class TracedDataCoda2IO(object):
         """
         Exports an iterable of TracedData to a messages json file suitable for upload into Coda V2.
 
+        Data is de-duplicated on export.
+
         Data which has been coded as True Missing, Skipped, or Not Logical will not be exported.
         Data which has been coded as Not Coded will be exported but without the Not Coded label.
         
@@ -493,6 +495,10 @@ class TracedDataCoda2IO(object):
         :param f: File to write exported JSON file to.
         :type f: file-like
         """
+        # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
+        data = list(data)
+        data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
+
         messages = []
         exported_message_ids = set()
         for td in data:
