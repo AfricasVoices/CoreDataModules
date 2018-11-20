@@ -471,7 +471,7 @@ class TracedDataCoda2IO(object):
         return False
 
     @classmethod
-    def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, data_message_id_key,
+    def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, message_id_key,
                                               coded_keys, f):
         """
         Exports an iterable of TracedData to a messages json file suitable for upload into Coda V2.
@@ -487,9 +487,9 @@ class TracedDataCoda2IO(object):
         :type raw_key: str
         :param creation_date_time_key: Key in TracedData objects of when the message was created
         :type creation_date_time_key: str
-        :param data_message_id_key: Key in TracedData objects of the message id.
+        :param message_id_key: Key in TracedData objects of the message id.
                                     Message Ids can be set using TracedDataCoda2IO.add_message_ids.
-        :type data_message_id_key: str
+        :type message_id_key: str
         :param coded_keys: Keys in TracedData objects of existing labels to export.  
         :type coded_keys: iterable of str
         :param f: File to write exported JSON file to.
@@ -507,7 +507,7 @@ class TracedDataCoda2IO(object):
                 continue
                 
             # Skip items which have already been exported
-            if td[data_message_id_key] in exported_message_ids:
+            if td[message_id_key] in exported_message_ids:
                 continue
 
             # Filter for coded_keys present in this TracedData object
@@ -527,7 +527,7 @@ class TracedDataCoda2IO(object):
 
             # Export a message for this row
             message = Message()
-            message.message_id = td[data_message_id_key]
+            message.message_id = td[message_id_key]
             message.text = td[raw_key]
             message.creation_date_time_utc = isoparse(td[creation_date_time_key]).astimezone(pytz.utc).isoformat()
             message.labels = []
@@ -543,7 +543,7 @@ class TracedDataCoda2IO(object):
         json.dump([m.to_dict() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
     @classmethod
-    def import_coda_2_to_traced_data_iterable(cls, user, data, data_message_id_key, scheme_keys, nr_label, f):
+    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_keys, nr_label, f):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
@@ -558,8 +558,8 @@ class TracedDataCoda2IO(object):
         :type user: str
         :param data: TracedData objects to be coded using the Coda file.
         :type data: iterable of TracedData
-        :param data_message_id_key: Key in TracedData objects of the message ids.
-        :type data_message_id_key: str
+        :param message_id_key: Key in TracedData objects of the message ids.
+        :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
                             (ids of the scheme in the Coda messages file to retrieve the labels from)
         :type scheme_keys: dict of str -> str
@@ -583,7 +583,7 @@ class TracedDataCoda2IO(object):
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
             for key_of_coded, scheme_id in scheme_keys.items():
-                labels = coda_dataset.get(td[data_message_id_key], dict()).get(scheme_id)
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme_id)
                 if labels is not None:
                     for label in labels:
                         # TODO: Check not duplicating previous history?
@@ -606,7 +606,7 @@ class TracedDataCoda2IO(object):
                     )
 
     @classmethod
-    def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, data_message_id_key, scheme_keys,
+    def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_keys,
                                                           nr_label, f):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
@@ -622,8 +622,8 @@ class TracedDataCoda2IO(object):
         :type user: str
         :param data: TracedData objects to be coded using the Coda file.
         :type data: iterable of TracedData
-        :param data_message_id_key: Key in TracedData objects of the message ids.
-        :type data_message_id_key: str
+        :param message_id_key: Key in TracedData objects of the message ids.
+        :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
                             (ids of schemes in the Coda messages file to retrieve the labels from)
         :type scheme_keys: dict of str -> (iterable of str)
@@ -652,7 +652,7 @@ class TracedDataCoda2IO(object):
                 # and sort oldest first.
                 labels = []
                 for scheme_id in scheme_keys[coded_key]:
-                    labels.extend(coda_dataset.get(td[data_message_id_key], dict()).get(scheme_id, []))
+                    labels.extend(coda_dataset.get(td[message_id_key], dict()).get(scheme_id, []))
                 labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
 
                 # Get the currently assigned list of codes for this multi-coded scheme
