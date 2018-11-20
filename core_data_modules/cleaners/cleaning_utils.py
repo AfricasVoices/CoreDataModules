@@ -37,7 +37,7 @@ class CleaningUtils(object):
         return label
 
     @classmethod
-    def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme_id, code_id_fn):
+    def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, code_translator):
         for td in data:
             # Don't clean missing data
             if td.get(clean_key) is not None and \
@@ -46,8 +46,8 @@ class CleaningUtils(object):
 
             code = cleaner(td[raw_key])
             control_code = Codes.NOT_CODED if code == Codes.NOT_CODED else None
-            code_id = code_id_fn(code)
+            code_id = code_translator.code_id(code)
             origin_id = Metadata.get_function_location(cleaner)
-            label = cls.make_label(scheme_id, code_id, origin_id, control_code=control_code)
+            label = cls.make_label(code_translator.scheme_id, code_id, origin_id, control_code=control_code)
 
             td.append_data({clean_key: label.to_dict()}, Metadata(user, Metadata.get_call_location(), time.time()))
