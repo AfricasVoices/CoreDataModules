@@ -1,7 +1,8 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
-from core_data_modules.cleaners.somali import DemographicCleaner
+from core_data_modules.cleaners.codes import SomaliaCodes
+from core_data_modules.cleaners.somali import DemographicCleaner, DemographicPatterns
 
 
 class TestDemographicCleaner(unittest.TestCase):
@@ -34,6 +35,9 @@ class TestDemographicCleaner(unittest.TestCase):
         self.assertEqual(DemographicCleaner.clean_urban_rural("I am a villager."), Codes.RURAL)
 
     def test_clean_somalia_district(self):
+        # Check that the patterns defined for the somalia districts cleaner are all defined in SomaliaCodes.DISTRICTS
+        self.assertSetEqual(set(DemographicPatterns.somalia_districts.keys()) - set(SomaliaCodes.DISTRICTS), set())
+
         self.assertEqual(DemographicCleaner.clean_somalia_district("I live in Mogadishu"), "mogadishu")
 
     def test_clean_number_words(self):
