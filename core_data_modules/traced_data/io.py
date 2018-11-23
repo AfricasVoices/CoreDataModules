@@ -581,6 +581,9 @@ class TracedDataCoda2IO(object):
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
+            if message_id_key not in td:
+                continue
+            
             for key_of_coded, scheme_id in scheme_keys.items():
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme_id)
                 if labels is not None:
