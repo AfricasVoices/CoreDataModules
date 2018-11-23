@@ -497,15 +497,14 @@ class TracedDataCoda2IO(object):
         """
         # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
         data = list(data)
+
+        data = [td for td in data if raw_key in td]
+
         data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
 
         messages = []
         exported_message_ids = set()
         for td in data:
-            # Skip items which don't have a value for this key
-            if raw_key not in td:
-                continue
-                
             # Skip items which have already been exported
             if td[message_id_key] in exported_message_ids:
                 continue
