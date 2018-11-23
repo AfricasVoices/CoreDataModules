@@ -288,7 +288,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
 
 class TestTracedDataCoda2IO(unittest.TestCase):
-    def test_export_import(self):
+    def test_export_import_single_code(self):
         # Build raw input data
         message_dicts = [
             {"gender_raw": "woman", "sent_on": "2018-11-01T07:13:04+03:00"},
