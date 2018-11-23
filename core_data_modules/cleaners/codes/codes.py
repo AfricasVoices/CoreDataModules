@@ -22,3 +22,4 @@ class Codes(object):
     NOT_LOGICAL = "NL"
     NOT_REVIEWED = "NR"
     NOT_CODED = "NC"
+    WRONG_SCHEME = "WS"

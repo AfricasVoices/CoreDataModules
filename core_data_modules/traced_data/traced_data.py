@@ -42,8 +42,17 @@ class Metadata(object):
         frame = inspect.stack()[1]  # Access the previous frame to find out where this function was called from.
         f = frame[1]
         line = frame[2]
-        func = frame[3]
-        return "{}:{}:{}".format(f, str(line), func)
+        name = frame[3]
+        
+        return "{}:{}:{}".format(f, str(line), name)
+
+    @staticmethod
+    def get_function_location(func):
+        f = inspect.getmodule(func).__file__
+        line = inspect.getsourcelines(func)[1]
+        name = func.__name__
+        
+        return "{}:{}:{}".format(f, str(line), name)
 
 
 class TracedData(Mapping):
