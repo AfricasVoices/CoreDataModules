@@ -10,23 +10,17 @@ from core_data_modules.traced_data import Metadata
 
 class CleaningUtils(object):
     @staticmethod
-    def make_label(scheme_id, code_id, origin_id, origin_name="Pipeline Auto-Coder",
-                   date_time_utc=None, control_code=None):
+    def make_label_from_code(code, origin_id, origin_name="Pipeline Auto-Coder", date_time_utc=None):
         if date_time_utc is None:
             date_time_utc = datetime.now().astimezone(pytz.utc).isoformat()
 
         label = Label()
-        label.scheme_id = scheme_id
-        label.code_id = code_id
+        label.scheme_id = code.scheme_id
+        label.code_id = code.code_id
         label.date_time_utc = date_time_utc
         label.checked = False
         label.confidence = 0  # TODO
         # Skipping label_set for now
-        if control_code is None:
-            label.code_type = "Normal"
-        else:
-            label.control_code = control_code
-            label.code_type = "Control"
 
         origin = Origin()
         origin.origin_id = origin_id
