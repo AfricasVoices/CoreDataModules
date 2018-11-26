@@ -20,6 +20,23 @@ class Scheme(object):
     def __neq__(self, other):
         return not self.__eq__(other)
 
+    def get_code_with_id(self, code_id):
+        for code in self.codes:
+            if code.code_id == code_id:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
+
+    def get_code_with_control_code(self, control_code):
+        for code in self.codes:
+            if code.control_code == control_code:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
+
+    def get_code_with_match_value(self, match_value):
+        for code in self.codes:
+            if match_value in code.match_values:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
 
     @staticmethod
     def from_firebase_map(data):
