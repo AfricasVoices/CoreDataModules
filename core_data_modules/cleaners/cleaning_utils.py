@@ -45,9 +45,8 @@ class CleaningUtils(object):
             if code == Codes.NOT_CODED:
                 continue
 
-            scheme_id = scheme.scheme_id
             code_id = scheme.get_code_with_match_value(code)
             origin_id = Metadata.get_function_location(cleaner)
-            label = cls.make_label(scheme_id, code_id, origin_id)
+            label = cls.make_label(scheme, code_id, origin_id)
 
             td.append_data({clean_key: label.to_dict()}, Metadata(user, Metadata.get_call_location(), time.time()))
