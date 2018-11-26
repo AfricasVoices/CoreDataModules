@@ -20,6 +20,23 @@ class Scheme(object):
     def __neq__(self, other):
         return not self.__eq__(other)
 
+    def get_code_with_id(self, code_id):
+        for code in self.codes:
+            if code.code_id == code_id:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
+
+    def get_code_with_control_code(self, control_code):
+        for code in self.codes:
+            if code.control_code == control_code:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
+
+    def get_code_with_match_value(self, match_value):
+        for code in self.codes:
+            if match_value in code.match_values:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
 
     @staticmethod
     def from_firebase_map(data):
@@ -58,8 +75,12 @@ class Scheme(object):
 class Code:
     code_id = None
     display_text = None
+    code_type = None
+    control_code = None
+    match_values = []
     shortcut = None
     numeric_value = -42
+    string_value = None
     visible_in_coda = True
     color = None
 
@@ -68,22 +89,37 @@ class Code:
         code = Code()
         code.code_id = validators.validate_string(data["CodeID"], "CodeID")
         code.display_text = validators.validate_string(data["DisplayText"], "DisplayText")
-        if "ShortCut" in data.keys():
+        
+        code.code_type = validators.validate_string(data["CodeType"], "CodeType")
+        assert code.code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(code.code_type)
+        if code.code_type == "Control":
+            code.control_code = validators.validate_string(data["ControlCode"], "ControlCode")
+        
+        code.match_values = validators.validate_list(data["MatchValues"], "MatchValues")
+        for i, match_value in enumerate(code.match_values):
+            validators.validate_string(match_value, "MatchValues[{}]".format(i))
+        
+        if "Shortcut" in data.keys():
             code.shortcut = validators.validate_string(data["Shortcut"], "Shortcut")
+        
         code.numeric_value = validators.validate_int(data["NumericValue"], "NumericValue")
+        code.string_value = validators.validate_string(data["StringValue"], "StringValue")
         code.visible_in_coda = validators.validate_bool(data["VisibleInCoda"], "VisibleInCoda")
+        
         if "Color" in data.keys():
             code.color = validators.validate_string(data["Color"], "Color")
+        
         return code
     
     def to_firebase_map(self):
+        # TODO: Update to include code_type, control_code, match_values, and string_value
         ret = dict()
         ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
         ret["DisplayText"] = validators.validate_string(self.display_text, "DisplayText")
         ret["Shortcut"] = validators.validate_string(self.shortcut, "Shortcut")
         ret["NumericValue"] = validators.validate_int(self.numeric_value, "NumericValue")
         ret["VisibleInCoda"] = validators.validate_bool(self.visible_in_coda, "VisibleInCoda")
-        if self.color != None:
+        if self.color is not None:
             ret["Color"] = validators.validate_string(self.color, "Color")
         return ret
 
