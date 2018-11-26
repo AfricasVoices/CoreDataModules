@@ -38,6 +38,10 @@ class DemographicCleaner(object):
         return RegexUtils.clean_with_patterns(text, DemographicPatterns.urban_rural)
 
     @staticmethod
+    def clean_mogadishu_sub_district(text):
+        return RegexUtils.clean_with_patterns(text, DemographicPatterns.mogadishu_sub_districts)
+
+    @staticmethod
     def clean_somalia_district(text):
         return RegexUtils.clean_with_patterns(text, DemographicPatterns.somalia_districts)
 

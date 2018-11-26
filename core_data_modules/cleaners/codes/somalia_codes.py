@@ -154,7 +154,6 @@ class SomaliaCodes(object):
     }
 
     MOGADISHU_SUB_DISTRICTS = [
-        MOGADISHU,
         BOONDHEERE,
         CABDLCASIIS,
         DAYNILE,
