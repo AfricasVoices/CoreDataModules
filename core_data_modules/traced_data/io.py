@@ -37,7 +37,8 @@ class _TracedDataIOUtil(object):
         :return: Filtered TracedData objects.
         :rtype: iterable of TracedData
         """
-        return [td for td in data if td[key_of_raw] not in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}]
+        return [td for td in data
+                if td[key_of_raw] not in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_INTERNALLY_CONSISTENT}]
 
     @staticmethod
     def unique_messages(data, key_of_raw):
@@ -357,7 +358,7 @@ class TracedDataCodaIO(object):
                     continue
 
                 coded_lookup_key = (td[key_of_raw], scheme_name)
-                if td[key_of_raw] in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
+                if td[key_of_raw] in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_INTERNALLY_CONSISTENT}:
                     code = td[key_of_raw]
                 elif coded_lookup_key in coded:
                     code = coded[coded_lookup_key][cls.coda_code_value_col]
