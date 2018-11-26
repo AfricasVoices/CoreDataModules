@@ -77,7 +77,7 @@ class Code:
     display_text = None
     code_type = None
     control_code = None
-    match_values = []
+    match_values = None
     shortcut = None
     numeric_value = -42
     string_value = None
@@ -113,12 +113,21 @@ class Code:
         return code
     
     def to_firebase_map(self):
-        # TODO: Update to include code_type, control_code, match_values, and string_value
         ret = dict()
         ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
         ret["DisplayText"] = validators.validate_string(self.display_text, "DisplayText")
-        ret["Shortcut"] = validators.validate_string(self.shortcut, "Shortcut")
+        ret["CodeType"] = validators.validate_string(self.code_type, "CodeType")
+        assert self.code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(self.code_type)
+        if self.code_type == "Control":
+            ret["ControlCode"] = validators.validate_string(self.control_code, "ControlCode")
+        if self.match_values is not None:
+            ret["MatchValues"] = validators.validate_list(self.match_values, "MatchValues")
+            for i, match_value in enumerate(self.match_values):
+                validators.validate_string(match_value, "MatchValues[{}]".format(i))
+        if self.shortcut is not None:
+            ret["Shortcut"] = validators.validate_string(self.shortcut, "Shortcut")
         ret["NumericValue"] = validators.validate_int(self.numeric_value, "NumericValue")
+        ret["StringValue"] = validators.validate_string(self.string_value, "StringValue")
         ret["VisibleInCoda"] = validators.validate_bool(self.visible_in_coda, "VisibleInCoda")
         if self.color is not None:
             ret["Color"] = validators.validate_string(self.color, "Color")
