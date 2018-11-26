@@ -1,8 +1,8 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
+from core_data_modules.pipeline_utils import ConsentUtils
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.util.consent_utils import ConsentUtils
 
 
 class TestConsentUtils(unittest.TestCase):
