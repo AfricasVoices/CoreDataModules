@@ -58,8 +58,12 @@ class Scheme(object):
 class Code:
     code_id = None
     display_text = None
+    code_type = None
+    control_code = None
+    match_values = []
     shortcut = None
     numeric_value = -42
+    string_value = None
     visible_in_coda = True
     color = None
 
@@ -68,22 +72,37 @@ class Code:
         code = Code()
         code.code_id = validators.validate_string(data["CodeID"], "CodeID")
         code.display_text = validators.validate_string(data["DisplayText"], "DisplayText")
-        if "ShortCut" in data.keys():
+        
+        code.code_type = validators.validate_string(data["CodeType"], "CodeType")
+        assert code.code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(code.code_type)
+        if code.code_type == "Control":
+            code.control_code = validators.validate_string(data["ControlCode"], "ControlCode")
+        
+        code.match_values = validators.validate_list(data["MatchValues"], "MatchValues")
+        for i, match_value in enumerate(code.match_values):
+            validators.validate_string(match_value, "MatchValues[{}]".format(i))
+        
+        if "Shortcut" in data.keys():
             code.shortcut = validators.validate_string(data["Shortcut"], "Shortcut")
+        
         code.numeric_value = validators.validate_int(data["NumericValue"], "NumericValue")
+        code.string_value = validators.validate_string(data["StringValue"], "StringValue")
         code.visible_in_coda = validators.validate_bool(data["VisibleInCoda"], "VisibleInCoda")
+        
         if "Color" in data.keys():
             code.color = validators.validate_string(data["Color"], "Color")
+        
         return code
     
     def to_firebase_map(self):
+        # TODO: Update to include code_type, control_code, match_values, and string_value
         ret = dict()
         ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
         ret["DisplayText"] = validators.validate_string(self.display_text, "DisplayText")
         ret["Shortcut"] = validators.validate_string(self.shortcut, "Shortcut")
         ret["NumericValue"] = validators.validate_int(self.numeric_value, "NumericValue")
         ret["VisibleInCoda"] = validators.validate_bool(self.visible_in_coda, "VisibleInCoda")
-        if self.color != None:
+        if self.color is not None:
             ret["Color"] = validators.validate_string(self.color, "Color")
         return ret
 
