@@ -94,10 +94,11 @@ class Code:
         assert code.code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(code.code_type)
         if code.code_type == "Control":
             code.control_code = validators.validate_string(data["ControlCode"], "ControlCode")
-        
-        code.match_values = validators.validate_list(data["MatchValues"], "MatchValues")
-        for i, match_value in enumerate(code.match_values):
-            validators.validate_string(match_value, "MatchValues[{}]".format(i))
+
+        if "MatchValues" in data.keys():
+            code.match_values = validators.validate_list(data["MatchValues"], "MatchValues")
+            for i, match_value in enumerate(code.match_values):
+                validators.validate_string(match_value, "MatchValues[{}]".format(i))
         
         if "Shortcut" in data.keys():
             code.shortcut = validators.validate_string(data["Shortcut"], "Shortcut")
