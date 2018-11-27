@@ -34,7 +34,7 @@ class Scheme(object):
 
     def get_code_with_match_value(self, match_value):
         for code in self.codes:
-            if match_value in code.match_values:
+            if code.match_values is not None and match_value in code.match_values:
                 return code
         raise KeyError("Scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
 
