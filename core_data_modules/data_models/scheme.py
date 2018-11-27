@@ -84,14 +84,16 @@ class Code:
     visible_in_coda = True
     color = None
 
-    @staticmethod
-    def from_firebase_map(data):
+    VALID_CODE_TYPES = {"Normal", "Control"}
+
+    @classmethod
+    def from_firebase_map(cls, data):
         code = Code()
         code.code_id = validators.validate_string(data["CodeID"], "CodeID")
         code.display_text = validators.validate_string(data["DisplayText"], "DisplayText")
         
         code.code_type = validators.validate_string(data["CodeType"], "CodeType")
-        assert code.code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(code.code_type)
+        assert code.code_type in cls.VALID_CODE_TYPES, "CodeType '{}' invalid".format(code.code_type)
         if code.code_type == "Control":
             code.control_code = validators.validate_string(data["ControlCode"], "ControlCode")
 
@@ -111,13 +113,13 @@ class Code:
             code.color = validators.validate_string(data["Color"], "Color")
         
         return code
-    
+
     def to_firebase_map(self):
         ret = dict()
         ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
         ret["DisplayText"] = validators.validate_string(self.display_text, "DisplayText")
         ret["CodeType"] = validators.validate_string(self.code_type, "CodeType")
-        assert self.code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(self.code_type)
+        assert self.code_type in self.VALID_CODE_TYPES, "CodeType '{}' invalid".format(self.code_type)
         if self.code_type == "Control":
             ret["ControlCode"] = validators.validate_string(self.control_code, "ControlCode")
         if self.match_values is not None:
