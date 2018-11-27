@@ -2,11 +2,15 @@ from core_data_modules.data_models import validators
 
 
 class Scheme(object):
-    scheme_id = None
-    name = None
-    version = None
-    codes = []
-    documentation = dict()
+    def __init__(self, scheme_id, name, version, codes, documentation=None):
+        if documentation is None:
+            documentation = dict()
+
+        self.scheme_id = scheme_id
+        self.name = name
+        self.version = version
+        self.codes = codes
+        self.documentation = documentation
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -38,24 +42,27 @@ class Scheme(object):
                 return code
         raise KeyError("Scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
 
-    @staticmethod
-    def from_firebase_map(data):
-        scheme = Scheme()
-        scheme.scheme_id = validators.validate_string(data["SchemeID"])
-        scheme.name = validators.validate_string(data["Name"])
-        scheme.version = validators.validate_string(data["Version"])
+    @classmethod
+    def from_firebase_map(cls, data):
+        scheme_id = validators.validate_string(data["SchemeID"])
+        name = validators.validate_string(data["Name"])
+        version = validators.validate_string(data["Version"])
 
+        codes = []
         for code_map in data["Codes"]:
             code = Code.from_firebase_map(code_map)
             assert code.code_id not in code_map.keys(), \
                 "Non-unique Code Id found in scheme: {}".format(code.code_id)
-            scheme.codes.append(code)
+            codes.append(code)
 
+        documentation = None
         if "Documentation" in data.keys():
             doc_map = data["Documentation"]
-            scheme.documentation["URI"] = validators.validate_string(doc_map["URI"])
+            documentation = {
+                "URI": validators.validate_string(doc_map["URI"])
+            }
         
-        return scheme
+        return cls(scheme_id, name, version, codes, documentation)
     
     def to_firebase_map(self):
         ret = dict()
