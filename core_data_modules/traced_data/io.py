@@ -463,7 +463,7 @@ class TracedDataCoda2IO(object):
         :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
         :rtype: bool
         """
-        control_codes = [label.get("ControlCode") for label in labels]
+        control_codes = [label.get("ControlCode") for label in labels if label is not None]
         if len(set(control_codes)) == 1:
             control_code = control_codes.pop()
             if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
