@@ -11,10 +11,10 @@ class Scheme(object):
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return other.scheme_id == self.scheme_id & \
-            other.name == self.name & \
-            other.version == self.version & \
-            other.documentation == self.documentation & \
+        return other.scheme_id == self.scheme_id and \
+            other.name == self.name and \
+            other.version == self.version and \
+            other.documentation == self.documentation and \
             other.codes == self.codes
     
     def __neq__(self, other):
@@ -58,7 +58,7 @@ class Scheme(object):
         return scheme
     
     def to_firebase_map(self):
-        ret = {}
+        ret = dict()
         ret["SchemeID"] = self.scheme_id
         ret["Name"] = self.name
         ret["Version"] = self.version
@@ -66,8 +66,8 @@ class Scheme(object):
         for code in self.codes:
             ret["Codes"].append(code.to_firebase_map())
 
-        if len(documentation.items) > 0:
-            ret["Documentation"] = documentation
+        if len(self.documentation) > 0:
+            ret["Documentation"] = self.documentation
         
         return ret
         
