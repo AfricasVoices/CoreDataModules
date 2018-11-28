@@ -649,6 +649,9 @@ class TracedDataCoda2IO(object):
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
+            if message_id_key not in td:
+                continue
+
             for coded_key in scheme_keys.keys():
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
