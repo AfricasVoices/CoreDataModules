@@ -467,7 +467,7 @@ class TracedDataCoda2IO(object):
         control_codes = [label.get("ControlCode") for label in labels if label is not None]
         if len(set(control_codes)) == 1:
             control_code = control_codes.pop()
-            if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL}:
+            if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_INTERNALLY_CONSISTENT}:
                 return True
         return False
 
