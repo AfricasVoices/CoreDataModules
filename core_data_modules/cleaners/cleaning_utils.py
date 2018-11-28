@@ -36,7 +36,7 @@ class CleaningUtils(object):
             # Don't clean missing data
             if td.get(clean_key) is not None and \
                     scheme.get_code_with_id(td[clean_key]["CodeID"]).control_code in {Codes.TRUE_MISSING, Codes.SKIPPED,
-                                                                                      Codes.NOT_LOGICAL}:
+                                                                                      Codes.NOT_INTERNALLY_CONSISTENT}:
                 continue
 
             code = cleaner(td[raw_key])
