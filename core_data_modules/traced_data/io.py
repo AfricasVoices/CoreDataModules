@@ -597,13 +597,13 @@ class TracedDataCoda2IO(object):
                                                                                 tzinfo=pytz.utc)).total_seconds())
                         )
 
-                    if key_of_coded not in td or td[key_of_coded]["Origin"]["OriginType"] != "Manual":
+                    if key_of_coded not in td or td[key_of_coded]["Origin"]["OriginType"] != "Manual" or \
+                            td[key_of_coded]["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
                         td.append_data(
                             {key_of_coded: nr_label.to_dict()},
                             Metadata(user, Metadata.get_call_location(), time.time())
                         )
-                elif not cls._is_coded_as_missing([td.get(key_of_coded)]) or \
-                        td[key_of_coded]["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
+                elif not cls._is_coded_as_missing([td.get(key_of_coded)]):
                     td.append_data(
                         {key_of_coded: nr_label.to_dict()},
                         Metadata(user, Metadata.get_call_location(), time.time())
