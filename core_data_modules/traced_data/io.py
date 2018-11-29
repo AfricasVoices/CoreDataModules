@@ -601,7 +601,8 @@ class TracedDataCoda2IO(object):
                             {key_of_coded: nr_label.to_dict()},
                             Metadata(user, Metadata.get_call_location(), time.time())
                         )
-                elif not cls._is_coded_as_missing([td.get(key_of_coded)]):
+                elif td[key_of_coded]["CodeID"] == "SPECIAL-MANUALLY_UNCODED" or \
+                        not cls._is_coded_as_missing([td.get(key_of_coded)]):
                     td.append_data(
                         {key_of_coded: nr_label.to_dict()},
                         Metadata(user, Metadata.get_call_location(), time.time())
