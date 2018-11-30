@@ -542,6 +542,30 @@ class TracedDataCoda2IO(object):
 
         json.dump([m.to_dict() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
+    @staticmethod
+    def _dataset_lut_from_messages_file(f):
+        """
+        Creates a lookup table of MessageID -> SchemeID -> Labels from the given Coda 2 messages file.
+
+        :param f: Coda 2 messages file.
+        :type f: file-like
+        :return: Lookup table.
+        :rtype: dict of str -> (dict of str -> list of dict)
+        """
+        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+
+        for msg in json.load(f):
+            schemes = dict()  # of SchemeID -> list of Label
+            coda_dataset[msg["MessageID"]] = schemes
+            msg["Labels"].reverse()
+            for label in msg["Labels"]:
+                scheme_id = label["SchemeID"]
+                if scheme_id not in schemes:
+                    schemes[scheme_id] = []
+                schemes[scheme_id].append(label)
+
+        return coda_dataset
+
     @classmethod
     def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_keys, nr_label, f):
         """
@@ -569,16 +593,7 @@ class TracedDataCoda2IO(object):
         :type f: file-like
         """
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
-        for msg in json.load(f):
-            schemes = dict()  # of SchemeID -> list of Label
-            coda_dataset[msg["MessageID"]] = schemes
-            msg["Labels"].reverse()
-            for label in msg["Labels"]:
-                scheme_id = label["SchemeID"]
-                if scheme_id not in schemes:
-                    schemes[scheme_id] = []
-                schemes[scheme_id].append(label)
+        coda_dataset = cls._dataset_lut_from_messages_file(f)
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
@@ -638,16 +653,7 @@ class TracedDataCoda2IO(object):
         :type f: file-like
         """
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
-        for msg in json.load(f):
-            schemes = dict()  # of SchemeID -> list of Label
-            coda_dataset[msg["MessageID"]] = schemes
-            msg["Labels"].reverse()
-            for label in msg["Labels"]:
-                scheme_id = label["SchemeID"]
-                if scheme_id not in schemes:
-                    schemes[scheme_id] = []
-                schemes[scheme_id].append(label)
+        coda_dataset = cls._dataset_lut_from_messages_file(f)
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
