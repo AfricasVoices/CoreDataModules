@@ -570,7 +570,7 @@ class TracedDataCoda2IO(object):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
-        Data which is has not been assigned a manual code in the Coda file is coded using the provided nr_label
+        Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
         Data which was previously coded as TRUE_MISSING, SKIPPED, or NOT_LOGICAL by any means is untouched.
 
@@ -629,7 +629,7 @@ class TracedDataCoda2IO(object):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
-        Data which is has not been assigned a manual code in the Coda file is coded using the provided nr_label
+        Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
         Data which was previously coded as TRUE_MISSING, SKIPPED, or NOT_LOGICAL by any means is untouched.
 
