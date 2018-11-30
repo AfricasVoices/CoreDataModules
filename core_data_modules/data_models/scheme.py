@@ -101,7 +101,7 @@ class Code:
         display_text = validators.validate_string(data["DisplayText"], "DisplayText")
 
         code_type = validators.validate_string(data["CodeType"], "CodeType")
-        assert self.code_type in self.VALID_CODE_TYPES, "CodeType '{}' invalid".format(self.code_type)
+        code_type in cls.VALID_CODE_TYPES, "CodeType '{}' invalid".format(code_type)
         control_code = None
         if code_type == "Control":
             control_code = validators.validate_string(data["ControlCode"], "ControlCode")
@@ -126,6 +126,7 @@ class Code:
 
         return cls(code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut,
                    color, match_values, control_code)
+
     def to_firebase_map(self):
         ret = dict()
         ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
