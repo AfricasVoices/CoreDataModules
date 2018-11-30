@@ -596,7 +596,7 @@ class TracedDataCoda2IO(object):
                                                                                 tzinfo=pytz.utc)).total_seconds())
                         )
 
-                    if key_of_coded not in td or td[key_of_coded]["Origin"]["OriginType"] != "Manual" or \
+                    if key_of_coded not in td or not td[key_of_coded]["Checked"] or \
                             td[key_of_coded]["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
                         td.append_data(
                             {key_of_coded: nr_label.to_dict()},
