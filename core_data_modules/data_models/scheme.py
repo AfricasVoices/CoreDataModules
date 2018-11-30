@@ -80,7 +80,7 @@ class Scheme(object):
 
 
 class Code:
-    VALID_CODE_TYPES= {"Normal", "Control"}
+    VALID_CODE_TYPES = {"Normal", "Control"}
 
     def __init__(self, code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut=None,
                  color=None, match_values=None, control_code=None):
