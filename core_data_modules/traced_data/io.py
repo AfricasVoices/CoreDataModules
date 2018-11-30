@@ -598,7 +598,7 @@ class TracedDataCoda2IO(object):
         for td in data:
             if message_id_key not in td:
                 continue
-            
+
             for key_of_coded, scheme_id in scheme_keys.items():
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme_id)
                 if labels is not None:
@@ -683,14 +683,15 @@ class TracedDataCoda2IO(object):
 
                     td_codes = list(td_codes_lut.values())
                     td.append_data({coded_key: td_codes},
-                                   Metadata(user, Metadata.get_call_location(), time.time()))
+                                   Metadata(user, Metadata.get_call_location(),
+                                            (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
+                                                                                       tzinfo=pytz.utc)).total_seconds()))
 
                 for scheme_id, code in list(td_codes_lut.items()):
                     if code["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
                         del td_codes_lut[scheme_id]
                         td_codes = list(td_codes_lut.values())
-                        td.append_data({coded_key: td_codes},
-                                       Metadata(user, Metadata.get_call_location(), time.time()))
+                        td.append_data({coded_key: td_codes}, Metadata(user, Metadata.get_call_location(), time.time()))
 
                 checked_codes_count = 0
                 coded_as_missing = False
