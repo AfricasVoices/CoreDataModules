@@ -680,7 +680,7 @@ class TracedDataCoda2IO(object):
                     td.append_data({coded_key: td_codes},
                                    Metadata(user, Metadata.get_call_location(), time.time()))
 
-                for scheme_id, code in td_codes_lut.items():
+                for scheme_id, code in list(td_codes_lut.items()):
                     if code["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
                         del td_codes_lut[scheme_id]
                         td_codes = list(td_codes_lut.values())
