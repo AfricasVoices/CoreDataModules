@@ -686,16 +686,16 @@ class TracedDataCoda2IO(object):
                         td.append_data({coded_key: td_codes},
                                        Metadata(user, Metadata.get_call_location(), time.time()))
 
-                manual_codes_count = 0
+                checked_codes_count = 0
                 coded_as_missing = False
                 labels = td.get(coded_key)
                 if labels is not None:
                     for label in labels:
-                        if label["Origin"]["OriginType"] == "Manual":
-                            manual_codes_count += 1
+                        if label["Checked"]:
+                            checked_codes_count += 1
                     coded_as_missing = cls._is_coded_as_missing(labels)
 
-                if manual_codes_count == 0 and not coded_as_missing:
+                if checked_codes_count == 0 and not coded_as_missing:
                     td.append_data(
                         {coded_key: [nr_label.to_dict()]},
                         Metadata(user, Metadata.get_call_location(), time.time())
