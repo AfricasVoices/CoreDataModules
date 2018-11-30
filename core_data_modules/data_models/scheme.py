@@ -12,18 +12,6 @@ class Scheme(object):
         self.codes = codes
         self.documentation = documentation
 
-    def __eq__(self, other):
-        if not isinstance(other, self.__class__):
-            return False
-        return other.scheme_id == self.scheme_id and \
-            other.name == self.name and \
-            other.version == self.version and \
-            other.documentation == self.documentation and \
-            other.codes == self.codes
-    
-    def __neq__(self, other):
-        return not self.__eq__(other)
-
     def get_code_with_id(self, code_id):
         for code in self.codes:
             if code.code_id == code_id:
@@ -77,50 +65,67 @@ class Scheme(object):
             ret["Documentation"] = self.documentation
         
         return ret
-        
+
+    def __eq__(self, other):
+        if not isinstance(other, self.__class__):
+            return False
+        return other.scheme_id == self.scheme_id and \
+               other.name == self.name and \
+               other.version == self.version and \
+               other.documentation == self.documentation and \
+               other.codes == self.codes
+
+    def __neq__(self, other):
+        return not self.__eq__(other)
+
 
 class Code:
-    code_id = None
-    display_text = None
-    code_type = None
-    control_code = None
-    match_values = None
-    shortcut = None
-    numeric_value = -42
-    string_value = None
-    visible_in_coda = True
-    color = None
+    VALID_CODE_TYPES= {"Normal", "Control"}
 
-    VALID_CODE_TYPES = {"Normal", "Control"}
+    def __init__(self, code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut=None,
+                 color=None, match_values=None, control_code=None):
+        self.code_id = code_id
+        self.code_type = code_type
+        self.control_code = control_code
+        self.display_text = display_text
+        self.shortcut = shortcut
+        self.numeric_value = numeric_value
+        self.string_value = string_value
+        self.visible_in_coda = visible_in_coda
+        self.color = color
+        self.match_values = match_values
 
     @classmethod
     def from_firebase_map(cls, data):
-        code = Code()
-        code.code_id = validators.validate_string(data["CodeID"], "CodeID")
-        code.display_text = validators.validate_string(data["DisplayText"], "DisplayText")
-        
-        code.code_type = validators.validate_string(data["CodeType"], "CodeType")
-        assert code.code_type in cls.VALID_CODE_TYPES, "CodeType '{}' invalid".format(code.code_type)
-        if code.code_type == "Control":
-            code.control_code = validators.validate_string(data["ControlCode"], "ControlCode")
+        code_id = validators.validate_string(data["CodeID"], "CodeID")
+        display_text = validators.validate_string(data["DisplayText"], "DisplayText")
 
+        code_type = validators.validate_string(data["CodeType"], "CodeType")
+        assert self.code_type in self.VALID_CODE_TYPES, "CodeType '{}' invalid".format(self.code_type)
+        control_code = None
+        if code_type == "Control":
+            control_code = validators.validate_string(data["ControlCode"], "ControlCode")
+
+        match_values = None
         if "MatchValues" in data.keys():
-            code.match_values = validators.validate_list(data["MatchValues"], "MatchValues")
-            for i, match_value in enumerate(code.match_values):
+            match_values = validators.validate_list(data["MatchValues"], "MatchValues")
+            for i, match_value in enumerate(match_values):
                 validators.validate_string(match_value, "MatchValues[{}]".format(i))
-        
-        if "Shortcut" in data.keys():
-            code.shortcut = validators.validate_string(data["Shortcut"], "Shortcut")
-        
-        code.numeric_value = validators.validate_int(data["NumericValue"], "NumericValue")
-        code.string_value = validators.validate_string(data["StringValue"], "StringValue")
-        code.visible_in_coda = validators.validate_bool(data["VisibleInCoda"], "VisibleInCoda")
-        
-        if "Color" in data.keys():
-            code.color = validators.validate_string(data["Color"], "Color")
-        
-        return code
 
+        shortcut = None
+        if "Shortcut" in data.keys():
+            shortcut = validators.validate_string(data["Shortcut"], "Shortcut")
+
+        numeric_value = validators.validate_int(data["NumericValue"], "NumericValue")
+        string_value = validators.validate_string(data["StringValue"], "StringValue")
+        visible_in_coda = validators.validate_bool(data["VisibleInCoda"], "VisibleInCoda")
+
+        color = None
+        if "Color" in data.keys():
+            color = validators.validate_string(data["Color"], "Color")
+
+        return cls(code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut,
+                   color, match_values, control_code)
     def to_firebase_map(self):
         ret = dict()
         ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
@@ -145,12 +150,16 @@ class Code:
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
-        return other.code_id == self.code_id & \
-            other.display_text == self.display_text & \
-            other.shortcut == self.shortcut & \
-            other.numeric_value == self.numeric_value & \
-            other.visible_in_coda == self.visible_in_coda & \
-            other.color == self.color
+        return other.code_id == self.code_id and \
+            other.code_type == self.code_type and \
+            other.control_code == self.control_code and \
+            other.display_text == self.display_text and \
+            other.shortcut == self.shortcut and \
+            other.numeric_value == self.numeric_value and \
+            other.string_value == self.string_value and \
+            other.visible_in_coda == self.visible_in_coda and \
+            other.color == self.color and \
+            other.match_values == self.match_values
     
     def __neq__(self, other):
         return not self.__eq__(other)
