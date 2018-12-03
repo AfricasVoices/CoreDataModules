@@ -8,7 +8,6 @@ from os import path
 
 from core_data_modules.cleaners import Codes, english
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
-from core_data_modules.cleaners.code_translators import GenderTranslator
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
     TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCodingCSVIO, TracedDataCoda2IO
