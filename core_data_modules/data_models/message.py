@@ -3,6 +3,12 @@ from core_data_modules.data_models import validators
 
 class Message(object):
     def __init__(self, message_id, text, creation_date_time_utc, labels):
+        """
+        :type message_id: str
+        :type text: str
+        :type creation_date_time_utc: str
+        :type labels: list of Label
+        """
         # Note: Ignoring sequence_number
         self.message_id = message_id
         self.text = text
@@ -55,6 +61,15 @@ class Message(object):
 
 class Label(object):
     def __init__(self, scheme_id, code_id, date_time_utc, origin, checked=None, confidence=None, label_set=None):
+        """
+        :type scheme_id: str
+        :type code_id: str
+        :type date_time_utc: str
+        :type origin: str
+        :type checked: bool | None
+        :type confidence: double | None
+        :type label_set: int | None
+        """
         self.scheme_id = scheme_id
         self.code_id = code_id
         self.date_time_utc = date_time_utc
@@ -127,6 +142,12 @@ class Label(object):
 
 class Origin(object):
     def __init__(self, origin_id, name, origin_type, metadata=None):
+        """
+        :type origin_id: str
+        :type name: str
+        :type origin_type: str
+        :type metadata: (dict of str -> str) | None
+        """
         self.origin_id = origin_id
         self.name = name
         self.origin_type = origin_type
