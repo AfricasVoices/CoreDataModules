@@ -531,12 +531,13 @@ class TracedDataCoda2IO(object):
             if cls._is_coded_as_missing(labels):
                 continue
 
-            # Export a message for this row
-            message = Message()
-            message.message_id = td[message_id_key]
-            message.text = td[raw_key]
-            message.creation_date_time_utc = isoparse(td[creation_date_time_key]).astimezone(pytz.utc).isoformat()
-            message.labels = []
+            # Create a Coda message object for this row
+            message = Message(
+                message_id=td[message_id_key],
+                text=td[raw_key],
+                creation_date_time_utc=isoparse(td[creation_date_time_key]).astimezone(pytz.utc).isoformat(),
+                labels=[]
+            )
 
             # Export codes for this row which are not Codes.NOT_CODED
             for coded_key in td_coded_keys:
@@ -547,7 +548,7 @@ class TracedDataCoda2IO(object):
             messages.append(message)
             exported_message_ids.add(message.message_id)
 
-        json.dump([m.to_dict() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
+        json.dump([m.to_firebase_map() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
     @staticmethod
     def _dataset_lut_from_messages_file(f):
