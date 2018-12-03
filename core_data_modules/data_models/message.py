@@ -1,8 +1,26 @@
 from core_data_modules.data_models import validators
 
 
+"""
+This module contains Python representations of the objects needed to construct entries in a Coda V2 messages file,
+and contains functions for validating, serializing, and de-serializing.
+
+The data formats are specified here:
+https://github.com/AfricasVoices/CodaV2/blob/master/docs/data_formats.md#messages
+
+Changes to this file will need to be synced with changes to that specification, and with all other uses of that
+specification.
+"""
+
+
 class Message(object):
     def __init__(self, message_id, text, creation_date_time_utc, labels):
+        """
+        :type message_id: str
+        :type text: str
+        :type creation_date_time_utc: str
+        :type labels: list of Label
+        """
         # Note: Ignoring sequence_number
         self.message_id = message_id
         self.text = text
@@ -26,16 +44,20 @@ class Message(object):
     def to_firebase_map(self):
         self.validate()
 
-        labels = []
+        firebase_labels = []
         for label in self.labels:
-            labels.append(label.to_firebase_map())
+            firebase_labels.append(label.to_firebase_map())
 
         return {
             "MessageID": self.message_id,
             "Text": self.text,
             "CreationDateTimeUTC": self.creation_date_time_utc,
-            "Labels": labels
+            "Labels": firebase_labels
         }
+
+    # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
+    def to_dict(self):
+        return self.to_firebase_map()
 
     def validate(self):
         validators.validate_string(self.message_id, "message_id")
@@ -51,6 +73,15 @@ class Message(object):
 
 class Label(object):
     def __init__(self, scheme_id, code_id, date_time_utc, origin, checked=None, confidence=None, label_set=None):
+        """
+        :type scheme_id: str
+        :type code_id: str
+        :type date_time_utc: str
+        :type origin: Origin
+        :type checked: bool | None
+        :type confidence: double | None
+        :type label_set: int | None
+        """
         self.scheme_id = scheme_id
         self.code_id = code_id
         self.date_time_utc = date_time_utc
@@ -95,7 +126,7 @@ class Label(object):
 
         return ret
 
-    # TODO: Delete?
+    # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
     def to_dict(self):
         return self.to_firebase_map()
 
@@ -123,6 +154,12 @@ class Label(object):
 
 class Origin(object):
     def __init__(self, origin_id, name, origin_type, metadata=None):
+        """
+        :type origin_id: str
+        :type name: str
+        :type origin_type: str
+        :type metadata: (dict of str -> str) | None
+        """
         self.origin_id = origin_id
         self.name = name
         self.origin_type = origin_type
