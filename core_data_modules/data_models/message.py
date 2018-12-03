@@ -97,6 +97,12 @@ class Label(object):
             
         ret["Origin"] = self.origin.to_firebase_map()
 
+        return ret
+
+    # TODO: Delete?
+    def to_dict(self):
+        return self.to_firebase_map()
+
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
         validators.validate_string(self.code_id, "code_id")
