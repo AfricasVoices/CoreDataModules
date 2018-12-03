@@ -14,21 +14,9 @@ class CleaningUtils(object):
         if date_time_utc is None:
             date_time_utc = datetime.now().astimezone(pytz.utc).isoformat()
 
-        label = Label()
-        label.scheme_id = scheme.scheme_id
-        label.code_id = code.code_id
-        label.date_time_utc = date_time_utc
-        label.checked = False
-        label.confidence = 0  # TODO
-        # Skipping label_set for now
+        origin = Origin(origin_id, origin_name, "External")
 
-        origin = Origin()
-        origin.origin_id = origin_id
-        origin.name = origin_name
-        origin.origin_type = "External"
-        label.origin = origin
-
-        return label
+        return Label(scheme.scheme_id, code.cod_id, date_time_utc, origin, checked=False)
 
     @classmethod
     def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme):

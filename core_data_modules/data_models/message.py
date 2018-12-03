@@ -37,10 +37,6 @@ class Message(object):
             "Labels": labels
         }
 
-    # TODO: Delete?
-    def to_dict(self):
-        return self.to_firebase_map()
-
     def validate(self):
         validators.validate_string(self.message_id, "message_id")
         validators.validate_string(self.text, "text")
@@ -96,6 +92,10 @@ class Label(object):
             ret["LabelSet"] = self.label_set
             
         ret["Origin"] = self.origin.to_firebase_map()
+
+    # TODO: Delete?
+    def to_dict(self):
+        return self.to_firebase_map()
 
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
