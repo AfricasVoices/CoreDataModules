@@ -99,7 +99,7 @@ class Label(object):
 
         return ret
 
-    # TODO: Delete?
+    # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
     def to_dict(self):
         return self.to_firebase_map()
 
