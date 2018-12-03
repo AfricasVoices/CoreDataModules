@@ -9,7 +9,7 @@ import six
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import CharacterCleaner, Codes
-from core_data_modules.data_models import Message
+from core_data_modules.data_models import Message, Label
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.util import SHAUtils
 
@@ -543,7 +543,7 @@ class TracedDataCoda2IO(object):
             for coded_key in td_coded_keys:
                 # if td[coded_key].get("ControlCode") != Codes.NOT_CODED:
                 if not td[coded_key]["CodeID"].startswith("code-NC"):
-                    message.labels.append(td[coded_key])
+                    message.labels.append(Label.from_firebase_map(td[coded_key]))
 
             messages.append(message)
             exported_message_ids.add(message.message_id)
