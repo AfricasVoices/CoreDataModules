@@ -101,7 +101,7 @@ class Code:
         display_text = validators.validate_string(data["DisplayText"], "DisplayText")
 
         code_type = validators.validate_string(data["CodeType"], "CodeType")
-        code_type in cls.VALID_CODE_TYPES, "CodeType '{}' invalid".format(code_type)
+        assert code_type in cls.VALID_CODE_TYPES, "CodeType '{}' invalid".format(code_type)
         control_code = None
         if code_type == "Control":
             control_code = validators.validate_string(data["ControlCode"], "ControlCode")
