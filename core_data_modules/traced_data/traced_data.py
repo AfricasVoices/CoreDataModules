@@ -42,8 +42,30 @@ class Metadata(object):
         frame = inspect.stack()[1]  # Access the previous frame to find out where this function was called from.
         f = frame[1]
         line = frame[2]
-        func = frame[3]
-        return "{}:{}:{}".format(f, str(line), func)
+        name = frame[3]
+
+        return "{}:{}:{}".format(f, str(line), name)
+
+    @staticmethod
+    def get_function_location(func):
+        """
+        Returns the location of a function.
+        
+        >>> def test_function():
+        ...     pass
+        >>> Metadata.get_function_location(test_function)
+        '...core_data_modules/traced_data/traced_data.py:1:test_function'
+
+        :param func: Function to get the location of.
+        :type func: function
+        :return: Function location in the format 'path/to/file.py:line:function_name'
+        :rtype: str
+        """
+        f = inspect.getmodule(func).__file__
+        line = inspect.getsourcelines(func)[1]
+        name = func.__name__
+
+        return "{}:{}:{}".format(f, str(line), name)
 
 
 class TracedData(Mapping):
