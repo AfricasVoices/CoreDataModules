@@ -44,15 +44,15 @@ class Message(object):
     def to_firebase_map(self):
         self.validate()
 
-        labels = []
+        firebase_labels = []
         for label in self.labels:
-            labels.append(label.to_firebase_map())
+            firebase_labels.append(label.to_firebase_map())
 
         return {
             "MessageID": self.message_id,
             "Text": self.text,
             "CreationDateTimeUTC": self.creation_date_time_utc,
-            "Labels": labels
+            "Labels": firebase_labels
         }
 
     # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
