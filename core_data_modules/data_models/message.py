@@ -65,7 +65,7 @@ class Label(object):
         :type scheme_id: str
         :type code_id: str
         :type date_time_utc: str
-        :type origin: str
+        :type origin: Origin
         :type checked: bool | None
         :type confidence: double | None
         :type label_set: int | None
