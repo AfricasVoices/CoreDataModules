@@ -540,7 +540,8 @@ class TracedDataCoda2IO(object):
 
             # Export codes for this row which are not Codes.NOT_CODED
             for coded_key in td_coded_keys:
-                if td[coded_key].get("ControlCode") != Codes.NOT_CODED:
+                # if td[coded_key].get("ControlCode") != Codes.NOT_CODED:
+                if not td[coded_key]["CodeID"].startswith("code-NC"):
                     message.labels.append(td[coded_key])
 
             messages.append(message)
