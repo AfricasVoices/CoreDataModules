@@ -16,7 +16,7 @@ class CleaningUtils(object):
 
         origin = Origin(origin_id, origin_name, "External")
 
-        return Label(scheme.scheme_id, code.cod_id, date_time_utc, origin, checked=False)
+        return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=False)
 
     @classmethod
     def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme):
