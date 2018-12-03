@@ -77,9 +77,11 @@ class Scheme(object):
 
     def __neq__(self, other):
         return not self.__eq__(other)
-        
+
 
 class Code:
+    VALID_CODE_TYPES = {"Normal", "Control"}
+
     def __init__(self, code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut=None,
                  color=None, match_values=None, control_code=None):
         self.code_id = code_id
@@ -99,7 +101,7 @@ class Code:
         display_text = validators.validate_string(data["DisplayText"], "DisplayText")
 
         code_type = validators.validate_string(data["CodeType"], "CodeType")
-        assert code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(code_type)
+        assert code_type in cls.VALID_CODE_TYPES, "CodeType '{}' invalid".format(code_type)
         control_code = None
         if code_type == "Control":
             control_code = validators.validate_string(data["ControlCode"], "ControlCode")
@@ -130,7 +132,7 @@ class Code:
         ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
         ret["DisplayText"] = validators.validate_string(self.display_text, "DisplayText")
         ret["CodeType"] = validators.validate_string(self.code_type, "CodeType")
-        assert self.code_type in {"Normal", "Control"}, "CodeType '{}' not 'Normal' or 'Control'".format(self.code_type)
+        assert self.code_type in self.VALID_CODE_TYPES, "CodeType '{}' invalid".format(self.code_type)
         if self.code_type == "Control":
             ret["ControlCode"] = validators.validate_string(self.control_code, "ControlCode")
         if self.match_values is not None:
