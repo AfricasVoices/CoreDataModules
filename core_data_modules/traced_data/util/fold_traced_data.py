@@ -78,10 +78,10 @@ class FoldTracedData(object):
         The precedence order for missing values is defined as follows (highest precedence listed first):
          - Codes.STOP
          - Codes.NOT_REVIEWED
-         - Codes.NOT_CODE
+         - Codes.NOT_INTERNALLY_CONSISTENT
+         - Codes.NOT_CODED
          - Codes.TRUE_MISSING
          - Codes.SKIPPED
-         - Codes.NOT_LOGICAL
          - None
 
         :param value_1: Code to reconcile.
@@ -93,7 +93,8 @@ class FoldTracedData(object):
         """
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
-            Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_LOGICAL, None
+            Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, None
         ]
 
         assert value_1 in precedence_order, "value_1 ('{}') not a missing or stop code".format(value_1)

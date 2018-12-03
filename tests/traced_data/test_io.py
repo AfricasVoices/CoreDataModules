@@ -176,7 +176,7 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"Value": "44F", "Gender_clean": "female", "Age_clean": 4},
             {"Value": Codes.TRUE_MISSING},
             {"Value": Codes.SKIPPED},
-            {"Value": Codes.NOT_LOGICAL},
+            {"Value": Codes.NOT_INTERNALLY_CONSISTENT},
             {"Value": "33", "Age_clean": 33}
         ]
         data = [TracedData(d, Metadata("test_user", "data_generator", i)) for i, d in enumerate(data_dicts)]
@@ -192,7 +192,8 @@ class TestTracedDataCodaIO(unittest.TestCase):
             {"Value": "44F", "Gender_clean": "female", "Age_clean": "44"},
             {"Value": Codes.TRUE_MISSING, "Gender_clean": Codes.TRUE_MISSING, "Age_clean": Codes.TRUE_MISSING},
             {"Value": Codes.SKIPPED, "Gender_clean": Codes.SKIPPED, "Age_clean": Codes.SKIPPED},
-            {"Value": Codes.NOT_LOGICAL, "Gender_clean": Codes.NOT_LOGICAL, "Age_clean": Codes.NOT_LOGICAL},
+            {"Value": Codes.NOT_INTERNALLY_CONSISTENT, "Gender_clean": Codes.NOT_INTERNALLY_CONSISTENT,
+             "Age_clean": Codes.NOT_INTERNALLY_CONSISTENT},
             {"Value": "33", "Gender_clean": Codes.NOT_REVIEWED, "Age_clean": "33"}
         ]
 
