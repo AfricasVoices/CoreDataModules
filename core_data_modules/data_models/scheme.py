@@ -1,4 +1,5 @@
 from core_data_modules.data_models import validators
+from core_data_modules.util import SHAUtils
 
 
 class Scheme(object):
@@ -23,6 +24,9 @@ class Scheme(object):
     
     def __neq__(self, other):
         return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash(SHAUtils.stringify_dict(self.to_firebase_map()))
 
     def get_code_with_id(self, code_id):
         for code in self.codes:
