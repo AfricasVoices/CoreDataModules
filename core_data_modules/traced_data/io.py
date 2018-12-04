@@ -575,7 +575,8 @@ class TracedDataCoda2IO(object):
 
         Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
-        Data which was previously coded as TRUE_MISSING, SKIPPED, or NOT_LOGICAL by any means is untouched.
+        Data which was previously coded as TRUE_MISSING or SKIPPED is untouched, irrespective of how that code
+        was assigned.
 
         TODO: Data which has been assigned a code under one scheme but none of the others needs to coded as NC not NR
         TODO: Or, do this in Coda so as to remove ambiguity from the perspective of the RAs?
@@ -621,7 +622,7 @@ class TracedDataCoda2IO(object):
                             Metadata(user, Metadata.get_call_location(), time.time())
                         )
                 elif key_of_coded not in td or \
-                        not cls._is_coded_as_missing(scheme.get_code_with_id(td[key_of_coded]["CodeID"]).control_code):
+                        not cls._is_coded_as_missing([scheme.get_code_with_id(td[key_of_coded]["CodeID"]).control_code]):
                     td.append_data(
                         {key_of_coded: nr_label.to_dict()},
                         Metadata(user, Metadata.get_call_location(), time.time())
