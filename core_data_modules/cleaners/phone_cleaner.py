@@ -61,7 +61,7 @@ class PhoneCleaner(object):
             "25265": SomaliaCodes.SOMTEL,
             "25266": SomaliaCodes.SOMTEL,
             "25267": SomaliaCodes.NATIONLINK,
-            "25268": SomaliaCodes.NATIONLINK,
+            "25268": SomaliaCodes.SOMNET,
             "25269": SomaliaCodes.NATIONLINK,
             "25290": SomaliaCodes.GOLIS
         }
