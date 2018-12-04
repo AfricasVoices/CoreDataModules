@@ -75,7 +75,7 @@ class Scheme(object):
                other.documentation == self.documentation and \
                other.codes == self.codes
 
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self.__eq__(other)
 
 
@@ -162,5 +162,5 @@ class Code:
             other.color == self.color and \
             other.match_values == self.match_values
     
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self.__eq__(other)

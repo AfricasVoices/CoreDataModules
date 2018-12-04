@@ -22,3 +22,8 @@ def validate_bool(b, variable_name=""):
 def validate_list(l, variable_name=""):
     assert isinstance(l, list), "{} not a list".format(variable_name)
     return l
+
+
+def validate_dict(d, variable_name=""):
+    assert isinstance(d, dict), "{} not a dict".format(variable_name)
+    return d
