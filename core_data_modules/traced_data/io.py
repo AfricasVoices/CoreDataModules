@@ -659,12 +659,18 @@ class TracedDataCoda2IO(object):
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = cls._dataset_lut_from_messages_file(f)
 
+        # Assert that all the groups of scheme items have the same codes (i.e. they all duplicates)
+        for schemes in scheme_keys.values():
+            head_scheme = list(schemes)[0]
+            for scheme in schemes:
+                assert scheme.codes == head_scheme.codes
+
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
             if message_id_key not in td:
                 continue
 
-            for coded_key in scheme_keys.keys():
+            for coded_key, schemes in scheme_keys:
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
@@ -705,7 +711,8 @@ class TracedDataCoda2IO(object):
                     for label in labels:
                         if label["Checked"]:
                             checked_codes_count += 1
-                    coded_as_missing = cls._is_coded_as_missing(labels)
+                    coded_as_missing = cls._is_coded_as_missing(
+                        [schemes[0].get_code_with_code_id(label["CodeID"]).control_code for label in labels])
 
                 if checked_codes_count == 0 and not coded_as_missing:
                     td.append_data(
