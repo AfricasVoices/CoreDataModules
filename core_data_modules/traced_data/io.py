@@ -518,7 +518,7 @@ class TracedDataCoda2IO(object):
                 continue
 
             # Filter for scheme_keys present in this TracedData object
-            td_coded_keys = [k for k in scheme_keys if k in td]
+            td_coded_keys = {k: v for k, v in scheme_keys.items() if k in td}  # TODO: Rewrite
 
             # Skip messages which have been coded as true missing, skipped, or not logical across all scheme_keys
             labels = []
@@ -541,9 +541,8 @@ class TracedDataCoda2IO(object):
             )
 
             # Export codes for this row which are not Codes.NOT_CODED
-            for coded_key in td_coded_keys:
-                # if td[coded_key].get("ControlCode") != Codes.NOT_CODED:
-                if not td[coded_key]["CodeID"].startswith("code-NC"):
+            for coded_key, scheme in td_coded_keys.items():
+                if scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
                     message.labels.append(Label.from_firebase_map(td[coded_key]))
 
             messages.append(message)
