@@ -21,7 +21,7 @@ class Scheme(object):
             other.documentation == self.documentation and \
             other.codes == self.codes
     
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self.__eq__(other)
 
     def get_code_with_id(self, code_id):
@@ -152,5 +152,5 @@ class Code:
             other.visible_in_coda == self.visible_in_coda & \
             other.color == self.color
     
-    def __neq__(self, other):
+    def __ne__(self, other):
         return not self.__eq__(other)
