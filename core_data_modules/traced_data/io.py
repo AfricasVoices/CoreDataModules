@@ -670,7 +670,7 @@ class TracedDataCoda2IO(object):
             if message_id_key not in td:
                 continue
 
-            for coded_key, schemes in scheme_keys:
+            for coded_key, schemes in scheme_keys.items():
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
