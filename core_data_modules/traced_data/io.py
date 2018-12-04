@@ -455,26 +455,19 @@ class TracedDataCoda2IO(object):
                 )
 
     @staticmethod
-    def _is_coded_as_missing(labels):
+    def _is_coded_as_missing(control_codes):
         """
         Returns whether all of the given labels are the same and either true missing, skipped, or not logical.
 
-        :param labels: Labels to check
-        :type labels: iterable of dict
+        :param control_codes: Control Codes to check
+        :type control_codes: iterable of dict
         :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
         :rtype: bool
         """
-        # control_codes = [label.get("ControlCode") for label in labels if label is not None]
-        # if len(set(control_codes)) == 1:
-        #     control_code = control_codes.pop()
-        #     if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_INTERNALLY_CONSISTENT}:
-        #         return True
-        # return False
-        # TODO: Re-implement using control codes
-        code_ids = [label["CodeID"] for label in labels if label is not None]
-        if len(set(code_ids)) == 1:
-            code_id = code_ids.pop()
-            return code_id.startswith("code-NA") or code_id.startswith("code-NS")
+        if len(set(control_codes)) == 1:
+            control_code = control_codes.pop()
+            if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED}:
+                return True
         return False
 
     @classmethod
@@ -521,15 +514,16 @@ class TracedDataCoda2IO(object):
             td_coded_keys = {k: v for k, v in scheme_keys.items() if k in td}  # TODO: Rewrite
 
             # Skip messages which have been coded as true missing, skipped, or not logical across all scheme_keys
-            labels = []
-            for coded_key in td_coded_keys:
+            control_codes = []
+            for coded_key, scheme in td_coded_keys.items():
                 codes = td.get(coded_key)
                 if codes is not None:
                     if type(codes) == dict:
-                        labels.append(codes)
+                        code = codes
+                        control_codes.append(scheme.get_code_with_id(code["CodeID"]).control_code)
                     else:
-                        labels.extend(codes)
-            if cls._is_coded_as_missing(labels):
+                        control_codes.extend([scheme.get_code_with_id(code["CodeID"]).control_code for code in codes])
+            if cls._is_coded_as_missing(control_codes):
                 continue
 
             # Create a Coda message object for this row
@@ -653,7 +647,7 @@ class TracedDataCoda2IO(object):
         :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
                             (Schemes in the Coda messages file to retrieve the labels from)
-        :type scheme_keys: dict of str -> Scheme
+        :type scheme_keys: dict of str -> list of Scheme
         :param nr_label: Label to apply to messages which haven't been reviewed yet.
         :type nr_label: core_data_modules.data_models.Label
         :type scheme_keys: dict of str -> list of str
