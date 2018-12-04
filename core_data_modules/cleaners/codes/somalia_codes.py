@@ -139,6 +139,7 @@ class SomaliaCodes(object):
     GOLIS = "golis"
     HORMUD = "hormud"
     NATIONLINK = "nationlink"
+    SOMNET = "somnet"
     SOMTEL = "somtel"
     TELESOM = "telesom"
 
