@@ -712,7 +712,7 @@ class TracedDataCoda2IO(object):
                         if label["Checked"]:
                             checked_codes_count += 1
                     coded_as_missing = cls._is_coded_as_missing(
-                        [schemes[0].get_code_with_code_id(label["CodeID"]).control_code for label in labels])
+                        [list(schemes)[0].get_code_with_code_id(label["CodeID"]).control_code for label in labels])
 
                 if checked_codes_count == 0 and not coded_as_missing:
                     td.append_data(
