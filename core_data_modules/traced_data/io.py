@@ -479,7 +479,7 @@ class TracedDataCoda2IO(object):
 
     @classmethod
     def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, message_id_key,
-                                              coded_keys, f):
+                                              scheme_keys, f):
         """
         Exports an iterable of TracedData to a messages json file suitable for upload into Coda V2.
 
@@ -497,8 +497,9 @@ class TracedDataCoda2IO(object):
         :param message_id_key: Key in TracedData objects of the message id.
                                     Message Ids can be set using TracedDataCoda2IO.add_message_ids.
         :type message_id_key: str
-        :param coded_keys: Keys in TracedData objects of existing labels to export.  
-        :type coded_keys: iterable of str
+        :param scheme_keys: Dictionary of (key in TracedData objects of coded data to export) ->
+                            (Scheme for that key)
+        :type scheme_keys: dict of str -> Scheme
         :param f: File to write exported JSON file to.
         :type f: file-like
         """
@@ -516,10 +517,10 @@ class TracedDataCoda2IO(object):
             if td[message_id_key] in exported_message_ids:
                 continue
 
-            # Filter for coded_keys present in this TracedData object
-            td_coded_keys = [k for k in coded_keys if k in td]
+            # Filter for scheme_keys present in this TracedData object
+            td_coded_keys = [k for k in scheme_keys if k in td]
 
-            # Skip messages which have been coded as true missing, skipped, or not logical across all coded_keys
+            # Skip messages which have been coded as true missing, skipped, or not logical across all scheme_keys
             labels = []
             for coded_key in td_coded_keys:
                 codes = td.get(coded_key)
@@ -593,8 +594,8 @@ class TracedDataCoda2IO(object):
         :param message_id_key: Key in TracedData objects of the message ids.
         :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
-                            (ids of the scheme in the Coda messages file to retrieve the labels from)
-        :type scheme_keys: dict of str -> str
+                            (Schemes in the Coda messages file to retrieve the labels from)
+        :type scheme_keys: dict of str -> Scheme
         :param nr_label: Label to apply to messages which haven't been reviewed yet.
         :type nr_label: core_data_modules.data_models.Label
         :param f: Coda data file to import codes from.
@@ -608,8 +609,8 @@ class TracedDataCoda2IO(object):
             if message_id_key not in td:
                 continue
 
-            for key_of_coded, scheme_id in scheme_keys.items():
-                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme_id)
+            for key_of_coded, scheme in scheme_keys.items():
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
                 if labels is not None:
                     for label in labels:
                         # TODO: Check not duplicating previous history?
@@ -652,8 +653,8 @@ class TracedDataCoda2IO(object):
         :param message_id_key: Key in TracedData objects of the message ids.
         :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
-                            (ids of schemes in the Coda messages file to retrieve the labels from)
-        :type scheme_keys: dict of str -> (iterable of str)
+                            (Schemes in the Coda messages file to retrieve the labels from)
+        :type scheme_keys: dict of str -> Scheme
         :param nr_label: Label to apply to messages which haven't been reviewed yet.
         :type nr_label: core_data_modules.data_models.Label
         :type scheme_keys: dict of str -> list of str
@@ -672,8 +673,8 @@ class TracedDataCoda2IO(object):
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
-                for scheme_id in scheme_keys[coded_key]:
-                    labels.extend(coda_dataset.get(td[message_id_key], dict()).get(scheme_id, []))
+                for scheme in scheme_keys[coded_key]:
+                    labels.extend(coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, []))
                 labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
 
                 # Get the currently assigned list of codes for this multi-coded scheme
