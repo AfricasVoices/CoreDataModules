@@ -476,7 +476,7 @@ class TracedDataCoda2IO(object):
         Returns whether all of the given control codes are the same and either TRUE_MISSING or SKIPPED
 
         :param control_codes: Control Codes to check
-        :type control_codes: iterable of dict
+        :type control_codes: iterable of str
         :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
         :rtype: bool
         """
@@ -532,13 +532,11 @@ class TracedDataCoda2IO(object):
             # Skip messages which have been coded as missing across all scheme_keys
             control_codes = []
             for coded_key, scheme in td_coded_keys.items():
-                codes = td.get(coded_key)
-                if codes is not None:
-                    if type(codes) == dict:
-                        code = codes
+                if type(td[coded_key]) == dict:
+                    control_codes.append(scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code)
+                else:
+                    for code in td[coded_key]:
                         control_codes.append(scheme.get_code_with_id(code["CodeID"]).control_code)
-                    else:
-                        control_codes.extend([scheme.get_code_with_id(code["CodeID"]).control_code for code in codes])
             if cls._is_coded_as_missing(control_codes):
                 continue
 
