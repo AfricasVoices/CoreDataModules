@@ -473,7 +473,7 @@ class TracedDataCoda2IO(object):
     @staticmethod
     def _is_coded_as_missing(control_codes):
         """
-        Returns whether all of the given labels are the same and either true missing, skipped, or not logical.
+        Returns whether all of the given control codes are the same and either TRUE_MISSING or SKIPPED
 
         :param control_codes: Control Codes to check
         :type control_codes: iterable of dict
@@ -494,9 +494,10 @@ class TracedDataCoda2IO(object):
 
         Data is de-duplicated on export.
 
-        Data which has been coded as True Missing, Skipped, or Not Logical will not be exported.
-        Data which has been coded as Not Coded will be exported but without the Not Coded label.
-        
+        TracedData objects which do not contain the given raw_key will not have data exported.
+        Data which has been coded as TRUE_MISSING or SKIPPED will not be exported.
+        Data which has been coded as NOT_CODED will be exported but without the NOT_CODED label.
+
         :param data: Data to export to Coda V2.
         :type data: iterable of TracedData
         :param raw_key: Key in TracedData objects of the raw messages.
@@ -512,24 +513,23 @@ class TracedDataCoda2IO(object):
         :param f: File to write exported JSON file to.
         :type f: file-like
         """
-        # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
-        data = list(data)
-
+        # Filter data for elements which contain the given raw key
         data = [td for td in data if raw_key in td]
-
+        
+        # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
         data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
 
-        messages = []
+        messages = []  # List of Coda V2 Message objects to be exported
         exported_message_ids = set()
         for td in data:
-            # Skip items which have already been exported
+            # Skip items which have already been exported (i.e. de-duplicate data on export)
             if td[message_id_key] in exported_message_ids:
                 continue
 
             # Filter for scheme_keys present in this TracedData object
             td_coded_keys = {k: v for k, v in scheme_keys.items() if k in td}  # TODO: Rewrite
 
-            # Skip messages which have been coded as true missing, skipped, or not logical across all scheme_keys
+            # Skip messages which have been coded as missing across all scheme_keys
             control_codes = []
             for coded_key, scheme in td_coded_keys.items():
                 codes = td.get(coded_key)
