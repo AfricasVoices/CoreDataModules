@@ -6,10 +6,11 @@ import time
 import unittest
 from os import path
 
-from core_data_modules.cleaners import Codes
+from core_data_modules.cleaners import Codes, english
+from core_data_modules.cleaners.cleaning_utils import CleaningUtils
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
-    TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCodingCSVIO
+    TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCodingCSVIO, TracedDataCoda2IO
 
 
 def generate_traced_data_iterable():
@@ -284,6 +285,102 @@ class TestTracedDataCodaIO(unittest.TestCase):
 
         for x, y in zip(data, expected_data):
             self.assertDictEqual(dict(x.items()), y)
+
+
+class TestTracedDataCoda2IO(unittest.TestCase):
+    def test_export_import_single_code(self):
+        # Build raw input data
+        message_dicts = [
+            {"gender_raw": "woman", "sent_on": "2018-11-01T07:13:04+03:00"},
+            {"gender_raw": "", "sent_on": "2018-11-01T07:17:04+03:00"},
+            {"gender_raw": "hiya", "sent_on": "2018-11-01T07:19:04+03:00"},
+            {"gender_raw": "boy", "sent_on": "2018-11-02T19:00:29+03:00"},
+        ]
+        messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
+                    for i, d in enumerate(message_dicts)]
+
+        # Add message ids
+        TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_id")
+
+        # Set TRUE_MISSING codes
+        for td in messages:
+            scheme_id = GenderTranslator.scheme_id
+            code_id = GenderTranslator.code_id(Codes.TRUE_MISSING)
+            na_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Auto-Missing",
+                                                control_code=Codes.TRUE_MISSING)
+
+            if td["gender_raw"] == "":
+                td.append_data({"gender_coded": na_label.to_dict()},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
+
+        # Apply the gender cleaner
+        CleaningUtils.apply_cleaner_to_traced_data_iterable(
+            "test_user", messages, "gender_raw", "gender_coded", english.DemographicCleaner.clean_gender,
+            GenderTranslator.scheme_id, GenderTranslator.code_id)
+
+        # Export to a Coda 2 messages file
+        with open("test.json", "w") as f:
+            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                messages, "gender_raw", "sent_on", "gender_id", {"gender_coded"}, f)
+
+        # Import manually coded data
+        with open("test_coded.json", "r") as f:
+            scheme_id = GenderTranslator.scheme_id
+            code_id = GenderTranslator.code_id(Codes.NOT_REVIEWED)
+            nr_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Coda Importer")
+
+            TracedDataCoda2IO.import_coda_2_to_traced_data_iterable(
+                "test_user", messages, "gender_id", {"gender_coded": GenderTranslator.scheme_id}, nr_label, f)
+
+        # Output coded TracedData
+        with open("imported.json", "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(messages, f, pretty_print=True)
+
+    def test_export_import_multi_code(self):
+        # Build raw input data
+        message_dicts = [
+            {"advisors_raw": "parents", "sent_on": "2018-11-01T07:13:04+03:00"},
+            {"advisors_raw": "", "sent_on": "2018-11-01T07:17:04+03:00"},
+            {"advisors_raw": "doctor + god", "sent_on": "2018-11-01T07:19:04+03:00"},
+            {"advisors_raw": "hi", "sent_on": "2018-11-01T07:19:04+03:00"},
+            {"advisors_raw": "family", "sent_on": "2018-11-01T07:19:04+03:00"},
+        ]
+        messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
+                    for i, d in enumerate(message_dicts)]
+
+        # Add message ids
+        TracedDataCoda2IO.add_message_ids("test_user", messages, "advisors_raw", "advisors_id")
+
+        # Set TRUE_MISSING codes
+        for td in messages:
+            scheme_id = GenderTranslator.scheme_id
+            code_id = GenderTranslator.code_id(Codes.TRUE_MISSING)
+            na_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Auto-Missing",
+                                                control_code=Codes.TRUE_MISSING)
+
+            if td["advisors_raw"] == "":
+                td.append_data({"advisors_coded": [na_label.to_dict()]},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
+
+        # Export to a Coda 2 messages file
+        with open("test_multi.json", "w") as f:
+            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                messages, "advisors_raw", "sent_on", "advisors_id", {"advisors_coded"}, f)
+
+        # Import manually coded data
+        with open("test_multi_coded.json", "r") as f:
+            scheme_id = GenderTranslator.scheme_id
+            code_id = GenderTranslator.code_id(Codes.NOT_REVIEWED)
+            nr_label = CleaningUtils.make_label(scheme_id, code_id, Metadata.get_call_location(), "Coda Importer",
+                                                control_code=Codes.NOT_REVIEWED)
+
+            TracedDataCoda2IO.import_coda_2_to_traced_data_iterable_multi_coded(
+                "test_user", messages, "advisors_id", {"advisors_coded": {"Scheme-2fff4d02", "Scheme-af78df67"}},
+                nr_label, f)  # TODO: Passing in an NR label like this means the timestamp will always be the same
+            
+        # Output coded TracedData
+        with open("imported_multi.json", "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(messages, f, pretty_print=True)
 
 
 class TestTracedDataCodingCSVIO(unittest.TestCase):
