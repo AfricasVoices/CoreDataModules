@@ -271,9 +271,27 @@ class FoldTracedData(object):
         """
         td.append_data({key: value for key in keys}, Metadata(user, Metadata.get_call_location(), time.time()))
 
+    @staticmethod
+    def reconcile_keys_using_columns(user, td_1, td_2, keys):
+        columns = dict()
+
+        for key in keys:
+            if "{} 1".format(key) not in td_1 and key in td_1:
+                columns["{} 1".format(key)] = td_1[key]
+            if key in td_2:
+                i = 1
+                while "{} {}".format(key, i) in td_1 or "{} {}".format(key, i) in columns:
+                    i += 1
+                columns["{} {}".format(key, i)] = td_2.get(key, Codes.TRUE_MISSING)
+            # columns[key] = "MERGED"
+
+        td_1.append_data(columns, Metadata(user, Metadata.get_call_location(), time.time()))
+        td_2.append_data(columns, Metadata(user, Metadata.get_call_location(), time.time()))
+
     @classmethod
     def fold_traced_data(cls, user, td_1, td_2, equal_keys=frozenset(), concat_keys=frozenset(),
-                         matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(), concat_delimiter=";"):
+                         matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
+                         column_keys=frozenset(), concat_delimiter=";"):
         """
         Folds two TracedData object into a new TracedData object.
 
@@ -310,12 +328,17 @@ class FoldTracedData(object):
         cls.reconcile_matrix_keys(user, td_1, td_2, matrix_keys)
         cls.reconcile_boolean_keys(user, td_1, td_2, bool_keys)
         cls.reconcile_yes_no_keys(user, td_1, td_2, yes_no_keys)
+        cls.reconcile_keys_using_columns(user, td_1, td_2, column_keys)
 
         equal_keys = set(equal_keys)
         equal_keys.update(concat_keys)
         equal_keys.update(matrix_keys)
         equal_keys.update(bool_keys)
         equal_keys.update(yes_no_keys)
+
+        for key in column_keys:
+            for i in range(0, 100):
+                equal_keys.add("{} {}".format(key, i))
 
         cls.set_keys_to_value(user, td_1, set(td_1.keys()) - set(equal_keys))
         cls.set_keys_to_value(user, td_2, set(td_2.keys()) - set(equal_keys))
@@ -328,7 +351,7 @@ class FoldTracedData(object):
     @classmethod
     def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys=frozenset(), concat_keys=frozenset(),
                                      matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
-                                     concat_delimiter=";"):
+                                     column_keys=frozenset(), concat_delimiter=";"):
         """
         Folds an iterable of TracedData into a new iterable of TracedData.
 
@@ -360,9 +383,26 @@ class FoldTracedData(object):
         :return: Folded TracedData objects.
         :rtype: iterable of TracedData
         """
-        return cls.fold_groups(
+        folded = cls.fold_groups(
             cls.group_by(data, fold_id_fn),
             lambda td_1, td_2: cls.fold_traced_data(
-                user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys, concat_delimiter)
+                user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys, column_keys,
+                concat_delimiter)
         )
+
+        folded_column_keys = set()
+        for key in column_keys:
+            for td in folded:
+                i = 1
+                while "{} {}".format(key, i) in td:
+                    folded_column_keys.add("{} {}".format(key, i))
+                    i += 1
+        for td in folded:
+            d = dict()
+            for key in folded_column_keys:
+                if key not in td:
+                    d[key] = Codes.TRUE_MISSING
+            td.append_data(d, Metadata(user, Metadata.get_call_location(), time.time()))
+        
+        return folded
 

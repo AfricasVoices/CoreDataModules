@@ -191,6 +191,62 @@ class TestFoldTracedData(unittest.TestCase):
         FoldTracedData.set_keys_to_value("test_user", td, {"msg2", "x"}, value="----")
         self.assertDictEqual(dict(td.items()), {"msg1": "MERGED", "msg2": "----", "x": "----"})
 
+    def test_reconcile_keys_using_columns(self):
+        td_1 = TracedData(
+            {"Id": "1", "Message": "a", "Code": "A"},
+            Metadata("test_user", Metadata.get_call_location(), 0)
+        )
+
+        td_2 = TracedData(
+            {"Id": "1"},
+            Metadata("test_user", Metadata.get_call_location(), 1)
+        )
+
+        td_3 = TracedData(
+            {"Id": "1", "Message": "c", "Code": "C"},
+            Metadata("test_user", Metadata.get_call_location(), 2)
+        )
+
+        # FoldTracedData.reconcile_keys_using_columns("test_user", td_1, td_2, {"Message", "Code"})
+
+        # expected_dict_1 = {"Message": "a", "Code": "A", "Id": "1", "Message 1": "a", "Message 2": "b",
+        #                    "Code 1": "A", "Code 2": "B"}
+        # expected_dict_2 = {"Message": "b", "Code": "B", "Id": "1", "Message 1": "a", "Message 2": "b",
+        #                    "Code 1": "A", "Code 2": "B"}
+        # self.assertDictEqual(dict(td_1.items()), expected_dict_1)
+        # self.assertDictEqual(dict(td_2.items()), expected_dict_2)
+        #
+        folded = FoldTracedData.fold_iterable_of_traced_data("test_user", [td_1, td_2, td_3], lambda td: td["Id"],
+                                                             column_keys=["Message", "Code"], equal_keys=["Id"])
+
+        expected_dict = {"Message": "MERGED", "Code": "MERGED", "Id": "1", "Message 1": "a", "Message 2": "c",
+                         "Code 1": "A", "Code 2": "C"}
+        self.assertDictEqual(dict(folded[0].items()), expected_dict)
+
+        # l = [td_1, td_2, td_3]
+        # keys = ["Message", "Code"]
+        # groups = FoldTracedData.group_by(l, lambda td: td["Id"])
+        # for group in groups:
+        #     if len(group) == 0:
+        #         continue
+        #
+        #     for key in keys:
+        #
+        #
+        #     group_updates = dict()
+        #     for key in keys:
+        #         i = 1
+        #         for td in group:
+        #             group_updates["{} {}".format(key, i)] = td[key]
+        #             i += 1
+        #         group_updates[key] = "MERGED"
+        #     for td in group:
+        #         td.append_data(group_updates, Metadata("test_user", Metadata.get_call_location(), 10))
+        #
+        # for k, v in l[0].items():
+        #     print("{}: {}".format(k, v))
+        # assert False
+
     def test_fold_td(self):
         td_1_dict = {
                 "equal_1": 4, "equal_2": "xyz",
