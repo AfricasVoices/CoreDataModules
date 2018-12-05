@@ -383,26 +383,9 @@ class FoldTracedData(object):
         :return: Folded TracedData objects.
         :rtype: iterable of TracedData
         """
-        folded = cls.fold_groups(
+        return cls.fold_groups(
             cls.group_by(data, fold_id_fn),
             lambda td_1, td_2: cls.fold_traced_data(
                 user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys, column_keys,
                 concat_delimiter)
         )
-
-        folded_column_keys = set()
-        for key in column_keys:
-            for td in folded:
-                i = 1
-                while "{} {}".format(key, i) in td:
-                    folded_column_keys.add("{} {}".format(key, i))
-                    i += 1
-        for td in folded:
-            d = dict()
-            for key in folded_column_keys:
-                if key not in td:
-                    d[key] = Codes.TRUE_MISSING
-            td.append_data(d, Metadata(user, Metadata.get_call_location(), time.time()))
-        
-        return folded
-
