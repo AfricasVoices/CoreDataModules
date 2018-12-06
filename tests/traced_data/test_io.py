@@ -321,7 +321,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
         TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
 
         # Load gender scheme
-        with open("tests/traced_data/resources/coda_2_gender_scheme.csv") as f:
+        with open("tests/traced_data/resources/coda_2_gender_scheme.json") as f:
             gender_scheme = Scheme.from_firebase_map(json.load(f))
 
         # Set TRUE_MISSING codes
