@@ -10,7 +10,7 @@ from core_data_modules.traced_data import Metadata
 
 class CleaningUtils(object):
     @staticmethod
-    def make_cleaner_label(scheme, code, origin_id, origin_name="Pipeline Auto-Coder", date_time_utc=None):
+    def make_label_from_cleaner_code(scheme, code, origin_id, origin_name="Pipeline Auto-Coder", date_time_utc=None):
         """
         Constructs a new Label object from a code determined by a pipeline cleaner.
 
@@ -74,6 +74,6 @@ class CleaningUtils(object):
             # Construct a label for the clean_value returned by the cleaner
             code_id = scheme.get_code_with_match_value(clean_value)
             origin_id = Metadata.get_function_location(cleaner)
-            label = cls.make_cleaner_label(scheme, code_id, origin_id)
+            label = cls.make_label_from_cleaner_code(scheme, code_id, origin_id)
 
             td.append_data({clean_key: label.to_dict()}, Metadata(user, Metadata.get_call_location(), time.time()))
