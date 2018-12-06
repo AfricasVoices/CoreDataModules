@@ -32,7 +32,31 @@ class SomaliaLocations(object):
                text in SomaliaCodes.ZONES
 
     @staticmethod
-    def district_for_location_code(location_code):
+    def mogadishu_sub_district_for_location_code(location_code):
+        """
+        Returns the Mogadishu sub-district for the provided Somalia location code.
+
+        The provided code may be a Mogadishu sub-district only.
+
+        >>> SomaliaLocations.mogadishu_sub_district_for_location_code(SomaliaCodes.KARAAN)
+        'karaan'
+        >>> SomaliaLocations.mogadishu_sub_district_for_location_code(SomaliaCodes.MOGADISHU)
+        'NC'
+        >>> SomaliaLocations.mogadishu_sub_district_for_location_code(SomaliaCodes.BELET_WEYNE)
+        'NC'
+
+        :param location_code: A Somalia sub-district code
+        :type location_code: str
+        :return: Mogadishu sub-district or Codes.NOT_CODED
+        :rtype: str
+        """
+        if location_code in SomaliaCodes.MOGADISHU_SUB_DISTRICTS:
+            return location_code
+
+        return Codes.NOT_CODED
+
+    @classmethod
+    def district_for_location_code(cls, location_code):
         """
         Returns the district for the provided Somalia location code.
 
@@ -47,10 +71,11 @@ class SomaliaLocations(object):
 
         :param location_code: A Somalia district code
         :type location_code: str
-        :return: Somali district or Codes.NOT_CODED
+        :return: Somalia district or Codes.NOT_CODED
         :rtype: str
         """
-        if location_code in SomaliaCodes.MOGADISHU_SUB_DISTRICTS:
+        mogadishu_sub_district = cls.mogadishu_sub_district_for_location_code(location_code)
+        if mogadishu_sub_district != Codes.NOT_CODED:
             return SomaliaCodes.MOGADISHU
 
         if location_code in SomaliaCodes.CANONICAL_DISTRICT_MAP:
