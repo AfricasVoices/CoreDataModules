@@ -460,7 +460,7 @@ class TracedDataCoda2IO(object):
         :type data: iterable of TracedData
         :param raw_key: Key in TracedData objects to read the text to generate message ids for from.
         :type raw_key: str
-        :param message_id_key: Key in TracedData objects to write the message id to .
+        :param message_id_key: Key in TracedData objects to write the message id to.
         :type message_id_key: str
         """
         for td in data:
