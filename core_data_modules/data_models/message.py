@@ -62,8 +62,7 @@ class Message(object):
     def validate(self):
         validators.validate_string(self.message_id, "message_id")
         validators.validate_string(self.text, "text")
-        validators.validate_string(self.creation_date_time_utc, "creation_date_time_utc")
-        # TODO: Validate that creation_date_time_utc is an ISO format string?
+        validators.validate_utc_iso_string(self.creation_date_time_utc, "creation_date_time_utc")
         validators.validate_list(self.labels, "labels")
 
         for i, label in enumerate(self.labels):
@@ -133,8 +132,7 @@ class Label(object):
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
         validators.validate_string(self.code_id, "code_id")
-        validators.validate_string(self.date_time_utc, "date_time_utc")
-        # TODO: Validate that date_time_utc is an ISO format string?
+        validators.validate_utc_iso_string(self.date_time_utc, "date_time_utc")
 
         if self.checked is not None:
             validators.validate_bool(self.checked, "checked")
