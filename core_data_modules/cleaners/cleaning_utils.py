@@ -6,6 +6,7 @@ import pytz
 from core_data_modules.cleaners import Codes
 from core_data_modules.data_models import Origin, Label
 from core_data_modules.traced_data import Metadata
+from core_data_modules.util import TimeUtils
 
 
 class CleaningUtils(object):
@@ -29,7 +30,7 @@ class CleaningUtils(object):
         :rtype: Label
         """
         if date_time_utc is None:
-            date_time_utc = datetime.now().astimezone(pytz.utc).isoformat()
+            date_time_utc = TimeUtils.utc_now_as_iso_string()
 
         origin = Origin(origin_id, origin_name, "External")
 
