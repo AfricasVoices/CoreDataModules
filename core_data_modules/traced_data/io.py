@@ -487,9 +487,8 @@ class TracedDataCoda2IO(object):
         """
         seen_message_ids = dict()  # of message_id -> coded_key -> set of code_ids
         for td in data:
-            # If this message id has been seen before, check that the codes are the same,
-            # otherwise add these codes to seen_code_ids for future tests
             if td[message_id_key] in seen_message_ids:
+                # This message id has been seen before, so check that the codes are the same.
                 seen_code_ids = seen_message_ids[td[message_id_key]]
                 for coded_key in coded_keys:
                     err_string = "Messages with the same id ({}) have different " \
@@ -502,6 +501,7 @@ class TracedDataCoda2IO(object):
                     else:
                         assert seen_code_ids[coded_key] == {label["CodeID"] for label in td[coded_key]}, err_string
             else:
+                # This is a new message id, so add these codes to seen_message_ids
                 new_code_ids = dict()
                 for coded_key in coded_keys:
                     if coded_key not in td:
