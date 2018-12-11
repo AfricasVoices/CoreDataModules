@@ -1,3 +1,4 @@
+import io
 import json
 import time
 from datetime import datetime
@@ -444,6 +445,8 @@ class TracedDataCodaIO(object):
 
 
 class TracedDataCoda2IO(object):
+    EMPTY_FILE = io.StringIO("[]")
+
     @classmethod
     def add_message_ids(cls, user, data, raw_key, message_id_key):
         for td in data:
@@ -542,7 +545,7 @@ class TracedDataCoda2IO(object):
         json.dump([m.to_dict() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
     @classmethod
-    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_keys, nr_label, f):
+    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_keys, nr_label, f=None):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
@@ -564,9 +567,12 @@ class TracedDataCoda2IO(object):
         :type scheme_keys: dict of str -> str
         :param nr_label: Label to apply to messages which haven't been reviewed yet.
         :type nr_label: core_data_modules.data_models.Label
-        :param f: Coda data file to import codes from.
-        :type f: file-like
+        :param f: Coda data file to import codes from, or None. If None, assigns NOT_REVIEWED codes to everything.
+        :type f: file-like | None
         """
+        if f is None:
+            f = cls.EMPTY_FILE
+
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
         for msg in json.load(f):
@@ -609,7 +615,7 @@ class TracedDataCoda2IO(object):
 
     @classmethod
     def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_keys,
-                                                          nr_label, f):
+                                                          nr_label, f=None):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
@@ -632,9 +638,12 @@ class TracedDataCoda2IO(object):
         :param nr_label: Label to apply to messages which haven't been reviewed yet.
         :type nr_label: core_data_modules.data_models.Label
         :type scheme_keys: dict of str -> list of str
-        :param f: Coda data file to import codes from.
-        :type f: file-like
+        :param f: Coda data file to import codes from, or None. If None, assigns NOT_REVIEWED codes to everything.
+        :type f: file-like | None
         """
+        if f is None:
+            f = cls.EMPTY_FILE
+
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
         for msg in json.load(f):
