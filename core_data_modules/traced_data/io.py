@@ -514,7 +514,7 @@ class TracedDataCoda2IO(object):
                 seen_message_ids[td[message_id_key]] = new_code_ids
 
     @staticmethod
-    def _de_duplicate_data(data, message_id_key, creation_date_time_key):
+    def _deduplicate_data(data, message_id_key, creation_date_time_key):
         """
         De-duplicates data.
         
@@ -566,6 +566,37 @@ class TracedDataCoda2IO(object):
         return False
 
     @classmethod
+    def _exclude_missing(cls, data, scheme_keys):
+        """
+        Filters an iterable of TracedData objects to exclude those that were code as TRUE_MISSING or SKIPPED across
+        all the fields in scheme_keys.
+
+        :param data:
+        :type data:
+        :param scheme_keys:
+        :type scheme_keys:
+        :return:
+        :rtype: iterable of TracedData
+        """
+        not_missing = []
+
+        for td in data:
+            control_codes = set()
+            for coded_key, scheme in scheme_keys.items():
+                if coded_key not in td:
+                    control_codes.add(None)
+                elif type(td[coded_key]) == dict:
+                    control_codes.add(scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code)
+                else:
+                    for code in td[coded_key]:
+                        control_codes.add(scheme.get_code_with_id(code["CodeID"]).control_code)
+
+            if not cls._is_coded_as_missing(control_codes):
+                not_missing.append(td)
+
+        return not_missing
+
+    @classmethod
     def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, message_id_key,
                                               scheme_keys, f):
         """
@@ -596,40 +627,25 @@ class TracedDataCoda2IO(object):
         # Filter data for elements which contain the given raw key
         data = [td for td in data if raw_key in td]
 
-        # Assert uniquely coded
         cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
-
-        # De-duplicate
-        data = cls._de_duplicate_data(data, message_id_key, creation_date_time_key)
+        data = cls._deduplicate_data(data, message_id_key, creation_date_time_key)
+        data = cls._exclude_missing(data, scheme_keys)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
         for td in data:
-            # Skip messages which have been coded as missing across all scheme_keys
-            control_codes = []
+            # Export labels for this row which are not Codes.NOT_CODED
+            labels = []
             for coded_key, scheme in scheme_keys.items():
-                if coded_key not in td:
-                    continue
-
-                if type(td[coded_key]) == dict:
-                    control_codes.append(scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code)
-                else:
-                    for code in td[coded_key]:
-                        control_codes.append(scheme.get_code_with_id(code["CodeID"]).control_code)
-            if cls._is_coded_as_missing(control_codes):
-                continue
+                if coded_key in td and scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
+                    labels.append(Label.from_firebase_map(td[coded_key]))
 
             # Create a Coda message object for this row
             message = Message(
                 message_id=td[message_id_key],
                 text=td[raw_key],
                 creation_date_time_utc=isoparse(td[creation_date_time_key]).astimezone(pytz.utc).isoformat(),
-                labels=[]
+                labels=labels
             )
-
-            # Export codes for this row which are not Codes.NOT_CODED
-            for coded_key, scheme in scheme_keys.items():
-                if coded_key in td and scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
-                    message.labels.append(Label.from_firebase_map(td[coded_key]))
 
             coda_messages.append(message)
 
