@@ -329,7 +329,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                 gender_scheme,
                 gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
                 "test_export_traced_data_iterable_to_coda_2",
-                date_time_utc="2018-11-02T13:00:00+03:00"
+                date_time_utc="2018-11-02T10:00:00+00:00"
             )
             if td.get("gender_raw", "") == "":
                 td.append_data({"gender_coded": na_label.to_dict()},
@@ -351,7 +351,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
                 messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": gender_scheme}, f)
 
-        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected.json"))
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected_one_scheme.json"))
 
         # Add an element with the same raw text but a conflicting
         messages.append(TracedData({
