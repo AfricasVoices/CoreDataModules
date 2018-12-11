@@ -519,7 +519,7 @@ class TracedDataCoda2IO(object):
         De-duplicates data.
         
         Items in data are considered duplicates if they have the same message id.
-        Where duplicates are found, the object with the oldest creation date is returned
+        Where duplicates are found, only the object with the oldest creation date is included in the returned list.s
         
         :param data: Data to de-duplicate.
         :type data: iterable of TracedData

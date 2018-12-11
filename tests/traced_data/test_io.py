@@ -1,4 +1,5 @@
 # coding=utf-8
+import collections
 import filecmp
 import json
 import shutil
@@ -375,8 +376,6 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             self.fail("Exporting data with conflicting labels did not fail")
 
     def test_export_traced_data_iterable_to_coda_2_multiple_schemes(self):
-        return
-        
         file_path = path.join(self.test_dir, "coda_2_test.json")
 
         # Load schemes
@@ -387,13 +386,13 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             zone_scheme = Scheme.from_firebase_map(json.load(f))
 
         def make_location_label(scheme, value):
-            if value in Codes.CONTROL_CODES:
+            if value in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_CODED}:
                 code = scheme.get_code_with_control_code(value)
             else:
                 code = scheme.get_code_with_match_value(value)
 
-            CleaningUtils.make_label_from_cleaner_code(scheme, code, "make_location_label",
-                                                       date_time_utc="2018-11-02T13:40:50Z")
+            return CleaningUtils.make_label_from_cleaner_code(scheme, code, "make_location_label",
+                                                              date_time_utc="2018-11-02T13:40:50Z").to_dict()
 
         # Build raw input data
         message_dicts = [
@@ -407,74 +406,79 @@ class TestTracedDataCoda2IO(unittest.TestCase):
              "district": make_location_label(district_scheme, "kismayo")},
 
             # Data coded as missing under both schemes
-            {"location_raw": "", "gender_sent_on": "2018-11-01T07:19:04+05:00",
+            {"location_raw": "", "location_sent_on": "2018-11-01T07:19:04+05:00",
              "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
              "zone": make_location_label(zone_scheme, Codes.TRUE_MISSING)},
 
             # No data
             {},
 
-            # Data coded as missing under one scheme only
-            {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:09+05:00",
-             "district": make_location_label(district_scheme, "kismayo"),
-             "zone": make_location_label(zone_scheme, Codes.TRUE_MISSING)},
-
             # Data coded as NC under both schemes
-            {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
-             "district": make_location_label(district_scheme, "kismayo"),
+            {"location_raw": "kismyo", "location_sent_on": "2018-11-01T07:19:30+03:00",
+             "district": make_location_label(district_scheme, Codes.NOT_CODED),
              "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
 
             # Data coded as NC under one scheme only
-            {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
+            {"location_raw": "kismay", "location_sent_on": "2018-11-01T07:19:30+03:00",
              "district": make_location_label(district_scheme, "kismayo"),
              "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
-
-            # Data coded as NC under one scheme but NA under another
-            # TODO: Test this case separately as it should fail
-            # {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
-            #  "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
-            #  "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
-
-            # TODO: as should this one
-            # {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
-            #  "district": make_location_label(district_scheme, "kismayo"),
-            #  "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
         ]
         messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
                     for i, d in enumerate(message_dicts)]
 
         # Add message ids
-        TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
-
-        # Set TRUE_MISSING codes
-        for td in messages:
-            na_label = CleaningUtils.make_label_from_cleaner_code(
-                gender_scheme,
-                gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
-                "test_export_traced_data_iterable_to_coda_2",
-                date_time_utc="2018-11-02T13:00:00+03:00"
-            )
-            if td.get("gender_raw", "") == "":
-                td.append_data({"gender_coded": na_label.to_dict()},
-                               Metadata("test_user", Metadata.get_call_location(), time.time()))
-
-        # Apply the English gender cleaner
-        with mock.patch("core_data_modules.util.TimeUtils.utc_now_as_iso_string") as time_mock, \
-                mock.patch("core_data_modules.traced_data.Metadata.get_function_location") as location_mock:
-            time_mock.return_value = "2018-11-02T15:00:07+00:00"
-            location_mock.return_value = "english.DemographicCleaner.clean_gender"
-
-            CleaningUtils.apply_cleaner_to_traced_data_iterable(
-                "test_user", messages, "gender_raw", "gender_coded",
-                english.DemographicCleaner.clean_gender, gender_scheme
-            )
+        TracedDataCoda2IO.add_message_ids("test_user", messages, "location_raw", "location_coda_id")
 
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
-            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
-                messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": gender_scheme}, f)
+            scheme_keys = collections.OrderedDict()  # Using OrderedDict to make tests easier to write in Py2 and Py3.
+            scheme_keys["district"] = district_scheme
+            scheme_keys["zone"] = zone_scheme
 
-        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected.json"))
+            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                messages, "location_raw", "location_sent_on", "location_coda_id", scheme_keys, f)
+
+        self.assertTrue(
+            filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected_multiple_schemes.json"))
+
+        # Test ambiguous missing codes
+        def test_ambiguous_missing_codes(d):
+            # Test exporting with ambiguous missing codes
+            conflicting_missings = list(messages)
+            conflicting_missings.append(TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())))
+            TracedDataCoda2IO.add_message_ids("test_user", conflicting_missings, "location_raw", "location_coda_id")
+
+            with open(file_path, "w") as f:
+                try:
+                    scheme_keys = collections.OrderedDict()
+                    scheme_keys["district"] = district_scheme
+                    scheme_keys["zone"] = zone_scheme
+
+                    TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                        conflicting_missings, "location_raw", "location_sent_on", "location_coda_id", scheme_keys, f)
+                except AssertionError as e:
+                    assert str(e) == "Data labelled as NA or NS under one code scheme but not all of the others"
+                    return
+                self.fail("Exporting data with ambiguous missing codes did not fail")
+
+        test_ambiguous_missing_codes({
+            "location_raw": "baidoa", "location_sent_on": "2018-11-01T07:19:30+03:00",
+            "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
+            "zone": make_location_label(zone_scheme, Codes.NOT_CODED)
+        })
+
+        test_ambiguous_missing_codes({
+            "location_raw": "baidoa", "location_sent_on": "2018-11-01T07:19:30+03:00",
+            "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
+            "zone": make_location_label(zone_scheme, Codes.SKIPPED)
+        })
+
+        test_ambiguous_missing_codes({
+            "location_raw": "baidoa", "location_sent_on": "2018-11-01T07:19:30+03:00",
+            "district": make_location_label(district_scheme, None),
+            "zone": make_location_label(zone_scheme, Codes.SKIPPED)
+        })
+
 
     # def test_export_import_single_code(self):
     #     # Build raw input data
