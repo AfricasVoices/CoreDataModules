@@ -569,11 +569,12 @@ class TracedDataCoda2IO(object):
         Filters an iterable of TracedData objects to exclude those that were code as TRUE_MISSING or SKIPPED across
         all the fields in scheme_keys.
 
-        :param data:
-        :type data:
-        :param scheme_keys:
-        :type scheme_keys:
-        :return:
+        :param data: Data to excluding objects coded as TRUE_MISSING or SKIPPED from.
+        :type data: iterable of TracedData
+        :param scheme_keys: Dictionary of (key in TracedData objects of coded data to export) ->
+                            (Scheme for that key) :param scheme_keys:
+        :type scheme_keys: dict of str -> Scheme
+        :return: Data with objects coded as missing excluded.
         :rtype: iterable of TracedData
         """
         not_missing = []
