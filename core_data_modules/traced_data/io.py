@@ -547,22 +547,21 @@ class TracedDataCoda2IO(object):
     @staticmethod
     def _is_coded_as_missing(control_codes):
         """
-        Returns whether all of the given control codes are the same and either TRUE_MISSING or SKIPPED
+        Returns whether all of the given control codes are the same and either TRUE_MISSING or SKIPPED.
 
         :param control_codes: Control Codes to check
         :type control_codes: iterable of str
         :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
         :rtype: bool
         """
-        # TODO: The logic here needs to change.
-        #       Probably to something like if NA or NS in the set of control codes, assert that all
-        #       codes are the same then return True. This probably isn't actually strong enough either -
-        #       we need to make sure there are no non-missing labels assigned to any of the schemes being exported.
-
         if len(set(control_codes)) == 1:
             control_code = control_codes.pop()
             if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED}:
                 return True
+
+        assert Codes.TRUE_MISSING not in control_codes and Codes.SKIPPED not in control_codes, \
+            "Data labelled as NA or NS under one code scheme but not all of the others"
+
         return False
 
     @classmethod
