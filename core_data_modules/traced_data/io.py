@@ -515,6 +515,23 @@ class TracedDataCoda2IO(object):
 
     @staticmethod
     def _de_duplicate_data(data, message_id_key, creation_date_time_key):
+        """
+        De-duplicates data.
+        
+        Items in data are considered duplicates if they have the same message id.
+        Where duplicates are found, the object with the oldest creation date is returned
+        
+        :param data: Data to de-duplicate.
+        :type data: iterable of TracedData
+        :param message_id_key: Key in TracedData objects of the message id.
+                               The returned dataset will not contain any duplicate values for this field.
+        :type message_id_key: str
+        :param creation_date_time_key: Key in TracedData objects of when the message was created.
+                                       Where duplicates are found, the object with the oldest value here is returned.s
+        :type creation_date_time_key: str
+        :return: De-duplicated TracedData objects.
+        :rtype: list of TracedData
+        """
         # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
         data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
 
@@ -565,10 +582,10 @@ class TracedDataCoda2IO(object):
         :type data: iterable of TracedData
         :param raw_key: Key in TracedData objects of the raw messages.
         :type raw_key: str
-        :param creation_date_time_key: Key in TracedData objects of when the message was created
+        :param creation_date_time_key: Key in TracedData objects of when the message was created.
         :type creation_date_time_key: str
         :param message_id_key: Key in TracedData objects of the message id.
-                               Message Ids can be set using TracedDataCoda2IO.add_message_ids.
+                               Message Ids may be set using TracedDataCoda2IO.add_message_ids.
         :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects of coded data to export) ->
                             (Scheme for that key)
@@ -583,16 +600,10 @@ class TracedDataCoda2IO(object):
         cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
 
         # De-duplicate
-        data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
+        data = cls._de_duplicate_data(data, message_id_key, creation_date_time_key)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
-        exported_code_ids = dict()  # of message_id -> coded_key -> set of code_ids
         for td in data:
-            # Skip items which have already been exported (i.e. de-duplicate data on export),
-            # checking that both raw messages have been assigned the same codes
-            if td[message_id_key] in exported_code_ids:
-                continue
-
             # Skip messages which have been coded as missing across all scheme_keys
             control_codes = []
             for coded_key, scheme in scheme_keys.items():
