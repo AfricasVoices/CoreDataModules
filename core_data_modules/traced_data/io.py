@@ -471,6 +471,63 @@ class TracedDataCoda2IO(object):
                 )
 
     @staticmethod
+    def _assert_uniquely_coded(data, message_id_key, coded_keys):
+        """
+        Checks that all objects with the same message id have been assigned the same codes for each coded_key in
+        coded_keys.
+
+        Fails with an AssertionError if there are TracedData objects with the same message id but different codes 
+        assigned, otherwise has no side-effects.
+
+        :param data: Data to check.
+        :type data: iterable of TracedData
+        :param message_id_key: Key in TracedData objects of the message id.
+        :type message_id_key: str
+        :param coded_keys: Keys in the TracedData objects containing coded data.
+        :type coded_keys: iterable of str
+        """
+        seen_message_ids = dict()  # of message_id -> coded_key -> set of code_ids
+        for td in data:
+            # If this message id has been seen before, check that the codes are the same,
+            # otherwise add these codes to seen_code_ids for future tests
+            if td[message_id_key] in seen_message_ids:
+                seen_code_ids = seen_message_ids[td[message_id_key]]
+                for coded_key in coded_keys:
+                    err_string = "Messages with the same id ({}) have different " \
+                                 "labels for coded_key '{}'".format(td[message_id_key], coded_key)
+
+                    if coded_key not in td:
+                        assert seen_code_ids[coded_key] is None, err_string
+                    elif type(td[coded_key]) == dict:
+                        assert seen_code_ids[coded_key] == td[coded_key]["CodeID"], err_string
+                    else:
+                        assert seen_code_ids[coded_key] == {label["CodeID"] for label in td[coded_key]}, err_string
+            else:
+                new_code_ids = dict()
+                for coded_key in coded_keys:
+                    if coded_key not in td:
+                        new_code_ids[coded_key] = None
+                    elif type(td[coded_key]) == dict:
+                        new_code_ids[coded_key] = td[coded_key]["CodeID"]
+                    else:
+                        new_code_ids[coded_key] = {label["CodeID"] for label in td[coded_key]}
+                seen_message_ids[td[message_id_key]] = new_code_ids
+
+    @staticmethod
+    def _de_duplicate_data(data, message_id_key, creation_date_time_key):
+        # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
+        data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
+
+        seen_ids = set()
+        unique_data = []
+        for td in data:
+            if td[message_id_key] not in seen_ids:
+                seen_ids.add(td[message_id_key])
+                unique_data.append(td)
+
+        return unique_data
+
+    @staticmethod
     def _is_coded_as_missing(control_codes):
         """
         Returns whether all of the given control codes are the same and either TRUE_MISSING or SKIPPED
@@ -480,6 +537,11 @@ class TracedDataCoda2IO(object):
         :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
         :rtype: bool
         """
+        # TODO: The logic here needs to change.
+        #       Probably to something like if NA or NS in the set of control codes, assert that all
+        #       codes are the same then return True. This probably isn't actually strong enough either -
+        #       we need to make sure there are no non-missing labels assigned to any of the schemes being exported.
+
         if len(set(control_codes)) == 1:
             control_code = control_codes.pop()
             if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED}:
@@ -506,7 +568,7 @@ class TracedDataCoda2IO(object):
         :param creation_date_time_key: Key in TracedData objects of when the message was created
         :type creation_date_time_key: str
         :param message_id_key: Key in TracedData objects of the message id.
-                                    Message Ids can be set using TracedDataCoda2IO.add_message_ids.
+                               Message Ids can be set using TracedDataCoda2IO.add_message_ids.
         :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects of coded data to export) ->
                             (Scheme for that key)
@@ -516,8 +578,11 @@ class TracedDataCoda2IO(object):
         """
         # Filter data for elements which contain the given raw key
         data = [td for td in data if raw_key in td]
-        
-        # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
+
+        # Assert uniquely coded
+        cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
+
+        # De-duplicate
         data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
@@ -526,10 +591,6 @@ class TracedDataCoda2IO(object):
             # Skip items which have already been exported (i.e. de-duplicate data on export),
             # checking that both raw messages have been assigned the same codes
             if td[message_id_key] in exported_code_ids:
-                for coded_key in scheme_keys:
-                    assert td.get(coded_key) == exported_code_ids[td[message_id_key]][coded_key], \
-                        "Messages with the same id ({}) have different labels for " \
-                        "coded_key '{}'".format(td[message_id_key], coded_key)
                 continue
 
             # Skip messages which have been coded as missing across all scheme_keys
@@ -537,7 +598,7 @@ class TracedDataCoda2IO(object):
             for coded_key, scheme in scheme_keys.items():
                 if coded_key not in td:
                     continue
-                
+
                 if type(td[coded_key]) == dict:
                     control_codes.append(scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code)
                 else:
@@ -558,12 +619,6 @@ class TracedDataCoda2IO(object):
             for coded_key, scheme in scheme_keys.items():
                 if coded_key in td and scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
                     message.labels.append(Label.from_firebase_map(td[coded_key]))
-
-            # Record the codes which have been assigned for this TracedData object, so that if the same message id
-            # is seen again, we can check that that data has been coded in the same way.
-            exported_code_ids[td[message_id_key]] = dict()
-            for coded_key in scheme_keys:
-                exported_code_ids[td[message_id_key]][coded_key] = td.get(coded_key)
 
             coda_messages.append(message)
 
@@ -697,7 +752,7 @@ class TracedDataCoda2IO(object):
 
             for coded_key, schemes in scheme_keys.items():
                 scheme = list(schemes)[0]
-                
+
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
