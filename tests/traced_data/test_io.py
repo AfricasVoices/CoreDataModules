@@ -471,12 +471,6 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             "zone": make_location_label(zone_scheme, Codes.SKIPPED)
         })
 
-        test_ambiguous_missing_codes({
-            "location_raw": "baidoa", "location_sent_on": "2018-11-01T07:19:30+03:00",
-            "district": make_location_label(district_scheme, None),
-            "zone": make_location_label(zone_scheme, Codes.SKIPPED)
-        })
-
 
 class TestTracedDataCodingCSVIO(unittest.TestCase):
     def setUp(self):
