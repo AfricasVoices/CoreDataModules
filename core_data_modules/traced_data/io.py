@@ -446,8 +446,6 @@ class TracedDataCodaIO(object):
 
 
 class TracedDataCoda2IO(object):
-    EMPTY_FILE = io.StringIO("[]")
-
     @classmethod
     def add_message_ids(cls, user, data, raw_key, message_id_key):
         """
@@ -655,6 +653,10 @@ class TracedDataCoda2IO(object):
         json.dump([m.to_firebase_map() for m in coda_messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
     @staticmethod
+    def _make_empty_file():
+        return io.StringIO("[]")
+
+    @staticmethod
     def _dataset_lut_from_messages_file(f):
         """
         Creates a lookup table of MessageID -> SchemeID -> Labels from the given Coda 2 messages file.
@@ -706,7 +708,7 @@ class TracedDataCoda2IO(object):
         :type f: file-like | None
         """
         if f is None:
-            f = cls.EMPTY_FILE
+            f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = cls._dataset_lut_from_messages_file(f)
@@ -771,7 +773,7 @@ class TracedDataCoda2IO(object):
         :type f: file-like | None
         """
         if f is None:
-            f = cls.EMPTY_FILE
+            f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = cls._dataset_lut_from_messages_file(f)
