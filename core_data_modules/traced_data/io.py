@@ -497,6 +497,7 @@ class TracedDataCoda2IO(object):
         TracedData objects which do not contain the given raw_key will not have data exported.
         Data which has been coded as TRUE_MISSING or SKIPPED will not be exported.
         Data which has been coded as NOT_CODED will be exported but without the NOT_CODED label.
+        TracedData objects with the same message id must have the same labels applied, otherwise this exporter will fail.
 
         :param data: Data to export to Coda V2.
         :type data: iterable of TracedData
@@ -519,19 +520,24 @@ class TracedDataCoda2IO(object):
         # Sort data oldest first in order to set the CreationDateTimeUTC keys correctly
         data.sort(key=lambda td: isoparse(td[creation_date_time_key]))
 
-        messages = []  # List of Coda V2 Message objects to be exported
-        exported_message_ids = set()
+        coda_messages = []  # List of Coda V2 Message objects to be exported
+        exported_code_ids = dict()  # of message_id -> coded_key -> set of code_ids
         for td in data:
-            # Skip items which have already been exported (i.e. de-duplicate data on export)
-            if td[message_id_key] in exported_message_ids:
+            # Skip items which have already been exported (i.e. de-duplicate data on export),
+            # checking that both raw messages have been assigned the same codes
+            if td[message_id_key] in exported_code_ids:
+                for coded_key in scheme_keys:
+                    assert td.get(coded_key) == exported_code_ids[td[message_id_key]][coded_key], \
+                        "Messages with the same id ({}) have different labels for " \
+                        "coded_key '{}'".format(td[message_id_key], coded_key)
                 continue
-
-            # Filter for scheme_keys present in this TracedData object
-            td_coded_keys = {k: v for k, v in scheme_keys.items() if k in td}  # TODO: Rewrite
 
             # Skip messages which have been coded as missing across all scheme_keys
             control_codes = []
-            for coded_key, scheme in td_coded_keys.items():
+            for coded_key, scheme in scheme_keys.items():
+                if coded_key not in td:
+                    continue
+                
                 if type(td[coded_key]) == dict:
                     control_codes.append(scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code)
                 else:
@@ -549,14 +555,19 @@ class TracedDataCoda2IO(object):
             )
 
             # Export codes for this row which are not Codes.NOT_CODED
-            for coded_key, scheme in td_coded_keys.items():
-                if scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
+            for coded_key, scheme in scheme_keys.items():
+                if coded_key in td and scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
                     message.labels.append(Label.from_firebase_map(td[coded_key]))
 
-            messages.append(message)
-            exported_message_ids.add(message.message_id)
+            # Record the codes which have been assigned for this TracedData object, so that if the same message id
+            # is seen again, we can check that that data has been coded in the same way.
+            exported_code_ids[td[message_id_key]] = dict()
+            for coded_key in scheme_keys:
+                exported_code_ids[td[message_id_key]][coded_key] = td.get(coded_key)
 
-        json.dump([m.to_firebase_map() for m in messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
+            coda_messages.append(message)
+
+        json.dump([m.to_firebase_map() for m in coda_messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
     @staticmethod
     def _dataset_lut_from_messages_file(f):

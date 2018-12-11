@@ -303,7 +303,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_export_traced_data_iterable_to_coda_2(self):
+    def test_export_traced_data_iterable_to_coda_2_one_scheme(self):
         file_path = path.join(self.test_dir, "coda_2_test.json")
 
         # Build raw input data
@@ -347,6 +347,128 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                 english.DemographicCleaner.clean_gender, gender_scheme
             )
         
+        # Export to a Coda 2 messages file
+        with open(file_path, "w") as f:
+            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": gender_scheme}, f)
+
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected.json"))
+
+        # Add an element with the same raw text but a conflicting
+        messages.append(TracedData({
+            "gender_raw": "woman", "gender_sent_on": "2018-11-01T07:13:04+03:00",
+            "gender_coded": CleaningUtils.make_label_from_cleaner_code(
+                gender_scheme, gender_scheme.get_code_with_match_value("male"), "make_location_label",
+                date_time_utc="2018-11-03T13:40:50Z").to_dict()
+        }, Metadata("test_user", Metadata.get_call_location(), time.time())))
+        TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
+
+        with open(file_path, "w") as f:
+            try:
+                TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                    messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": gender_scheme}, f)
+            except AssertionError as e:
+                assert str(e) == "Messages with the same id " \
+                                 "(cf2e5bff1ef03dcd20d1a0b18ef7d89fc80a3554434165753672f6f40fde1d25) have different " \
+                                 "labels for coded_key 'gender_coded'"
+                return
+            self.fail("Exporting data with conflicting labels did not fail")
+
+    def test_export_traced_data_iterable_to_coda_2_multiple_schemes(self):
+        return
+        
+        file_path = path.join(self.test_dir, "coda_2_test.json")
+
+        # Load schemes
+        with open("tests/traced_data/resources/coda_2_district_scheme.json") as f:
+            district_scheme = Scheme.from_firebase_map(json.load(f))
+
+        with open("tests/traced_data/resources/coda_2_zone_scheme.json") as f:
+            zone_scheme = Scheme.from_firebase_map(json.load(f))
+
+        def make_location_label(scheme, value):
+            if value in Codes.CONTROL_CODES:
+                code = scheme.get_code_with_control_code(value)
+            else:
+                code = scheme.get_code_with_match_value(value)
+
+            CleaningUtils.make_label_from_cleaner_code(scheme, code, "make_location_label",
+                                                       date_time_utc="2018-11-02T13:40:50Z")
+
+        # Build raw input data
+        message_dicts = [
+            # Normal, coded data
+            {"location_raw": "mog", "location_sent_on": "2018-11-01T07:13:04+03:00",
+             "district": make_location_label(district_scheme, "mogadishu"),
+             "zone": make_location_label(zone_scheme, "scz")},
+
+            # Data coded under one scheme only
+            {"location_raw": "kismayo", "location_sent_on": "2018-11-01T07:17:04+03:00",
+             "district": make_location_label(district_scheme, "kismayo")},
+
+            # Data coded as missing under both schemes
+            {"location_raw": "", "gender_sent_on": "2018-11-01T07:19:04+05:00",
+             "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
+             "zone": make_location_label(zone_scheme, Codes.TRUE_MISSING)},
+
+            # No data
+            {},
+
+            # Data coded as missing under one scheme only
+            {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:09+05:00",
+             "district": make_location_label(district_scheme, "kismayo"),
+             "zone": make_location_label(zone_scheme, Codes.TRUE_MISSING)},
+
+            # Data coded as NC under both schemes
+            {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
+             "district": make_location_label(district_scheme, "kismayo"),
+             "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
+
+            # Data coded as NC under one scheme only
+            {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
+             "district": make_location_label(district_scheme, "kismayo"),
+             "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
+
+            # Data coded as NC under one scheme but NA under another
+            # TODO: Test this case separately as it should fail
+            # {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
+            #  "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
+            #  "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
+
+            # TODO: as should this one
+            # {"location_raw": "kismayo", "gender_sent_on": "2018-11-01T07:19:30+03:00",
+            #  "district": make_location_label(district_scheme, "kismayo"),
+            #  "zone": make_location_label(zone_scheme, Codes.NOT_CODED)},
+        ]
+        messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
+                    for i, d in enumerate(message_dicts)]
+
+        # Add message ids
+        TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
+
+        # Set TRUE_MISSING codes
+        for td in messages:
+            na_label = CleaningUtils.make_label_from_cleaner_code(
+                gender_scheme,
+                gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
+                "test_export_traced_data_iterable_to_coda_2",
+                date_time_utc="2018-11-02T13:00:00+03:00"
+            )
+            if td.get("gender_raw", "") == "":
+                td.append_data({"gender_coded": na_label.to_dict()},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
+
+        # Apply the English gender cleaner
+        with mock.patch("core_data_modules.util.TimeUtils.utc_now_as_iso_string") as time_mock, \
+                mock.patch("core_data_modules.traced_data.Metadata.get_function_location") as location_mock:
+            time_mock.return_value = "2018-11-02T15:00:07+00:00"
+            location_mock.return_value = "english.DemographicCleaner.clean_gender"
+
+            CleaningUtils.apply_cleaner_to_traced_data_iterable(
+                "test_user", messages, "gender_raw", "gender_coded",
+                english.DemographicCleaner.clean_gender, gender_scheme
+            )
+
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
             TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
