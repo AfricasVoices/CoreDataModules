@@ -686,7 +686,7 @@ class TracedDataCoda2IO(object):
         return coda_dataset
 
     @classmethod
-    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_keys, nr_label, f=None):
+    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_keys, f=None):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
@@ -707,8 +707,6 @@ class TracedDataCoda2IO(object):
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
                             (Schemes in the Coda messages file to retrieve the labels from)
         :type scheme_keys: dict of str -> Scheme
-        :param nr_label: Label to apply to messages which haven't been reviewed yet.
-        :type nr_label: core_data_modules.data_models.Label
         :param f: Coda data file to import codes from, or None. If None, assigns NOT_REVIEWED codes to everything.
         :type f: file-like | None
         """
