@@ -654,6 +654,10 @@ class TracedDataCoda2IO(object):
 
     @staticmethod
     def _make_empty_file():
+        """
+        :return: Object which looks like a Coda 2 messages file containing no messages.
+        :rtype: StringIO
+        """
         return io.StringIO("[]")
 
     @staticmethod
@@ -671,7 +675,7 @@ class TracedDataCoda2IO(object):
         for msg in json.load(f):
             schemes = dict()  # of SchemeID -> list of Label
             coda_dataset[msg["MessageID"]] = schemes
-            msg["Labels"].reverse()
+            msg["Labels"].reverse()  # Coda outputs most-recent first but easier to handle in Python if most-recent last
             for label in msg["Labels"]:
                 scheme_id = label["SchemeID"]
                 if scheme_id not in schemes:
@@ -722,7 +726,6 @@ class TracedDataCoda2IO(object):
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
                 if labels is not None:
                     for label in labels:
-                        # TODO: Check not duplicating previous history?
                         td.append_data(
                             {key_of_coded: label},
                             Metadata(user, Metadata.get_call_location(),
