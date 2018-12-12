@@ -79,5 +79,5 @@ To run a specific test or test suite:
 `$ pipenv run python setup.py test --addopts path/to/test_file.py::TestClass::test_method` 
 e.g. `$ pipenv run python setup.py test --addopts tests/cleaners/english/test_demographic_cleaner.py`.
 
-[Circle CI](https://circleci.com/gh/AfricasVoices) automatically runs all tests in both Python 2.7 and 
-Python 3.6 whenever a commit is pushed to this repository.
+[Circle CI](https://circleci.com/gh/AfricasVoices) automatically runs all tests in Python 3.6 whenever a commit is 
+pushed to this repository.
