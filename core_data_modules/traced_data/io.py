@@ -736,11 +736,19 @@ class TracedDataCoda2IO(object):
                                                                                 tzinfo=pytz.utc)).total_seconds())
                         )
 
-                # If the most-recent label has not been checked (i.e. manually verified), set Codes.NOT_REVIEWED.
-                if key_of_coded not in td or \
-                        not cls._is_coded_as_missing([scheme.get_code_with_id(td[key_of_coded]["CodeID"]).control_code]) or \
-                        not td[key_of_coded]["Checked"] or \
-                        td[key_of_coded]["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
+                # not_reviewed = False
+                # if key_of_coded not in td:
+                #     not_reviewed = True
+                # elif not td[key_of_coded]["Checked"] and \
+                #         td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.SKIPPED).code_id and \
+                #         td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id:
+                #     not_reviewed = True
+
+                # If no label, or the label is a non-missing label that hasn't been checked, set a code for NOT_REVIEWED
+                if key_of_coded not in td or (
+                       not td[key_of_coded]["Checked"] and
+                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.SKIPPED).code_id and
+                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id):
                     nr_label = CleaningUtils.make_label_from_cleaner_code(
                         scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
                         Metadata.get_call_location()
