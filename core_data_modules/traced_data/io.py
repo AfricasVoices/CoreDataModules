@@ -803,9 +803,10 @@ class TracedDataCoda2IO(object):
                     labels.extend(coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, []))
                 labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
 
-                # Get the currently assigned list of codes for this multi-coded scheme
-                td_codes = td.get(coded_key, [])
-                td_codes_lut = {code["SchemeID"]: code for code in td_codes}
+                # Get the currently assigned list of labels for this multi-coded scheme,
+                # and construct a look-up table of scheme id -> label
+                td_labels = td.get(coded_key, [])
+                td_codes_lut = {label["SchemeID"]: label for label in td_labels}
 
                 for label in labels:
                     # Update the relevant label in this traced data's list of labels with the new label,
@@ -817,8 +818,8 @@ class TracedDataCoda2IO(object):
                             if scheme.get_code_with_id(code["CodeID"]).control_code == Codes.NOT_CODED:
                                 del td_codes_lut[key]
 
-                    td_codes = list(td_codes_lut.values())
-                    td.append_data({coded_key: td_codes},
+                    td_labels = list(td_codes_lut.values())
+                    td.append_data({coded_key: td_labels},
                                    Metadata(user, Metadata.get_call_location(),
                                             (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
                                                                                        tzinfo=pytz.utc)).total_seconds()))
@@ -826,8 +827,8 @@ class TracedDataCoda2IO(object):
                 for scheme_id, code in list(td_codes_lut.items()):
                     if code["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
                         del td_codes_lut[scheme_id]
-                        td_codes = list(td_codes_lut.values())
-                        td.append_data({coded_key: td_codes},
+                        td_labels = list(td_codes_lut.values())
+                        td.append_data({coded_key: td_labels},
                                        Metadata(user, Metadata.get_call_location(), time.time()))
 
                 checked_codes_count = 0
