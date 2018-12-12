@@ -10,6 +10,7 @@ import six
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import CharacterCleaner, Codes
+from core_data_modules.cleaners.cleaning_utils import CleaningUtils
 from core_data_modules.data_models import Message, Label
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.util import SHAUtils
@@ -723,8 +724,10 @@ class TracedDataCoda2IO(object):
                 continue
 
             for key_of_coded, scheme in scheme_keys.items():
+                # Get labels for this message id/scheme id from the look-up table
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
                 if labels is not None:
+                    # Append each label was assigned to this message for this scheme to the TracedData.
                     for label in labels:
                         td.append_data(
                             {key_of_coded: label},
@@ -733,19 +736,26 @@ class TracedDataCoda2IO(object):
                                                                                 tzinfo=pytz.utc)).total_seconds())
                         )
 
-                    if key_of_coded not in td or not td[key_of_coded]["Checked"] or \
-                            td[key_of_coded]["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
-                        td.append_data(
-                            {key_of_coded: nr_label.to_dict()},
-                            Metadata(user, Metadata.get_call_location(), time.time())
-                        )
-                elif key_of_coded not in td or \
-                        not cls._is_coded_as_missing(
-                            [scheme.get_code_with_id(td[key_of_coded]["CodeID"]).control_code]):
+                # If the most-recent label has not been checked (i.e. manually verified), set Codes.NOT_REVIEWED.
+                if key_of_coded not in td or \
+                        not cls._is_coded_as_missing([scheme.get_code_with_id(td[key_of_coded]["CodeID"]).control_code]) or \
+                        not td[key_of_coded]["Checked"] or \
+                        td[key_of_coded]["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
+                    nr_label = CleaningUtils.make_label_from_cleaner_code(
+                        scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
+                        Metadata.get_call_location()
+                    )
                     td.append_data(
                         {key_of_coded: nr_label.to_dict()},
                         Metadata(user, Metadata.get_call_location(), time.time())
                     )
+                # elif key_of_coded not in td or \
+                #         not cls._is_coded_as_missing(
+                #             [scheme.get_code_with_id(td[key_of_coded]["CodeID"]).control_code]):
+                #     td.append_data(
+                #         {key_of_coded: nr_label.to_dict()},
+                #         Metadata(user, Metadata.get_call_location(), time.time())
+                #     )
 
     @classmethod
     def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_keys,
