@@ -716,11 +716,11 @@ class TracedDataCoda2IO(object):
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = cls._dataset_lut_from_messages_file(f)
 
+        # Filter out TracedData objects without a message id key
+        data = [td for td in data if message_id_key in data]
+
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
-            if message_id_key not in td:
-                continue
-
             for key_of_coded, scheme in scheme_keys.items():
                 # Get labels for this message id/scheme id from the look-up table
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
