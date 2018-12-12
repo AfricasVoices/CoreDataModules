@@ -736,14 +736,6 @@ class TracedDataCoda2IO(object):
                                                                                 tzinfo=pytz.utc)).total_seconds())
                         )
 
-                # not_reviewed = False
-                # if key_of_coded not in td:
-                #     not_reviewed = True
-                # elif not td[key_of_coded]["Checked"] and \
-                #         td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.SKIPPED).code_id and \
-                #         td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id:
-                #     not_reviewed = True
-
                 # If no label, or the label is a non-missing label that hasn't been checked, set a code for NOT_REVIEWED
                 if key_of_coded not in td or (
                        not td[key_of_coded]["Checked"] and
@@ -757,13 +749,6 @@ class TracedDataCoda2IO(object):
                         {key_of_coded: nr_label.to_dict()},
                         Metadata(user, Metadata.get_call_location(), time.time())
                     )
-                # elif key_of_coded not in td or \
-                #         not cls._is_coded_as_missing(
-                #             [scheme.get_code_with_id(td[key_of_coded]["CodeID"]).control_code]):
-                #     td.append_data(
-                #         {key_of_coded: nr_label.to_dict()},
-                #         Metadata(user, Metadata.get_call_location(), time.time())
-                #     )
 
     @classmethod
     def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_keys,
