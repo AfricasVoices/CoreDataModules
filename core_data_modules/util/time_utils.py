@@ -10,4 +10,4 @@ class TimeUtils(object):
         :return: Current system time in UTC in ISO 8601 string format.
         :rtype: str
         """
-        return pytz.utc.localize(datetime.utcnow()).isoformat()
+        return pytz.utc.localize(datetime.utcnow()).isoformat(timespec="microseconds")
