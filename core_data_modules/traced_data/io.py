@@ -806,28 +806,28 @@ class TracedDataCoda2IO(object):
                 # Get the currently assigned list of labels for this multi-coded scheme,
                 # and construct a look-up table of scheme id -> label
                 td_labels = td.get(coded_key, [])
-                td_codes_lut = {label["SchemeID"]: label for label in td_labels}
+                td_labels_lut = {label["SchemeID"]: label for label in td_labels}
 
                 for label in labels:
                     # Update the relevant label in this traced data's list of labels with the new label,
                     # and append the whole new list to the traced data.
-                    td_codes_lut[label["SchemeID"]] = label
+                    td_labels_lut[label["SchemeID"]] = label
 
-                    if len(td_codes_lut) > 1:
-                        for key, code in td_codes_lut.items():
+                    if len(td_labels_lut) > 1:
+                        for key, code in td_labels_lut.items():
                             if scheme.get_code_with_id(code["CodeID"]).control_code == Codes.NOT_CODED:
-                                del td_codes_lut[key]
+                                del td_labels_lut[key]
 
-                    td_labels = list(td_codes_lut.values())
+                    td_labels = list(td_labels_lut.values())
                     td.append_data({coded_key: td_labels},
                                    Metadata(user, Metadata.get_call_location(),
                                             (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
                                                                                        tzinfo=pytz.utc)).total_seconds()))
 
-                for scheme_id, code in list(td_codes_lut.items()):
+                for scheme_id, code in list(td_labels_lut.items()):
                     if code["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
-                        del td_codes_lut[scheme_id]
-                        td_labels = list(td_codes_lut.values())
+                        del td_labels_lut[scheme_id]
+                        td_labels = list(td_labels_lut.values())
                         td.append_data({coded_key: td_labels},
                                        Metadata(user, Metadata.get_call_location(), time.time()))
 
