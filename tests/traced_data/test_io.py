@@ -302,7 +302,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_export_traced_data_iterable_to_coda_2_one_scheme(self):
+    def test_one_scheme(self):
         file_path = path.join(self.test_dir, "coda_2_test.json")
 
         # Build raw input data
@@ -352,6 +352,18 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                 messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": gender_scheme}, f)
 
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected_one_scheme.json"))
+
+        # Test importing with no file available
+        imported_messages = []
+        for td in messages:
+            imported_messages.append(td.copy())
+        TracedDataCoda2IO.import_coda_2_to_traced_data_iterable(
+            "test_user", imported_messages, "gender_coda_id", {"gender_coded": gender_scheme})
+
+        na_id = gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id
+        nr_id = gender_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id
+        imported_code_ids = [td["gender_coded"]["CodeID"] for td in imported_messages]
+        self.assertListEqual(imported_code_ids, [nr_id, na_id, nr_id, na_id, nr_id])
 
         # Add an element with the same raw text but a conflicting
         messages.append(TracedData({
@@ -470,8 +482,8 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
             "zone": make_location_label(zone_scheme, Codes.SKIPPED)
         })
-                
 
+        
 class TestTracedDataCSVIO(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()
