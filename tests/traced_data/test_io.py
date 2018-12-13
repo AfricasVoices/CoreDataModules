@@ -359,6 +359,9 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             imported_messages.append(td.copy())
         TracedDataCoda2IO.import_coda_2_to_traced_data_iterable(
             "test_user", imported_messages, "gender_coda_id", {"gender_coded": gender_scheme})
+        # Deliberately testing the read can be done twice
+        TracedDataCoda2IO.import_coda_2_to_traced_data_iterable(
+            "test_user", imported_messages, "gender_coda_id", {"gender_coded": gender_scheme})
 
         na_id = gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id
         nr_id = gender_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id
