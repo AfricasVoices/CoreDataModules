@@ -13,7 +13,7 @@ from core_data_modules.cleaners import CharacterCleaner, Codes
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
 from core_data_modules.data_models import Message, Label
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.util import SHAUtils
+from core_data_modules.util import SHAUtils, TimeUtils
 
 if six.PY2:
     import unicodecsv as csv
@@ -716,7 +716,7 @@ class TracedDataCoda2IO(object):
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = cls._dataset_lut_from_messages_file(f)
 
-        # Filter out TracedData objects without a message id key
+        # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
 
         # Apply the labels from Coda to each TracedData item in data
@@ -725,14 +725,10 @@ class TracedDataCoda2IO(object):
                 # Get labels for this message id/scheme id from the look-up table
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
                 if labels is not None:
-                    # Append each label was assigned to this message for this scheme to the TracedData.
+                    # Append each label that was assigned to this message for this scheme to the TracedData.
                     for label in labels:
-                        td.append_data(
-                            {key_of_coded: label},
-                            Metadata(user, Metadata.get_call_location(),
-                                     (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
-                                                                                tzinfo=pytz.utc)).total_seconds())
-                        )
+                        td.append_data({key_of_coded: label},
+                                       Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
                 # If no label, or the label is a non-missing label that hasn't been checked, set a code for NOT_REVIEWED
                 if key_of_coded not in td or (
