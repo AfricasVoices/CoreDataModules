@@ -784,11 +784,11 @@ class TracedDataCoda2IO(object):
             for scheme in schemes:
                 assert scheme.codes == head_scheme.codes
 
+        # Filter out TracedData objects that do not contain a message id key
+        data = [td for td in data if message_id_key in td]
+
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
-            if message_id_key not in td:
-                continue
-
             for coded_key, schemes in scheme_keys.items():
                 scheme = list(schemes)[0]
 
