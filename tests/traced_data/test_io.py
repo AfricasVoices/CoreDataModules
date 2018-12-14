@@ -312,6 +312,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             {"gender_raw": "hiya", "gender_sent_on": "2018-11-01T07:19:04+05:00"},
             {},
             {"gender_raw": "boy", "gender_sent_on": "2018-11-02T19:00:29+03:00"},
+            {"gender_raw": "man", "gender_sent_on": "2018-11-02T19:00:29+03:00"},
         ]
         messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
                     for i, d in enumerate(message_dicts)]
@@ -366,7 +367,27 @@ class TestTracedDataCoda2IO(unittest.TestCase):
         na_id = gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id
         nr_id = gender_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id
         imported_code_ids = [td["gender_coded"]["CodeID"] for td in imported_messages]
-        self.assertListEqual(imported_code_ids, [nr_id, na_id, nr_id, na_id, nr_id])
+
+        self.assertListEqual(imported_code_ids, [nr_id, na_id, nr_id, na_id, nr_id, nr_id])
+
+        # Test importing from the test file
+        imported_messages = []
+        for td in messages:
+            imported_messages.append(td.copy())
+        with open("tests/traced_data/resources/coda_2_import_test_one_scheme.json", "r") as f:
+            TracedDataCoda2IO.import_coda_2_to_traced_data_iterable(
+                "test_user", imported_messages, "gender_coda_id", {"gender_coded": gender_scheme}, f)
+        imported_code_ids = [td["gender_coded"]["CodeID"] for td in imported_messages]
+        
+        expected_code_ids = [
+            gender_scheme.get_code_with_match_value("female").code_id,  # Manually approved auto-code
+            gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id,  # Empty raw message
+            gender_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id,  # Manually assigned code which isn't checked
+            gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id,  # No raw message
+            gender_scheme.get_code_with_control_code(Codes.NOT_CODED).code_id,  # Manually Not Coded
+            gender_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id,  # Manually un-coded
+        ]
+        self.assertListEqual(imported_code_ids, expected_code_ids)
 
         # Add an element with the same raw text but a conflicting
         messages.append(TracedData({
