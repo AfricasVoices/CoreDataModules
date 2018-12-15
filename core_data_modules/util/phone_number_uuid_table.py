@@ -1,6 +1,5 @@
 import json
 
-import six
 from core_data_modules.cleaners import PhoneCleaner
 from core_data_modules.util import IDUtils
 
@@ -100,23 +99,6 @@ class PhoneNumberUuidTable(object):
         Analogous to dict.keys
         """
         return self.uuid_to_phone.keys()
-
-    if six.PY2:
-        def iternumbers(self):
-            """
-            Returns all the numbers in the table, as an iterator.
-            
-            Analogous to dict.iterkeys.
-            """
-            return self.phone_to_uuid.iterkeys()
-
-        def iteruuids(self):
-            """
-            Returns all the uuids in the table, as an iterator.
-        
-            Analogous to dict.iterkeys
-            """
-            return self.uuid_to_phone.iterkeys()
 
     def dumps(self, sort_keys=False):
         """
