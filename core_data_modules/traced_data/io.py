@@ -745,8 +745,7 @@ class TracedDataCoda2IO(object):
                     )
 
     @classmethod
-    def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_keys,
-                                                          nr_label, f=None):
+    def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_keys, f=None):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
@@ -766,8 +765,6 @@ class TracedDataCoda2IO(object):
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
                             (Scheme in the Coda messages file to retrieve the labels from)
         :type scheme_keys: dict of str -> Scheme
-        :param nr_label: Label to apply to messages which haven't been reviewed yet.
-        :type nr_label: core_data_modules.data_models.Label
         :type scheme_keys: dict of str -> list of str
         :param f: Coda data file to import codes from, or None. If None, assigns NOT_REVIEWED codes to everything.
         :type f: file-like | None
@@ -832,6 +829,11 @@ class TracedDataCoda2IO(object):
                         [scheme.get_code_with_id(label["CodeID"]).control_code for label in labels])
 
                 if checked_codes_count == 0 and not coded_as_missing:
+                    nr_label = CleaningUtils.make_label_from_cleaner_code(
+                        scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
+                        Metadata.get_call_location()
+                    )
+
                     td.append_data(
                         {coded_key: [nr_label.to_dict()]},
                         Metadata(user, Metadata.get_call_location(), time.time())
