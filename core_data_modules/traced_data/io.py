@@ -787,11 +787,10 @@ class TracedDataCoda2IO(object):
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
-                
                 all_scheme_labels = coda_dataset.get(td[message_id_key], dict())
                 for scheme_id, scheme_labels in all_scheme_labels.items():
                     if scheme_id.startswith(scheme.scheme_id):
-                        labels.extend(labels)
+                        labels.extend(scheme_labels)
                 labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
 
                 # Get the currently assigned list of labels for this multi-coded scheme,
