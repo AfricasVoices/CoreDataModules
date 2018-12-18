@@ -764,8 +764,8 @@ class TracedDataCoda2IO(object):
         :param message_id_key: Key in TracedData objects of the message ids.
         :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
-                            (Schemes in the Coda messages file to retrieve the labels from)
-        :type scheme_keys: dict of str -> list of Scheme
+                            (Scheme in the Coda messages file to retrieve the labels from)
+        :type scheme_keys: dict of str -> Scheme
         :param nr_label: Label to apply to messages which haven't been reviewed yet.
         :type nr_label: core_data_modules.data_models.Label
         :type scheme_keys: dict of str -> list of str
@@ -789,14 +789,15 @@ class TracedDataCoda2IO(object):
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
-            for coded_key, schemes in scheme_keys.items():
-                scheme = list(schemes)[0]
-
+            for coded_key, scheme in scheme_keys.items():
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
-                for scheme in scheme_keys[coded_key]:
-                    labels.extend(coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, []))
+                
+                all_scheme_labels = coda_dataset.get(td[message_id_key], dict())
+                for scheme_id, scheme_labels in all_scheme_labels.items():
+                    if scheme_id.startswith(scheme.scheme_id):
+                        labels.extend(labels)
                 labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
 
                 # Get the currently assigned list of labels for this multi-coded scheme,
