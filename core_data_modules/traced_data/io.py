@@ -778,12 +778,6 @@ class TracedDataCoda2IO(object):
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = cls._dataset_lut_from_messages_file(f)
 
-        # Assert that all the groups of scheme items have the same codes (i.e. they all duplicates)
-        for schemes in scheme_keys.values():
-            head_scheme = list(schemes)[0]
-            for scheme in schemes:
-                assert scheme.codes == head_scheme.codes
-
         # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
 
