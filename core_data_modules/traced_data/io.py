@@ -722,7 +722,7 @@ class TracedDataCoda2IO(object):
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
             for key_of_coded, scheme in scheme_keys.items():
-                # Get labels for this message id/scheme id from the look-up table
+                # Get labels for this (message id, scheme id) from the look-up table
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
                 if labels is not None:
                     # Append each label that was assigned to this message for this scheme to the TracedData.
