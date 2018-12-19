@@ -800,6 +800,8 @@ class TracedDataCoda2IO(object):
                     # and append the whole new list to the traced data.
                     td_labels_lut[label["SchemeID"]] = label
 
+                    # If multiple codes have been assigned, delete any instances of Code.NOT_CODED
+                    # (because if there are multiple codes then the data must be coded now).
                     if len(td_labels_lut) > 1:
                         for key, code in td_labels_lut.items():
                             if scheme.get_code_with_id(code["CodeID"]).control_code == Codes.NOT_CODED:
@@ -807,10 +809,9 @@ class TracedDataCoda2IO(object):
 
                     td_labels = list(td_labels_lut.values())
                     td.append_data({coded_key: td_labels},
-                                   Metadata(user, Metadata.get_call_location(),
-                                            (isoparse(label["DateTimeUTC"]) - datetime(1970, 1, 1,
-                                                                                       tzinfo=pytz.utc)).total_seconds()))
+                                   Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
+                # Delete any labels that are SPECIAL-MANUALLY_UNCODED
                 for scheme_id, code in list(td_labels_lut.items()):
                     if code["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
                         del td_labels_lut[scheme_id]
@@ -818,6 +819,8 @@ class TracedDataCoda2IO(object):
                         td.append_data({coded_key: td_labels},
                                        Metadata(user, Metadata.get_call_location(), time.time()))
 
+                # If no manual labels have been set, or not all of the labels are TRUE_MISSING or SKIPPED,
+                # set a label for NOT_REVIEWED.
                 checked_codes_count = 0
                 coded_as_missing = False
                 labels = td.get(coded_key)
