@@ -627,7 +627,7 @@ class TracedDataCoda2IO(object):
         :type f: file-like
         """
         # Filter data for elements which contain the given raw key
-        data = [td for td in data if raw_key in td]
+        data = [td for td in data if td.get(raw_key, "") != ""]
 
         cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
         data = cls._deduplicate_data(data, message_id_key, creation_date_time_key)
