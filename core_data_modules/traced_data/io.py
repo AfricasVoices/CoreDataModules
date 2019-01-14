@@ -201,7 +201,7 @@ class TracedDataCodaV2IO(object):
 
         cls._assert_uniquely_coded(data, message_id_key, scheme_key_map.keys())
         data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
-        data = cls._filter_missing(data, scheme_key_map)
+        # data = cls._filter_missing(data, scheme_key_map)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
         for td in data:
