@@ -1,9 +1,8 @@
-import six
 from dateutil.parser import isoparse
 
 
 def validate_string(s, variable_name=""):
-    assert isinstance(s, six.string_types), "{} not a string".format(variable_name)
+    assert isinstance(s, str), "{} not a string".format(variable_name)
     assert s != "", "{} is empty".format(variable_name)
     return s
 
