@@ -445,27 +445,27 @@ class TracedDataCodaIO(object):
 
 class TracedDataCoda2IO(object):
     @classmethod
-    def add_message_ids(cls, user, data, raw_key, message_id_key):
+    def compute_message_ids(cls, user, data, raw_message_key, message_id_key_to_write):
         """
         Appends a message id to each object in the provided iterable of TracedData.
 
-        Message ids are set by computing the SHA of the value at each `raw_key`, so are guaranteed to be stable.
+        Message ids are set by computing the SHA of the value at each `raw_message_key`, so are guaranteed to be stable.
 
-        If the `raw_key` is not found in a TracedData object in the iterable, no message id is assigned.
+        If the `raw_message_key` is not found in a TracedData object in the iterable, no message id is assigned.
 
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
-        :param data: TracedData objects to set message_ids for.
+        :param data: TracedData objects to set the message ids of.
         :type data: iterable of TracedData
-        :param raw_key: Key in TracedData objects to read the text to generate message ids for from.
-        :type raw_key: str
-        :param message_id_key: Key in TracedData objects to write the message id to.
-        :type message_id_key: str
+        :param raw_message_key: Key in TracedData objects of the raw text to generate message ids from.
+        :type raw_message_key: str
+        :param message_id_key_to_write: Key in TracedData objects to write the message id to.
+        :type message_id_key_to_write: str
         """
         for td in data:
-            if raw_key in td:
+            if raw_message_key in td:
                 td.append_data(
-                    {message_id_key: SHAUtils.sha_string(td[raw_key])},
+                    {message_id_key_to_write: SHAUtils.sha_string(td[raw_message_key])},
                     Metadata(user, Metadata.get_call_location(), time.time())
                 )
 
