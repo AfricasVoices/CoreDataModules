@@ -317,7 +317,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                     for i, d in enumerate(message_dicts)]
 
         # Add message ids
-        TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
+        TracedDataCoda2IO.compute_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
 
         # Load gender scheme
         with open("tests/traced_data/resources/coda_2_gender_scheme.json") as f:
@@ -360,7 +360,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                 gender_scheme, gender_scheme.get_code_with_match_value("male"), "make_location_label",
                 date_time_utc="2018-11-03T13:40:50Z").to_dict()
         }, Metadata("test_user", Metadata.get_call_location(), time.time())))
-        TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
+        TracedDataCoda2IO.compute_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
 
         with open(file_path, "w") as f:
             try:
@@ -425,7 +425,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                     for i, d in enumerate(message_dicts)]
 
         # Add message ids
-        TracedDataCoda2IO.add_message_ids("test_user", messages, "location_raw", "location_coda_id")
+        TracedDataCoda2IO.compute_message_ids("test_user", messages, "location_raw", "location_coda_id")
 
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
@@ -444,7 +444,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             # Test exporting with ambiguous missing codes
             conflicting_missings = list(messages)
             conflicting_missings.append(TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())))
-            TracedDataCoda2IO.add_message_ids("test_user", conflicting_missings, "location_raw", "location_coda_id")
+            TracedDataCoda2IO.compute_message_ids("test_user", conflicting_missings, "location_raw", "location_coda_id")
 
             with open(file_path, "w") as f:
                 try:
