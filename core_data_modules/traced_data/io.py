@@ -513,12 +513,12 @@ class TracedDataCoda2IO(object):
                 seen_message_ids[td[message_id_key]] = new_code_ids
 
     @staticmethod
-    def _deduplicate_data(data, message_id_key, creation_date_time_key):
+    def _filter_duplicates(data, message_id_key, creation_date_time_key):
         """
-        De-duplicates data.
+        Filters a list of TracedData by returning only TracedData object with each value at `message_id_key`.
 
         Items in data are considered duplicates if they have the same message id.
-        Where duplicates are found, only the object with the oldest creation date is included in the returned list.s
+        Where duplicates are found, only the object with the oldest creation date is included in the returned list.
 
         :param data: Data to de-duplicate.
         :type data: iterable of TracedData
@@ -526,7 +526,7 @@ class TracedDataCoda2IO(object):
                                The returned dataset will not contain any duplicate values for this field.
         :type message_id_key: str
         :param creation_date_time_key: Key in TracedData objects of when the message was created.
-                                       Where duplicates are found, the object with the oldest value here is returned.s
+                                       Where duplicates are found, the object with the oldest value here is returned.
         :type creation_date_time_key: str
         :return: De-duplicated TracedData objects.
         :rtype: list of TracedData
@@ -627,7 +627,7 @@ class TracedDataCoda2IO(object):
         data = [td for td in data if raw_key in td]
 
         cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
-        data = cls._deduplicate_data(data, message_id_key, creation_date_time_key)
+        data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
         data = cls._exclude_missing(data, scheme_keys)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
