@@ -821,16 +821,13 @@ class TracedDataCoda2IO(object):
                 # If no manual labels have been set, or not all of the labels are TRUE_MISSING or SKIPPED,
                 # set a label for NOT_REVIEWED.
                 checked_codes_count = 0
-                coded_as_missing = False
                 labels = td.get(coded_key)
                 if labels is not None:
                     for label in labels:
                         if label["Checked"]:
                             checked_codes_count += 1
-                    coded_as_missing = cls._is_coded_as_missing(
-                        [scheme.get_code_with_id(label["CodeID"]).control_code for label in labels])
 
-                if checked_codes_count == 0 and not coded_as_missing:
+                if checked_codes_count == 0:
                     nr_label = CleaningUtils.make_label_from_cleaner_code(
                         scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
                         Metadata.get_call_location()
