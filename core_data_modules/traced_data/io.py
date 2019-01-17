@@ -626,7 +626,7 @@ class TracedDataCoda2IO(object):
         :param f: File to write exported JSON file to.
         :type f: file-like
         """
-        # Filter data for elements which contain the given raw key
+        # Filter data for elements which contain a value for the given raw key that isn't empty string
         data = [td for td in data if td.get(raw_key, "") != ""]
 
         cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
@@ -730,11 +730,9 @@ class TracedDataCoda2IO(object):
                         td.append_data({key_of_coded: label},
                                        Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
-                # If no label, or the label is a non-missing label that hasn't been checked, set a code for NOT_REVIEWED
-                if key_of_coded not in td or (
-                       not td[key_of_coded]["Checked"] and
-                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.SKIPPED).code_id and
-                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id):
+                # If this td still has no label after importing from the Coda file, or the label is a non-missing label
+                # that hasn't been checked in the Coda UI, set a code for NOT_REVIEWED
+                if key_of_coded not in td or not td[key_of_coded]["Checked"]:
                     nr_label = CleaningUtils.make_label_from_cleaner_code(
                         scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
                         Metadata.get_call_location()
