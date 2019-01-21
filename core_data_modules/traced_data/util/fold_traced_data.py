@@ -71,6 +71,13 @@ class FoldTracedData(object):
                                                    "respectively)".format(key, td_1.get(key), td_2.get(key))
 
     @staticmethod
+    def _is_missing_value(code):
+        return code in {
+            Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, None
+        }
+
+    @staticmethod
     def reconcile_missing_values(value_1, value_2):
         """
         Reconciles two missing values, by choosing the form of missing value with the highest precedence.
@@ -255,6 +262,27 @@ class FoldTracedData(object):
         td_1.append_data(yes_no_dict, Metadata(user, Metadata.get_call_location(), time.time()))
         td_2.append_data(yes_no_dict, Metadata(user, Metadata.get_call_location(), time.time()))
 
+    @classmethod
+    def reconcile_ambivalent_keys(cls, user, td_1, td_2, keys):
+        ambivalent_dict = dict()
+
+        for key in keys:
+            if cls._is_missing_value(td_1.get(key)) and cls._is_missing_value(td_2.get(key)):
+                ambivalent_dict[key] = cls.reconcile_missing_values(td_1.get(key), td_2.get(key))
+            elif cls._is_missing_value(td_1.get(key)):
+                ambivalent_dict[key] = td_2.get(key)
+            elif cls._is_missing_value(td_2.get(key)):
+                ambivalent_dict[key] = td_1.get(key)
+            elif td_1.get(key) == "ambivalent" or td_1.get(key) == "ambivalent":
+                ambivalent_dict[key] = "ambivalent"
+            elif td_1.get(key) == td_2.get(key):
+                ambivalent_dict[key] = td_1.get(key)
+            else:
+                ambivalent_dict[key] = "ambivalent"
+
+        td_1.append_data(ambivalent_dict, Metadata(user, Metadata.get_call_location(), time.time()))
+        td_2.append_data(ambivalent_dict, Metadata(user, Metadata.get_call_location(), time.time()))
+
     @staticmethod
     def set_keys_to_value(user, td, keys, value="MERGED"):
         """
@@ -273,7 +301,9 @@ class FoldTracedData(object):
 
     @classmethod
     def fold_traced_data(cls, user, td_1, td_2, equal_keys=frozenset(), concat_keys=frozenset(),
-                         matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(), concat_delimiter=";"):
+                         matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
+                         ambivalent_keys=frozenset(),
+                         concat_delimiter=";"):
         """
         Folds two TracedData object into a new TracedData object.
 
@@ -297,6 +327,8 @@ class FoldTracedData(object):
         :type bool_keys: iterable of str
         :param yes_no_keys: Yes/No keys, to fold using FoldTracedData.reconcile_yes_no_keys.
         :type yes_no_keys: iterable of str
+        :param ambivalent_keys: X/Y/ambivalent keys, to fold using FoldTracedData.reconcile_ambivalent_keys.
+        :type ambivalent_keys: iterable of str
         :param concat_delimiter: String to separate the concatenated strings with.
         :type concat_delimiter: str
         :return: td_1 folded with td_2.
@@ -310,12 +342,14 @@ class FoldTracedData(object):
         cls.reconcile_matrix_keys(user, td_1, td_2, matrix_keys)
         cls.reconcile_boolean_keys(user, td_1, td_2, bool_keys)
         cls.reconcile_yes_no_keys(user, td_1, td_2, yes_no_keys)
+        cls.reconcile_ambivalent_keys(user, td_1, td_2, ambivalent_keys)
 
         equal_keys = set(equal_keys)
         equal_keys.update(concat_keys)
         equal_keys.update(matrix_keys)
         equal_keys.update(bool_keys)
         equal_keys.update(yes_no_keys)
+        equal_keys.update(ambivalent_keys)
 
         cls.set_keys_to_value(user, td_1, set(td_1.keys()) - set(equal_keys))
         cls.set_keys_to_value(user, td_2, set(td_2.keys()) - set(equal_keys))
@@ -328,6 +362,7 @@ class FoldTracedData(object):
     @classmethod
     def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys=frozenset(), concat_keys=frozenset(),
                                      matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
+                                     ambivalent_keys=frozenset(),
                                      concat_delimiter=";"):
         """
         Folds an iterable of TracedData into a new iterable of TracedData.
@@ -355,6 +390,8 @@ class FoldTracedData(object):
         :type bool_keys: iterable of str
         :param yes_no_keys: Yes/No keys, to fold using FoldTracedData.reconcile_yes_no_keys.
         :type yes_no_keys: iterable of str
+        :param ambivalent_keys: X/Y/ambivalent keys, to fold using FoldTracedData.reconcile_ambivalent_keys.
+        :type ambivalent_keys: iterable of str
         :param concat_delimiter: String to separate the concatenated strings with.
         :type concat_delimiter: str
         :return: Folded TracedData objects.
@@ -363,6 +400,6 @@ class FoldTracedData(object):
         return cls.fold_groups(
             cls.group_by(data, fold_id_fn),
             lambda td_1, td_2: cls.fold_traced_data(
-                user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys, concat_delimiter)
+                user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys, ambivalent_keys, concat_delimiter)
         )
 
