@@ -1,0 +1,26 @@
+[
+  {
+    "CreationDateTimeUTC": "2018-11-01T02:19:04+00:00", 
+    "Labels": [], 
+    "MessageID": "46189dc39be0b8e4ce047b787852e2084d9faf024b3592398554675fea04fbc5", 
+    "Text": "food + water"
+  }, 
+  {
+    "CreationDateTimeUTC": "2018-11-01T04:13:04+00:00", 
+    "Labels": [], 
+    "MessageID": "c1f026582fe6e8cb620d0c85a72fe421ddded756662a8ec00ed4c297ad10676b", 
+    "Text": "food"
+  }, 
+  {
+    "CreationDateTimeUTC": "2018-11-02T16:00:29+00:00", 
+    "Labels": [], 
+    "MessageID": "0f4168490e38b8447e11ba4bd656aa11b925bd22af30bac464bc153fdb608501", 
+    "Text": "water"
+  }, 
+  {
+    "CreationDateTimeUTC": "2018-11-02T17:30:45+00:00", 
+    "Labels": [], 
+    "MessageID": "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589", 
+    "Text": "abcd"
+  }
+]

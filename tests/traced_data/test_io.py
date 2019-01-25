@@ -507,7 +507,110 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             "zone": make_location_label(zone_scheme, Codes.SKIPPED)
         })
 
+    def test_multi_coded(self):
+        file_path = path.join(self.test_dir, "coda_2_test.json")
 
+        # Build raw input data
+        message_dicts = [
+            {"msg_raw": "food", "msg_sent_on": "2018-11-01T07:13:04+03:00"},
+            {"msg_raw": "", "msg_sent_on": "2018-11-01T07:17:04+03:00"},
+            {"msg_raw": "food + water", "msg_sent_on": "2018-11-01T07:19:04+05:00"},
+            {},
+            {"msg_raw": "water", "msg_sent_on": "2018-11-02T19:00:29+03:00"},
+            {"msg_raw": "abcd", "msg_sent_on": "2018-11-02T20:30:45+03:00"}
+        ]
+        messages = [TracedData(d, Metadata("test_user", Metadata.get_call_location(), i))
+                    for i, d in enumerate(message_dicts)]
+
+        # Add message ids
+        TracedDataCoda2IO.add_message_ids("test_user", messages, "msg_raw", "msg_coda_id")
+
+        # Load gender scheme
+        with open("tests/traced_data/resources/coda_2_msg_scheme.json") as f:
+            msg_scheme = Scheme.from_firebase_map(json.load(f))
+
+        # Set TRUE_MISSING codes
+        for td in messages:
+            na_label = CleaningUtils.make_label_from_cleaner_code(
+                msg_scheme,
+                msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
+                "test_export_traced_data_iterable_to_coda_2",
+                date_time_utc="2018-11-02T10:00:00+00:00"
+            )
+            if td.get("msg_raw", "") == "":
+                td.append_data({"msg_coded": [na_label.to_dict()]},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
+
+        # Export to a Coda 2 messages file
+        with open(file_path, "w") as f:
+            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                messages, "msg_raw", "msg_sent_on", "msg_coda_id", {"msg_coded": msg_scheme}, f)
+
+        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected_multi_coded.json"))
+
+        # Test importing with no file available
+        imported_messages = []
+        for td in messages:
+            imported_messages.append(td.copy())
+        TracedDataCoda2IO.import_coda_2_to_traced_data_iterable_multi_coded(
+            "test_user", imported_messages, "msg_coda_id", {"msg_coded": msg_scheme})
+        # Deliberately testing the read can be done twice
+        TracedDataCoda2IO.import_coda_2_to_traced_data_iterable_multi_coded(
+            "test_user", imported_messages, "msg_coda_id", {"msg_coded": msg_scheme})
+
+        na_id = msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id
+        nr_id = msg_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id
+
+        for td in imported_messages:
+            self.assertEqual(len(td["msg_coded"]), 1)
+        imported_code_ids = [td["msg_coded"][0]["CodeID"] for td in imported_messages]
+        self.assertListEqual(imported_code_ids, [nr_id, na_id, nr_id, na_id, nr_id, nr_id])
+
+        # Test importing from the test file
+        imported_messages = []
+        for td in messages:
+            imported_messages.append(td.copy())
+        with open("tests/traced_data/resources/coda_2_import_test_multi_coded.json", "r") as f:
+            TracedDataCoda2IO.import_coda_2_to_traced_data_iterable_multi_coded(
+                "test_user", imported_messages, "msg_coda_id", {"msg_coded": msg_scheme}, f)
+
+        imported_code_ids = []
+        for td in imported_messages:
+            imported_code_ids.append([code["CodeID"] for code in td["msg_coded"]])
+
+        expected_code_ids = [
+            {msg_scheme.get_code_with_match_value("food").code_id},
+            {msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id},
+            {msg_scheme.get_code_with_match_value("food").code_id, msg_scheme.get_code_with_match_value("water").code_id},
+            {msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id},
+            {msg_scheme.get_code_with_match_value("water").code_id},
+            {msg_scheme.get_code_with_control_code(Codes.NOT_CODED).code_id}
+        ]
+
+        for x, y in zip(imported_code_ids, expected_code_ids):
+            self.assertSetEqual(set(x), set(y))
+
+        # Add an element with the same raw text but a conflicting
+        # messages.append(TracedData({
+        #     "gender_raw": "woman", "gender_sent_on": "2018-11-01T07:13:04+03:00",
+        #     "gender_coded": CleaningUtils.make_label_from_cleaner_code(
+        #         msg_scheme, msg_scheme.get_code_with_match_value("male"), "make_location_label",
+        #         date_time_utc="2018-11-03T13:40:50Z").to_dict()
+        # }, Metadata("test_user", Metadata.get_call_location(), time.time())))
+        # TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
+        #
+        # with open(file_path, "w") as f:
+        #     try:
+        #         TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+        #             messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": msg_scheme}, f)
+        #     except AssertionError as e:
+        #         assert str(e) == "Messages with the same id " \
+        #                          "(cf2e5bff1ef03dcd20d1a0b18ef7d89fc80a3554434165753672f6f40fde1d25) have different " \
+        #                          "labels for coded_key 'gender_coded'"
+        #         return
+        #     self.fail("Exporting data with conflicting labels did not fail")
+
+        
 class TestTracedDataCSVIO(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()

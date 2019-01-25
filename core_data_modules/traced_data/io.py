@@ -801,11 +801,13 @@ class TracedDataCoda2IO(object):
 
                     # If multiple codes have been assigned, delete any instances of Code.NOT_CODED
                     # (because if there are multiple codes then the data must be coded now).
-                    if len(td_labels_lut) > 1:
-                        for key, code in list(td_labels_lut.items()):
-                            if code["CodeID"] != "SPECIAL-MANUALLY_UNCODED" and \
-                                    scheme.get_code_with_id(code["CodeID"]).control_code == Codes.NOT_CODED:
-                                del td_labels_lut[key]
+                    # TODO: The assumption being made here doesn't actually hold, because it's possible that
+                    # TODO: all the columns of data have been assigned NOT_CODED.
+                    # if len(td_labels_lut) > 1:
+                    #     for key, code in list(td_labels_lut.items()):
+                    #         if code["CodeID"] != "SPECIAL-MANUALLY_UNCODED" and \
+                    #                 scheme.get_code_with_id(code["CodeID"]).control_code == Codes.NOT_CODED:
+                    #             del td_labels_lut[key]
 
                     td_labels = list(td_labels_lut.values())
                     td.append_data({coded_key: td_labels},
