@@ -18,7 +18,7 @@ from core_data_modules.cleaners.cleaning_utils import CleaningUtils
 from core_data_modules.data_models import Scheme
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCodaIO, TracedDataCSVIO, TracedDataJsonIO, \
-    TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCoda2IO
+    TracedDataTheInterfaceIO, _td_type_error_string, TracedDataCodaV2IO
 
 
 def generate_traced_data_iterable():
@@ -317,7 +317,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                     for i, d in enumerate(message_dicts)]
 
         # Add message ids
-        TracedDataCoda2IO.compute_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
+        TracedDataCodaV2IO.compute_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
 
         # Load gender scheme
         with open("tests/traced_data/resources/coda_2_gender_scheme.json") as f:
@@ -348,7 +348,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
 
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
-            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+            TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
                 messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": gender_scheme}, f)
 
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected_one_scheme.json"))
@@ -360,11 +360,11 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                 gender_scheme, gender_scheme.get_code_with_match_value("male"), "make_location_label",
                 date_time_utc="2018-11-03T13:40:50Z").to_dict()
         }, Metadata("test_user", Metadata.get_call_location(), time.time())))
-        TracedDataCoda2IO.compute_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
+        TracedDataCodaV2IO.compute_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
 
         with open(file_path, "w") as f:
             try:
-                TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
                     messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": gender_scheme}, f)
             except AssertionError as e:
                 assert str(e) == "Messages with the same id " \
@@ -425,7 +425,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                     for i, d in enumerate(message_dicts)]
 
         # Add message ids
-        TracedDataCoda2IO.compute_message_ids("test_user", messages, "location_raw", "location_coda_id")
+        TracedDataCodaV2IO.compute_message_ids("test_user", messages, "location_raw", "location_coda_id")
 
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
@@ -433,7 +433,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             scheme_keys["district"] = district_scheme
             scheme_keys["zone"] = zone_scheme
 
-            TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+            TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
                 messages, "location_raw", "location_sent_on", "location_coda_id", scheme_keys, f)
 
         self.assertTrue(
@@ -444,7 +444,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             # Test exporting with ambiguous missing codes
             conflicting_missings = list(messages)
             conflicting_missings.append(TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())))
-            TracedDataCoda2IO.compute_message_ids("test_user", conflicting_missings, "location_raw", "location_coda_id")
+            TracedDataCodaV2IO.compute_message_ids("test_user", conflicting_missings, "location_raw", "location_coda_id")
 
             with open(file_path, "w") as f:
                 try:
@@ -452,7 +452,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                     scheme_keys["district"] = district_scheme
                     scheme_keys["zone"] = zone_scheme
 
-                    TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
+                    TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
                         conflicting_missings, "location_raw", "location_sent_on", "location_coda_id", scheme_keys, f)
                 except AssertionError as e:
                     assert str(e) == "Data labelled as NA or NS under one code scheme but not all of the others"

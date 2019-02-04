@@ -443,7 +443,7 @@ class TracedDataCodaIO(object):
             td.append_data(td_matrix_data, Metadata(user, Metadata.get_call_location(), time.time()))
 
 
-class TracedDataCoda2IO(object):
+class TracedDataCodaV2IO(object):
     @classmethod
     def compute_message_ids(cls, user, data, raw_message_key, message_id_key_to_write):
         """
