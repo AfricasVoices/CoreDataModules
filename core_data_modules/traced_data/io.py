@@ -445,7 +445,7 @@ class TracedDataCodaIO(object):
 
 class TracedDataCodaV2IO(object):
     @classmethod
-    def compute_message_ids(cls, user, data, raw_message_key, message_id_key_to_write):
+    def compute_message_ids(cls, user, data, message_key, message_id_key_to_write):
         """
         Appends a message id to each object in the provided iterable of TracedData.
 
@@ -457,15 +457,15 @@ class TracedDataCodaV2IO(object):
         :type user: str
         :param data: TracedData objects to set the message ids of.
         :type data: iterable of TracedData
-        :param raw_message_key: Key in TracedData objects of the raw text to generate message ids from.
-        :type raw_message_key: str
+        :param message_key: Key in TracedData objects of the raw text to generate message ids from.
+        :type message_key: str
         :param message_id_key_to_write: Key in TracedData objects to write the message id to.
         :type message_id_key_to_write: str
         """
         for td in data:
-            if raw_message_key in td:
+            if message_key in td:
                 td.append_data(
-                    {message_id_key_to_write: SHAUtils.sha_string(td[raw_message_key])},
+                    {message_id_key_to_write: SHAUtils.sha_string(td[message_key])},
                     Metadata(user, Metadata.get_call_location(), time.time())
                 )
 
