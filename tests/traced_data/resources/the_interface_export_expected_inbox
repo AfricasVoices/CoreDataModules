@@ -1,4 +1,0 @@
-phone	date	time	message
-a	06/01/2018	10:47:02	Message 1
-b	05/30/2018	21:00:00	Message 2 is very long
-c	06/02/2018	18:30:02	Message 3, has punctuation and non-ASCII: ø. These need cleaning!
