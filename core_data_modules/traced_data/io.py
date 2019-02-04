@@ -1,48 +1,44 @@
+import csv
 import io
 import json
 import time
 
 import jsonpickle
 import pytz
-import six
+from dateutil.parser import isoparse
 
-from core_data_modules.cleaners import CharacterCleaner, Codes
+from core_data_modules.cleaners import Codes
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
 from core_data_modules.data_models import Message, Label
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.util import SHAUtils, TimeUtils
 
-if six.PY2:
-    import unicodecsv as csv
-if six.PY3:
-    import csv
-
 _td_type_error_string = "argument 'data' contains an element which is not of type TracedData"
 
 
-class TracedDataCoda2IO(object):
+class TracedDataCodaV2IO(object):
     @classmethod
-    def add_message_ids(cls, user, data, raw_key, message_id_key):
+    def compute_message_ids(cls, user, data, message_key, message_id_key_to_write):
         """
         Appends a message id to each object in the provided iterable of TracedData.
 
-        Message ids are set by computing the SHA of the value at each `raw_key`, so are guaranteed to be stable.
+        Message ids are set by computing the SHA of the value at each `raw_message_key`, so are guaranteed to be stable.
 
-        If the `raw_key` is not found in a TracedData object in the iterable, no message id is assigned.
+        If the `raw_message_key` is not found in a TracedData object in the iterable, no message id is assigned.
 
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
-        :param data: TracedData objects to set message_ids for.
+        :param data: TracedData objects to set the message ids of.
         :type data: iterable of TracedData
-        :param raw_key: Key in TracedData objects to read the text to generate message ids for from.
-        :type raw_key: str
-        :param message_id_key: Key in TracedData objects to write the message id to.
-        :type message_id_key: str
+        :param message_key: Key in TracedData objects of the raw text to generate message ids from.
+        :type message_key: str
+        :param message_id_key_to_write: Key in TracedData objects to write the message id to.
+        :type message_id_key_to_write: str
         """
         for td in data:
-            if raw_key in td:
+            if message_key in td:
                 td.append_data(
-                    {message_id_key: SHAUtils.sha_string(td[raw_key])},
+                    {message_id_key_to_write: SHAUtils.sha_string(td[message_key])},
                     Metadata(user, Metadata.get_call_location(), time.time())
                 )
 
@@ -90,12 +86,12 @@ class TracedDataCoda2IO(object):
                 seen_message_ids[td[message_id_key]] = new_code_ids
 
     @staticmethod
-    def _deduplicate_data(data, message_id_key, creation_date_time_key):
+    def _filter_duplicates(data, message_id_key, creation_date_time_key):
         """
-        De-duplicates data.
+        Filters a list of TracedData by returning only TracedData object with each value at `message_id_key`.
 
         Items in data are considered duplicates if they have the same message id.
-        Where duplicates are found, only the object with the oldest creation date is included in the returned list.s
+        Where duplicates are found, only the object with the oldest creation date is included in the returned list.
 
         :param data: Data to de-duplicate.
         :type data: iterable of TracedData
@@ -103,7 +99,7 @@ class TracedDataCoda2IO(object):
                                The returned dataset will not contain any duplicate values for this field.
         :type message_id_key: str
         :param creation_date_time_key: Key in TracedData objects of when the message was created.
-                                       Where duplicates are found, the object with the oldest value here is returned.s
+                                       Where duplicates are found, the object with the oldest value here is returned.
         :type creation_date_time_key: str
         :return: De-duplicated TracedData objects.
         :rtype: list of TracedData
@@ -141,7 +137,7 @@ class TracedDataCoda2IO(object):
         return False
 
     @classmethod
-    def _exclude_missing(cls, data, scheme_keys):
+    def _filter_missing(cls, data, scheme_keys):
         """
         Filters an iterable of TracedData objects to exclude those that were code as TRUE_MISSING or SKIPPED across
         all the fields in scheme_keys.
@@ -204,8 +200,8 @@ class TracedDataCoda2IO(object):
         data = [td for td in data if raw_key in td]
 
         cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
-        data = cls._deduplicate_data(data, message_id_key, creation_date_time_key)
-        data = cls._exclude_missing(data, scheme_keys)
+        data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
+        data = cls._filter_missing(data, scheme_keys)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
         for td in data:
@@ -444,7 +440,7 @@ class TracedDataCSVIO(object):
         if headers is None:
             headers = set()
             for td in data:
-                for key in six.iterkeys(td):
+                for key in td:
                     headers.add(key)
 
         writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n")
