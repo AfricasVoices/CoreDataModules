@@ -138,9 +138,9 @@ class Label(object):
             validators.validate_bool(self.checked, "checked")
 
         if self.confidence is not None:
-            validators.validate_double(self.confidence, "confidence")
-
-            # TODO: If we keep this line in then we should specify this in the data_formats.md file in CodaV2
+            # Not type-checking self.confidence is a float, because Firebase can return either an int or a float.
+            # Relying on >= and <= not being defined between numeric and non-numeric types to get an 'is-numeric'
+            # type-check as a side-effect of the >= and <= tests.
             assert 0 <= self.confidence <= 1, "self.confidence ({}) is not in range [0, 1]".format(self.confidence)
 
         if self.label_set is not None:
