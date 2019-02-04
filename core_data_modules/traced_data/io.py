@@ -564,7 +564,7 @@ class TracedDataCoda2IO(object):
         return False
 
     @classmethod
-    def _exclude_missing(cls, data, scheme_keys):
+    def _filter_missing(cls, data, scheme_keys):
         """
         Filters an iterable of TracedData objects to exclude those that were code as TRUE_MISSING or SKIPPED across
         all the fields in scheme_keys.
@@ -628,7 +628,7 @@ class TracedDataCoda2IO(object):
 
         cls._assert_uniquely_coded(data, message_id_key, scheme_keys.keys())
         data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
-        data = cls._exclude_missing(data, scheme_keys)
+        data = cls._filter_missing(data, scheme_keys)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
         for td in data:
