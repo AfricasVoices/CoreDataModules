@@ -4,8 +4,8 @@
       {
         "SchemeID": "Scheme-12cb6f95",
         "Origin": {
-          "Name": "Alexander Simpson",
-          "OriginID": "alexander@africasvoices.org",
+          "Name": "Test User",
+          "OriginID": "test_user",
           "OriginType": "Manual"
         },
         "Confidence": 1,
@@ -15,8 +15,8 @@
       },
       {
         "Origin": {
-          "Name": "Alexander Simpson",
-          "OriginID": "alexander@africasvoices.org",
+          "Name": "Test User",
+          "OriginID": "test_user",
           "OriginType": "Manual"
         },
         "Confidence": 1,
@@ -35,8 +35,8 @@
     "Labels": [
       {
         "Origin": {
-          "Name": "Alexander Simpson",
-          "OriginID": "alexander@africasvoices.org",
+          "Name": "Test User",
+          "OriginID": "test_user",
           "OriginType": "Manual"
         },
         "Confidence": 1,
@@ -66,8 +66,8 @@
     "Labels": [
       {
         "Origin": {
-          "OriginID": "alexander@africasvoices.org",
-          "Name": "Alexander Simpson",
+          "OriginID": "test_user",
+          "Name": "Test User",
           "OriginType": "Manual"
         },
         "Confidence": 1,
@@ -86,8 +86,8 @@
     "Labels": [
       {
         "Origin": {
-          "Name": "Alexander Simpson",
-          "OriginID": "alexander@africasvoices.org",
+          "Name": "Test User",
+          "OriginID": "test_user",
           "OriginType": "Manual"
         },
         "Confidence": 1,

@@ -7,7 +7,7 @@ import tempfile
 import time
 import unittest
 from os import path
-from unittest import mock  # TODO: Use unittest.mock in code elsewhere instead
+from unittest import mock
 
 from core_data_modules.cleaners import Codes, english
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
@@ -42,14 +42,14 @@ def generate_appended_traced_data():
     return message_td
 
 
-class TestTracedDataCoda2IO(unittest.TestCase):
+class TestTracedDataCodaV2IO(unittest.TestCase):
     def setUp(self):
         self.test_dir = tempfile.mkdtemp()
 
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_one_scheme(self):
+    def test_export_import_one_single_coded_scheme(self):
         file_path = path.join(self.test_dir, "coda_2_test.json")
 
         # Build raw input data
@@ -156,7 +156,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
                 return
             self.fail("Exporting data with conflicting labels did not fail")
 
-    def test_export_traced_data_iterable_to_coda_2_multiple_schemes(self):
+    def test_export_two_single_coded_schemes(self):
         file_path = path.join(self.test_dir, "coda_2_test.json")
 
         # Load schemes
@@ -254,7 +254,7 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             "zone": make_location_label(zone_scheme, Codes.SKIPPED)
         })
 
-    def test_multi_coded(self):
+    def test_export_import_one_multi_coded_scheme(self):
         file_path = path.join(self.test_dir, "coda_2_test.json")
 
         # Build raw input data
@@ -332,41 +332,10 @@ class TestTracedDataCoda2IO(unittest.TestCase):
             {msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id},
             {msg_scheme.get_code_with_match_value("water").code_id},
             {msg_scheme.get_code_with_control_code(Codes.NOT_CODED).code_id}
-
-
-            # msg_scheme.get_code_with_match_value("female").code_id,  # Manually approved auto-code
-            # msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id,  # Empty raw message
-            # msg_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id,
-            # # Manually assigned code which isn't checked
-            # msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id,  # No raw message
-            # msg_scheme.get_code_with_control_code(Codes.NOT_CODED).code_id,  # Manually Not Coded
-            # msg_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id,  # Manually un-coded
         ]
 
         for x, y in zip(imported_code_ids, expected_code_ids):
             self.assertSetEqual(set(x), set(y))
-
-        # self.assertListEqual(imported_code_ids, expected_code_ids)
-
-        # Add an element with the same raw text but a conflicting
-        # messages.append(TracedData({
-        #     "gender_raw": "woman", "gender_sent_on": "2018-11-01T07:13:04+03:00",
-        #     "gender_coded": CleaningUtils.make_label_from_cleaner_code(
-        #         msg_scheme, msg_scheme.get_code_with_match_value("male"), "make_location_label",
-        #         date_time_utc="2018-11-03T13:40:50Z").to_dict()
-        # }, Metadata("test_user", Metadata.get_call_location(), time.time())))
-        # TracedDataCoda2IO.add_message_ids("test_user", messages, "gender_raw", "gender_coda_id")
-        #
-        # with open(file_path, "w") as f:
-        #     try:
-        #         TracedDataCoda2IO.export_traced_data_iterable_to_coda_2(
-        #             messages, "gender_raw", "gender_sent_on", "gender_coda_id", {"gender_coded": msg_scheme}, f)
-        #     except AssertionError as e:
-        #         assert str(e) == "Messages with the same id " \
-        #                          "(cf2e5bff1ef03dcd20d1a0b18ef7d89fc80a3554434165753672f6f40fde1d25) have different " \
-        #                          "labels for coded_key 'gender_coded'"
-        #         return
-        #     self.fail("Exporting data with conflicting labels did not fail")
 
 
 class TestTracedDataCSVIO(unittest.TestCase):
