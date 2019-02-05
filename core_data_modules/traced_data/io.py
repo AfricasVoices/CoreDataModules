@@ -1,4 +1,5 @@
 import csv
+import io
 import json
 import time
 
@@ -7,9 +8,10 @@ import pytz
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import Codes
+from core_data_modules.cleaners.cleaning_utils import CleaningUtils
 from core_data_modules.data_models import Label, Message
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.util import SHAUtils
+from core_data_modules.util import SHAUtils, TimeUtils
 
 _td_type_error_string = "argument 'data' contains an element which is not of type TracedData"
 
@@ -221,6 +223,97 @@ class TracedDataCodaV2IO(object):
 
         json.dump([m.to_firebase_map() for m in coda_messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
 
+    @staticmethod
+    def _make_empty_file():
+        """
+        :return: Object which looks like a Coda 2 messages file containing no messages.
+        :rtype: StringIO
+        """
+        return io.StringIO("[]")
+
+    @staticmethod
+    def _dataset_lut_from_messages_file(f):
+        """
+        Creates a lookup table of MessageID -> SchemeID -> Labels from the given Coda 2 messages file.
+
+        :param f: Coda 2 messages file.
+        :type f: file-like
+        :return: Lookup table.
+        :rtype: dict of str -> (dict of str -> list of dict)
+        """
+        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+
+        for msg in json.load(f):
+            schemes = dict()  # of SchemeID -> list of Label
+            coda_dataset[msg["MessageID"]] = schemes
+            msg["Labels"].reverse()  # Coda outputs most-recent first but easier to handle in Python if most-recent last
+            for label in msg["Labels"]:
+                scheme_id = label["SchemeID"]
+                if scheme_id not in schemes:
+                    schemes[scheme_id] = []
+                schemes[scheme_id].append(label)
+
+        return coda_dataset
+
+    @classmethod
+    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_keys, f=None):
+        """
+        Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
+
+        Data which is has not been checked in the Coda file is coded using the provided nr_label
+        (irrespective of whether there was an automatic code there before).
+        Data which was previously coded as TRUE_MISSING or SKIPPED is untouched, irrespective of how that code
+        was assigned.
+
+        TODO: Data which has been assigned a code under one scheme but none of the others needs to coded as NC not NR
+        TODO: Or, do this in Coda so as to remove ambiguity from the perspective of the RAs?
+
+        :param user: Identifier of user running this program.
+        :type user: str
+        :param data: TracedData objects to be coded using the Coda file.
+        :type data: iterable of TracedData
+        :param message_id_key: Key in TracedData objects of the message ids.
+        :type message_id_key: str
+        :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
+                            (Scheme in the Coda messages file to retrieve the labels from)
+        :type scheme_keys: dict of str -> Scheme
+        :param f: Coda data file to import codes from, or None.
+        :type f: file-like | None
+        """
+        if f is None:
+            f = cls._make_empty_file()
+
+        # Build a lookup table of MessageID -> SchemeID -> Labels
+        coda_dataset = cls._dataset_lut_from_messages_file(f)
+
+        # Filter out TracedData objects that do not contain a message id key
+        data = [td for td in data if message_id_key in td]
+
+        # Apply the labels from Coda to each TracedData item in data
+        for td in data:
+            for key_of_coded, scheme in scheme_keys.items():
+                # Get labels for this (message id, scheme id) from the look-up table
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
+                if labels is not None:
+                    # Append each label that was assigned to this message for this scheme to the TracedData.
+                    for label in labels:
+                        td.append_data({key_of_coded: label},
+                                       Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+
+                # If no label, or the label is a non-missing label that hasn't been checked, set a code for NOT_REVIEWED
+                if key_of_coded not in td or (
+                       not td[key_of_coded]["Checked"] and
+                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.SKIPPED).code_id and
+                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id):
+                    nr_label = CleaningUtils.make_label_from_cleaner_code(
+                        scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
+                        Metadata.get_call_location()
+                    )
+                    td.append_data(
+                        {key_of_coded: nr_label.to_dict()},
+                        Metadata(user, Metadata.get_call_location(), time.time())
+                    )
+
 
 class TracedDataCSVIO(object):
     @staticmethod
@@ -246,7 +339,7 @@ class TracedDataCSVIO(object):
         if headers is None:
             headers = set()
             for td in data:
-                for key in six.iterkeys(td):
+                for key in td:
                     headers.add(key)
 
         writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n")
