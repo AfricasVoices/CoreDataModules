@@ -7,7 +7,7 @@ import tempfile
 import time
 import unittest
 from os import path
-from unittest import mock  # TODO: Use unittest.mock in code elsewhere instead
+from unittest import mock
 
 from core_data_modules.cleaners import Codes, english
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
