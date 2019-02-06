@@ -322,6 +322,9 @@ class TracedDataCodaV2IO(object):
         Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
         Data which was previously coded as TRUE_MISSING, SKIPPED, or NOT_LOGICAL by any means is untouched.
+        
+        Only the 'primary' schemes should be passed in. Schemes that have been duplicated using the duplicate_scheme
+        tool in CodaV2/data_tools will be detected as being associated with the primary scheme automatically.
 
         TODO: Data which has been assigned a code under one scheme but none of the others needs to coded as NC not NR
         TODO: Or, do this in Coda so as to remove ambiguity from the perspective of the RAs?
