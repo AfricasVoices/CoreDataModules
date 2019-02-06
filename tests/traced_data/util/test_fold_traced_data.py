@@ -179,7 +179,7 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertDictEqual(dict(td_1.items()), expected_dict)
         self.assertDictEqual(dict(td_2.items()), expected_dict)
 
-    def test_reconcile_ambivalent_keys(self):
+    def test_reconcile_binary_keys(self):
         td_1 = TracedData(
             {"a": "integrate", "b": "return", "c": "ambivalent", "d": "ambivalent", "e": "integrate", "f": Codes.NOT_CODED,
              "g": Codes.STOP, "h": Codes.NOT_CODED},
@@ -192,7 +192,7 @@ class TestFoldTracedData(unittest.TestCase):
             Metadata("test_user", Metadata.get_call_location(), 1)
         )
 
-        FoldTracedData.reconcile_ambivalent_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e", "f", "g", "h"})
+        FoldTracedData.reconcile_binary_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e", "f", "g", "h"})
 
         expected_dict = {"a": "integrate", "b": "ambivalent", "c": "ambivalent", "d": "ambivalent", "e": "ambivalent",
                          "f": Codes.NOT_CODED, "g": Codes.STOP, "h": "integrate"}
