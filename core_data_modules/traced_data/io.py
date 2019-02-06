@@ -334,8 +334,7 @@ class TracedDataCodaV2IO(object):
         :type message_id_key: str
         :param scheme_keys: Dictionary of (key in TracedData objects to assign labels to) ->
                             (Scheme in the Coda messages file to retrieve the labels from)
-        :type scheme_keys: dict of str -> Scheme
-        :type scheme_keys: dict of str -> list of str
+        :type scheme_keys: dict of str -> iterable of Scheme
         :param f: Coda data file to import codes from, or None. If None, assigns NOT_REVIEWED codes to everything.
         :type f: file-like | None
         """
