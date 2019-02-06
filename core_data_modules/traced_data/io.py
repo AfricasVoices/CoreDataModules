@@ -137,16 +137,16 @@ class TracedDataCodaV2IO(object):
         return False
 
     @classmethod
-    def _filter_missing(cls, data, scheme_map):
+    def _filter_missing(cls, data, scheme_key_map):
         """
         Filters an iterable of TracedData objects to exclude those that were code as TRUE_MISSING or SKIPPED across
         all the fields in scheme_keys.
 
         :param data: Data to excluding objects coded as TRUE_MISSING or SKIPPED from.
         :type data: iterable of TracedData
-        :param scheme_map: Dictionary of (key in TracedData objects of coded data to export) ->
-                            (Scheme for that key)
-        :type scheme_map: dict of str -> Scheme
+        :param scheme_key_map: Dictionary of (key in TracedData objects of coded data to export) ->
+                               (Scheme for that key)
+        :type scheme_key_map: dict of str -> Scheme
         :return: Data with objects coded as missing excluded.
         :rtype: iterable of TracedData
         """
@@ -154,7 +154,7 @@ class TracedDataCodaV2IO(object):
 
         for td in data:
             control_codes = set()
-            for coded_key, scheme in scheme_map.items():
+            for coded_key, scheme in scheme_key_map.items():
                 if coded_key not in td:
                     control_codes.add(None)
                 elif type(td[coded_key]) == dict:
@@ -170,7 +170,7 @@ class TracedDataCodaV2IO(object):
 
     @classmethod
     def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, message_id_key,
-                                              scheme_map, f):
+                                              scheme_key_map, f):
         """
         Exports an iterable of TracedData to a messages json file suitable for upload into Coda V2.
 
@@ -190,24 +190,24 @@ class TracedDataCodaV2IO(object):
         :param message_id_key: Key in TracedData objects of the message id.
                                Message Ids may be set using TracedDataCoda2IO.add_message_ids.
         :type message_id_key: str
-        :param scheme_map: Dictionary of (key in TracedData objects of coded data to export) ->
-                            (Scheme for that key)
-        :type scheme_map: dict of str -> Scheme
+        :param scheme_key_map: Dictionary of (key in TracedData objects of coded data to export) ->
+                               (Scheme for that key)
+        :type scheme_key_map: dict of str -> Scheme
         :param f: File to write exported JSON file to.
         :type f: file-like
         """
         # Filter data for elements which contain the given raw key
         data = [td for td in data if raw_key in td]
 
-        cls._assert_uniquely_coded(data, message_id_key, scheme_map.keys())
+        cls._assert_uniquely_coded(data, message_id_key, scheme_key_map.keys())
         data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
-        data = cls._filter_missing(data, scheme_map)
+        data = cls._filter_missing(data, scheme_key_map)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
         for td in data:
             # Export labels for this row which are not Codes.NOT_CODED
             labels = []
-            for coded_key, scheme in scheme_map.items():
+            for coded_key, scheme in scheme_key_map.items():
                 if coded_key in td and scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
                     labels.append(Label.from_firebase_map(td[coded_key]))
 
@@ -256,7 +256,7 @@ class TracedDataCodaV2IO(object):
         return coda_dataset
 
     @classmethod
-    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_map, f=None):
+    def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_key_map, f=None):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
@@ -274,9 +274,9 @@ class TracedDataCodaV2IO(object):
         :type data: iterable of TracedData
         :param message_id_key: Key in TracedData objects of the message ids.
         :type message_id_key: str
-        :param scheme_map: Dictionary of (key in TracedData objects to assign labels to) ->
-                            (Scheme in the Coda messages file to retrieve the labels from)
-        :type scheme_map: dict of str -> Scheme
+        :param scheme_key_map: Dictionary of (key in TracedData objects to assign labels to) ->
+                               (Scheme in the Coda messages file to retrieve the labels from)
+        :type scheme_key_map: dict of str -> Scheme
         :param f: Coda data file to import codes from, or None.
         :type f: file-like | None
         """
@@ -291,7 +291,7 @@ class TracedDataCodaV2IO(object):
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
-            for key_of_coded, scheme in scheme_map.items():
+            for key_of_coded, scheme in scheme_key_map.items():
                 # Get labels for this (message id, scheme id) from the look-up table
                 labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
                 if labels is not None:
@@ -315,7 +315,7 @@ class TracedDataCodaV2IO(object):
                     )
 
     @classmethod
-    def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_map, f=None):
+    def import_coda_2_to_traced_data_iterable_multi_coded(cls, user, data, message_id_key, scheme_key_map, f=None):
         """
         Codes keys in an iterable of TracedData objects by using the codes from a Coda 2 messages JSON file.
 
@@ -335,9 +335,9 @@ class TracedDataCodaV2IO(object):
         :type data: iterable of TracedData
         :param message_id_key: Key in TracedData objects of the message ids.
         :type message_id_key: str
-        :param scheme_map: Dictionary of (key in TracedData objects to assign labels to) ->
+        :param scheme_key_map: Dictionary of (key in TracedData objects to assign labels to) ->
                             (Scheme in the Coda messages file to retrieve the labels from)
-        :type scheme_map: dict of str -> iterable of Scheme
+        :type scheme_key_map: dict of str -> iterable of Scheme
         :param f: Coda data file to import codes from, or None. If None, assigns NOT_REVIEWED codes to everything.
         :type f: file-like | None
         """
@@ -352,7 +352,7 @@ class TracedDataCodaV2IO(object):
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
-            for coded_key, scheme in scheme_map.items():
+            for coded_key, scheme in scheme_key_map.items():
                 # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
                 # and sort oldest first.
                 labels = []
