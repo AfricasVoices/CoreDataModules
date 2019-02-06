@@ -1,0 +1,142 @@
+[
+  {
+    "Labels": [
+      {
+        "SchemeID": "Scheme-c4855fcb-1",
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": false,
+        "CodeID": "SPECIAL-MANUALLY_UNCODED",
+        "DateTimeUTC": "2019-01-25T11:14:07.746Z"
+      },
+      {
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-NC-42f1d983",
+        "DateTimeUTC": "2019-01-25T11:14:06.117Z",
+        "SchemeID": "Scheme-c4855fcb-1"
+      },
+      {
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-88433f94",
+        "DateTimeUTC": "2019-01-25T11:14:03.763Z",
+        "SchemeID": "Scheme-c4855fcb"
+      }
+    ],
+    "Text": "water",
+    "CreationDateTimeUTC": "2018-11-02T16:00:29.000Z",
+    "SequenceNumber": 2,
+    "MessageID": "0f4168490e38b8447e11ba4bd656aa11b925bd22af30bac464bc153fdb608501"
+  },
+  {
+    "SequenceNumber": 0,
+    "MessageID": "46189dc39be0b8e4ce047b787852e2084d9faf024b3592398554675fea04fbc5",
+    "Labels": [
+      {
+        "SchemeID": "Scheme-c4855fcb-2",
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-88433f94",
+        "DateTimeUTC": "2019-01-25T11:13:58.980Z"
+      },
+      {
+        "CodeID": "code-b8e40cba",
+        "DateTimeUTC": "2019-01-25T11:13:57.271Z",
+        "SchemeID": "Scheme-c4855fcb",
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true
+      }
+    ],
+    "Text": "food + water",
+    "CreationDateTimeUTC": "2018-11-01T02:19:04.000Z"
+  },
+  {
+    "SequenceNumber": 3,
+    "MessageID": "88d4266fd4e6338d13b845fcf289579d209c897823b9217da3e161936f031589",
+    "Labels": [
+      {
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": false,
+        "CodeID": "SPECIAL-MANUALLY_UNCODED",
+        "DateTimeUTC": "2019-01-25T11:49:52.542Z",
+        "SchemeID": "Scheme-c4855fcb-1"
+      },
+      {
+        "SchemeID": "Scheme-c4855fcb-1",
+        "Origin": {
+          "OriginID": "test_user_id",
+          "Name": "test_user",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-88433f94",
+        "DateTimeUTC": "2019-01-25T11:49:51.095Z"
+      },
+      {
+        "SchemeID": "Scheme-c4855fcb",
+        "Origin": {
+          "OriginID": "test_user_id",
+          "Name": "test_user",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-NC-42f1d983",
+        "DateTimeUTC": "2019-01-25T11:49:48.892Z"
+      }
+    ],
+    "Text": "abcd",
+    "CreationDateTimeUTC": "2018-11-02T17:30:45.000Z"
+  },
+  {
+    "Text": "food",
+    "CreationDateTimeUTC": "2018-11-01T04:13:04.000Z",
+    "MessageID": "c1f026582fe6e8cb620d0c85a72fe421ddded756662a8ec00ed4c297ad10676b",
+    "SequenceNumber": 1,
+    "Labels": [
+      {
+        "Checked": true,
+        "CodeID": "code-b8e40cba",
+        "DateTimeUTC": "2019-01-25T11:14:01.872Z",
+        "SchemeID": "Scheme-c4855fcb",
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1
+      }
+    ]
+  }
+]

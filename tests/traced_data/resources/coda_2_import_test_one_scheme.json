@@ -1,0 +1,116 @@
+[
+  {
+    "Labels": [
+      {
+        "SchemeID": "Scheme-12cb6f95",
+        "Origin": {
+          "Name": "Test User",
+          "OriginID": "test_user",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": false,
+        "CodeID": "code-63dcde9a",
+        "DateTimeUTC": "2018-12-13T17:42:34.460Z"
+      },
+      {
+        "Origin": {
+          "Name": "Test User",
+          "OriginID": "test_user",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-63dcde9a",
+        "DateTimeUTC": "2018-12-13T17:42:33.911Z",
+        "SchemeID": "Scheme-12cb6f95"
+      }
+    ],
+    "Text": "hiya",
+    "CreationDateTimeUTC": "2018-11-01T02:19:04.000Z",
+    "MessageID": "10e5ede4715c80885bf4ca6f9ea87d841cbd24cd0b6bd1af5f1edc9b561052de",
+    "SequenceNumber": 0
+  },
+  {
+    "Labels": [
+      {
+        "Origin": {
+          "Name": "Test User",
+          "OriginID": "test_user",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": false,
+        "CodeID": "SPECIAL-MANUALLY_UNCODED",
+        "DateTimeUTC": "2018-12-14T11:37:57.972Z",
+        "SchemeID": "Scheme-12cb6f95"
+      },
+      {
+        "Checked": false,
+        "CodeID": "code-63dcde9a",
+        "DateTimeUTC": "2018-11-02T15:00:07.000Z",
+        "Origin": {
+          "Name": "Pipeline Auto-Coder",
+          "OriginID": "english.DemographicCleaner.clean_gender",
+          "OriginType": "External"
+        },
+        "SchemeID": "Scheme-12cb6f95"
+      }
+    ],
+    "Text": "man",
+    "CreationDateTimeUTC": "2018-11-02T16:00:29.000Z",
+    "MessageID": "48b676e2b107da679512b793d5fd4cc4329f0c7c17a97cf6e0e3d1005b600b03",
+    "SequenceNumber": 3
+  },
+  {
+    "Labels": [
+      {
+        "Origin": {
+          "OriginID": "test_user",
+          "Name": "Test User",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-NC-42f1d983",
+        "DateTimeUTC": "2018-12-13T17:42:41.512Z",
+        "SchemeID": "Scheme-12cb6f95"
+      }
+    ],
+    "Text": "boy",
+    "CreationDateTimeUTC": "2018-11-02T16:00:29.000Z",
+    "SequenceNumber": 2,
+    "MessageID": "cc6a778404ea557da5543d7cba14f75030dd069f56c80af62b0d7e1840a1ff67"
+  },
+  {
+    "Labels": [
+      {
+        "Origin": {
+          "Name": "Test User",
+          "OriginID": "test_user",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1,
+        "Checked": true,
+        "CodeID": "code-86a4602c",
+        "DateTimeUTC": "2018-12-13T17:42:31.874Z",
+        "SchemeID": "Scheme-12cb6f95"
+      },
+      {
+        "Checked": false,
+        "CodeID": "code-86a4602c",
+        "DateTimeUTC": "2018-11-02T15:00:07.000Z",
+        "Origin": {
+          "OriginID": "english.DemographicCleaner.clean_gender",
+          "Name": "Pipeline Auto-Coder",
+          "OriginType": "External"
+        },
+        "SchemeID": "Scheme-12cb6f95"
+      }
+    ],
+    "Text": "woman",
+    "CreationDateTimeUTC": "2018-11-01T04:13:04.000Z",
+    "SequenceNumber": 1,
+    "MessageID": "cf2e5bff1ef03dcd20d1a0b18ef7d89fc80a3554434165753672f6f40fde1d25"
+  }
+]
