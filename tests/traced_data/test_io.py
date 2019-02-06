@@ -212,12 +212,12 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
-            scheme_keys = collections.OrderedDict()  # Using OrderedDict to make tests easier to write in Py2 and Py3.
-            scheme_keys["district"] = district_scheme
-            scheme_keys["zone"] = zone_scheme
+            scheme_key_map = collections.OrderedDict()  # Using OrderedDict to make tests easier to write in Py2 and Py3.
+            scheme_key_map["district"] = district_scheme
+            scheme_key_map["zone"] = zone_scheme
 
             TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
-                messages, "location_raw", "location_sent_on", "location_coda_id", scheme_keys, f)
+                messages, "location_raw", "location_sent_on", "location_coda_id", scheme_key_map, f)
 
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected_multiple_schemes.json"))
@@ -231,12 +231,12 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
             with open(file_path, "w") as f:
                 try:
-                    scheme_keys = collections.OrderedDict()
-                    scheme_keys["district"] = district_scheme
-                    scheme_keys["zone"] = zone_scheme
+                    scheme_key_map = collections.OrderedDict()
+                    scheme_key_map["district"] = district_scheme
+                    scheme_key_map["zone"] = zone_scheme
 
                     TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
-                        conflicting_missings, "location_raw", "location_sent_on", "location_coda_id", scheme_keys, f)
+                        conflicting_missings, "location_raw", "location_sent_on", "location_coda_id", scheme_key_map, f)
                 except AssertionError as e:
                     assert str(e) == "Data labelled as NA or NS under one code scheme but not all of the others"
                     return
