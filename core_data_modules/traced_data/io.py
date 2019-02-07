@@ -232,12 +232,16 @@ class TracedDataCodaV2IO(object):
         return io.StringIO("[]")
 
     @staticmethod
-    def _dataset_lut_from_messages_file(f):
+    def _dataset_lut_from_messages_file(f, schemes_to_parse):
         """
         Creates a lookup table of MessageID -> SchemeID -> Labels from the given Coda 2 messages file.
+        
+        Labels from schemes which are duplicates are automatically placed in the look-up table for the primary scheme.
 
         :param f: Coda 2 messages file.
         :type f: file-like
+        :param schemes_to_parse: Primary schemes to include in the returned LUT.
+        :type schemes_to_parse: iterable of Scheme
         :return: Lookup table.
         :rtype: dict of str -> (dict of str -> list of Label)
         """
@@ -254,9 +258,12 @@ class TracedDataCodaV2IO(object):
             labels = list(msg.labels)
             labels.reverse()  # Coda outputs most-recent first but easier to handle in Python if most-recent last
             for label in labels:
-                if label.scheme_id not in schemes_lut:
-                    schemes_lut[label.scheme_id] = []
-                schemes_lut[label.scheme_id].append(label)
+                for scheme_to_parse in schemes_to_parse:
+                    if label.scheme_id == scheme_to_parse.scheme_id or label.scheme_id.startswith(scheme_to_parse.scheme_id):
+                        primary_scheme_id = scheme_to_parse.scheme_id
+                        if primary_scheme_id not in schemes_lut:
+                            schemes_lut[primary_scheme_id] = []
+                        schemes_lut[primary_scheme_id].append(label)
 
         return dataset_lut
 
@@ -289,7 +296,7 @@ class TracedDataCodaV2IO(object):
             f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = cls._dataset_lut_from_messages_file(f)
+        coda_dataset = cls._dataset_lut_from_messages_file(f, scheme_key_map.values())
 
         # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
@@ -298,7 +305,7 @@ class TracedDataCodaV2IO(object):
         for td in data:
             for key_of_coded, scheme in scheme_key_map.items():
                 # Get labels for this (message id, scheme id) from the look-up table
-                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, [])
                 if labels is not None:
                     # Append each label that was assigned to this message for this scheme to the TracedData.
                     for label in labels:
@@ -350,7 +357,7 @@ class TracedDataCodaV2IO(object):
             f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = cls._dataset_lut_from_messages_file(f)
+        coda_dataset = cls._dataset_lut_from_messages_file(f, scheme_key_map.values())
 
         # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
@@ -358,14 +365,8 @@ class TracedDataCodaV2IO(object):
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
             for coded_key, scheme in scheme_key_map.items():
-                # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
-                # and sort oldest first.
-                labels = []
-                all_scheme_labels = coda_dataset.get(td[message_id_key], dict())
-                for scheme_id, scheme_labels in all_scheme_labels.items():
-                    if scheme_id.startswith(scheme.scheme_id):
-                        labels.extend(scheme_labels)
-                # labels.sort(key=lambda l: isoparse(l.date_time_utc))
+                # Get labels for this (message id, scheme id) from the look-up table
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, [])
 
                 # Get the currently assigned list of labels for this multi-coded scheme,
                 # and construct a look-up table of scheme id -> label
