@@ -242,7 +242,9 @@ class TracedDataCodaV2IO(object):
         :rtype: dict of str -> (dict of str -> list of Label)
         """
         coda_messages_file = json.load(f)
-        messages = [Message.from_firebase_map(m) for m in coda_messages_file]
+        messages = []
+        for json_msg in coda_messages_file:
+            messages.append(Message.from_firebase_map(json_msg))
 
         dataset_lut = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
         for msg in messages:
