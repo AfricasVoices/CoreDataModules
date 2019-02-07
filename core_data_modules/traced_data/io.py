@@ -22,9 +22,9 @@ class TracedDataCodaV2IO(object):
         """
         Appends a message id to each object in the provided iterable of TracedData.
 
-        Message ids are set by computing the SHA of the value at each `raw_message_key`, so are guaranteed to be stable.
+        Message ids are set by computing the SHA of the value at each `message_key`, so are guaranteed to be stable.
 
-        If the `raw_message_key` is not found in a TracedData object in the iterable, no message id is assigned.
+        If the `message_key` is not found in a TracedData object in the iterable, no message id is assigned.
 
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
