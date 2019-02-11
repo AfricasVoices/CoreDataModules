@@ -5,6 +5,8 @@ from core_data_modules.traced_data import Metadata
 
 
 class FoldTracedData(object):
+    AMBIVALENT_BINARY_VALUE = "ambivalent"
+
     @staticmethod
     def group_by(data, group_id_fn):
         """
@@ -273,12 +275,12 @@ class FoldTracedData(object):
                 binary_dict[key] = td_2.get(key)
             elif cls._is_missing_value(td_2.get(key)):
                 binary_dict[key] = td_1.get(key)
-            elif td_1.get(key) == "ambivalent" or td_1.get(key) == "ambivalent":
-                binary_dict[key] = "ambivalent"
+            elif td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE or td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE:
+                binary_dict[key] = cls.AMBIVALENT_BINARY_VALUE
             elif td_1.get(key) == td_2.get(key):
                 binary_dict[key] = td_1.get(key)
             else:
-                binary_dict[key] = "ambivalent"
+                binary_dict[key] = cls.AMBIVALENT_BINARY_VALUE
 
         td_1.append_data(binary_dict, Metadata(user, Metadata.get_call_location(), time.time()))
         td_2.append_data(binary_dict, Metadata(user, Metadata.get_call_location(), time.time()))
