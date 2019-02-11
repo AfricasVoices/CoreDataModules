@@ -182,16 +182,14 @@ class TestFoldTracedData(unittest.TestCase):
     def test_reconcile_binary_keys(self):
         td_1 = TracedData(
             {"a": "integrate", "b": "return", "c": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-             "d": FoldTracedData.AMBIVALENT_BINARY_VALUE, "e": "integrate",
-             "f": Codes.NOT_CODED,
+             "d": FoldTracedData.AMBIVALENT_BINARY_VALUE, "e": "integrate", "f": Codes.NOT_CODED,
              "g": Codes.STOP, "h": Codes.NOT_CODED},
             Metadata("test_user", Metadata.get_call_location(), 0)
         )
 
         td_2 = TracedData(
             {"a": "integrate", "b": "integrate", "c": "return", "d": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-             "e": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-             "f": Codes.NOT_CODED,
+             "e": FoldTracedData.AMBIVALENT_BINARY_VALUE, "f": Codes.NOT_CODED,
              "g": Codes.NOT_CODED, "h": "integrate"},
             Metadata("test_user", Metadata.get_call_location(), 1)
         )
