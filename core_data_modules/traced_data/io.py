@@ -245,6 +245,9 @@ class TracedDataCodaV2IO(object):
         :return: Lookup table.
         :rtype: dict of str -> (dict of str -> list of Label)
         """
+        assert f.tell() == 0, "File-pointer not at byte 0. " \
+                              "Should you have used e.g. `f.seek(0)` before calling this method?"
+
         coda_messages_file = json.load(f)
         messages = []
         for json_msg in coda_messages_file:
