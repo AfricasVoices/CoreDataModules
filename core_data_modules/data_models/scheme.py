@@ -111,6 +111,8 @@ class Code:
         self.visible_in_coda = visible_in_coda
         self.color = color
         self.match_values = match_values
+        
+        self.validate()
 
     @classmethod
     def from_firebase_map(cls, data):
