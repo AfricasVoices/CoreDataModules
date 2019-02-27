@@ -3,14 +3,13 @@ from core_data_modules.data_models import validators
 
 class Scheme(object):
     def __init__(self, scheme_id, name, version, codes, documentation=None):
-        if documentation is None:
-            documentation = dict()
-
         self.scheme_id = scheme_id
         self.name = name
         self.version = version
         self.codes = codes
         self.documentation = documentation
+
+        self.validate()
 
     def get_code_with_id(self, code_id):
         for code in self.codes:
@@ -32,9 +31,9 @@ class Scheme(object):
 
     @classmethod
     def from_firebase_map(cls, data):
-        scheme_id = validators.validate_string(data["SchemeID"])
-        name = validators.validate_string(data["Name"])
-        version = validators.validate_string(data["Version"])
+        scheme_id = data["SchemeID"]
+        name = data["Name"]
+        version = data["Version"]
 
         codes = []
         for code_map in data["Codes"]:
@@ -49,22 +48,40 @@ class Scheme(object):
             documentation = {
                 "URI": validators.validate_string(doc_map["URI"])
             }
-        
+
         return cls(scheme_id, name, version, codes, documentation)
-    
+
     def to_firebase_map(self):
-        ret = dict()
-        ret["SchemeID"] = self.scheme_id
-        ret["Name"] = self.name
-        ret["Version"] = self.version
-        ret["Codes"] = []
+        self.validate()
+
+        ret = {
+            "SchemeID": self.scheme_id,
+            "Name": self.name,
+            "Version": self.version,
+            "Codes": []
+        }
+
         for code in self.codes:
             ret["Codes"].append(code.to_firebase_map())
 
-        if len(self.documentation) > 0:
+        if self.documentation is not None:
             ret["Documentation"] = self.documentation
-        
+
         return ret
+
+    def validate(self):
+        validators.validate_string(self.scheme_id, "scheme_id")
+        validators.validate_string(self.name, "name")
+        validators.validate_string(self.version, "version")
+
+        validators.validate_list(self.codes, "codes")
+        for i, code in enumerate(self.codes):
+            assert isinstance(code, Code), f"self.codes[{i}] is not of type Code"
+            # TODO: code.validate()
+
+        if self.documentation is not None:
+            validators.validate_dict(self.documentation, "documentation")
+            validators.validate_string(self.documentation["URI"], "documentation[URI]")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -161,6 +178,6 @@ class Code:
             other.visible_in_coda == self.visible_in_coda and \
             other.color == self.color and \
             other.match_values == self.match_values
-    
+
     def __ne__(self, other):
         return not self.__eq__(other)
