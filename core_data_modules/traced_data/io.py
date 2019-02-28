@@ -116,58 +116,6 @@ class TracedDataCodaV2IO(object):
 
         return unique_data
 
-    @staticmethod
-    def _is_coded_as_missing(control_codes):
-        """
-        Returns whether all of the given control codes are the same and either TRUE_MISSING or SKIPPED.
-
-        :param control_codes: Control Codes to check
-        :type control_codes: iterable of str
-        :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
-        :rtype: bool
-        """
-        if len(set(control_codes)) == 1:
-            control_code = control_codes.pop()
-            if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED}:
-                return True
-
-        assert Codes.TRUE_MISSING not in control_codes and Codes.SKIPPED not in control_codes, \
-            "Data labelled as NA or NS under one code scheme but not all of the others"
-
-        return False
-
-    @classmethod
-    def _filter_missing(cls, data, scheme_key_map):
-        """
-        Filters an iterable of TracedData objects to exclude those that were code as TRUE_MISSING or SKIPPED across
-        all the fields in scheme_keys.
-
-        :param data: Data to excluding objects coded as TRUE_MISSING or SKIPPED from.
-        :type data: iterable of TracedData
-        :param scheme_key_map: Dictionary of (key in TracedData objects of coded data to export) ->
-                               (Scheme for that key)
-        :type scheme_key_map: dict of str -> Scheme
-        :return: Data with objects coded as missing excluded.
-        :rtype: iterable of TracedData
-        """
-        not_missing = []
-
-        for td in data:
-            control_codes = set()
-            for coded_key, scheme in scheme_key_map.items():
-                if coded_key not in td:
-                    control_codes.add(None)
-                elif type(td[coded_key]) == dict:
-                    control_codes.add(scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code)
-                else:
-                    for code in td[coded_key]:
-                        control_codes.add(scheme.get_code_with_id(code["CodeID"]).control_code)
-
-            if not cls._is_coded_as_missing(control_codes):
-                not_missing.append(td)
-
-        return not_missing
-
     @classmethod
     def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, message_id_key,
                                               scheme_key_map, f):
@@ -176,8 +124,8 @@ class TracedDataCodaV2IO(object):
 
         Data is de-duplicated on export.
 
-        TracedData objects which do not contain the given raw_key will not have data exported.
-        Data which has been coded as TRUE_MISSING or SKIPPED will not be exported.
+        TracedData objects which do not contain the given raw_key, or which the value at raw_key is empty string,
+        will not have data exported.
         Data which has been coded as NOT_CODED will be exported but without the NOT_CODED label.
         TracedData objects with the same message id must have the same labels applied, otherwise this exporter will fail.
 
@@ -201,7 +149,6 @@ class TracedDataCodaV2IO(object):
 
         cls._assert_uniquely_coded(data, message_id_key, scheme_key_map.keys())
         data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
-        # data = cls._filter_missing(data, scheme_key_map)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
         for td in data:
@@ -262,8 +209,6 @@ class TracedDataCodaV2IO(object):
 
         Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
-        Data which was previously coded as TRUE_MISSING or SKIPPED is untouched, irrespective of how that code
-        was assigned.
 
         TODO: Data which has been assigned a code under one scheme but none of the others needs to coded as NC not NR
         TODO: Or, do this in Coda so as to remove ambiguity from the perspective of the RAs?
@@ -319,7 +264,6 @@ class TracedDataCodaV2IO(object):
 
         Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
-        Data which was previously coded as TRUE_MISSING, SKIPPED, or NOT_LOGICAL by any means is untouched.
         
         Only the 'primary' schemes should be passed in. Schemes that have been duplicated using the duplicate_scheme
         tool in CodaV2/data_tools will be detected as being associated with the primary scheme automatically.
@@ -382,8 +326,7 @@ class TracedDataCodaV2IO(object):
                         td.append_data({coded_key: td_labels},
                                        Metadata(user, Metadata.get_call_location(), time.time()))
 
-                # If no manual labels have been set, or not all of the labels are TRUE_MISSING or SKIPPED,
-                # set a label for NOT_REVIEWED.
+                # If no manual labels have been set and are checked, set a code for NOT_REVIEWED
                 checked_codes_count = 0
                 labels = td.get(coded_key)
                 if labels is not None:
