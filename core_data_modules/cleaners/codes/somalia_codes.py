@@ -57,6 +57,7 @@ class SomaliaCodes(object):
     JOWHAR = "jowhar"
     JILIB = "jilib"
     KARAAN = "karaan"
+    KAXDA = "kaxda"
     KISMAYO = "kismayo"
     KURTUNWAAREY = "kurtunwaarey"
     LAAS_CAANOOD = "laas caanood"
@@ -163,6 +164,7 @@ class SomaliaCodes(object):
         HODAN,
         HAWL_WADAAG,
         KARAAN,
+        KAXDA,
         SHANGAANI,
         SHIBIS,
         WAABERI,
