@@ -321,6 +321,15 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
             TracedDataCodaV2IO.import_coda_2_to_traced_data_iterable_multi_coded(
                 "test_user", imported_messages, "msg_coda_id", {"msg_coded": msg_scheme}, f)
 
+            # Test that reading the same file-pointer twice without moving it back to the start of the file fails
+            try:
+                TracedDataCodaV2IO.import_coda_2_to_traced_data_iterable_multi_coded(
+                    "test_user", imported_messages, "msg_coda_id", {"msg_coded": msg_scheme}, f)
+                self.fail("Re-using the same file pointer didn't raise an assertion error")
+            except AssertionError as e:
+                self.assertEqual(str(e), "File-pointer not at byte 0. "
+                                         "Should you have used e.g. `f.seek(0)` before calling this method?")
+
         imported_code_ids = []
         for td in imported_messages:
             imported_code_ids.append([code["CodeID"] for code in td["msg_coded"]])
