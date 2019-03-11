@@ -3,14 +3,13 @@ from core_data_modules.data_models import validators
 
 class Scheme(object):
     def __init__(self, scheme_id, name, version, codes, documentation=None):
-        if documentation is None:
-            documentation = dict()
-
         self.scheme_id = scheme_id
         self.name = name
         self.version = version
         self.codes = codes
         self.documentation = documentation
+
+        self.validate()
 
     def get_code_with_id(self, code_id):
         for code in self.codes:
@@ -32,9 +31,9 @@ class Scheme(object):
 
     @classmethod
     def from_firebase_map(cls, data):
-        scheme_id = validators.validate_string(data["SchemeID"])
-        name = validators.validate_string(data["Name"])
-        version = validators.validate_string(data["Version"])
+        scheme_id = data["SchemeID"]
+        name = data["Name"]
+        version = data["Version"]
 
         codes = []
         for code_map in data["Codes"]:
@@ -49,22 +48,40 @@ class Scheme(object):
             documentation = {
                 "URI": validators.validate_string(doc_map["URI"])
             }
-        
+
         return cls(scheme_id, name, version, codes, documentation)
-    
+
     def to_firebase_map(self):
-        ret = dict()
-        ret["SchemeID"] = self.scheme_id
-        ret["Name"] = self.name
-        ret["Version"] = self.version
-        ret["Codes"] = []
+        self.validate()
+
+        ret = {
+            "SchemeID": self.scheme_id,
+            "Name": self.name,
+            "Version": self.version,
+            "Codes": []
+        }
+
         for code in self.codes:
             ret["Codes"].append(code.to_firebase_map())
 
-        if len(self.documentation) > 0:
+        if self.documentation is not None:
             ret["Documentation"] = self.documentation
-        
+
         return ret
+
+    def validate(self):
+        validators.validate_string(self.scheme_id, "scheme_id")
+        validators.validate_string(self.name, "name")
+        validators.validate_string(self.version, "version")
+
+        validators.validate_list(self.codes, "codes")
+        for i, code in enumerate(self.codes):
+            assert isinstance(code, Code), f"self.codes[{i}] is not of type Code"
+            code.validate()
+
+        if self.documentation is not None:
+            validators.validate_dict(self.documentation, "documentation")
+            validators.validate_string(self.documentation["URI"], "documentation[URI]")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -94,59 +111,75 @@ class Code:
         self.visible_in_coda = visible_in_coda
         self.color = color
         self.match_values = match_values
+        
+        self.validate()
 
     @classmethod
     def from_firebase_map(cls, data):
-        code_id = validators.validate_string(data["CodeID"], "CodeID")
-        display_text = validators.validate_string(data["DisplayText"], "DisplayText")
-
-        code_type = validators.validate_string(data["CodeType"], "CodeType")
-        assert code_type in cls.VALID_CODE_TYPES, "CodeType '{}' invalid".format(code_type)
-        control_code = None
-        if code_type == "Control":
-            control_code = validators.validate_string(data["ControlCode"], "ControlCode")
-
-        match_values = None
-        if "MatchValues" in data.keys():
-            match_values = validators.validate_list(data["MatchValues"], "MatchValues")
-            for i, match_value in enumerate(match_values):
-                validators.validate_string(match_value, "MatchValues[{}]".format(i))
-
-        shortcut = None
-        if "Shortcut" in data.keys():
-            shortcut = validators.validate_string(data["Shortcut"], "Shortcut")
-
-        numeric_value = validators.validate_int(data["NumericValue"], "NumericValue")
-        string_value = validators.validate_string(data["StringValue"], "StringValue")
-        visible_in_coda = validators.validate_bool(data["VisibleInCoda"], "VisibleInCoda")
-
-        color = None
-        if "Color" in data.keys():
-            color = validators.validate_string(data["Color"], "Color")
+        code_id = data["CodeID"]
+        display_text = data["DisplayText"]
+        code_type = data["CodeType"]
+        control_code = data.get("ControlCode")
+        shortcut = data.get("Shortcut")
+        numeric_value = data["NumericValue"]
+        string_value = data["StringValue"]
+        visible_in_coda = data["VisibleInCoda"]
+        color = data.get("Color")
+        match_values = data.get("MatchValues")
 
         return cls(code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut,
                    color, match_values, control_code)
 
     def to_firebase_map(self):
-        ret = dict()
-        ret["CodeID"] = validators.validate_string(self.code_id, "CodeID")
-        ret["DisplayText"] = validators.validate_string(self.display_text, "DisplayText")
-        ret["CodeType"] = validators.validate_string(self.code_type, "CodeType")
-        assert self.code_type in self.VALID_CODE_TYPES, "CodeType '{}' invalid".format(self.code_type)
-        if self.code_type == "Control":
-            ret["ControlCode"] = validators.validate_string(self.control_code, "ControlCode")
-        if self.match_values is not None:
-            ret["MatchValues"] = validators.validate_list(self.match_values, "MatchValues")
-            for i, match_value in enumerate(self.match_values):
-                validators.validate_string(match_value, "MatchValues[{}]".format(i))
+        self.validate()
+
+        ret = {
+            "CodeID": self.code_id,
+            "DisplayText": self.display_text,
+            "CodeType": self.code_type,
+            "NumericValue": self.numeric_value,
+            "StringValue": self.string_value,
+            "VisibleInCoda": self.visible_in_coda
+        }
+
+        if self.control_code is not None:
+            ret["ControlCode"] = self.control_code
+
         if self.shortcut is not None:
-            ret["Shortcut"] = validators.validate_string(self.shortcut, "Shortcut")
-        ret["NumericValue"] = validators.validate_int(self.numeric_value, "NumericValue")
-        ret["StringValue"] = validators.validate_string(self.string_value, "StringValue")
-        ret["VisibleInCoda"] = validators.validate_bool(self.visible_in_coda, "VisibleInCoda")
+            ret["Shortcut"] = self.shortcut
+
         if self.color is not None:
-            ret["Color"] = validators.validate_string(self.color, "Color")
+            ret["Color"] = self.color
+
+        if self.match_values is not None:
+            ret["MatchValues"] = self.match_values
+
         return ret
+
+    def validate(self):
+        validators.validate_string(self.code_id, "code_id")
+        validators.validate_string(self.display_text, "display_text")
+
+        validators.validate_string(self.code_type, "code_type")
+        assert self.code_type in self.VALID_CODE_TYPES, f"CodeType '{self.code_type}' invalid"
+        if self.code_type == "Control":
+            validators.validate_string(self.control_code, "control_code")
+
+        if self.shortcut is not None:
+            validators.validate_string(self.shortcut, "shortcut")
+            assert len(self.shortcut) == 1, f"shortcut {self.shortcut} is not a single character"
+
+        validators.validate_int(self.numeric_value, "numeric_value")
+        validators.validate_string(self.string_value, "string_value")
+        validators.validate_bool(self.visible_in_coda, "visible_in_coda")
+
+        if self.color is not None:
+            validators.validate_string(self.color, "color")
+
+        if self.match_values is not None:
+            validators.validate_list(self.match_values, "match_values")
+            for i, match_value in enumerate(self.match_values):
+                validators.validate_string(match_value, f"match_values[{i}]")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -161,6 +194,6 @@ class Code:
             other.visible_in_coda == self.visible_in_coda and \
             other.color == self.color and \
             other.match_values == self.match_values
-    
+
     def __ne__(self, other):
         return not self.__eq__(other)
