@@ -124,10 +124,11 @@ class TracedDataCodaV2IO(object):
 
         Data is de-duplicated on export.
 
-        TracedData objects which do not contain the given raw_key, or which the value at raw_key is empty string,
-        will not have data exported.
+        This function will not export data objects which do not contain the raw_key, or for which the value at the
+        raw_key is an empty string.
         Data which has been coded as NOT_CODED will be exported but without the NOT_CODED label.
-        TracedData objects with the same message id must have the same labels applied, otherwise this exporter will fail.
+        TracedData objects with the same message id must have the same labels applied, otherwise this exporter will
+        fail.
 
         :param data: Data to export to Coda V2.
         :type data: iterable of TracedData
