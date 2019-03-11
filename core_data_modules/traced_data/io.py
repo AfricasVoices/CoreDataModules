@@ -145,13 +145,13 @@ class TracedDataCodaV2IO(object):
         :type f: file-like
         """
         # Filter data for elements which contain a value for the given raw key that isn't empty string
-        data = [td for td in data if td.get(raw_key, "") != ""]
+        filtered_data = [td for td in data if td.get(raw_key, "") != ""]
 
-        cls._assert_uniquely_coded(data, message_id_key, scheme_key_map.keys())
-        data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
+        cls._assert_uniquely_coded(filtered_data, message_id_key, scheme_key_map.keys())
+        filtered_data = cls._filter_duplicates(filtered_data, message_id_key, creation_date_time_key)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
-        for td in data:
+        for td in filtered_data:
             # Export labels for this row which are not Codes.NOT_CODED
             labels = []
             for coded_key, scheme in scheme_key_map.items():
