@@ -232,28 +232,38 @@ class TracedDataCodaV2IO(object):
         return io.StringIO("[]")
 
     @staticmethod
-    def _dataset_lut_from_messages_file(f):
+    def _dataset_lut_from_messages_file(f, schemes_to_parse):
         """
         Creates a lookup table of MessageID -> SchemeID -> Labels from the given Coda 2 messages file.
+        
+        Labels from schemes which are duplicates are automatically placed in the look-up table for the primary scheme.
 
         :param f: Coda 2 messages file.
         :type f: file-like
+        :param schemes_to_parse: Primary schemes to include in the returned LUT.
+        :type schemes_to_parse: iterable of Scheme
         :return: Lookup table.
-        :rtype: dict of str -> (dict of str -> list of dict)
+        :rtype: dict of str -> (dict of str -> list of Label)
         """
-        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+        coda_messages_file = json.load(f)
+        messages = []
+        for json_msg in coda_messages_file:
+            messages.append(Message.from_firebase_map(json_msg))
 
-        for msg in json.load(f):
-            schemes = dict()  # of SchemeID -> list of Label
-            coda_dataset[msg["MessageID"]] = schemes
-            msg["Labels"].reverse()  # Coda outputs most-recent first but easier to handle in Python if most-recent last
-            for label in msg["Labels"]:
-                scheme_id = label["SchemeID"]
-                if scheme_id not in schemes:
-                    schemes[scheme_id] = []
-                schemes[scheme_id].append(label)
+        dataset_lut = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+        for msg in messages:
+            schemes_lut = dict()  # of SchemeID -> list of Label (for this message)
+            dataset_lut[msg.message_id] = schemes_lut
 
-        return coda_dataset
+            for label in msg.labels:
+                for scheme_to_parse in schemes_to_parse:
+                    if label.scheme_id == scheme_to_parse.scheme_id or label.scheme_id.startswith(scheme_to_parse.scheme_id):
+                        primary_scheme_id = scheme_to_parse.scheme_id
+                        if primary_scheme_id not in schemes_lut:
+                            schemes_lut[primary_scheme_id] = []
+                        schemes_lut[primary_scheme_id].append(label)
+
+        return dataset_lut
 
     @classmethod
     def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_key_map, f=None):
@@ -284,7 +294,7 @@ class TracedDataCodaV2IO(object):
             f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = cls._dataset_lut_from_messages_file(f)
+        coda_dataset = cls._dataset_lut_from_messages_file(f, scheme_key_map.values())
 
         # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
@@ -293,11 +303,11 @@ class TracedDataCodaV2IO(object):
         for td in data:
             for key_of_coded, scheme in scheme_key_map.items():
                 # Get labels for this (message id, scheme id) from the look-up table
-                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, [])
                 if labels is not None:
                     # Append each label that was assigned to this message for this scheme to the TracedData.
-                    for label in labels:
-                        td.append_data({key_of_coded: label},
+                    for label in reversed(labels):
+                        td.append_data({key_of_coded: label.to_dict()},
                                        Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
                 # If no label, or the label is a non-missing label that hasn't been checked, set a code for NOT_REVIEWED
@@ -345,7 +355,7 @@ class TracedDataCodaV2IO(object):
             f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = cls._dataset_lut_from_messages_file(f)
+        coda_dataset = cls._dataset_lut_from_messages_file(f, scheme_key_map.values())
 
         # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
@@ -353,35 +363,29 @@ class TracedDataCodaV2IO(object):
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
             for coded_key, scheme in scheme_key_map.items():
-                # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
-                # and sort oldest first.
-                labels = []
-                all_scheme_labels = coda_dataset.get(td[message_id_key], dict())
-                for scheme_id, scheme_labels in all_scheme_labels.items():
-                    if scheme_id.startswith(scheme.scheme_id):
-                        labels.extend(scheme_labels)
-                labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
+                # Get labels for this (message id, scheme id) from the look-up table
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, [])
 
                 # Get the currently assigned list of labels for this multi-coded scheme,
                 # and construct a look-up table of scheme id -> label
                 td_labels = td.get(coded_key, [])
-                td_labels_lut = {label["SchemeID"]: label for label in td_labels}
+                td_labels_lut = {label["SchemeID"]: Label.from_dict(label) for label in td_labels}
 
-                for label in labels:
+                for label in reversed(labels):
                     # Update the relevant label in this traced data's list of labels with the new label,
                     # and append the whole new list to the traced data.
-                    td_labels_lut[label["SchemeID"]] = label
+                    td_labels_lut[label.scheme_id] = label
 
                     td_labels = list(td_labels_lut.values())
-                    td.append_data({coded_key: td_labels},
+                    td.append_data({coded_key: [label.to_dict() for label in td_labels]},
                                    Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
                 # Delete any labels that are SPECIAL-MANUALLY_UNCODED
-                for scheme_id, code in list(td_labels_lut.items()):
-                    if code["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
+                for scheme_id, label in list(td_labels_lut.items()):
+                    if label.code_id == "SPECIAL-MANUALLY_UNCODED":
                         del td_labels_lut[scheme_id]
                         td_labels = list(td_labels_lut.values())
-                        td.append_data({coded_key: td_labels},
+                        td.append_data({coded_key: [label.to_dict() for label in td_labels]},
                                        Metadata(user, Metadata.get_call_location(), time.time()))
 
                 # If no manual labels have been set, or not all of the labels are TRUE_MISSING or SKIPPED,
