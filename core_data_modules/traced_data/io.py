@@ -116,58 +116,6 @@ class TracedDataCodaV2IO(object):
 
         return unique_data
 
-    @staticmethod
-    def _is_coded_as_missing(control_codes):
-        """
-        Returns whether all of the given control codes are the same and either TRUE_MISSING or SKIPPED.
-
-        :param control_codes: Control Codes to check
-        :type control_codes: iterable of str
-        :return: Whether or not all of the given code_ids are the same and one of true missing, skipped, or not logical.
-        :rtype: bool
-        """
-        if len(set(control_codes)) == 1:
-            control_code = control_codes.pop()
-            if control_code in {Codes.TRUE_MISSING, Codes.SKIPPED}:
-                return True
-
-        assert Codes.TRUE_MISSING not in control_codes and Codes.SKIPPED not in control_codes, \
-            "Data labelled as NA or NS under one code scheme but not all of the others"
-
-        return False
-
-    @classmethod
-    def _filter_missing(cls, data, scheme_key_map):
-        """
-        Filters an iterable of TracedData objects to exclude those that were code as TRUE_MISSING or SKIPPED across
-        all the fields in scheme_keys.
-
-        :param data: Data to excluding objects coded as TRUE_MISSING or SKIPPED from.
-        :type data: iterable of TracedData
-        :param scheme_key_map: Dictionary of (key in TracedData objects of coded data to export) ->
-                               (Scheme for that key)
-        :type scheme_key_map: dict of str -> Scheme
-        :return: Data with objects coded as missing excluded.
-        :rtype: iterable of TracedData
-        """
-        not_missing = []
-
-        for td in data:
-            control_codes = set()
-            for coded_key, scheme in scheme_key_map.items():
-                if coded_key not in td:
-                    control_codes.add(None)
-                elif type(td[coded_key]) == dict:
-                    control_codes.add(scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code)
-                else:
-                    for code in td[coded_key]:
-                        control_codes.add(scheme.get_code_with_id(code["CodeID"]).control_code)
-
-            if not cls._is_coded_as_missing(control_codes):
-                not_missing.append(td)
-
-        return not_missing
-
     @classmethod
     def export_traced_data_iterable_to_coda_2(cls, data, raw_key, creation_date_time_key, message_id_key,
                                               scheme_key_map, f):
@@ -176,10 +124,11 @@ class TracedDataCodaV2IO(object):
 
         Data is de-duplicated on export.
 
-        TracedData objects which do not contain the given raw_key will not have data exported.
-        Data which has been coded as TRUE_MISSING or SKIPPED will not be exported.
+        This function will not export data objects which do not contain the raw_key, or for which the value at the
+        raw_key is an empty string.
         Data which has been coded as NOT_CODED will be exported but without the NOT_CODED label.
-        TracedData objects with the same message id must have the same labels applied, otherwise this exporter will fail.
+        TracedData objects with the same message id must have the same labels applied, otherwise this exporter will
+        fail.
 
         :param data: Data to export to Coda V2.
         :type data: iterable of TracedData
@@ -196,15 +145,14 @@ class TracedDataCodaV2IO(object):
         :param f: File to write exported JSON file to.
         :type f: file-like
         """
-        # Filter data for elements which contain the given raw key
-        data = [td for td in data if raw_key in td]
+        # Filter data for elements which contain a value for the given raw key that isn't empty string
+        filtered_data = [td for td in data if td.get(raw_key, "") != ""]
 
-        cls._assert_uniquely_coded(data, message_id_key, scheme_key_map.keys())
-        data = cls._filter_duplicates(data, message_id_key, creation_date_time_key)
-        data = cls._filter_missing(data, scheme_key_map)
+        cls._assert_uniquely_coded(filtered_data, message_id_key, scheme_key_map.keys())
+        filtered_data = cls._filter_duplicates(filtered_data, message_id_key, creation_date_time_key)
 
         coda_messages = []  # List of Coda V2 Message objects to be exported
-        for td in data:
+        for td in filtered_data:
             # Export labels for this row which are not Codes.NOT_CODED
             labels = []
             for coded_key, scheme in scheme_key_map.items():
@@ -232,28 +180,41 @@ class TracedDataCodaV2IO(object):
         return io.StringIO("[]")
 
     @staticmethod
-    def _dataset_lut_from_messages_file(f):
+    def _dataset_lut_from_messages_file(f, schemes_to_parse):
         """
         Creates a lookup table of MessageID -> SchemeID -> Labels from the given Coda 2 messages file.
+        
+        Labels from schemes which are duplicates are automatically placed in the look-up table for the primary scheme.
 
         :param f: Coda 2 messages file.
         :type f: file-like
+        :param schemes_to_parse: Primary schemes to include in the returned LUT.
+        :type schemes_to_parse: iterable of Scheme
         :return: Lookup table.
-        :rtype: dict of str -> (dict of str -> list of dict)
+        :rtype: dict of str -> (dict of str -> list of Label)
         """
-        coda_dataset = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+        assert f.tell() == 0, "File-pointer not at byte 0. " \
+                              "Should you have used e.g. `f.seek(0)` before calling this method?"
 
-        for msg in json.load(f):
-            schemes = dict()  # of SchemeID -> list of Label
-            coda_dataset[msg["MessageID"]] = schemes
-            msg["Labels"].reverse()  # Coda outputs most-recent first but easier to handle in Python if most-recent last
-            for label in msg["Labels"]:
-                scheme_id = label["SchemeID"]
-                if scheme_id not in schemes:
-                    schemes[scheme_id] = []
-                schemes[scheme_id].append(label)
+        coda_messages_file = json.load(f)
+        messages = []
+        for json_msg in coda_messages_file:
+            messages.append(Message.from_firebase_map(json_msg))
 
-        return coda_dataset
+        dataset_lut = dict()  # of MessageID -> (dict of SchemeID -> list of Label)
+        for msg in messages:
+            schemes_lut = dict()  # of SchemeID -> list of Label (for this message)
+            dataset_lut[msg.message_id] = schemes_lut
+
+            for label in msg.labels:
+                for scheme_to_parse in schemes_to_parse:
+                    if label.scheme_id == scheme_to_parse.scheme_id or label.scheme_id.startswith(scheme_to_parse.scheme_id):
+                        primary_scheme_id = scheme_to_parse.scheme_id
+                        if primary_scheme_id not in schemes_lut:
+                            schemes_lut[primary_scheme_id] = []
+                        schemes_lut[primary_scheme_id].append(label)
+
+        return dataset_lut
 
     @classmethod
     def import_coda_2_to_traced_data_iterable(cls, user, data, message_id_key, scheme_key_map, f=None):
@@ -262,8 +223,6 @@ class TracedDataCodaV2IO(object):
 
         Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
-        Data which was previously coded as TRUE_MISSING or SKIPPED is untouched, irrespective of how that code
-        was assigned.
 
         TODO: Data which has been assigned a code under one scheme but none of the others needs to coded as NC not NR
         TODO: Or, do this in Coda so as to remove ambiguity from the perspective of the RAs?
@@ -284,7 +243,7 @@ class TracedDataCodaV2IO(object):
             f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = cls._dataset_lut_from_messages_file(f)
+        coda_dataset = cls._dataset_lut_from_messages_file(f, scheme_key_map.values())
 
         # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
@@ -293,18 +252,16 @@ class TracedDataCodaV2IO(object):
         for td in data:
             for key_of_coded, scheme in scheme_key_map.items():
                 # Get labels for this (message id, scheme id) from the look-up table
-                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id)
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, [])
                 if labels is not None:
                     # Append each label that was assigned to this message for this scheme to the TracedData.
-                    for label in labels:
-                        td.append_data({key_of_coded: label},
+                    for label in reversed(labels):
+                        td.append_data({key_of_coded: label.to_dict()},
                                        Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
-                # If no label, or the label is a non-missing label that hasn't been checked, set a code for NOT_REVIEWED
-                if key_of_coded not in td or (
-                       not td[key_of_coded]["Checked"] and
-                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.SKIPPED).code_id and
-                       td[key_of_coded]["CodeID"] != scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id):
+                # If this td still has no label after importing from the Coda file, or the label is a non-missing label
+                # that hasn't been checked in the Coda UI, set a code for NOT_REVIEWED
+                if key_of_coded not in td or not td[key_of_coded]["Checked"]:
                     nr_label = CleaningUtils.make_label_from_cleaner_code(
                         scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
                         Metadata.get_call_location()
@@ -321,7 +278,6 @@ class TracedDataCodaV2IO(object):
 
         Data which is has not been checked in the Coda file is coded using the provided nr_label
         (irrespective of whether there was an automatic code there before).
-        Data which was previously coded as TRUE_MISSING, SKIPPED, or NOT_LOGICAL by any means is untouched.
         
         Only the 'primary' schemes should be passed in. Schemes that have been duplicated using the duplicate_scheme
         tool in CodaV2/data_tools will be detected as being associated with the primary scheme automatically.
@@ -345,7 +301,7 @@ class TracedDataCodaV2IO(object):
             f = cls._make_empty_file()
 
         # Build a lookup table of MessageID -> SchemeID -> Labels
-        coda_dataset = cls._dataset_lut_from_messages_file(f)
+        coda_dataset = cls._dataset_lut_from_messages_file(f, scheme_key_map.values())
 
         # Filter out TracedData objects that do not contain a message id key
         data = [td for td in data if message_id_key in td]
@@ -353,50 +309,40 @@ class TracedDataCodaV2IO(object):
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
             for coded_key, scheme in scheme_key_map.items():
-                # Get all the labels assigned to this scheme across all the virtual schemes in Coda,
-                # and sort oldest first.
-                labels = []
-                all_scheme_labels = coda_dataset.get(td[message_id_key], dict())
-                for scheme_id, scheme_labels in all_scheme_labels.items():
-                    if scheme_id.startswith(scheme.scheme_id):
-                        labels.extend(scheme_labels)
-                labels.sort(key=lambda l: isoparse(l["DateTimeUTC"]))
+                # Get labels for this (message id, scheme id) from the look-up table
+                labels = coda_dataset.get(td[message_id_key], dict()).get(scheme.scheme_id, [])
 
                 # Get the currently assigned list of labels for this multi-coded scheme,
                 # and construct a look-up table of scheme id -> label
                 td_labels = td.get(coded_key, [])
-                td_labels_lut = {label["SchemeID"]: label for label in td_labels}
+                td_labels_lut = {label["SchemeID"]: Label.from_dict(label) for label in td_labels}
 
-                for label in labels:
+                for label in reversed(labels):
                     # Update the relevant label in this traced data's list of labels with the new label,
                     # and append the whole new list to the traced data.
-                    td_labels_lut[label["SchemeID"]] = label
+                    td_labels_lut[label.scheme_id] = label
 
                     td_labels = list(td_labels_lut.values())
-                    td.append_data({coded_key: td_labels},
+                    td.append_data({coded_key: [label.to_dict() for label in td_labels]},
                                    Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
                 # Delete any labels that are SPECIAL-MANUALLY_UNCODED
-                for scheme_id, code in list(td_labels_lut.items()):
-                    if code["CodeID"] == "SPECIAL-MANUALLY_UNCODED":
+                for scheme_id, label in list(td_labels_lut.items()):
+                    if label.code_id == "SPECIAL-MANUALLY_UNCODED":
                         del td_labels_lut[scheme_id]
                         td_labels = list(td_labels_lut.values())
-                        td.append_data({coded_key: td_labels},
+                        td.append_data({coded_key: [label.to_dict() for label in td_labels]},
                                        Metadata(user, Metadata.get_call_location(), time.time()))
 
-                # If no manual labels have been set, or not all of the labels are TRUE_MISSING or SKIPPED,
-                # set a label for NOT_REVIEWED.
+                # If no manual labels have been set and are checked, set a code for NOT_REVIEWED
                 checked_codes_count = 0
-                coded_as_missing = False
                 labels = td.get(coded_key)
                 if labels is not None:
                     for label in labels:
                         if label["Checked"]:
                             checked_codes_count += 1
-                    coded_as_missing = cls._is_coded_as_missing(
-                        [scheme.get_code_with_id(label["CodeID"]).control_code for label in labels])
 
-                if checked_codes_count == 0 and not coded_as_missing:
+                if checked_codes_count == 0:
                     nr_label = CleaningUtils.make_label_from_cleaner_code(
                         scheme, scheme.get_code_with_control_code(Codes.NOT_REVIEWED),
                         Metadata.get_call_location()

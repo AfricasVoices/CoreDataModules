@@ -129,6 +129,10 @@ class Label(object):
     def to_dict(self):
         return self.to_firebase_map()
 
+    @classmethod
+    def from_dict(cls, d):
+        return cls.from_firebase_map(d)
+
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
         validators.validate_string(self.code_id, "code_id")

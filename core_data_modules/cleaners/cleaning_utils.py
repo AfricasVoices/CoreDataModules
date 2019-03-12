@@ -1,7 +1,4 @@
 import time
-from datetime import datetime
-
-import pytz
 
 from core_data_modules.cleaners import Codes
 from core_data_modules.data_models import Origin, Label
@@ -41,8 +38,6 @@ class CleaningUtils(object):
         """
         Applies a cleaning function to an iterable of TracedData objects, updating each with a new Label object.
 
-        TracedData objects which have already been coded as TRUE_MISSING or SKIPPED in `clean_key` are not cleaned.
-        
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
         :param data: TracedData objects to apply the cleaner to.
@@ -50,10 +45,6 @@ class CleaningUtils(object):
         :param raw_key: Key in each TracedData object of the raw text to be cleaned.
         :type raw_key: str
         :param clean_key: Key in each TracedData object to write cleaned labels to.
-                          These keys may already be present in TracedData objects. In such cases:
-                           - Keys which have been labelled as TRUE_MISSING or SKIPPED under this scheme are
-                             left untouched.
-                           - All other keys are overwritten with new codes.
         :type clean_key: str
         :param cleaner: Cleaning function to apply to each TracedData[`raw_key`].
         :type cleaner: function of str -> str
@@ -61,11 +52,10 @@ class CleaningUtils(object):
         :type scheme: Scheme
         """
         for td in data:
-            # Don't re-clean data which has already been coded as missing
-            if td.get(clean_key) is not None and \
-                    scheme.get_code_with_id(td[clean_key]["CodeID"]).control_code in {Codes.TRUE_MISSING, Codes.SKIPPED}:
+            # Skip data that isn't present
+            if raw_key not in td:
                 continue
-
+           
             clean_value = cleaner(td[raw_key])
 
             # Don't label data which the cleaners couldn't code
