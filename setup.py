@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="CoreDataModules",
-    version="0.8.1",
+    version="0.9.0",
     url="https://github.com/AfricasVoices/CoreDataModules",
     packages=["core_data_modules"],
     setup_requires=["pytest-runner"],
