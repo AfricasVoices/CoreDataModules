@@ -71,18 +71,6 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
         with open("tests/traced_data/resources/coda_2_gender_scheme.json") as f:
             gender_scheme = Scheme.from_firebase_map(json.load(f))
 
-        # Set TRUE_MISSING codes
-        for td in messages:
-            na_label = CleaningUtils.make_label_from_cleaner_code(
-                gender_scheme,
-                gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
-                "test_export_traced_data_iterable_to_coda_2",
-                date_time_utc="2018-11-02T10:00:00+00:00"
-            )
-            if td.get("gender_raw", "") == "":
-                td.append_data({"gender_coded": na_label.to_dict()},
-                               Metadata("test_user", Metadata.get_call_location(), time.time()))
-
         # Apply the English gender cleaner
         with mock.patch("core_data_modules.util.TimeUtils.utc_now_as_iso_string") as time_mock, \
                 mock.patch("core_data_modules.traced_data.Metadata.get_function_location") as location_mock:
@@ -113,6 +101,19 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         na_id = gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id
         nr_id = gender_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id
+
+        # Set TRUE_MISSING codes
+        for td in imported_messages:
+            na_label = CleaningUtils.make_label_from_cleaner_code(
+                gender_scheme,
+                gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
+                "test_export_traced_data_iterable_to_coda_2",
+                date_time_utc="2018-11-02T10:00:00+00:00"
+            )
+            if td.get("gender_raw", "") == "":
+                td.append_data({"gender_coded": na_label.to_dict()},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
+
         imported_code_ids = [td["gender_coded"]["CodeID"] for td in imported_messages]
 
         self.assertListEqual(imported_code_ids, [nr_id, na_id, nr_id, na_id, nr_id, nr_id])
@@ -124,6 +125,19 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
         with open("tests/traced_data/resources/coda_2_import_test_one_scheme.json", "r") as f:
             TracedDataCodaV2IO.import_coda_2_to_traced_data_iterable(
                 "test_user", imported_messages, "gender_coda_id", {"gender_coded": gender_scheme}, f)
+
+        # Set TRUE_MISSING codes
+        for td in imported_messages:
+            na_label = CleaningUtils.make_label_from_cleaner_code(
+                gender_scheme,
+                gender_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
+                "test_export_traced_data_iterable_to_coda_2",
+                date_time_utc="2018-11-02T10:00:00+00:00"
+            )
+            if td.get("gender_raw", "") == "":
+                td.append_data({"gender_coded": na_label.to_dict()},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
+
         imported_code_ids = [td["gender_coded"]["CodeID"] for td in imported_messages]
 
         expected_code_ids = [
@@ -222,38 +236,6 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
         self.assertTrue(
             filecmp.cmp(file_path, "tests/traced_data/resources/coda_2_export_expected_multiple_schemes.json"))
 
-        # Test ambiguous missing codes
-        def test_ambiguous_missing_codes(d):
-            # Test exporting with ambiguous missing codes
-            conflicting_missings = list(messages)
-            conflicting_missings.append(TracedData(d, Metadata("test_user", Metadata.get_call_location(), time.time())))
-            TracedDataCodaV2IO.compute_message_ids("test_user", conflicting_missings, "location_raw", "location_coda_id")
-
-            with open(file_path, "w") as f:
-                try:
-                    scheme_key_map = collections.OrderedDict()
-                    scheme_key_map["district"] = district_scheme
-                    scheme_key_map["zone"] = zone_scheme
-
-                    TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
-                        conflicting_missings, "location_raw", "location_sent_on", "location_coda_id", scheme_key_map, f)
-                except AssertionError as e:
-                    assert str(e) == "Data labelled as NA or NS under one code scheme but not all of the others"
-                    return
-                self.fail("Exporting data with ambiguous missing codes did not fail")
-
-        test_ambiguous_missing_codes({
-            "location_raw": "baidoa", "location_sent_on": "2018-11-01T07:19:30+03:00",
-            "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
-            "zone": make_location_label(zone_scheme, Codes.NOT_CODED)
-        })
-
-        test_ambiguous_missing_codes({
-            "location_raw": "baidoa", "location_sent_on": "2018-11-01T07:19:30+03:00",
-            "district": make_location_label(district_scheme, Codes.TRUE_MISSING),
-            "zone": make_location_label(zone_scheme, Codes.SKIPPED)
-        })
-
     def test_export_import_one_multi_coded_scheme(self):
         file_path = path.join(self.test_dir, "coda_2_test.json")
 
@@ -276,18 +258,6 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
         with open("tests/traced_data/resources/coda_2_msg_scheme.json") as f:
             msg_scheme = Scheme.from_firebase_map(json.load(f))
 
-        # Set TRUE_MISSING codes
-        for td in messages:
-            na_label = CleaningUtils.make_label_from_cleaner_code(
-                msg_scheme,
-                msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
-                "test_export_traced_data_iterable_to_coda_2",
-                date_time_utc="2018-11-02T10:00:00+00:00"
-            )
-            if td.get("msg_raw", "") == "":
-                td.append_data({"msg_coded": [na_label.to_dict()]},
-                               Metadata("test_user", Metadata.get_call_location(), time.time()))
-
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
             TracedDataCodaV2IO.export_traced_data_iterable_to_coda_2(
@@ -307,6 +277,18 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         na_id = msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id
         nr_id = msg_scheme.get_code_with_control_code(Codes.NOT_REVIEWED).code_id
+
+        # Set TRUE_MISSING codes
+        for td in imported_messages:
+            na_label = CleaningUtils.make_label_from_cleaner_code(
+                msg_scheme,
+                msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
+                "test_export_traced_data_iterable_to_coda_2",
+                date_time_utc="2018-11-02T10:00:00+00:00"
+            )
+            if td.get("msg_raw", "") == "":
+                td.append_data({"msg_coded": [na_label.to_dict()]},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
 
         for td in imported_messages:
             self.assertEqual(len(td["msg_coded"]), 1)
@@ -329,6 +311,18 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
             except AssertionError as e:
                 self.assertEqual(str(e), "File-pointer not at byte 0. "
                                          "Should you have used e.g. `f.seek(0)` before calling this method?")
+
+        # Set TRUE_MISSING codes
+        for td in imported_messages:
+            na_label = CleaningUtils.make_label_from_cleaner_code(
+                msg_scheme,
+                msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING),
+                "test_export_traced_data_iterable_to_coda_2",
+                date_time_utc="2018-11-02T10:00:00+00:00"
+            )
+            if td.get("msg_raw", "") == "":
+                td.append_data({"msg_coded": [na_label.to_dict()]},
+                               Metadata("test_user", Metadata.get_call_location(), time.time()))
 
         imported_code_ids = []
         for td in imported_messages:
