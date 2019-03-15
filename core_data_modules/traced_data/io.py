@@ -406,7 +406,7 @@ class TracedDataCSVIO(object):
 
 class TracedDataJsonIO(object):
     @staticmethod
-    def export_traced_data_iterable_to_json(data, f, pretty_print=False):
+    def _export_traced_data_iterable_to_json(data, f, pretty_print=False):
         """
         Exports a collection of TracedData objects to a JSON file.
 
@@ -432,6 +432,44 @@ class TracedDataJsonIO(object):
 
         f.write(jsonpickle.dumps(data))
         f.write("\n")
+
+    @staticmethod
+    def export_traced_data_iterable_to_json(data, f, pretty_print=False):
+        """
+        Exports a collection of TracedData objects to a JSON file.
+
+        The original TracedData objects which are exported by this function are fully recoverable from the emitted
+        JSON using TracedDataJsonIO.import_json_to_traced_data_iterable.
+
+        :param data: TracedData objects to export.
+        :type data: iterable of TracedData
+        :param f: File to export the TracedData objects to.
+        :type f: file-like
+        :param pretty_print: Whether to format the JSON with line breaks, indentation, and alphabetised keys.
+        :type pretty_print: bool
+        """
+        data = list(data)
+        for td in data:
+            assert isinstance(td, TracedData), _td_type_error_string
+
+        formatting_args = {
+            "sort_keys": True
+        }
+
+        if pretty_print:
+            formatting_args["indent"] = 2
+            formatting_args["separators"] = (", ", ": ")
+
+        json.dump([td.serialize() for td in data], f, **formatting_args)
+
+        # f.write("[\n")
+        # for td in data:
+        #     if pretty_print:
+        #         json.dump(td.serialize(), f, sort_keys=True, indent=2, separators=(", ", ": "))
+        #     else:
+        #         json.dump(td.serialize(), f, sort_keys=True)
+        #     f.write(",\n")
+        # f.write("]\n")
 
     @staticmethod
     def import_json_to_traced_data_iterable(f):

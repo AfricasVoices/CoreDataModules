@@ -30,6 +30,13 @@ class Metadata(object):
 
     def __eq__(self, other):
         return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
+    
+    def serialize(self):
+        return {
+            "User": self.user,
+            "Source": self.source,
+            "Timestamp": self.timestamp
+        }
 
     @staticmethod
     def get_call_location():
@@ -309,6 +316,14 @@ class TracedData(Mapping):
 
         history.sort(key=lambda x: x["timestamp"])
         return history
+
+    def serialize(self):
+        return {
+            "Data": self._data,
+            "SHA": self._sha,
+            "Metadata": self._metadata.serialize(),
+            "Prev": None if self._prev is None else self._prev.serialize()
+        }
 
     @staticmethod
     def join_iterables(user, join_on_key, data_1, data_2, data_2_label):
