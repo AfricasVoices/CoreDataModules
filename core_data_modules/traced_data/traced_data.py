@@ -318,8 +318,11 @@ class TracedData(Mapping):
         return history
 
     def serialize(self):
+        nested_traced_data = dict(filter(lambda k, v: type(v) == TracedData, self._data.items()))
+        
         return {
-            "Data": self._data,
+            "Data": list(filter(lambda k, v: type(v) != TracedData, self._data.items())),
+            "NestedTracedData": {k: v.serialize() for k, v in nested_traced_data.items()},
             "SHA": self._sha,
             "Metadata": self._metadata.serialize(),
             "Prev": None if self._prev is None else self._prev.serialize()
