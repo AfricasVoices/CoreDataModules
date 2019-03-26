@@ -38,6 +38,10 @@ class Metadata(object):
             "Timestamp": self.timestamp
         }
 
+    @classmethod
+    def deserialize(cls, d):
+        return cls(d["User"], d["Source"], d["Timestamp"])
+
     @staticmethod
     def get_call_location():
         """
@@ -325,6 +329,20 @@ class TracedData(Mapping):
             "Metadata": self._metadata.serialize(),
             "Prev": None if self._prev is None else self._prev.serialize()
         }
+
+    @classmethod
+    def deserialize(cls, d):
+        data = d["Data"]
+        for k, v in d["NestedTracedData"].items():
+            data[k] = cls.deserialize(v)
+        sha = d["SHA"]
+        metadata = Metadata.deserialize(d["Metadata"])
+        prev = None if d["Prev"] is None else cls.deserialize(d["Prev"])
+
+        traced_data = cls(data, metadata, _prev=prev)
+        assert traced_data._sha == sha
+        
+        return traced_data
 
     @staticmethod
     def join_iterables(user, join_on_key, data_1, data_2, data_2_label):

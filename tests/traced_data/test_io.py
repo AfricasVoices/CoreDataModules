@@ -387,53 +387,70 @@ class TestTracedDataJsonIO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_export_traced_data_iterable_to_json(self):
-        file_path = path.join(self.test_dir, "json_test.json")
+    def test_export_import(self):
+        file_path = path.join(".", "json_test.json")
 
-        # Test exporting wrong data type
         data = list(generate_traced_data_iterable())
-        with open(file_path, "w") as f:
-            try:
-                TracedDataJsonIO.export_traced_data_iterable_to_json(data[0], f)
-                self.fail("Exporting the wrong data type did not raise an assertion error")
-            except AssertionError as e:
-                self.assertEquals(str(e), _td_type_error_string)
 
-        # Test normal export
-        data = generate_traced_data_iterable()
-        with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f)
-        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected.json"))
+        data[1].append_data({"Gender": "f", "Gender_Coded": "Female"},
+                            Metadata("test_user", "gender_coder", 10))
 
-        # Test normal export with pretty print enabled
-        data = generate_traced_data_iterable()
         with open(file_path, "w") as f:
             TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected_pretty_print.json"))
-
-        # Test export for appended TracedData
-        data = [generate_appended_traced_data()]
-        with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-        self.assertTrue(filecmp.cmp(
-                file_path, "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
-            ))
-
-    def test_import_json_to_traced_data_iterable(self):
-        # Test simple TracedData case
-        file_path = "tests/traced_data/resources/json_export_expected.json"
-        expected = list(generate_traced_data_iterable())
 
         with open(file_path, "r") as f:
-            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+            imported = TracedDataJsonIO.import_json_to_traced_data_iterable(f)
 
-        self.assertListEqual(expected, imported)
+        for x, y in zip(data, imported):
+            self.assertEqual(x, y)
 
-        # Test appended TracedData case
-        file_path = "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
-        expected = [generate_appended_traced_data()]
-
-        with open(file_path, "r") as f:
-            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
-
-        self.assertListEqual(expected, imported)
+    # def test_export_traced_data_iterable_to_json(self):
+    #     file_path = path.join(self.test_dir, "json_test.json")
+    #
+    #     # Test exporting wrong data type
+    #     data = list(generate_traced_data_iterable())
+    #     with open(file_path, "w") as f:
+    #         try:
+    #             TracedDataJsonIO.export_traced_data_iterable_to_json(data[0], f)
+    #             self.fail("Exporting the wrong data type did not raise an assertion error")
+    #         except AssertionError as e:
+    #             self.assertEquals(str(e), _td_type_error_string)
+    #
+    #     # Test normal export
+    #     data = generate_traced_data_iterable()
+    #     with open(file_path, "w") as f:
+    #         TracedDataJsonIO.export_traced_data_iterable_to_json(data, f)
+    #     self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected.json"))
+    #
+    #     # Test normal export with pretty print enabled
+    #     data = generate_traced_data_iterable()
+    #     with open(file_path, "w") as f:
+    #         TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
+    #     self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected_pretty_print.json"))
+    #
+    #     # Test export for appended TracedData
+    #     data = [generate_appended_traced_data()]
+    #     with open(file_path, "w") as f:
+    #         TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
+    #     self.assertTrue(filecmp.cmp(
+    #             file_path, "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
+    #         ))
+    #
+    # def test_import_json_to_traced_data_iterable(self):
+    #     # Test simple TracedData case
+    #     file_path = "tests/traced_data/resources/json_export_expected.json"
+    #     expected = list(generate_traced_data_iterable())
+    #
+    #     with open(file_path, "r") as f:
+    #         imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+    #
+    #     self.assertListEqual(expected, imported)
+    #
+    #     # Test appended TracedData case
+    #     file_path = "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
+    #     expected = [generate_appended_traced_data()]
+    #
+    #     with open(file_path, "r") as f:
+    #         imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+    #
+    #     self.assertListEqual(expected, imported)

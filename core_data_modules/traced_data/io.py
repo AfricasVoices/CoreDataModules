@@ -462,15 +462,6 @@ class TracedDataJsonIO(object):
 
         json.dump([td.serialize() for td in data], f, **formatting_args)
 
-        # f.write("[\n")
-        # for td in data:
-        #     if pretty_print:
-        #         json.dump(td.serialize(), f, sort_keys=True, indent=2, separators=(", ", ": "))
-        #     else:
-        #         json.dump(td.serialize(), f, sort_keys=True)
-        #     f.write(",\n")
-        # f.write("]\n")
-
     @staticmethod
     def import_json_to_traced_data_iterable(f):
         """
@@ -484,4 +475,4 @@ class TracedDataJsonIO(object):
         :return: TracedData objects deserialized from the JSON file.
         :rtype: generator of TracedData
         """
-        return jsonpickle.decode(f.read())
+        return [TracedData.deserialize(d) for d in json.load(f)]
