@@ -322,25 +322,38 @@ class TracedData(Mapping):
         return history
 
     def serialize(self):
-        return {
-            "Data": {k: v for k, v in self._data.items() if type(v) != TracedData},
-            "NestedTracedData": {k: v.serialize() for k, v in self._data.items() if type(v) == TracedData},
-            "SHA": self._sha,
-            "Metadata": self._metadata.serialize(),
-            "Prev": None if self._prev is None else self._prev.serialize()
-        }
+        serialized_history = []
+
+        traced_data = self
+        while traced_data is not None:
+            serialized_history.append(
+                {
+                    "Data": {k: v for k, v in traced_data._data.items() if type(v) != TracedData},
+                    "NestedTracedData": {k: v.serialize() for k, v in traced_data._data.items() if type(v) == TracedData},
+                    "SHA": traced_data._sha,
+                    "Metadata": traced_data._metadata.serialize(),
+                }
+            )
+            traced_data = traced_data._prev
+
+        return serialized_history
 
     @classmethod
-    def deserialize(cls, d):
-        data = d["Data"]
-        for k, v in d["NestedTracedData"].items():
-            data[k] = cls.deserialize(v)
-        sha = d["SHA"]
-        metadata = Metadata.deserialize(d["Metadata"])
-        prev = None if d["Prev"] is None else cls.deserialize(d["Prev"])
+    def deserialize(cls, serialized_history):
+        traced_data = None
 
-        traced_data = cls(data, metadata, _prev=prev)
-        assert traced_data._sha == sha
+        for d in reversed(serialized_history):
+            data = d["Data"]
+            for k, v in d["NestedTracedData"].items():
+                data[k] = cls.deserialize(v)
+            sha = d["SHA"]
+            metadata = Metadata.deserialize(d["Metadata"])
+
+            if traced_data is None:
+                traced_data = cls(data, metadata)
+            else:
+                traced_data.append_data(data, metadata)
+            assert traced_data._sha == sha
         
         return traced_data
 
