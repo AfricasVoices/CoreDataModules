@@ -20,6 +20,10 @@ class Logger(object):
     def __init__(self, name):
         self.name = name
 
+    @classmethod
+    def set_project_name(cls, project_name):
+        cls.project_name = project_name
+
     def log(self, log_level, message):
         print(f"{TimeUtils.utc_now_as_iso_string()} {log_level.string_value} - "
               f"{self.project_name}{'/' if self.project_name is not '' else ''}{self.name}: {message}")
@@ -35,7 +39,3 @@ class Logger(object):
 
     def debug(self, message):
         self.log(LogLevels.DEBUG, message)
-        
-    @classmethod
-    def set_project_name(cls, project_name):
-        cls.project_name = project_name
