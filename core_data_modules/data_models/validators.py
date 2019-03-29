@@ -49,7 +49,7 @@ def validate_utc_iso_string(s, variable_name=""):
     return s
 
 
-def validate_url(s, validate_scheme=None, variable_name=""):
+def validate_url(s, variable_name="", scheme=None):
     validate_string(s, variable_name)
 
     try:
@@ -57,7 +57,7 @@ def validate_url(s, validate_scheme=None, variable_name=""):
     except:
         assert False, f"{variable_name} not a valid URL"
 
-    if validate_scheme is not None:
-        assert parsed_url.scheme == validate_scheme, f"{variable_name} not a URL with scheme {validate_scheme}"
+    if scheme is not None:
+        assert parsed_url.scheme == scheme, f"{variable_name} not a URL with scheme {scheme}"
 
     return s
