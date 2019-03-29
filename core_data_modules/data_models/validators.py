@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+
 from dateutil.parser import isoparse
 
 
@@ -44,4 +46,18 @@ def validate_iso_string(s, variable_name=""):
 def validate_utc_iso_string(s, variable_name=""):
     validate_iso_string(s, variable_name)
     assert s.endswith("Z") or s.endswith("+00:00"), "{} not a UTC ISO string".format(variable_name)
+    return s
+
+
+def validate_url(s, validate_scheme=None, variable_name=""):
+    validate_string(s, variable_name)
+
+    try:
+        parsed_url = urlparse(s)
+    except:
+        assert False, f"{variable_name} not a valid URL"
+
+    if validate_scheme is not None:
+        assert parsed_url.scheme == validate_scheme, f"{variable_name} not a URL with scheme {validate_scheme}"
+
     return s
