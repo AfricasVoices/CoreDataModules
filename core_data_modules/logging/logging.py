@@ -15,11 +15,22 @@ class LogLevels(object):
 
 
 class Logger(object):
+    project_name = ""
+    
     def __init__(self, name):
         self.name = name
 
+    @classmethod
+    def set_project_name(cls, project_name):
+        cls.project_name = project_name
+
     def log(self, log_level, message):
-        print(f"{TimeUtils.utc_now_as_iso_string()} - {log_level.string_value} - {self.name}: {message}")
+        project_name = self.project_name
+        if project_name != "":
+            project_name += "/"
+
+        print(f"{TimeUtils.utc_now_as_iso_string()} {log_level.string_value} "
+              f"{project_name}{self.name}: {message}")
 
     def error(self, message):
         self.log(LogLevels.ERROR, message)
