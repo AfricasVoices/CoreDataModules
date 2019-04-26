@@ -76,7 +76,7 @@ class FoldTracedData(object):
     def _is_missing_value(code):
         return code in {
             Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, None
         }
 
     @staticmethod
