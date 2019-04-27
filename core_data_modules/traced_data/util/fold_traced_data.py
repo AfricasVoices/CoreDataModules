@@ -103,7 +103,7 @@ class FoldTracedData(object):
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, None
         ]
 
         assert value_1 in precedence_order, "value_1 ('{}') not a missing or stop code".format(value_1)
