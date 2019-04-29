@@ -73,10 +73,10 @@ class FoldTracedData(object):
                                                    "respectively)".format(key, td_1.get(key), td_2.get(key))
 
     @staticmethod
-    def _is_missing_value(code):
+    def _is_control_code(code):
         return code in {
             Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, None
         }
 
     @staticmethod
@@ -103,7 +103,7 @@ class FoldTracedData(object):
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, None
         ]
 
         assert value_1 in precedence_order, "value_1 ('{}') not a missing or stop code".format(value_1)
@@ -289,11 +289,11 @@ class FoldTracedData(object):
         binary_dict = dict()
 
         for key in keys:
-            if cls._is_missing_value(td_1.get(key)) and cls._is_missing_value(td_2.get(key)):
+            if cls._is_control_code(td_1.get(key)) and cls._is_control_code(td_2.get(key)):
                 binary_dict[key] = cls.reconcile_missing_values(td_1.get(key), td_2.get(key))
-            elif cls._is_missing_value(td_1.get(key)):
+            elif cls._is_control_code(td_1.get(key)):
                 binary_dict[key] = td_2.get(key)
-            elif cls._is_missing_value(td_2.get(key)):
+            elif cls._is_control_code(td_2.get(key)):
                 binary_dict[key] = td_1.get(key)
             elif td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE or td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE:
                 binary_dict[key] = cls.AMBIVALENT_BINARY_VALUE
