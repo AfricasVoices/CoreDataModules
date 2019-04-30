@@ -3,6 +3,7 @@ import io
 import json
 import time
 
+import jsonpickle
 import pytz
 from dateutil.parser import isoparse
 
@@ -446,4 +447,4 @@ class TracedDataJsonIO(object):
         :return: TracedData objects deserialized from the JSON file.
         :rtype: generator of TracedData
         """
-        return [TracedData.deserialize(d) for d in json.load(f)]
+        return jsonpickle.decode(f.read())
