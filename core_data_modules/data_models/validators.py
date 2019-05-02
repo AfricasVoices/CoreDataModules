@@ -1,3 +1,4 @@
+from datetime import datetime
 from urllib.parse import urlparse
 
 from dateutil.parser import isoparse
@@ -32,6 +33,11 @@ def validate_list(l, variable_name=""):
 def validate_dict(d, variable_name=""):
     assert isinstance(d, dict), "{} not a dict".format(variable_name)
     return d
+
+
+def validate_datetime(dt, variable_name=""):
+    assert isinstance(dt, datetime), "{} not a datetime".format(variable_name)
+    return dt
 
 
 def validate_iso_string(s, variable_name=""):
