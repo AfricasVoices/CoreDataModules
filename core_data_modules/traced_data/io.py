@@ -3,7 +3,6 @@ import io
 import json
 import time
 
-import jsonpickle
 import pytz
 from dateutil.parser import isoparse
 
@@ -424,14 +423,15 @@ class TracedDataJsonIO(object):
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
 
-        # Serialize the list of TracedData to a format which can be trivially deserialized.
-        if pretty_print:
-            jsonpickle.set_encoder_options("json", sort_keys=True, indent=2, separators=(", ", ": "))
-        else:
-            jsonpickle.set_encoder_options("json", sort_keys=True)
+        formatting_args = {
+            "sort_keys": True
+        }
 
-        f.write(jsonpickle.dumps(data))
-        f.write("\n")
+        if pretty_print:
+            formatting_args["indent"] = 2
+            formatting_args["separators"] = (", ", ": ")
+
+        json.dump([td.serialize() for td in data], f, **formatting_args)
 
     @staticmethod
     def import_json_to_traced_data_iterable(f):
@@ -446,4 +446,4 @@ class TracedDataJsonIO(object):
         :return: TracedData objects deserialized from the JSON file.
         :rtype: generator of TracedData
         """
-        return jsonpickle.decode(f.read())
+        return [TracedData.deserialize(d) for d in json.load(f)]
