@@ -37,6 +37,7 @@ def validate_dict(d, variable_name=""):
 
 def validate_datetime(dt, variable_name=""):
     assert isinstance(dt, datetime), "{} not a datetime".format(variable_name)
+    assert dt.tzinfo is not None and dt.tzinfo.utcoffset(dt) is not None, "{} not timezone-aware".format(variable_name)
     return dt
 
 
