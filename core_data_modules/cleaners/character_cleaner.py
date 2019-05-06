@@ -1,8 +1,6 @@
 # coding=utf-8
 import string
 
-import six
-
 
 class CharacterCleaner(object):
     """
@@ -24,10 +22,7 @@ class CharacterCleaner(object):
         :return: ASCII-encoded string.
         :rtype: str
         """
-        if six.PY2:
-            return text.encode("ascii", "ignore")
-        if six.PY3:
-            return text.encode("ascii", "ignore").decode()
+        return text.encode("ascii", "ignore").decode()
 
     @staticmethod
     def fold_lines(text):
@@ -58,10 +53,5 @@ class CharacterCleaner(object):
         :return: Cleaned text
         :rtype: str
         """
-        translator = None
-        if six.PY2:
-            translator = string.maketrans(string.punctuation, " " * len(string.punctuation))
-        if six.PY3:
-            translator = bytes.maketrans(string.punctuation.encode("ascii"), b" " * len(string.punctuation))
-
+        translator = bytes.maketrans(string.punctuation.encode("ascii"), b" " * len(string.punctuation))
         return cls.to_ascii(text).translate(translator).lower()
