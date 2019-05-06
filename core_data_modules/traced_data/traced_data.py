@@ -2,9 +2,6 @@ import inspect
 import time
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
 
-import six
-from deprecation import deprecated
-
 from core_data_modules.util.sha_utils import SHAUtils
 
 
@@ -223,49 +220,14 @@ class TracedData(Mapping):
     def __iter__(self):
         return _TracedDataKeysIterator(self)
 
-    if six.PY2:
-        @deprecated(deprecated_in="v0")
-        def has_key(self, key):
-            return key in self
+    def keys(self):
+        return KeysView(self)
 
-        def keys(self):
-            return list(self)
+    def values(self):
+        return ValuesView(self)
 
-        def values(self):
-            return [self[key] for key in self]
-
-        def items(self):
-            return [(key, self[key]) for key in self]
-
-        def iterkeys(self):
-            return iter(self)
-
-        def itervalues(self):
-            for key in self:
-                yield self[key]
-
-        def iteritems(self):
-            for key in self:
-                yield (key, self[key])
-
-        def viewkeys(self):
-            return KeysView(self)
-
-        def viewvalues(self):
-            return ValuesView(self)
-
-        def viewitems(self):
-            return ItemsView(self)
-
-    if six.PY3:
-        def keys(self):
-            return KeysView(self)
-
-        def values(self):
-            return ValuesView(self)
-
-        def items(self):
-            return ItemsView(self)
+    def items(self):
+        return ItemsView(self)
 
     def __eq__(self, other):
         if type(other) != TracedData:
@@ -420,14 +382,14 @@ class _TracedDataKeysIterator(Iterator):
         if seen_keys is None:
             seen_keys = set()
         self.traced_data = traced_data
-        self.next_keys = six.iterkeys(traced_data._data)
+        self.next_keys = iter(traced_data._data)
         self.next_traced_datas = []
         self.seen_keys = seen_keys
 
     def __iter__(self):
         return self
 
-    def _next_item(self):
+    def __next__(self):
         while True:
             # Search for a new key in the iterator for the current TracedData instance.
             try:
@@ -456,12 +418,4 @@ class _TracedDataKeysIterator(Iterator):
                 self.traced_data = self.traced_data._prev
                 if self.traced_data is None:
                     raise StopIteration()
-                self.next_keys = six.iterkeys(self.traced_data._data)
-
-    if six.PY2:
-        def next(self):
-            return self._next_item()
-
-    if six.PY3:
-        def __next__(self):
-            return self._next_item()
+                self.next_keys = iter(self.traced_data._data)
