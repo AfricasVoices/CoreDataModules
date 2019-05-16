@@ -76,7 +76,7 @@ class FoldTracedData(object):
     def _is_control_code(code):
         return code in {
             Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT, None
         }
 
     @staticmethod
@@ -91,6 +91,8 @@ class FoldTracedData(object):
          - Codes.NOT_CODED
          - Codes.TRUE_MISSING
          - Codes.SKIPPED
+         - Codes.WRONG_SCHEME
+         - Codes.NOISE_OTHER_PROJECT
          - None
 
         :param value_1: Code to reconcile.
@@ -103,7 +105,7 @@ class FoldTracedData(object):
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT, None
         ]
 
         assert value_1 in precedence_order, "value_1 ('{}') not a missing or stop code".format(value_1)

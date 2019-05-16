@@ -23,3 +23,4 @@ class Codes(object):
     NOT_REVIEWED = "NR"
     NOT_CODED = "NC"
     WRONG_SCHEME = "WS"
+    NOISE_OTHER_PROJECT= "NOP"
