@@ -43,6 +43,12 @@ class TracedDataCodaV2IO(object):
                 )
 
     @staticmethod
+    def _assert_data_has_message_ids(data, message_id_key):
+        for td in data:
+            assert message_id_key in td, f"'data' contains a TracedData object which does not have contain the " \
+                                         f"message id key '{message_id_key}'"
+
+    @staticmethod
     def _assert_uniquely_coded(data, message_id_key, coded_keys):
         """
         Checks that all objects with the same message id have been assigned the same codes for each coded_key in
@@ -148,6 +154,7 @@ class TracedDataCodaV2IO(object):
         # Filter data for elements which contain a value for the given raw key that isn't empty string
         filtered_data = [td for td in data if td.get(raw_key, "") != ""]
 
+        cls._assert_data_has_message_ids(data, message_id_key)
         cls._assert_uniquely_coded(filtered_data, message_id_key, scheme_key_map.keys())
         filtered_data = cls._filter_duplicates(filtered_data, message_id_key, creation_date_time_key)
 
@@ -242,11 +249,10 @@ class TracedDataCodaV2IO(object):
         if f is None:
             f = cls._make_empty_file()
 
+        cls._assert_data_has_message_ids(data, message_id_key)
+
         # Build a lookup table of MessageID -> SchemeID -> Labels
         coda_dataset = cls._dataset_lut_from_messages_file(f, scheme_key_map.values())
-
-        # Filter out TracedData objects that do not contain a message id key
-        data = [td for td in data if message_id_key in td]
 
         # Apply the labels from Coda to each TracedData item in data
         for td in data:
