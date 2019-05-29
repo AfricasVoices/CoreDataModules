@@ -29,15 +29,15 @@ class KenyaLocations(object):
                text in KenyaCodes.COUNTIES
 
     @staticmethod
-    def kenya_constituency_for_location_code(location_code):
+    def constituency_for_location_code(location_code):
         """
         Returns the Kenya constituency for the provided Kenya location code.
 
         The provided code may be a Kenya constituency only.
 
-        >>> KenyaLocations.kenya_constituency_for_location_code(KenyaCodes.NORTH_IMENTI)
+        >>> KenyaLocations.constituency_for_location_code(KenyaCodes.NORTH_IMENTI)
         'north imenti'
-        >>> KenyaLocations.kenya_constituency_for_location_code(KenyaCodes.NAIROBI)
+        >>> KenyaLocations.constituency_for_location_code(KenyaCodes.NAIROBI)
         'NC'
 
         :param location_code: A Kenya constituency code
@@ -69,9 +69,9 @@ class KenyaLocations(object):
         :return: A kenyan county code or Codes.NOT_CODED
         :rtype: str
         """
-        county = cls.county_for_location_code(location_code)
-        if county != Codes.NOT_CODED:
-            location_code = county
+        constituency = cls.constituency_for_location_code(location_code)
+        if constituency != Codes.NOT_CODED:
+            location_code = constituency
 
         if location_code in KenyaCodes.CONSTITUENCIES:
             return KenyaCodes.CONSTITUENCY_TO_COUNTY_MAP[location_code]
