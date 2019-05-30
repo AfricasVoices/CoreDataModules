@@ -7,7 +7,7 @@ class KenyaLocations(object):
     def is_location_code(cls, text):
         """
         Returns True if the given location argument matches a kenya constituency or county
-         code; False otherwise.
+        code; False otherwise.
 
         >>> KenyaLocations.is_location_code('nairobi')
         True
