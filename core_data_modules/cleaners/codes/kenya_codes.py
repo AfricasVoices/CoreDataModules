@@ -636,4 +636,4 @@ class KenyaCodes(object):
 
     CONSTITUENCIES = list(CONSTITUENCY_TO_COUNTY_MAP.keys())
 
-    COUNTIES = list(CONSTITUENCY_TO_COUNTY_MAP.values())
+    COUNTIES = list(set(CONSTITUENCY_TO_COUNTY_MAP.values()))
