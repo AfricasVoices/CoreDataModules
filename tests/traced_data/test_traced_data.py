@@ -85,6 +85,10 @@ class TestTracedData(unittest.TestCase):
         with self.assertRaisesRegex(KeyError, "gender"):
             td.hide_keys({"gender"}, Metadata("test_user", "hide_keys", time.time()))
 
+        td.append_data({"gender": "female"}, Metadata("test_user", "add_gender", time.time()))
+        self.assertTrue("gender" in td)
+        self.assertEqual(td["gender"], "female")
+
     def test__sha_with_prev(self):
         self.assertEqual(
             TracedData._sha_with_prev(
