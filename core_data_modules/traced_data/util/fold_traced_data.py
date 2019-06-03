@@ -75,7 +75,7 @@ class FoldTracedData(object):
     @staticmethod
     def _is_control_code(code):
         return code in {
-            Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
             Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT, None
         }
 
@@ -86,6 +86,7 @@ class FoldTracedData(object):
 
         The precedence order for missing values is defined as follows (highest precedence listed first):
          - Codes.STOP
+         - Codes.CODING_ERROR
          - Codes.NOT_REVIEWED
          - Codes.NOT_INTERNALLY_CONSISTENT
          - Codes.NOT_CODED
@@ -104,7 +105,7 @@ class FoldTracedData(object):
         """
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
-            Codes.STOP, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
             Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT, None
         ]
 
