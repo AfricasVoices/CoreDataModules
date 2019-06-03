@@ -65,6 +65,9 @@ class TestTracedData(unittest.TestCase):
         self.assertEqual(td["phone"], "+441632000001")
         self.assertEqual(td["gender"], "man")
 
+        with self.assertRaisesRegex(KeyError, "age"):
+            td.hide_keys({"age"}, Metadata("test_user", "hide_keys", time.time()))
+
         td.hide_keys({"gender", "phone"}, Metadata("test_user", "hide_keys", time.time()))
 
         self.assertTrue("id" in td)
