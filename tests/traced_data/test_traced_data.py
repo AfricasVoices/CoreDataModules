@@ -58,6 +58,40 @@ class TestTracedData(unittest.TestCase):
         history = td.get_history("gender")
         self.assertListEqual(list(map(lambda x: x["value"], history)), ["man", "male"])
 
+    def test_hide_keys(self):
+        td = self.generate_test_data()
+
+        self.assertEqual(td["id"], "0")
+        self.assertEqual(td["phone"], "+441632000001")
+        self.assertEqual(td["gender"], "man")
+
+        with self.assertRaisesRegex(KeyError, "age"):
+            td.hide_keys({"age"}, Metadata("test_user", "hide_keys", time.time()))
+
+        td.hide_keys({"gender", "phone"}, Metadata("test_user", "hide_keys", time.time()))
+
+        self.assertTrue("id" in td)
+        self.assertFalse("phone" in td)
+        self.assertFalse("gender" in td)
+
+        self.assertRaises(KeyError, lambda: td["gender"])
+        self.assertRaises(KeyError, lambda: td["phone"])
+
+        self.assertEqual(td.get("gender"), None)
+        self.assertEqual(td.get("id"), "0")
+
+        self.assertSetEqual(set(td.keys()), {"id"})
+        self.assertDictEqual(dict(td.items()), {"id": "0"})
+        self.assertSetEqual(set(td.values()), {"0"})
+        self.assertEqual(len(td), 1)
+
+        with self.assertRaisesRegex(KeyError, "gender"):
+            td.hide_keys({"gender"}, Metadata("test_user", "hide_keys", time.time()))
+
+        td.append_data({"gender": "female"}, Metadata("test_user", "add_gender", time.time()))
+        self.assertTrue("gender" in td)
+        self.assertEqual(td["gender"], "female")
+
     def test__sha_with_prev(self):
         self.assertEqual(
             TracedData._sha_with_prev(

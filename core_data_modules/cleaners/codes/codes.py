@@ -20,6 +20,7 @@ class Codes(object):
     TRUE_MISSING = "NA"
     SKIPPED = "NS"
     NOT_INTERNALLY_CONSISTENT = "NIC"
+    CODING_ERROR = "CE"
     NOT_REVIEWED = "NR"
     NOT_CODED = "NC"
     WRONG_SCHEME = "WS"
