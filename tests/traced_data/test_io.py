@@ -446,3 +446,19 @@ class TestTracedDataJsonIO(unittest.TestCase):
             imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
 
         self.assertListEqual(expected, imported)
+
+    def test_round_trip(self):
+        expected = self.generate_test_data()
+        temp_file = tempfile.NamedTemporaryFile()
+
+        with open(temp_file.name, "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_json(expected, f)
+
+        with open(temp_file.name, "r") as f:
+            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+
+        for x, y in zip(expected, imported):
+            x_attributes = {k: getattr(x, k) for k in dir(x) if not k.startswith("__") and not callable(getattr(x, k))}
+            y_attributes = {k: getattr(y, k) for k in dir(y) if not k.startswith("__") and not callable(getattr(y, k))}
+
+            self.assertDictEqual(x_attributes, y_attributes)
