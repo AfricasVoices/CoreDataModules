@@ -76,7 +76,8 @@ class FoldTracedData(object):
     def _is_control_code(code):
         return code in {
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT,
+            Codes.NOISE_OTHER_CHANNEL, None
         }
 
     @staticmethod
@@ -106,7 +107,8 @@ class FoldTracedData(object):
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT, None
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_PROJECT,
+            Codes.NOISE_OTHER_CHANNEL, None
         ]
 
         assert value_1 in precedence_order, "value_1 ('{}') not a missing or stop code".format(value_1)
