@@ -27,6 +27,17 @@ class Metadata(object):
 
     def __eq__(self, other):
         return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
+    
+    def serialize(self):
+        return {
+            "User": self.user,
+            "Source": self.source,
+            "Timestamp": self.timestamp
+        }
+
+    @classmethod
+    def deserialize(cls, d):
+        return cls(d["User"], d["Source"], d["Timestamp"])
 
     @staticmethod
     def get_call_location():
@@ -304,6 +315,42 @@ class TracedData(Mapping):
 
         history.sort(key=lambda x: x["timestamp"])
         return history
+
+    def serialize(self):
+        serialized_history = []
+
+        traced_data = self
+        while traced_data is not None:
+            serialized_history.append(
+                {
+                    "Data": {k: v for k, v in traced_data._data.items() if type(v) != TracedData},
+                    "NestedTracedData": {k: v.serialize() for k, v in traced_data._data.items() if type(v) == TracedData},
+                    "SHA": traced_data._sha,
+                    "Metadata": traced_data._metadata.serialize(),
+                }
+            )
+            traced_data = traced_data._prev
+
+        return serialized_history
+
+    @classmethod
+    def deserialize(cls, serialized_history):
+        traced_data = None
+
+        for d in reversed(serialized_history):
+            data = d["Data"]
+            for k, v in d["NestedTracedData"].items():
+                data[k] = cls.deserialize(v)
+            sha = d["SHA"]
+            metadata = Metadata.deserialize(d["Metadata"])
+
+            if traced_data is None:
+                traced_data = cls(data, metadata)
+            else:
+                traced_data.append_data(data, metadata)
+            assert traced_data._sha == sha
+        
+        return traced_data
 
     @staticmethod
     def join_iterables(user, join_on_key, data_1, data_2, data_2_label):
