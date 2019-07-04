@@ -405,7 +405,7 @@ class TracedDataCSVIO(object):
 
 class TracedDataJsonIO(object):
     @staticmethod
-    def export_traced_data_iterable_to_json(data, f, pretty_print=False):
+    def export_traced_data_iterable_to_jsonl(data, f):
         """
         Exports a collection of TracedData objects to a JSON file.
 
@@ -423,15 +423,8 @@ class TracedDataJsonIO(object):
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
 
-        formatting_args = {
-            "sort_keys": True
-        }
-
-        if pretty_print:
-            formatting_args["indent"] = 2
-            formatting_args["separators"] = (", ", ": ")
-
-        json.dump([td.serialize() for td in data], f, **formatting_args)
+        for td in data:
+            json.dump(td.serialize(), f, sort_keys=True)
 
     @staticmethod
     def import_json_to_traced_data_iterable(f):
