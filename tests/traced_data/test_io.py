@@ -400,20 +400,6 @@ class TestTracedDataJsonIO(unittest.TestCase):
 
         return test_data
 
-    def test_export_import(self):
-        file_path = path.join(self.test_dir, "json_test.json")
-
-        data = self.generate_test_data()
-
-        with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-
-        with open(file_path, "r") as f:
-            imported = TracedDataJsonIO.import_json_to_traced_data_iterable(f)
-
-        for x, y in zip(data, imported):
-            self.assertEqual(x, y)
-
     def test_export_traced_data_iterable_to_jsonl(self):
         file_path = path.join(self.test_dir, "json_test.json")
 
