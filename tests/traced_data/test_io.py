@@ -423,7 +423,7 @@ class TestTracedDataJsonIO(unittest.TestCase):
         expected = self.generate_test_data()
 
         with open(file_path, "r") as f:
-            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+            imported = list(TracedDataJsonIO.import_jsonl_to_traced_data_iterable(f))
 
         self.assertListEqual(expected, imported)
 
@@ -432,10 +432,10 @@ class TestTracedDataJsonIO(unittest.TestCase):
         temp_file = tempfile.NamedTemporaryFile()
 
         with open(temp_file.name, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(expected, f)
+            TracedDataJsonIO.export_traced_data_iterable_to_jsonl(expected, f)
 
         with open(temp_file.name, "r") as f:
-            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+            imported = list(TracedDataJsonIO.import_jsonl_to_traced_data_iterable(f))
 
         self.assertEqual(len(expected), len(imported))
         for x, y in zip(expected, imported):
