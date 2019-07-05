@@ -416,8 +416,6 @@ class TracedDataJsonIO(object):
         :type data: iterable of TracedData
         :param f: File to export the TracedData objects to.
         :type f: file-like
-        :param pretty_print: Whether to format the JSON with line breaks, indentation, and alphabetised keys.
-        :type pretty_print: bool
         """
         data = list(data)
         for td in data:
@@ -425,6 +423,7 @@ class TracedDataJsonIO(object):
 
         for td in data:
             json.dump(td.serialize(), f, sort_keys=True)
+            f.write("\n")
 
     @staticmethod
     def import_json_to_traced_data_iterable(f):

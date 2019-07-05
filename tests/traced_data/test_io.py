@@ -414,14 +414,14 @@ class TestTracedDataJsonIO(unittest.TestCase):
         for x, y in zip(data, imported):
             self.assertEqual(x, y)
 
-    def test_export_traced_data_iterable_to_json(self):
+    def test_export_traced_data_iterable_to_jsonl(self):
         file_path = path.join(self.test_dir, "json_test.json")
 
         # Test exporting wrong data type
         data = self.generate_test_data()
         with open(file_path, "w") as f:
             try:
-                TracedDataJsonIO.export_traced_data_iterable_to_json(data[0], f)
+                TracedDataJsonIO.export_traced_data_iterable_to_jsonl(data[0], f)
                 self.fail("Exporting the wrong data type did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), _td_type_error_string)
@@ -429,14 +429,8 @@ class TestTracedDataJsonIO(unittest.TestCase):
         # Test normal export
         data = self.generate_test_data()
         with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f)
+            TracedDataJsonIO.export_traced_data_iterable_to_jsonl(data, f)
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected.json"))
-
-        # Test normal export with pretty print enabled
-        data = self.generate_test_data()
-        with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected_pretty_print.json"))
 
     def test_import_json_to_traced_data_iterable(self):
         file_path = "tests/traced_data/resources/json_export_expected.json"
