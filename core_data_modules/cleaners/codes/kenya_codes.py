@@ -439,7 +439,7 @@ class KenyaCodes(object):
         TETU: NYERI,
         KIENI: NYERI,
         MATHIRA: NYERI,
-        MATHIOYA:MURANGA,
+        MATHIOYA: MURANGA,
         OTHAYA: NYERI,
         MUKURWEINI: NYERI,
         NYERI_TOWN: NYERI,
