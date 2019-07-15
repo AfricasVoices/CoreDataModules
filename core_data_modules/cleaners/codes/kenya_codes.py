@@ -4,10 +4,10 @@ class KenyaCodes(object):
     BOMET = "bomet"
     BUNGOMA = "bungoma"
     BUSIA = "busia"
-    ELGEYO_MARAKWET = "elgeyo_marakwet"
+    ELGEYO_MARAKWET = "elgeyo marakwet"
     EMBU = "embu"
     GARISSA = "garissa"
-    HOMA_BAY = "homa_bay"
+    HOMA_BAY = "homa bay"
     ISIOLO = "isiolo"
     KAJIADO = "kajiado"
     KAKAMEGA = "kakamega"
@@ -38,12 +38,12 @@ class KenyaCodes(object):
     NYERI = "nyeri"
     SAMBURU = "samburu"
     SIAYA = "siaya"
-    TAITA_TAVETA = "taita_taveta"
-    TANA_RIVER = "tana_river"
-    THARAKA_NITHI = "tharaka_nithi"
-    TRANS_NZOIA = "trans_nzoia"
+    TAITA_TAVETA = "taita taveta"
+    TANA_RIVER = "tana river"
+    THARAKA_NITHI = "tharaka nithi"
+    TRANS_NZOIA = "trans nzoia"
     TURKANA = "turkana"
-    UASIN_GISHU = "uasin_gishu"
+    UASIN_GISHU = "uasin gishu"
     VIHIGA = "vihiga"
     WAJIR = "wajir"
     WEST_POKOT = "west pokot"
@@ -111,7 +111,7 @@ class KenyaCodes(object):
     GITHUNGURI = "githunguri"
     HAMISI = "hamisi"
     HOMA_BAY_TOWN = "homa bay town"
-    IGAMBANG_OMBE = "chuka/igambang`ombe"
+    IGAMBANG_OMBE = "igambang`ombe"
     IGEMBE_CENTRAL = "igembe central"
     IGEMBE_NORTH = "igembe north"
     IGEMBE_SOUTH = "igembe south"
@@ -172,7 +172,7 @@ class KenyaCodes(object):
     KISUMU_CENTRAL = "kisumu central"
     KISUMU_EAST = "kisumu east"
     KISUMU_WEST = "kisumu west"
-    KITITU_CHACHE_SOUTH = "ktitu chache south"
+    KITITU_CHACHE_SOUTH = "kititu chache south"
     KITUI_CENTRAL = "kitui central"
     KITUI_EAST = "kitui east"
     KITUI_RURAL = "kitui rural"
@@ -188,9 +188,9 @@ class KenyaCodes(object):
     KWANZA = "kwanza"
     LAFEY = "lafey"
     LAGDERA = "lagdera"
-    LAIKIPIA_EAST = "laikipi east"
-    LAIKIPIA_NORTH = "laikipi north"
-    LAIKIPIA_WEST = "laikipi west"
+    LAIKIPIA_EAST = "laikipia east"
+    LAIKIPIA_NORTH = "laikipia north"
+    LAIKIPIA_WEST = "laikipia west"
     LAISAMIS = "laisamis"
     LAMU_EAST = "lamu east"
     LAMU_WEST = "lamu west"
@@ -217,12 +217,13 @@ class KenyaCodes(object):
     MANDERA_WEST = "mandera west"
     MANYATTA = "manyatta"
     MARAGWA = "maragwa"
-    MARAKWET_EAST = "marakweteast"
+    MARAKWET_EAST = "marakwet east"
     MARAKWET_WEST = "marakwet west"
     MASINGA = "masinga"
     MATAYOS = "matayos"
     MATHARE = "mathare"
     MATHIRA = "mathira"
+    MATHIOYA = "mathioya"
     MATUGA = "matuga"
     MATUNGU = "matungu"
     MATUNGULU = "matungulu"
@@ -237,9 +238,9 @@ class KenyaCodes(object):
     MOSOP = "mosop"
     MOUNT_ELGON = "mount elgon"
     MOYALE = "moyale"
-    MSAMWENI = "msamweni"
+    MSAMBWENI = "msambweni"
     MUHORONI = "muhoroni"
-    MUKURWENI = "mukurweni"
+    MUKURWEINI = "mukurweini"
     MUMIAS_EAST = "mumias east"
     MUMIAS_WEST = "mumias west"
     MVITA = "mvita"
@@ -295,7 +296,7 @@ class KenyaCodes(object):
     SEME = "seme"
     SHINYALU = "shinyalu"
     SIGOR = "sigor"
-    SIGOWET_SION = "sigowet-sion"
+    SIGOWET_SION = "sigowet sion"
     SIRISIA = "sirisia"
     SOTIK = "sotik"
     SOUTH_IMENTI = "south imenti"
@@ -348,7 +349,7 @@ class KenyaCodes(object):
         NYALI: MOMBASA,
         LIKONI: MOMBASA,
         MVITA: MOMBASA,
-        MSAMWENI: KWALE,
+        MSAMBWENI: KWALE,
         LUNGA_LUNGA: KWALE,
         MATUGA: KWALE,
         KINANGO: KWALE,
@@ -438,8 +439,9 @@ class KenyaCodes(object):
         TETU: NYERI,
         KIENI: NYERI,
         MATHIRA: NYERI,
+        MATHIOYA: MURANGA,
         OTHAYA: NYERI,
-        MUKURWENI: NYERI,
+        MUKURWEINI: NYERI,
         NYERI_TOWN: NYERI,
         MWEA: KIRINYAGA,
         GICHUGU: KIRINYAGA,
