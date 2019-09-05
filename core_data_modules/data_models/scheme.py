@@ -11,7 +11,7 @@ class Scheme(object):
 
         self.validate()
 
-    def get_code_with_id(self, code_id):
+    def get_code_with_code_id(self, code_id):
         for code in self.codes:
             if code.code_id == code_id:
                 return code

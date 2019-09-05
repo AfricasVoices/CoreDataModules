@@ -155,7 +155,7 @@ class TracedDataCodaV2IO(object):
             # Export labels for this row which are not Codes.NOT_CODED
             labels = []
             for coded_key, scheme in scheme_key_map.items():
-                if coded_key in td and scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
+                if coded_key in td and scheme.get_code_with_code_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
                     labels.append(Label.from_firebase_map(td[coded_key]))
 
             # Create a Coda message object for this row
