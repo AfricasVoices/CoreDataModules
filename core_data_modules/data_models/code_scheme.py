@@ -15,19 +15,19 @@ class CodeScheme(object):
         for code in self.codes:
             if code.code_id == code_id:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
 
     def get_code_with_control_code(self, control_code):
         for code in self.codes:
             if code.control_code == control_code:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
 
     def get_code_with_match_value(self, match_value):
         for code in self.codes:
             if code.match_values is not None and match_value in code.match_values:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
 
     @classmethod
     def from_firebase_map(cls, data):
@@ -39,7 +39,7 @@ class CodeScheme(object):
         for code_map in data["Codes"]:
             code = Code.from_firebase_map(code_map)
             assert code.code_id not in code_map.keys(), \
-                "Non-unique Code Id found in scheme: {}".format(code.code_id)
+                "Non-unique Code Id found in code scheme: {}".format(code.code_id)
             codes.append(code)
 
         documentation = None
