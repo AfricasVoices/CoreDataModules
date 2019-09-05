@@ -1,7 +1,7 @@
 from core_data_modules.data_models import validators
 
 
-class Scheme(object):
+class CodeScheme(object):
     def __init__(self, scheme_id, name, version, codes, documentation=None):
         self.scheme_id = scheme_id
         self.name = name

@@ -11,7 +11,7 @@ from unittest import mock
 
 from core_data_modules.cleaners import Codes, english
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
-from core_data_modules.data_models import Scheme
+from core_data_modules.data_models import CodeScheme
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCSVIO, TracedDataJsonIO, \
     _td_type_error_string, TracedDataCodaV2IO
@@ -69,7 +69,7 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         # Load gender scheme
         with open("tests/traced_data/resources/coda_2_gender_scheme.json") as f:
-            gender_scheme = Scheme.from_firebase_map(json.load(f))
+            gender_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         # Apply the English gender cleaner
         with mock.patch("core_data_modules.util.TimeUtils.utc_now_as_iso_string") as time_mock, \
@@ -175,10 +175,10 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         # Load schemes
         with open("tests/traced_data/resources/coda_2_district_scheme.json") as f:
-            district_scheme = Scheme.from_firebase_map(json.load(f))
+            district_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         with open("tests/traced_data/resources/coda_2_zone_scheme.json") as f:
-            zone_scheme = Scheme.from_firebase_map(json.load(f))
+            zone_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         def make_location_label(scheme, value):
             if value in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_CODED}:
@@ -256,7 +256,7 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         # Load gender scheme
         with open("tests/traced_data/resources/coda_2_msg_scheme.json") as f:
-            msg_scheme = Scheme.from_firebase_map(json.load(f))
+            msg_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
