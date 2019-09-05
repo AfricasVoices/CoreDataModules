@@ -133,6 +133,7 @@ class Code:
         display_text = data["DisplayText"]
         code_type = data["CodeType"]
         control_code = data.get("ControlCode")
+        meta_code = data.get("MetaCode")
         shortcut = data.get("Shortcut")
         numeric_value = data["NumericValue"]
         string_value = data["StringValue"]
@@ -141,7 +142,7 @@ class Code:
         match_values = data.get("MatchValues")
 
         return cls(code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut,
-                   color, match_values, control_code)
+                   color, match_values, control_code, meta_code)
 
     def to_firebase_map(self):
         self.validate()
@@ -157,6 +158,9 @@ class Code:
 
         if self.control_code is not None:
             ret["ControlCode"] = self.control_code
+
+        if self.meta_code is not None:
+            ret["MetaCode"] = self.meta_code
 
         if self.shortcut is not None:
             ret["Shortcut"] = self.shortcut
