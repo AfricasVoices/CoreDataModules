@@ -19,9 +19,15 @@ class Scheme(object):
 
     def get_code_with_control_code(self, control_code):
         for code in self.codes:
-            if code.control_code == control_code:
+            if code.code_type == CodeTypes.CONTROL and code.control_code == control_code:
                 return code
         raise KeyError("Scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
+
+    def get_code_with_meta_code(self, meta_code):
+        for code in self.codes:
+            if code.code_type == CodeTypes.META and code.meta_code == meta_code:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with meta code '{}'".format(self.name, self.scheme_id, meta_code))
 
     def get_code_with_match_value(self, match_value):
         for code in self.codes:
@@ -96,14 +102,21 @@ class Scheme(object):
         return not self.__eq__(other)
 
 
+class CodeTypes:
+    NORMAL = "Normal"
+    CONTROL = "Control"
+    META = "Meta"
+
+
 class Code:
-    VALID_CODE_TYPES = {"Normal", "Control", "Meta"}
+    VALID_CODE_TYPES = {CodeTypes.NORMAL, CodeTypes.CONTROL, CodeTypes.META}
 
     def __init__(self, code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut=None,
-                 color=None, match_values=None, control_code=None):
+                 color=None, match_values=None, control_code=None, meta_code=None):
         self.code_id = code_id
         self.code_type = code_type
         self.control_code = control_code
+        self.meta_code = meta_code
         self.display_text = display_text
         self.shortcut = shortcut
         self.numeric_value = numeric_value
@@ -162,8 +175,10 @@ class Code:
 
         validators.validate_string(self.code_type, "code_type")
         assert self.code_type in self.VALID_CODE_TYPES, f"CodeType '{self.code_type}' invalid"
-        if self.code_type == "Control":
+        if self.code_type == CodeTypes.CONTROL:
             validators.validate_string(self.control_code, "control_code")
+        if self.code_type == CodeTypes.META:
+            validators.validate_string(self.meta_code, "meta_code")
 
         if self.shortcut is not None:
             validators.validate_string(self.shortcut, "shortcut")
@@ -187,6 +202,7 @@ class Code:
         return other.code_id == self.code_id and \
             other.code_type == self.code_type and \
             other.control_code == self.control_code and \
+            other.meta_code == self.meta_code and \
             other.display_text == self.display_text and \
             other.shortcut == self.shortcut and \
             other.numeric_value == self.numeric_value and \
