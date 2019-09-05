@@ -34,3 +34,4 @@ class Codes(object):
     SHOWTIME_QUESTION = "showtime_question"
     QUESTION = "question"
     GREETING = "greeting"
+    OPT_IN = "opt_in"
