@@ -93,6 +93,7 @@ class FoldTracedData(object):
          - Codes.TRUE_MISSING
          - Codes.SKIPPED
          - Codes.WRONG_SCHEME
+         - Codes.NOISE_OTHER_CHANNEL
          - None
 
         :param value_1: Code to reconcile.
