@@ -1,7 +1,5 @@
 class Codes(object):
-    TRUE = "true"
-    FALSE = "false"
-
+    # Demographic codes
     MALE = "male"
     FEMALE = "female"
 
@@ -12,11 +10,15 @@ class Codes(object):
     URBAN = "urban"
     RURAL = "rural"
 
+    # Pipeline support codes
+    TRUE = "true"
+    FALSE = "false"
+
     MATRIX_0 = "0"
     MATRIX_1 = "1"
 
+    # Control Codes
     STOP = "STOP"
-
     TRUE_MISSING = "NA"
     SKIPPED = "NS"
     NOT_INTERNALLY_CONSISTENT = "NIC"
@@ -26,3 +28,10 @@ class Codes(object):
     WRONG_SCHEME = "WS"
     NOISE_OTHER_PROJECT = "NOP"  # Deprecated; use NOISE_OTHER_CHANNEL instead.
     NOISE_OTHER_CHANNEL = "NOC"
+
+    # Meta Codes
+    PUSH_BACK = "push_back"
+    SHOWTIME_QUESTION = "showtime_question"
+    QUESTION = "question"
+    GREETING = "greeting"
+    OPT_IN = "opt_in"
