@@ -13,7 +13,7 @@ specification.
 """
 
 
-class Scheme(object):
+class CodeScheme(object):
     def __init__(self, scheme_id, name, version, codes, documentation=None):
         self.scheme_id = scheme_id
         self.name = name
@@ -27,13 +27,13 @@ class Scheme(object):
         for code in self.codes:
             if code.code_id == code_id:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
 
     def get_code_with_control_code(self, control_code):
         for code in self.codes:
             if code.code_type == CodeTypes.CONTROL and code.control_code == control_code:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
 
     def get_code_with_meta_code(self, meta_code):
         for code in self.codes:
@@ -45,7 +45,7 @@ class Scheme(object):
         for code in self.codes:
             if code.match_values is not None and match_value in code.match_values:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
 
     @classmethod
     def from_firebase_map(cls, data):
@@ -57,7 +57,7 @@ class Scheme(object):
         for code_map in data["Codes"]:
             code = Code.from_firebase_map(code_map)
             assert code.code_id not in code_map.keys(), \
-                "Non-unique Code Id found in scheme: {}".format(code.code_id)
+                "Non-unique Code Id found in code scheme: {}".format(code.code_id)
             codes.append(code)
 
         documentation = None
