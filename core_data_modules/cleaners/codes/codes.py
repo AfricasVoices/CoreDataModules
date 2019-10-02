@@ -26,7 +26,6 @@ class Codes(object):
     NOT_REVIEWED = "NR"
     NOT_CODED = "NC"
     WRONG_SCHEME = "WS"
-    NOISE_OTHER_PROJECT = "NOP"  # Deprecated; use NOISE_OTHER_CHANNEL instead.
     NOISE_OTHER_CHANNEL = "NOC"
 
     # Meta Codes
