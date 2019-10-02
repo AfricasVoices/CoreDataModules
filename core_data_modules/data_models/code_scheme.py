@@ -1,7 +1,19 @@
 from core_data_modules.data_models import validators
 
 
-class Scheme(object):
+"""
+This module contains Python representations of the objects needed to construct entries in a Coda V2 code scheme file,
+and contains functions for validating, serializing, and de-serializing.
+
+The data formats are specified here:
+https://github.com/AfricasVoices/CodaV2/blob/master/docs/data_formats.md#code-schemes
+
+Changes to this file will need to be synced with changes to that specification, and with all other uses of that
+specification.
+"""
+
+
+class CodeScheme(object):
     def __init__(self, scheme_id, name, version, codes, documentation=None):
         self.scheme_id = scheme_id
         self.name = name
@@ -15,19 +27,25 @@ class Scheme(object):
         for code in self.codes:
             if code.code_id == code_id:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with id '{}'".format(self.name, self.scheme_id, code_id))
 
     def get_code_with_control_code(self, control_code):
         for code in self.codes:
-            if code.control_code == control_code:
+            if code.code_type == CodeTypes.CONTROL and code.control_code == control_code:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with control code '{}'".format(self.name, self.scheme_id, control_code))
+
+    def get_code_with_meta_code(self, meta_code):
+        for code in self.codes:
+            if code.code_type == CodeTypes.META and code.meta_code == meta_code:
+                return code
+        raise KeyError("Scheme '{}' (id '{}') does not contain a code with meta code '{}'".format(self.name, self.scheme_id, meta_code))
 
     def get_code_with_match_value(self, match_value):
         for code in self.codes:
             if code.match_values is not None and match_value in code.match_values:
                 return code
-        raise KeyError("Scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
+        raise KeyError("Code scheme '{}' (id '{}') does not contain a code with match value '{}'".format(self.name, self.scheme_id, match_value))
 
     @classmethod
     def from_firebase_map(cls, data):
@@ -39,7 +57,7 @@ class Scheme(object):
         for code_map in data["Codes"]:
             code = Code.from_firebase_map(code_map)
             assert code.code_id not in code_map.keys(), \
-                "Non-unique Code Id found in scheme: {}".format(code.code_id)
+                "Non-unique Code Id found in code scheme: {}".format(code.code_id)
             codes.append(code)
 
         documentation = None
@@ -96,14 +114,21 @@ class Scheme(object):
         return not self.__eq__(other)
 
 
+class CodeTypes:
+    NORMAL = "Normal"
+    CONTROL = "Control"
+    META = "Meta"
+
+
 class Code:
-    VALID_CODE_TYPES = {"Normal", "Control", "Meta"}
+    VALID_CODE_TYPES = {CodeTypes.NORMAL, CodeTypes.CONTROL, CodeTypes.META}
 
     def __init__(self, code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut=None,
-                 color=None, match_values=None, control_code=None):
+                 color=None, match_values=None, control_code=None, meta_code=None):
         self.code_id = code_id
         self.code_type = code_type
         self.control_code = control_code
+        self.meta_code = meta_code
         self.display_text = display_text
         self.shortcut = shortcut
         self.numeric_value = numeric_value
@@ -120,6 +145,7 @@ class Code:
         display_text = data["DisplayText"]
         code_type = data["CodeType"]
         control_code = data.get("ControlCode")
+        meta_code = data.get("MetaCode")
         shortcut = data.get("Shortcut")
         numeric_value = data["NumericValue"]
         string_value = data["StringValue"]
@@ -128,7 +154,7 @@ class Code:
         match_values = data.get("MatchValues")
 
         return cls(code_id, code_type, display_text, numeric_value, string_value, visible_in_coda, shortcut,
-                   color, match_values, control_code)
+                   color, match_values, control_code, meta_code)
 
     def to_firebase_map(self):
         self.validate()
@@ -144,6 +170,9 @@ class Code:
 
         if self.control_code is not None:
             ret["ControlCode"] = self.control_code
+
+        if self.meta_code is not None:
+            ret["MetaCode"] = self.meta_code
 
         if self.shortcut is not None:
             ret["Shortcut"] = self.shortcut
@@ -162,8 +191,10 @@ class Code:
 
         validators.validate_string(self.code_type, "code_type")
         assert self.code_type in self.VALID_CODE_TYPES, f"CodeType '{self.code_type}' invalid"
-        if self.code_type == "Control":
+        if self.code_type == CodeTypes.CONTROL:
             validators.validate_string(self.control_code, "control_code")
+        if self.code_type == CodeTypes.META:
+            validators.validate_string(self.meta_code, "meta_code")
 
         if self.shortcut is not None:
             validators.validate_string(self.shortcut, "shortcut")
@@ -187,6 +218,7 @@ class Code:
         return other.code_id == self.code_id and \
             other.code_type == self.code_type and \
             other.control_code == self.control_code and \
+            other.meta_code == self.meta_code and \
             other.display_text == self.display_text and \
             other.shortcut == self.shortcut and \
             other.numeric_value == self.numeric_value and \
