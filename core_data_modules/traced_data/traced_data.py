@@ -29,7 +29,7 @@ class Metadata(object):
 
     def __eq__(self, other):
         return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
-    
+
     def serialize(self):
         return {
             "User": self.user,
@@ -78,6 +78,22 @@ class Metadata(object):
         return "{}:{}:{}".format(f, str(line), name)
 
 
+class _Update(object):
+    def __init__(self, data, metadata, sha):
+        self.data = data
+        self.metadata = metadata
+        self.sha = sha
+        
+    def eq(self, other):
+        if type(other) != _Update:
+            return False
+        
+        return self.data == other.data and self.metadata == other.metadata and self.sha == other.sha
+
+    def copy(self):
+        return _Update(self.data, self.metadata, self.sha)
+
+
 class TracedData(Mapping):
     """
     An append-only dictionary with data provenance.
@@ -105,19 +121,16 @@ class TracedData(Mapping):
     """
     _TOMBSTONE_VALUE = "#HIDDEN-VALUE-44dce0a0-e79c-48cf-8d8e-ec59137ef0d0"
 
-    def __init__(self, data, metadata, _prev=None):
+    def __init__(self, data, metadata):
         """
         :param data: Dict containing data to insert.
         :type data: dict
         :param metadata: See core_data_modules.traced_data.Metadata
         :type metadata: Metadata
-        :param _prev: Pointer to the previous update. Not for external use.
-        :type _prev: TracedData
         """
-        self._prev = _prev
-        self._data = data
-        self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha)
-        self._metadata = metadata
+        self.history = [
+            _Update(data, metadata, self._sha_with_prev(data, None))
+        ]
 
     def get_sha(self):
         return self._sha
@@ -131,15 +144,16 @@ class TracedData(Mapping):
         :param new_metadata: Metadata about this update
         :type new_metadata: Metadata
         """
-        self._prev = TracedData(self._data, self._metadata, self._prev)
-        self._data = new_data
-        self._sha = self._sha_with_prev(self._data, self._prev._sha)
-        self._metadata = new_metadata
+        self.history.insert(0, _Update(
+            new_data,
+            new_metadata,
+            self._sha_with_prev(new_data, self.history[-1].sha)
+        ))
 
     def append_traced_data(self, key_of_appended, traced_data, new_metadata):
         """
         Updates this object with another traced data object.
-        
+
         After the update, all key-values of 'traced_data', and their histories, become available
         to this object.
 
@@ -193,7 +207,7 @@ class TracedData(Mapping):
         :return: Copy of input dictionary, with TracedData objects replaced with their SHAs
         :rtype: dict
         """
-        return {k: v if type(v) != TracedData else v._sha for k, v in data.items()}
+        return {k: v if type(v) != TracedData else v.history[0].sha for k, v in data.items()}
 
     @classmethod
     def _sha_with_prev(cls, data, prev_sha=None):
@@ -213,36 +227,32 @@ class TracedData(Mapping):
         return SHAUtils.sha_dict({"data": cls._replace_traced_with_sha(data), "prev_sha": prev_sha})
 
     def __getitem__(self, key):
-        if key in self._data:
-            if self._data[key] == self._TOMBSTONE_VALUE:
-                raise KeyError(key)
-            return self._data[key]
-
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                if traced_values[key] == self._TOMBSTONE_VALUE:
+        for h in self.history:
+            if key in h.data:
+                if h.data[key] == self._TOMBSTONE_VALUE:
                     raise KeyError(key)
-                return traced_values[key]
+                return h.data[key]
 
-        if self._prev is not None:
-            return self._prev[key]
+            for traced_values in filter(lambda v: type(v) == TracedData, h.data.values()):
+                if key in traced_values:
+                    if traced_values[key] == self._TOMBSTONE_VALUE:
+                        raise KeyError(key)
+                    return traced_values[key]
 
         raise KeyError(key)
 
     def get(self, key, default=None):
-        if key in self._data:
-            if self._data[key] == self._TOMBSTONE_VALUE:
-                return default
-            return self._data[key]
-
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                if traced_values[key] == self._TOMBSTONE_VALUE:
+        for h in self.history:
+            if key in h.data:
+                if h.data[key] == self._TOMBSTONE_VALUE:
                     return default
-                return traced_values[key]
+                return h.data[key]
 
-        if self._prev is not None:
-            return self._prev.get(key, default)
+            for traced_values in filter(lambda v: type(v) == TracedData, h.data.values()):
+                if key in traced_values:
+                    if traced_values[key] == self._TOMBSTONE_VALUE:
+                        return default
+                    return traced_values[key]
 
         return default
 
@@ -250,19 +260,17 @@ class TracedData(Mapping):
         return sum(1 for _ in self)
 
     def __contains__(self, key):
-        if key in self._data:
-            if self._data[key] == self._TOMBSTONE_VALUE:
-                return False
-            return True
-
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                if traced_values[key] == self._TOMBSTONE_VALUE:
+        for h in self.history:
+            if key in h.data:
+                if h.data[key] == self._TOMBSTONE_VALUE:
                     return False
                 return True
 
-        if self._prev is not None:
-            return key in self._prev
+            for traced_values in filter(lambda v: type(v) == TracedData, h.data.values()):
+                if key in traced_values:
+                    if traced_values[key] == self._TOMBSTONE_VALUE:
+                        return False
+                    return True
 
         return False
 
@@ -280,20 +288,26 @@ class TracedData(Mapping):
 
     def __eq__(self, other):
         if type(other) != TracedData:
+            print(type(other))
             return False
 
-        if set(self._data.keys()) != set(other._data.keys()):
-            return False
-
-        for key in self._data.keys():
-            if self._data[key] != other._data[key]:
+        for x, y in zip(self.history, other.history):
+            if x.metadata != y.metadata or x.sha != y.sha:
                 return False
 
-        return self._metadata == other._metadata and self._sha == other._sha and self._prev == other._prev
+            if set(x.data.keys()) != set(y.data.keys()):
+                return False
+            
+            for key in x.data.keys():
+                if x.data[key] != y.data[key]:
+                    return False
+
+        return True
 
     def copy(self):
-        # Data, Metadata, and prev are read only so no need to recursively copy those.
-        return TracedData(self._data, self._metadata, self._prev)
+        td = TracedData({}, None)
+        td.history = [h.copy() for h in self.history]
+        return td
 
     def get_history(self, key):
         """
@@ -310,13 +324,13 @@ class TracedData(Mapping):
                  The "timestamp" field contains when this update was made, using the timestamp from the update Metadata
         :rtype: list of dict
         """
-        history = [] if self._prev is None else self._prev.get_history(key)
+        history = []
+        for h in self.history:
+            for traced_values in filter(lambda v: type(v) == TracedData, h.data.values()):
+                history.extend(traced_values.get_history(key))
 
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            history.extend(traced_values.get_history(key))
-
-        if key in self._data:
-            history.append({"sha": self._sha, "value": self._data[key], "timestamp": self._metadata.timestamp})
+            if key in h.data:
+                history.append({"sha": h.sha, "value": h.data[key], "timestamp": h.metadata.timestamp})
 
         history.sort(key=lambda x: x["timestamp"])
         return history
@@ -343,17 +357,16 @@ class TracedData(Mapping):
     def serialize(self):
         serialized_history = []
 
-        traced_data = self
-        while traced_data is not None:
+        for h in self.history:
             serialized_history.append(
                 {
-                    "Data": {k: v for k, v in traced_data._data.items() if type(v) != TracedData},
-                    "NestedTracedData": {k: v.serialize() for k, v in traced_data._data.items() if type(v) == TracedData},
-                    "SHA": traced_data._sha,
-                    "Metadata": traced_data._metadata.serialize(),
+                    "Data": {k: v for k, v in h.data.items() if type(v) != TracedData},
+                    "NestedTracedData": {k: v.serialize() for k, v in h.data.items() if
+                                         type(v) == TracedData},
+                    "SHA": h.sha,
+                    "Metadata": h.metadata.serialize()
                 }
             )
-            traced_data = traced_data._prev
 
         return serialized_history
 
@@ -372,8 +385,8 @@ class TracedData(Mapping):
                 traced_data = cls(data, metadata)
             else:
                 traced_data.append_data(data, metadata)
-            assert traced_data._sha == sha
-        
+            assert traced_data.history[0].sha == sha
+
         return traced_data
 
     @staticmethod
@@ -485,8 +498,8 @@ class _TracedDataKeysIterator(Iterator):
     def __init__(self, traced_data, seen_keys=None):
         if seen_keys is None:
             seen_keys = set()
-        self.traced_data = traced_data
-        self.next_keys = iter(traced_data._data)
+        self.remaining_history = [x for x in traced_data.history]
+        self.next_keys = iter(traced_data.history[0].data)
         self.next_traced_datas = []
         self.seen_keys = seen_keys
 
@@ -499,15 +512,16 @@ class _TracedDataKeysIterator(Iterator):
             try:
                 while True:
                     key = next(self.next_keys)
+                    value = self.remaining_history[0].data[key]
 
-                    if self.traced_data._data[key] == TracedData._TOMBSTONE_VALUE:
+                    if value == TracedData._TOMBSTONE_VALUE:
                         self.seen_keys.add(key)
                         continue
 
                     # If this key points to another TracedData, add that TracedData to a queue of objects to return 
                     # after returning the other keys
-                    if type(self.traced_data[key]) == TracedData:
-                        self.next_traced_datas.append(_TracedDataKeysIterator(self.traced_data[key], self.seen_keys))
+                    if type(value) == TracedData:
+                        self.next_traced_datas.append(_TracedDataKeysIterator(value, self.seen_keys))
                         continue
 
                     if key not in self.seen_keys:
@@ -522,8 +536,8 @@ class _TracedDataKeysIterator(Iterator):
                     except StopIteration:
                         self.next_traced_datas.pop(0)
 
-                # We ran out of keys which we haven't yet returned. Try the prev TracedData.
-                self.traced_data = self.traced_data._prev
-                if self.traced_data is None:
+                # We ran out of keys which we haven't yet returned. Try the next history.
+                self.remaining_history.pop(0)
+                if len(self.remaining_history) == 0:
                     raise StopIteration()
-                self.next_keys = iter(self.traced_data._data)
+                self.next_keys = iter(self.remaining_history[0].data)

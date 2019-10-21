@@ -358,7 +358,7 @@ class TestTracedDataAppendTracedData(unittest.TestCase):
 
         self.assertDictEqual(
             TracedData._replace_traced_with_sha({"phone": "+441632000001", "demog_1": demog_1_td}),
-            {"phone": "+441632000001", "demog_1": demog_1_td._sha}
+            {"phone": "+441632000001", "demog_1": demog_1_td.history[0].sha}
         )
 
     def test___get_item__(self):
