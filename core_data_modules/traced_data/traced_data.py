@@ -147,7 +147,7 @@ class TracedData(Mapping):
         self.history.insert(0, _Update(
             new_data,
             new_metadata,
-            self._sha_with_prev(new_data, self.history[-1].sha)
+            self._sha_with_prev(new_data, self.history[0].sha)
         ))
 
     def append_traced_data(self, key_of_appended, traced_data, new_metadata):
@@ -385,7 +385,8 @@ class TracedData(Mapping):
                 traced_data = cls(data, metadata)
             else:
                 traced_data.append_data(data, metadata)
-            assert traced_data.history[0].sha == sha
+            assert traced_data.history[0].sha == sha, f"SHAs mismatch: SHA is {traced_data.history[0].sha} after " \
+                                                      f"import, but was {sha} in the original file"
 
         return traced_data
 
