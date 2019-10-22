@@ -288,7 +288,6 @@ class TracedData(Mapping):
 
     def __eq__(self, other):
         if type(other) != TracedData:
-            print(type(other))
             return False
 
         for x, y in zip(self.history, other.history):
