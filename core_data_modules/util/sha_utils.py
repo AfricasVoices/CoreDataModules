@@ -43,21 +43,21 @@ class SHAUtils(object):
         return cls.sha_string(cls.stringify_dict(d))
 
     @classmethod
-    def sha_file_at_path(cls, file_path, block_size=65536):
+    def sha_file_at_path(cls, file_path, read_block_size=65536):
         """
         Hashes the file at the provided path using the SHA-256 algorithm.
         
         :param file_path: Path to the file to compute the SHA of.
         :type file_path: str
-        :param block_size: When reading the file, the number of bytes to read at once. 
-        :type block_size: int
+        :param read_block_size: When reading the file, the number of bytes to read at once. 
+        :type read_block_size: int
         :return: SHA-256 hash of the file.
         :rtype: str
         """
         sha = hashlib.sha256()
         with open(file_path, "rb") as f:
             while True:
-                chunk = f.read(block_size)
+                chunk = f.read(read_block_size)
                 if not chunk:
                     break
                 sha.update(chunk)
