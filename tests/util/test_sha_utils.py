@@ -14,3 +14,12 @@ class TestSHAUtils(unittest.TestCase):
             SHAUtils.sha_string(""),
             "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         )
+
+    def test_sha_file(self):
+        self.assertEqual(
+            # 6.3 KiB file of random base64 data and new lines
+            SHAUtils.sha_file_at_path("tests/util/resources/sha_test_data.txt", 2048),
+
+            # Sha of file computed using `$ shasum -a 256 tests/util/resources/sha_test_data.txt`
+            "24244c9751746fad483dbc72a97c7d2d406dbead491c9d2e0dab26503f361c58"
+        )
