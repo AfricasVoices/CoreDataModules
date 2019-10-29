@@ -445,6 +445,22 @@ class TracedDataJsonIO(object):
 
     @classmethod
     def flush_history_from_traced_data_iterable(cls, user, data, file_path):
+        """
+        Flushes the history of a TracedData iterable to a file.
+        
+        Each TracedData in the iterable passed in is updated to include:
+         - the latest values.
+         - the SHA of the exported file.
+         - the SHA of the previous TracedData.
+        The history is then deleted from memory.
+        
+        :param user: Identifier of the user running this program, for TracedData Metadata.
+        :type user: str
+        :param data: TracedData objects to flush the history from.
+        :type data: iterable of TracedData
+        :param file_path: Path to the file to flush the TracedData history to.
+        :type file_path: str
+        """
         with open(file_path, "w") as f:
             cls.export_traced_data_iterable_to_jsonl(data, f)
 

@@ -322,12 +322,10 @@ class TracedData(Mapping):
         Appends the current data in this object, SHAs to the previous TracedData and to the file in which the history
         can be found, then dereferences the previous history.
         
-        :param user:
-        :type user:
+        :param user: Identifier of the user running this program, for TracedData Metadata.
+        :type user: str
         :param file_sha:
-        :type file_sha:
-        :return:
-        :rtype:
+        :type file_sha: str
         """
         keep_data = {k: v for k, v in self.items()}
 
