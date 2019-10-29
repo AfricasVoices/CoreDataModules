@@ -442,3 +442,13 @@ class TracedDataJsonIO(object):
         for line in f:
             data.append(TracedData.deserialize(json.loads(line)))
         return data
+
+    @classmethod
+    def flush_history_from_traced_data_iterable(cls, user, data, file_path):
+        with open(file_path, "w") as f:
+            cls.export_traced_data_iterable_to_jsonl(data, f)
+
+        file_sha = SHAUtils.sha_file_at_path(file_path)
+
+        for td in data:
+            td.clear_history(user, file_sha)

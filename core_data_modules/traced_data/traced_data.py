@@ -2,6 +2,7 @@ import inspect
 import time
 from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
 
+from core_data_modules.util import TimeUtils
 from core_data_modules.util.sha_utils import SHAUtils
 
 
@@ -315,6 +316,26 @@ class TracedData(Mapping):
 
         history.sort(key=lambda x: x["timestamp"])
         return history
+
+    def clear_history(self, user, file_sha):
+        """
+        Appends the current data in this object, SHAs to the previous TracedData and to the file in which the history
+        can be found, then dereferences the previous history.
+        
+        :param user:
+        :type user:
+        :param file_sha:
+        :type file_sha:
+        :return:
+        :rtype:
+        """
+        keep_data = {k: v for k, v in self.items()}
+
+        keep_data["_PrevTracedDataFileSHA"] = file_sha
+        keep_data["_PrevTracedDataSHA"] = self._sha
+
+        self.append_data(keep_data, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+        self._prev = None
 
     def serialize(self):
         serialized_history = []
