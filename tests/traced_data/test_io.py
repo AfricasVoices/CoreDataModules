@@ -428,7 +428,7 @@ class TestTracedDataJsonIO(unittest.TestCase):
         self.assertListEqual(expected, imported)
 
     def test_flush_history_from_traced_data_iterable(self):
-        history_file_path = path.join(self.test_dir, "flush_test_history.json")
+        history_file_path = path.join(self.test_dir, "flush_test_history.jsonl")
 
         data = self.generate_test_data()
         data_0_sha = data[0].get_sha()
@@ -436,7 +436,7 @@ class TestTracedDataJsonIO(unittest.TestCase):
 
         TracedDataJsonIO.flush_history_from_traced_data_iterable("test_user", data, history_file_path)
 
-        self.assertTrue(filecmp.cmp(history_file_path, "tests/traced_data/resources/flush_history_expected_history.json"))
+        self.assertTrue(filecmp.cmp(history_file_path, "tests/traced_data/resources/flush_history_expected_history.jsonl"))
         self.assertEqual(len(data[1].get_history("Gender")), 1)
         self.assertEqual(data[0]["_PrevTracedDataSHA"], data_0_sha)
 
