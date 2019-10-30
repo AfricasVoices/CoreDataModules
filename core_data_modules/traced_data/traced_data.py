@@ -118,6 +118,9 @@ class TracedData(Mapping):
         self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha)
         self._metadata = metadata
 
+    def get_sha(self):
+        return self._sha
+
     def append_data(self, new_data, new_metadata):
         """
         Updates this object with the provided key-value pairs.
@@ -324,7 +327,7 @@ class TracedData(Mapping):
         
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
-        :param file_sha:
+        :param file_sha: SHA of the file containing the history of this TracedData (and possibly other objects).
         :type file_sha: str
         """
         keep_data = {k: v for k, v in self.items()}
