@@ -440,7 +440,6 @@ class TestTracedDataJsonIO(unittest.TestCase):
         self.assertEqual(len(data[1].get_history("Gender")), 1)
         self.assertEqual(data[0]["_PrevTracedDataSHA"], data_0_sha)
 
-
     def test_round_trip(self):
         expected = self.generate_test_data()
         temp_file = tempfile.NamedTemporaryFile()
