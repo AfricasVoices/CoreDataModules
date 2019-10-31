@@ -337,6 +337,7 @@ class TracedData(Mapping):
 
         self.append_data(keep_data, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
         self._prev = None
+        self._sha = self._sha_with_prev(self._data, None)
 
     def serialize(self):
         serialized_history = []

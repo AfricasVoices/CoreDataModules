@@ -440,6 +440,13 @@ class TestTracedDataJsonIO(unittest.TestCase):
         self.assertEqual(len(data[1].get_history("Gender")), 1)
         self.assertEqual(data[0]["_PrevTracedDataSHA"], data_0_sha)
 
+        # Test the remaining data can be round-tripped
+        latest_file_path = path.join(self.test_dir, "flush_test_latest.jsonl")
+        with open(latest_file_path, "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_jsonl(data, f)
+        with open(latest_file_path, "r") as f:
+            TracedDataJsonIO.import_jsonl_to_traced_data_iterable(f)
+
     def test_round_trip(self):
         expected = self.generate_test_data()
         temp_file = tempfile.NamedTemporaryFile()
