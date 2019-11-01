@@ -27,6 +27,17 @@ class Metadata(object):
 
     def __eq__(self, other):
         return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
+    
+    def serialize(self):
+        return {
+            "User": self.user,
+            "Source": self.source,
+            "Timestamp": self.timestamp
+        }
+
+    @classmethod
+    def deserialize(cls, d):
+        return cls(d["User"], d["Source"], d["Timestamp"])
 
     @staticmethod
     def get_call_location():
@@ -90,6 +101,7 @@ class TracedData(Mapping):
     >>> traced_data["gender"]
     'f'
     """
+    _TOMBSTONE_VALUE = "#HIDDEN-VALUE-44dce0a0-e79c-48cf-8d8e-ec59137ef0d0"
 
     def __init__(self, data, metadata, _prev=None):
         """
@@ -143,6 +155,26 @@ class TracedData(Mapping):
 
         self.append_data({key_of_appended: traced_data}, new_metadata)
 
+    def hide_keys(self, keys, new_metadata):
+        """
+        Hides the given keys from this TracedData.
+
+        Analogous to deleting keys from a Python dictionary, in that hidden keys will not be returned from this
+        TracedData, and requests for hidden keys will raise KeyErrors. However, the keys will be preserved in the
+        TracedData history.
+
+        :param keys: Keys to hide in this TracedData
+        :type keys: iterable of str
+        :param new_metadata: Metadata about this update
+        :type new_metadata: Metadata
+        """
+        # Check that all the keys to be hidden are actually in this TracedData.
+        for key in keys:
+            if key not in self:
+                raise KeyError(key)
+
+        self.append_data({k: self._TOMBSTONE_VALUE for k in keys}, new_metadata)
+
     @staticmethod
     def _replace_traced_with_sha(data):
         """
@@ -177,10 +209,14 @@ class TracedData(Mapping):
 
     def __getitem__(self, key):
         if key in self._data:
+            if self._data[key] == self._TOMBSTONE_VALUE:
+                raise KeyError(key)
             return self._data[key]
 
         for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
             if key in traced_values:
+                if traced_values[key] == self._TOMBSTONE_VALUE:
+                    raise KeyError(key)
                 return traced_values[key]
 
         if self._prev is not None:
@@ -190,10 +226,14 @@ class TracedData(Mapping):
 
     def get(self, key, default=None):
         if key in self._data:
+            if self._data[key] == self._TOMBSTONE_VALUE:
+                return default
             return self._data[key]
 
         for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
             if key in traced_values:
+                if traced_values[key] == self._TOMBSTONE_VALUE:
+                    return default
                 return traced_values[key]
 
         if self._prev is not None:
@@ -206,10 +246,14 @@ class TracedData(Mapping):
 
     def __contains__(self, key):
         if key in self._data:
+            if self._data[key] == self._TOMBSTONE_VALUE:
+                return False
             return True
 
         for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
             if key in traced_values:
+                if traced_values[key] == self._TOMBSTONE_VALUE:
+                    return False
                 return True
 
         if self._prev is not None:
@@ -271,6 +315,42 @@ class TracedData(Mapping):
 
         history.sort(key=lambda x: x["timestamp"])
         return history
+
+    def serialize(self):
+        serialized_history = []
+
+        traced_data = self
+        while traced_data is not None:
+            serialized_history.append(
+                {
+                    "Data": {k: v for k, v in traced_data._data.items() if type(v) != TracedData},
+                    "NestedTracedData": {k: v.serialize() for k, v in traced_data._data.items() if type(v) == TracedData},
+                    "SHA": traced_data._sha,
+                    "Metadata": traced_data._metadata.serialize(),
+                }
+            )
+            traced_data = traced_data._prev
+
+        return serialized_history
+
+    @classmethod
+    def deserialize(cls, serialized_history):
+        traced_data = None
+
+        for d in reversed(serialized_history):
+            data = d["Data"]
+            for k, v in d["NestedTracedData"].items():
+                data[k] = cls.deserialize(v)
+            sha = d["SHA"]
+            metadata = Metadata.deserialize(d["Metadata"])
+
+            if traced_data is None:
+                traced_data = cls(data, metadata)
+            else:
+                traced_data.append_data(data, metadata)
+            assert traced_data._sha == sha
+        
+        return traced_data
 
     @staticmethod
     def join_iterables(user, join_on_key, data_1, data_2, data_2_label):
@@ -395,6 +475,10 @@ class _TracedDataKeysIterator(Iterator):
             try:
                 while True:
                     key = next(self.next_keys)
+
+                    if self.traced_data._data[key] == TracedData._TOMBSTONE_VALUE:
+                        self.seen_keys.add(key)
+                        continue
 
                     # If this key points to another TracedData, add that TracedData to a queue of objects to return 
                     # after returning the other keys

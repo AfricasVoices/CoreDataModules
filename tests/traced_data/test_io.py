@@ -11,7 +11,7 @@ from unittest import mock
 
 from core_data_modules.cleaners import Codes, english
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
-from core_data_modules.data_models import Scheme
+from core_data_modules.data_models import CodeScheme
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.io import TracedDataCSVIO, TracedDataJsonIO, \
     _td_type_error_string, TracedDataCodaV2IO
@@ -69,7 +69,7 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         # Load gender scheme
         with open("tests/traced_data/resources/coda_2_gender_scheme.json") as f:
-            gender_scheme = Scheme.from_firebase_map(json.load(f))
+            gender_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         # Apply the English gender cleaner
         with mock.patch("core_data_modules.util.TimeUtils.utc_now_as_iso_string") as time_mock, \
@@ -175,10 +175,10 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         # Load schemes
         with open("tests/traced_data/resources/coda_2_district_scheme.json") as f:
-            district_scheme = Scheme.from_firebase_map(json.load(f))
+            district_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         with open("tests/traced_data/resources/coda_2_zone_scheme.json") as f:
-            zone_scheme = Scheme.from_firebase_map(json.load(f))
+            zone_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         def make_location_label(scheme, value):
             if value in {Codes.TRUE_MISSING, Codes.SKIPPED, Codes.NOT_CODED}:
@@ -256,7 +256,7 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
 
         # Load gender scheme
         with open("tests/traced_data/resources/coda_2_msg_scheme.json") as f:
-            msg_scheme = Scheme.from_firebase_map(json.load(f))
+            msg_scheme = CodeScheme.from_firebase_map(json.load(f))
 
         # Export to a Coda 2 messages file
         with open(file_path, "w") as f:
@@ -387,53 +387,59 @@ class TestTracedDataJsonIO(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    def test_export_traced_data_iterable_to_json(self):
+    @staticmethod
+    def generate_test_data():
+        test_data = list(generate_traced_data_iterable())
+
+        test_data[1].append_data({"Gender": "f", "Gender_Coded": "Female"},
+                                 Metadata("test_user", "gender_coder", 10))
+
+        test_data[2].append_traced_data("Age_Data",
+                                        TracedData({"age": 4}, Metadata("test_user", "age_generator", 11)),
+                                        Metadata("test_user", "age_merger", 12))
+
+        return test_data
+
+    def test_export_traced_data_iterable_to_jsonl(self):
         file_path = path.join(self.test_dir, "json_test.json")
 
         # Test exporting wrong data type
-        data = list(generate_traced_data_iterable())
+        data = self.generate_test_data()
         with open(file_path, "w") as f:
             try:
-                TracedDataJsonIO.export_traced_data_iterable_to_json(data[0], f)
+                TracedDataJsonIO.export_traced_data_iterable_to_jsonl(data[0], f)
                 self.fail("Exporting the wrong data type did not raise an assertion error")
             except AssertionError as e:
                 self.assertEquals(str(e), _td_type_error_string)
 
         # Test normal export
-        data = generate_traced_data_iterable()
+        data = self.generate_test_data()
         with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f)
+            TracedDataJsonIO.export_traced_data_iterable_to_jsonl(data, f)
         self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected.json"))
 
-        # Test normal export with pretty print enabled
-        data = generate_traced_data_iterable()
-        with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-        self.assertTrue(filecmp.cmp(file_path, "tests/traced_data/resources/json_export_expected_pretty_print.json"))
-
-        # Test export for appended TracedData
-        data = [generate_appended_traced_data()]
-        with open(file_path, "w") as f:
-            TracedDataJsonIO.export_traced_data_iterable_to_json(data, f, pretty_print=True)
-        self.assertTrue(filecmp.cmp(
-                file_path, "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
-            ))
-
     def test_import_json_to_traced_data_iterable(self):
-        # Test simple TracedData case
         file_path = "tests/traced_data/resources/json_export_expected.json"
-        expected = list(generate_traced_data_iterable())
+        expected = self.generate_test_data()
 
         with open(file_path, "r") as f:
-            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+            imported = list(TracedDataJsonIO.import_jsonl_to_traced_data_iterable(f))
 
         self.assertListEqual(expected, imported)
 
-        # Test appended TracedData case
-        file_path = "tests/traced_data/resources/json_export_expected_append_traced_data_pretty_print.json"
-        expected = [generate_appended_traced_data()]
+    def test_round_trip(self):
+        expected = self.generate_test_data()
+        temp_file = tempfile.NamedTemporaryFile()
 
-        with open(file_path, "r") as f:
-            imported = list(TracedDataJsonIO.import_json_to_traced_data_iterable(f))
+        with open(temp_file.name, "w") as f:
+            TracedDataJsonIO.export_traced_data_iterable_to_jsonl(expected, f)
 
-        self.assertListEqual(expected, imported)
+        with open(temp_file.name, "r") as f:
+            imported = list(TracedDataJsonIO.import_jsonl_to_traced_data_iterable(f))
+
+        self.assertEqual(len(expected), len(imported))
+        for x, y in zip(expected, imported):
+            x_attributes = {k: getattr(x, k) for k in dir(x) if not k.startswith("__") and not callable(getattr(x, k))}
+            y_attributes = {k: getattr(y, k) for k in dir(y) if not k.startswith("__") and not callable(getattr(y, k))}
+
+            self.assertDictEqual(x_attributes, y_attributes)

@@ -3,7 +3,6 @@ import io
 import json
 import time
 
-import jsonpickle
 import pytz
 from dateutil.parser import isoparse
 
@@ -156,7 +155,7 @@ class TracedDataCodaV2IO(object):
             # Export labels for this row which are not Codes.NOT_CODED
             labels = []
             for coded_key, scheme in scheme_key_map.items():
-                if coded_key in td and scheme.get_code_with_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
+                if coded_key in td and scheme.get_code_with_code_id(td[coded_key]["CodeID"]).control_code != Codes.NOT_CODED:
                     labels.append(Label.from_firebase_map(td[coded_key]))
 
             # Create a Coda message object for this row
@@ -406,44 +405,40 @@ class TracedDataCSVIO(object):
 
 class TracedDataJsonIO(object):
     @staticmethod
-    def export_traced_data_iterable_to_json(data, f, pretty_print=False):
+    def export_traced_data_iterable_to_jsonl(data, f):
         """
-        Exports a collection of TracedData objects to a JSON file.
+        Exports a collection of TracedData objects to a JSONL file.
 
         The original TracedData objects which are exported by this function are fully recoverable from the emitted
-        JSON using TracedDataJsonIO.import_json_to_traced_data_iterable.
+        JSONL using TracedDataJsonIO.import_jsonl_to_traced_data_iterable.
 
         :param data: TracedData objects to export.
         :type data: iterable of TracedData
         :param f: File to export the TracedData objects to.
         :type f: file-like
-        :param pretty_print: Whether to format the JSON with line breaks, indentation, and alphabetised keys.
-        :type pretty_print: bool
         """
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
 
-        # Serialize the list of TracedData to a format which can be trivially deserialized.
-        if pretty_print:
-            jsonpickle.set_encoder_options("json", sort_keys=True, indent=2, separators=(", ", ": "))
-        else:
-            jsonpickle.set_encoder_options("json", sort_keys=True)
-
-        f.write(jsonpickle.dumps(data))
-        f.write("\n")
+        for td in data:
+            json.dump(td.serialize(), f, sort_keys=True)
+            f.write("\n")
 
     @staticmethod
-    def import_json_to_traced_data_iterable(f):
+    def import_jsonl_to_traced_data_iterable(f):
         """
-        Imports a JSON file to TracedData objects.
+        Imports a JSONL file to TracedData objects.
 
-        Note that the JSON file must be a serialized representation of TracedData objects in jsonpickle format
-        e.g. as produced by TracedDataJsonIO.export_traced_data_iterable_to_json.
+        Note that the JSONL file must be a serialized representation of TracedData objects in the format
+        as produced by TracedDataJsonIO.export_traced_data_iterable_to_json.
 
-        :param f: File to import JSON from.
+        :param f: File to import JSONL from.
         :type f: file-like
-        :return: TracedData objects deserialized from the JSON file.
+        :return: TracedData objects deserialized from the JSONL file.
         :rtype: generator of TracedData
         """
-        return jsonpickle.decode(f.read())
+        data = []
+        for line in f:
+            data.append(TracedData.deserialize(json.loads(line)))
+        return data
