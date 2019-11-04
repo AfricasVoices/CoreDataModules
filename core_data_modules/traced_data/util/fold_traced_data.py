@@ -360,7 +360,7 @@ class FoldTracedData(object):
         td.append_data({key: value for key in keys}, Metadata(user, Metadata.get_call_location(), time.time()))
 
     @classmethod
-    def fold_traced_data(cls, user, td_1, td_2, equal_keys=frozenset(), concat_keys=frozenset(),
+    def fold_traced_data(cls, user, td_1, td_2, equal_keys=frozenset(), equal_label_keys=frozenset(), concat_keys=frozenset(),
                          matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
                          binary_keys=frozenset(), concat_delimiter=";"):
         """
@@ -397,6 +397,7 @@ class FoldTracedData(object):
         td_2 = td_2.copy()
 
         cls.assert_equal_keys_equal(td_1, td_2, equal_keys)
+        cls.assert_labels_equal(td_1, td_2, equal_label_keys)
         cls.reconcile_keys_by_concatenation(user, td_1, td_2, concat_keys, concat_delimiter)
         cls.reconcile_matrix_keys(user, td_1, td_2, matrix_keys)
         cls.reconcile_boolean_keys(user, td_1, td_2, bool_keys)
@@ -419,7 +420,7 @@ class FoldTracedData(object):
         return folded_td
 
     @classmethod
-    def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys=frozenset(), concat_keys=frozenset(),
+    def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys=frozenset(), equal_label_keys=frozenset(), concat_keys=frozenset(),
                                      matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
                                      binary_keys=frozenset(), concat_delimiter=";"):
         """
@@ -458,7 +459,7 @@ class FoldTracedData(object):
         return cls.fold_groups(
             cls.group_by(data, fold_id_fn),
             lambda td_1, td_2: cls.fold_traced_data(
-                user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys,
+                user, td_1, td_2, equal_keys, equal_label_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys,
                 binary_keys, concat_delimiter
             )
         )
