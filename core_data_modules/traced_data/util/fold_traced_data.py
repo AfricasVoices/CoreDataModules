@@ -75,6 +75,7 @@ class FoldTracedData(object):
     @staticmethod
     def assert_labels_equal(td_1, td_2, label_keys):
         for key in label_keys:
+            print(td_1.uid, td_2.uid, td_1.get(key), td_2.get(key))
             assert td_1.get(key)["CodeID"] == td_2.get(key)["CodeID"]
 
     @staticmethod
