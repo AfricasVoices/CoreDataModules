@@ -73,6 +73,41 @@ class FoldTracedData(object):
                                                    "respectively)".format(key, td_1.get(key), td_2.get(key))
 
     @staticmethod
+    def assert_labels_equal(td_1, td_2, label_keys):
+        for key in label_keys:
+            assert td_1.get(key)["CodeID"] == td_2.get(key)["CodeID"]
+
+    @staticmethod
+    def reconcile_list_of_labels(user, td_1, td_2, list_of_labels_keys):
+        merged_dict = dict()
+        
+        for key in list_of_labels_keys:
+            merged_list = []
+            for label in td_1[key] + td_2[key]:
+                if label["CodeID"] not in merged_list:
+                    merged_list.append(label)
+            merged_dict[key] = merged_list
+
+        td_1.append_data(merged_dict, Metadata(user, Metadata.get_call_location(), time.time()))
+        td_2.append_data(merged_dict, Metadata(user, Metadata.get_call_location(), time.time()))
+
+    # @staticmethod
+    # def reconcile_yes_no_amb_labels(user, td_1, td_2, yes_no_amb_label_keys):
+    #     for key in yes_no_amb_label_keys:
+    #         if cls._is_control_code(td_1.get(key)) and cls._is_control_code(td_2.get(key)):
+    #             binary_dict[key] = cls.reconcile_missing_values(td_1.get(key), td_2.get(key))
+    #         elif cls._is_control_code(td_1.get(key)):
+    #             binary_dict[key] = td_2.get(key)
+    #         elif cls._is_control_code(td_2.get(key)):
+    #             binary_dict[key] = td_1.get(key)
+    #         elif td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE or td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE:
+    #             binary_dict[key] = cls.AMBIVALENT_BINARY_VALUE
+    #         elif td_1.get(key) == td_2.get(key):
+    #             binary_dict[key] = td_1.get(key)
+    #         else:
+    #             binary_dict[key] = cls.AMBIVALENT_BINARY_VALUE
+
+    @staticmethod
     def _is_control_code(code):
         return code in {
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
