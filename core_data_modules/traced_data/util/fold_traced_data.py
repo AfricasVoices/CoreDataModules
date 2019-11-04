@@ -406,6 +406,7 @@ class FoldTracedData(object):
         cls.reconcile_binary_keys(user, td_1, td_2, binary_keys)
 
         equal_keys = set(equal_keys)
+        equal_keys.update(equal_label_keys)
         equal_keys.update(concat_keys)
         equal_keys.update(matrix_keys)
         equal_keys.update(bool_keys)
