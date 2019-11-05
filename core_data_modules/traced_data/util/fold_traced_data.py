@@ -73,10 +73,13 @@ class FoldTracedData(object):
                                                    "respectively)".format(key, td_1.get(key), td_2.get(key))
 
     @staticmethod
-    def assert_labels_equal(td_1, td_2, label_keys):
+    def assert_labels_equal(user, td_1, td_2, label_keys):
+        d = dict()
         for key in label_keys:
-            print(td_1["uid"], td_2["uid"], td_1.get(key), td_2.get(key))
-            assert td_1.get(key)["CodeID"] == td_2.get(key)["CodeID"]
+            assert td_1[key]["CodeID"] == td_2[key]["CodeID"]
+            d[key] = td_1[key]
+        td_1.append_data(d, Metadata(user, Metadata.get_call_location(), time.time()))
+        td_2.append_data(d, Metadata(user, Metadata.get_call_location(), time.time()))
 
     @staticmethod
     def reconcile_list_of_labels(user, td_1, td_2, list_of_labels_keys):
@@ -398,7 +401,7 @@ class FoldTracedData(object):
         td_2 = td_2.copy()
 
         cls.assert_equal_keys_equal(td_1, td_2, equal_keys)
-        cls.assert_labels_equal(td_1, td_2, equal_label_keys)
+        cls.assert_labels_equal(user, td_1, td_2, equal_label_keys)
         cls.reconcile_keys_by_concatenation(user, td_1, td_2, concat_keys, concat_delimiter)
         cls.reconcile_matrix_keys(user, td_1, td_2, matrix_keys)
         cls.reconcile_boolean_keys(user, td_1, td_2, bool_keys)
