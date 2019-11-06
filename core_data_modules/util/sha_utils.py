@@ -41,3 +41,22 @@ class SHAUtils(object):
         :rtype: string
         """
         return cls.sha_string(cls.stringify_dict(d))
+
+    @classmethod
+    def sha_file_at_path(cls, file_path):
+        """
+        Hashes the file at the provided path using the SHA-256 algorithm.
+        
+        :param file_path: Path to the file to compute the SHA of.
+        :type file_path: str
+        :return: SHA-256 hash of the file.
+        :rtype: str
+        """
+        sha = hashlib.sha256()
+        with open(file_path, "rb") as f:
+            while True:
+                chunk = f.read(65536)
+                if not chunk:
+                    break
+                sha.update(chunk)
+            return sha.hexdigest()
