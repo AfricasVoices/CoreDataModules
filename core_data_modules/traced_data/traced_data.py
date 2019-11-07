@@ -19,8 +19,9 @@ class Metadata(object):
         :type user: str
         :param source: Identifier of the program, or similar, which generated the new data.
         :type source: str
-        :param timestamp: When the updated data was generated.
-        :type timestamp: float
+        :param timestamp: When the updated data was generated, in timezone-aware ISO 8601 format.
+                          e.g. 2019-08-13T21:20:22+00:00
+        :type timestamp: str
         """
         self.user = user
         self.source = source
