@@ -22,6 +22,10 @@ class TestReconciliationFunctions(unittest.TestCase):
                              "Values should be the same but are different "
                              "(differing values were '6' and '7')")
 
+    def test_control_code(self):
+        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
+        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
+
     def test_concatenate(self):
         self.assertEqual(FoldStrategies.concatenate("abc", "def"), "abc;def")
         self.assertEqual(FoldStrategies.concatenate("abc", ""), "abc;")
@@ -40,10 +44,6 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_0, Codes.MATRIX_1), Codes.MATRIX_1)
         self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_1, Codes.MATRIX_0), Codes.MATRIX_1)
         self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_0, Codes.MATRIX_0), Codes.MATRIX_0)
-
-    def test_control_code(self):
-        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
-        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
 
 
 class TestFoldTracedData(unittest.TestCase):
