@@ -29,6 +29,8 @@ class FoldStrategies(object):
 
     @staticmethod
     def _is_control_code(code):
+        # TODO: If we move this function to `Codes`, that will reduce the risk of us updating Core but not updating
+        #       the body of this function.
         return code in {
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
             Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
