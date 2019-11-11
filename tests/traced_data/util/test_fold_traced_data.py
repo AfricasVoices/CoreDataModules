@@ -29,6 +29,11 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertEqual(FoldStrategies.concatenate("", "def"), ";def")
         self.assertEqual(FoldStrategies.concatenate(None, "def"), "def")
         self.assertEqual(FoldStrategies.concatenate(None, None), None)
+        
+    def test_boolean_or(self):
+        self.assertEqual(FoldStrategies.boolean_or(Codes.TRUE, Codes.TRUE), Codes.TRUE)
+        self.assertEqual(FoldStrategies.boolean_or(Codes.FALSE, Codes.TRUE), Codes.TRUE)
+        self.assertEqual(FoldStrategies.boolean_or(Codes.FALSE, Codes.FALSE), Codes.FALSE)
 
     def test_matrix(self):
         self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_1, Codes.MATRIX_1), Codes.MATRIX_1)
