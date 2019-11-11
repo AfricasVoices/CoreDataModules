@@ -2,7 +2,85 @@ import time
 
 from core_data_modules.cleaners import Codes
 from core_data_modules.traced_data import Metadata
+from core_data_modules.util import TimeUtils
 
+
+class FoldStrategies(object):
+    """
+    Standard reconciliation functions for use when folding.
+    
+    All reconciliation functions take two values, apply some logic to produce the
+    """
+    AMBIVALENT_BINARY_VALUE = "ambivalent"
+
+    @staticmethod
+    def assert_equal(x, y):
+        assert x == y, f"Values should be the same but are different (differing values were '{x}' and '{y}')"
+        return x
+
+    @staticmethod
+    def concatenate(x, y):
+        return f"{x};{y}"
+
+    @staticmethod
+    def _is_control_code(code):
+        return code in {
+            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
+        }
+
+    @staticmethod
+    def control_code(x, y):
+        # Precedence order in case of conflicts; highest precedence first
+        precedence_order = [
+            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
+        ]
+
+        assert x in precedence_order, "value_1 ('{}') not a missing or stop code".format(x)
+        assert y in precedence_order, "value_2 ('{}') not a missing or stop code".format(y)
+
+        if precedence_order.index(x) <= precedence_order.index(y):
+            return x
+        else:
+            return y
+        
+    @staticmethod
+    def boolean_or(x, y):
+        assert x in {Codes.TRUE, Codes.FALSE}
+        assert y in {Codes.TRUE, Codes.FALSE}
+
+        if x == Codes.TRUE or y == Codes.TRUE:
+            return Codes.TRUE
+        else:
+            return Codes.FALSE
+        
+    @staticmethod
+    def matrix(x, y):
+        # TODO: Do the pipelines still need this check?
+        if x == Codes.STOP or y == Codes.STOP:
+            return Codes.STOP
+        
+        if x == Codes.MATRIX_1 or y == Codes.MATRIX_1:
+            return Codes.MATRIX_1
+        else:
+            return Codes.MATRIX_0
+
+    @classmethod
+    def yes_no_amb(cls, x, y):
+        if cls._is_control_code(x) and cls._is_control_code(y):
+            return cls.control_code(x, y)
+        elif cls._is_control_code(x):
+            return y
+        elif cls._is_control_code(y):
+            return x
+        elif x == cls.AMBIVALENT_BINARY_VALUE or y == cls.AMBIVALENT_BINARY_VALUE:
+            return cls.AMBIVALENT_BINARY_VALUE
+        elif x == y:
+            return x
+        else:
+            return cls.AMBIVALENT_BINARY_VALUE
+        
 
 class FoldTracedData(object):
     AMBIVALENT_BINARY_VALUE = "ambivalent"
@@ -324,107 +402,33 @@ class FoldTracedData(object):
         """
         td.append_data({key: value for key in keys}, Metadata(user, Metadata.get_call_location(), time.time()))
 
-    @classmethod
-    def fold_traced_data(cls, user, td_1, td_2, equal_keys=frozenset(), concat_keys=frozenset(),
-                         matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
-                         binary_keys=frozenset(), concat_delimiter=";"):
-        """
-        Folds two TracedData object into a new TracedData object.
-
-        Use the '*_keys' parameters to control how different parameters should be reconciled when folding.
-        Keys not included in any of these parameters will be set to the value 'MERGED'.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param td_1: First TracedData object to fold.
-        :type td_1: TracedData
-        :param td_2: Second TracedData object to fold.
-        :type td_2: TracedData
-        :param equal_keys: Keys to assert are equal, using FoldTracedData.assert_equal_keys_equal
-        :type equal_keys: iterable of str
-        :param concat_keys: Keys to fold by string concatenation, using FoldTracedData.reconcile_keys_by_concatenation.
-                            Concatenated values take the form <td_1[key]><concat_delimiter><td_2[key]>.
-        :type concat_keys: iterable of str
-        :param matrix_keys: Keys to fold using FoldTracedData.reconcile_matrix_keys.
-        :type matrix_keys: iterable of str
-        :param bool_keys: Boolean keys, to fold using FoldTracedData.reconcile_boolean_keys.
-        :type bool_keys: iterable of str
-        :param yes_no_keys: Yes/No keys, to fold using FoldTracedData.reconcile_yes_no_keys.
-        :type yes_no_keys: iterable of str
-        :param binary_keys: X/Y/ambivalent keys, to fold using FoldTracedData.reconcile_binary_keys.
-        :type binary_keys: iterable of str
-        :param concat_delimiter: String to separate the concatenated strings with.
-        :type concat_delimiter: str
-        :return: td_1 folded with td_2.
-        :rtype: TracedData
-        """
+    @staticmethod
+    def fold_traced_data(user, td_1, td_2, reconciliation_strategies):  # r_strategies: dict of (key -> strategy func)
         td_1 = td_1.copy()
         td_2 = td_2.copy()
+        
+        reconciled_dict = dict()
 
-        cls.assert_equal_keys_equal(td_1, td_2, equal_keys)
-        cls.reconcile_keys_by_concatenation(user, td_1, td_2, concat_keys, concat_delimiter)
-        cls.reconcile_matrix_keys(user, td_1, td_2, matrix_keys)
-        cls.reconcile_boolean_keys(user, td_1, td_2, bool_keys)
-        cls.reconcile_yes_no_keys(user, td_1, td_2, yes_no_keys)
-        cls.reconcile_binary_keys(user, td_1, td_2, binary_keys)
+        for key, strategy in reconciliation_strategies.items():
+            reconciled_dict[key] = strategy(td_1[key], td_2[key])
 
-        equal_keys = set(equal_keys)
-        equal_keys.update(concat_keys)
-        equal_keys.update(matrix_keys)
-        equal_keys.update(bool_keys)
-        equal_keys.update(yes_no_keys)
-        equal_keys.update(binary_keys)
+        td_1.append_data(reconciled_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+        td_2.append_data(reconciled_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
-        cls.set_keys_to_value(user, td_1, set(td_1.keys()) - set(equal_keys))
-        cls.set_keys_to_value(user, td_2, set(td_2.keys()) - set(equal_keys))
+        td_1.hide_keys(set(td_1.keys()) - set(reconciled_dict.keys()),
+                       Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+        td_2.hide_keys(set(td_2.keys()) - set(reconciled_dict.keys()),
+                       Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
         folded_td = td_1
-        folded_td.append_traced_data("folded_with", td_2, Metadata(user, Metadata.get_call_location(), time.time()))
-
+        folded_td.append_traced_data("folded_with", td_2,
+                                     Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+        
         return folded_td
 
     @classmethod
-    def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, equal_keys=frozenset(), concat_keys=frozenset(),
-                                     matrix_keys=frozenset(), bool_keys=frozenset(), yes_no_keys=frozenset(),
-                                     binary_keys=frozenset(), concat_delimiter=";"):
-        """
-        Folds an iterable of TracedData into a new iterable of TracedData.
-
-        Objects with the same fold id (as determined by 'fold_id_fn') are folded together into a new TracedData object.
-
-        Use the '*_keys' parameters to control how different parameters should be reconciled when folding.
-        Keys not included in any of these parameters will be set to the value 'MERGED'.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param data: TracedData objects to fold.
-        :type data: iterable of TracedData
-        :param fold_id_fn: Function which generates a fold id for a TracedData object.
-                           TracedData objects with the same fold id will be folded into a single, new TracedData object.
-        :type fold_id_fn: function of TracedData -> hashable
-        :param equal_keys: Keys to assert are equal, using FoldTracedData.assert_equal_keys_equal
-        :type equal_keys: iterable of str
-        :param concat_keys: Keys to fold by string concatenation, using FoldTracedData.reconcile_keys_by_concatenation.
-                            Concatenated values take the form <td_1[key]><concat_delimiter><td_2[key]>.
-        :type concat_keys: iterable of str
-        :param matrix_keys: Keys to fold using FoldTracedData.reconcile_matrix_keys.
-        :type matrix_keys: iterable of str
-        :param bool_keys: Boolean keys, to fold using FoldTracedData.reconcile_boolean_keys.
-        :type bool_keys: iterable of str
-        :param yes_no_keys: Yes/No keys, to fold using FoldTracedData.reconcile_yes_no_keys.
-        :type yes_no_keys: iterable of str
-        :param binary_keys: X/Y/ambivalent keys, to fold using FoldTracedData.reconcile_binary_keys.
-        :type binary_keys: iterable of str
-        :param concat_delimiter: String to separate the concatenated strings with.
-        :type concat_delimiter: str
-        :return: Folded TracedData objects.
-        :rtype: iterable of TracedData
-        """
+    def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, fold_strategies):
         return cls.fold_groups(
             cls.group_by(data, fold_id_fn),
-            lambda td_1, td_2: cls.fold_traced_data(
-                user, td_1, td_2, equal_keys, concat_keys, matrix_keys, bool_keys, yes_no_keys,
-                binary_keys, concat_delimiter
-            )
+            lambda td_1, td_2: cls.fold_traced_data(user, td_1, td_2, fold_strategies)
         )
-
