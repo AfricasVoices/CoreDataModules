@@ -183,48 +183,6 @@ class FoldTracedData(object):
         else:
             return value_2
 
-    @classmethod
-    def reconcile_yes_no_keys(cls, user, td_1, td_2, keys):
-        """
-        Sets the given keys in two TracedData objects to the same yes/no/both value, using the logic given below.
-
-        The value set for each key is:
-         - Codes.STOP if either value is Codes.STOP
-         - Codes.BOTH if either value is Codes.BOTH
-         - Codes.BOTH if one value is Codes.YES and the other value is Codes.NO
-         - Codes.YES if both values are Codes.YES
-         - Codes.NO if both values are Codes.NO
-         - value 1 if value 1 is Codes.YES or Codes.NO, and value 2 is neither Codes.YES nor Codes.NO
-         - value 2 if value 2 is Codes.YES or Codes.NO, and value 1 is neither Codes.YES nor Codes.NO
-        If none of the above conditions are true, the logic of FoldTracedData.reconcile_missing_values is applied.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param td_1: TracedData object to reconcile the yes/no keys of.
-        :type td_1: TracedData
-        :param td_2: TracedData object to reconcile the yes/no keys of.
-        :type td_2: TracedData
-        :param keys: Keys in each TracedData object to reconcile.
-        :type keys: iterable of str
-        """
-        yes_no_dict = dict()
-
-        for key in keys:
-            if td_1.get(key) == Codes.STOP or td_2.get(key) == Codes.STOP:
-                yes_no_dict[key] = Codes.STOP
-            elif td_1.get(key) == Codes.BOTH or td_2.get(key) == Codes.BOTH:
-                yes_no_dict[key] = Codes.BOTH
-            elif td_1.get(key) in {Codes.YES, Codes.NO} and td_2.get(key) in {Codes.YES, Codes.NO}:
-                yes_no_dict[key] = td_1[key] if td_1[key] == td_2[key] else Codes.BOTH
-            elif td_1.get(key) in {Codes.YES, Codes.NO}:
-                yes_no_dict[key] = td_1[key]
-            elif td_2.get(key) in {Codes.YES, Codes.NO}:
-                yes_no_dict[key] = td_2[key]
-            else:
-                yes_no_dict[key] = cls.reconcile_missing_values(td_1.get(key), td_2.get(key))
-
-        td_1.append_data(yes_no_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-        td_2.append_data(yes_no_dict, Metadata(user, Metadata.get_call_location(), time.time()))
 
     @classmethod
     def reconcile_binary_keys(cls, user, td_1, td_2, keys):
