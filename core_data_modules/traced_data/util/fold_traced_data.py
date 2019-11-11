@@ -184,56 +184,6 @@ class FoldTracedData(object):
             return value_2
 
     @staticmethod
-    def reconcile_matrix_keys(user, td_1, td_2, keys):
-        """
-        Sets given keys in two TracedData objects to the same value, of Codes.MATRIX_1 if the value in either
-        of those objects is Codes.MATRIX_1, otherwise sets the values to Codes.MATRIX_0.
-
-        An exception is made for keys ending with Codes.NOT_CODED - in this case, the folded value is Codes.MATRIX_0
-        unless the value in both td_1 and td_2 is Codes.MATRIX_1.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param td_1: TracedData object to reconcile the matrix keys of.
-        :type td_1: TracedData
-        :param td_2: TracedData object to reconcile the matrix keys of.
-        :type td_2: TracedData
-        :param keys: Keys in each TracedData object to reconcile.
-        :type keys: iterable of str
-        """
-        matrix_dict = dict()
-
-        possible_matrix_values = {Codes.MATRIX_0, Codes.MATRIX_1}
-        for key in keys:
-            if td_1.get(key) == Codes.STOP or td_2.get(key) == Codes.STOP:
-                matrix_dict[key] = Codes.STOP
-                continue
-
-            # TODO: Handle the different modes of missing data
-
-            if key.endswith(Codes.NOT_CODED):
-                if td_1.get(key) == Codes.MATRIX_0 or td_2.get(key) == Codes.MATRIX_0:
-                    matrix_dict[key] = Codes.MATRIX_0
-                else:
-                    matrix_dict[key] = Codes.MATRIX_1
-                continue
-
-            assert td_1.get(key) in possible_matrix_values, \
-                "td_1.get('{}') is not '{}' or '{}' (has value '{}')".format(
-                    key, Codes.MATRIX_0, Codes.MATRIX_1, td_1.get(key))
-            assert td_2.get(key) in possible_matrix_values, \
-                "td_2.get('{}') is not '{}' or '{}' (has value '{}')".format(
-                    key, Codes.MATRIX_0, Codes.MATRIX_1, td_2.get(key))
-
-            if td_1.get(key) == Codes.MATRIX_1 or td_2.get(key) == Codes.MATRIX_1:
-                matrix_dict[key] = Codes.MATRIX_1
-            else:
-                matrix_dict[key] = Codes.MATRIX_0
-
-        td_1.append_data(matrix_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-        td_2.append_data(matrix_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-
-    @staticmethod
     def reconcile_boolean_keys(user, td_1, td_2, keys):
         """
         Sets the given keys in two TracedData objects to the same value, of Codes.TRUE if the value in either

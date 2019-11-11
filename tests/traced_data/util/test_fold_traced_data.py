@@ -98,28 +98,6 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
 
-    def test_reconcile_matrix_keys(self):
-        td_1 = TracedData(
-            {"a": Codes.MATRIX_0, "b": Codes.MATRIX_1, Codes.NOT_REVIEWED: Codes.MATRIX_1,
-             Codes.NOT_CODED: Codes.MATRIX_1, "c": Codes.STOP},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2 = TracedData(
-            {"a": Codes.MATRIX_0, "b": Codes.MATRIX_0, Codes.NOT_REVIEWED: Codes.MATRIX_0,
-             Codes.NOT_CODED: Codes.MATRIX_0, "c": Codes.MATRIX_0},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        # TODO: Update dictionaries above to test for the various cases of missing data
-
-        FoldTracedData.reconcile_matrix_keys("test_user", td_1, td_2, td_1.keys())
-
-        expected_dict = {"a": Codes.MATRIX_0, "b": Codes.MATRIX_1, Codes.NOT_REVIEWED: Codes.MATRIX_1,
-                         Codes.NOT_CODED: Codes.MATRIX_0, "c": Codes.STOP}
-        self.assertDictEqual(dict(td_1.items()), expected_dict)
-        self.assertDictEqual(dict(td_2.items()), expected_dict)
-
     def test_reconcile_boolean_keys(self):
         td_1 = TracedData(
             {"a": Codes.TRUE, "b": Codes.FALSE, "c": Codes.FALSE, "d": Codes.NOT_CODED, "e": Codes.NOT_CODED},
