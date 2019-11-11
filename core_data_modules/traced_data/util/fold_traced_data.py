@@ -182,35 +182,6 @@ class FoldTracedData(object):
             return value_2
 
     @staticmethod
-    def reconcile_keys_by_concatenation(user, td_1, td_2, keys, concat_delimiter=";"):
-        """
-        Sets the given keys in two TracedData objects to the same value by string concatenating the values of each.
-
-        Concatenated values take the form <td_1[key]><concat_delimiter><td_2[key]>.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param td_1: First TracedData object to concatenate the keys with.
-                     This value will appear first in the concatenated string i.e. before the concat_delimiter.
-        :type td_1: TracedData
-        :param td_2: Second TracedData object to concatenate the keys with.
-                     This value will appear first in the concatenated string i.e. after the concat_delimiter.
-        :type td_2: TracedData
-        :param keys: Keys in each TracedData object to concatenate the values of.
-        :type keys: iterable of str
-        :param concat_delimiter: String to separate the concatenated strings with.
-        :type concat_delimiter: str
-        """
-        concat_dict = dict()
-
-        for key in keys:
-            if key in td_1 and key in td_2:
-                concat_dict[key] = "{}{}{}".format(td_1[key], concat_delimiter, td_2[key])
-
-        td_1.append_data(concat_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-        td_2.append_data(concat_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-
-    @staticmethod
     def reconcile_matrix_keys(user, td_1, td_2, keys):
         """
         Sets given keys in two TracedData objects to the same value, of Codes.MATRIX_1 if the value in either

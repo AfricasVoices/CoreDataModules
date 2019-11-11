@@ -92,30 +92,6 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
 
-    def test_reconcile_keys_by_concatenation(self):
-        def make_tds():
-            td_1 = TracedData(
-                {"msg1": "abc", "msg2": "xy", "x": 4},
-                Metadata("test_user", Metadata.get_call_location(), 0)
-            )
-
-            td_2 = TracedData(
-                {"msg1": "def", "msg2": "xy", "x": 5},
-                Metadata("test_user", Metadata.get_call_location(), 1)
-            )
-
-            return td_1, td_2
-
-        td_1, td_2 = make_tds()
-        FoldTracedData.reconcile_keys_by_concatenation("test_user", td_1, td_2, {"msg1", "msg2"})
-        self.assertDictEqual(dict(td_1.items()), {"msg1": "abc;def", "msg2": "xy;xy", "x": 4})
-        self.assertDictEqual(dict(td_2.items()), {"msg1": "abc;def", "msg2": "xy;xy", "x": 5})
-
-        td_1, td_2 = make_tds()
-        FoldTracedData.reconcile_keys_by_concatenation("test_user", td_1, td_2, {"msg1", "msg2"}, concat_delimiter="--")
-        self.assertDictEqual(dict(td_1.items()), {"msg1": "abc--def", "msg2": "xy--xy", "x": 4})
-        self.assertDictEqual(dict(td_2.items()), {"msg1": "abc--def", "msg2": "xy--xy", "x": 5})
-
     def test_reconcile_matrix_keys(self):
         td_1 = TracedData(
             {"a": Codes.MATRIX_0, "b": Codes.MATRIX_1, Codes.NOT_REVIEWED: Codes.MATRIX_1,
