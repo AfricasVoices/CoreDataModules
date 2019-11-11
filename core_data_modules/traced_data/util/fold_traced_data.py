@@ -403,23 +403,28 @@ class FoldTracedData(object):
         td.append_data({key: value for key in keys}, Metadata(user, Metadata.get_call_location(), time.time()))
 
     @staticmethod
-    def fold_traced_data(user, td_1, td_2, reconciliation_strategies):  # r_strategies: dict of (key -> strategy func)
+    def fold_traced_data(user, td_1, td_2, fold_strategies):  # r_strategies: dict of (key -> strategy func)
+        # Create (shallow) copies of the input TracedData so that we can fold without modifying the arguments.
+        # TODO: Is this necessary?
         td_1 = td_1.copy()
         td_2 = td_2.copy()
         
-        reconciled_dict = dict()
+        # Fold the specified keys using the provided fold strategies.
+        folded_dict = dict()
+        for key, strategy in fold_strategies.items():
+            folded_dict[key] = strategy(td_1[key], td_2[key])
+        td_1.append_data(folded_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+        td_2.append_data(folded_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
-        for key, strategy in reconciliation_strategies.items():
-            reconciled_dict[key] = strategy(td_1[key], td_2[key])
-
-        td_1.append_data(reconciled_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
-        td_2.append_data(reconciled_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
-
-        td_1.hide_keys(set(td_1.keys()) - set(reconciled_dict.keys()),
+        # Hide any keys which weren't specified in the list of fold strategies.
+        # TODO: Add a note about what would happen if we didn't do this?
+        # TODO: Do this here or pull this up into the pipelines. If in the pipelines, there would be no 'magic' here
+        td_1.hide_keys(set(td_1.keys()) - set(folded_dict.keys()),
                        Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
-        td_2.hide_keys(set(td_2.keys()) - set(reconciled_dict.keys()),
+        td_2.hide_keys(set(td_2.keys()) - set(folded_dict.keys()),
                        Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
+        # Append one traced data to the other (to ensure we have a record of both histories), and return
         folded_td = td_1
         folded_td.append_traced_data("folded_with", td_2,
                                      Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
