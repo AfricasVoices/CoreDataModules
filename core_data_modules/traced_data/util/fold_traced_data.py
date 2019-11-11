@@ -137,25 +137,6 @@ class FoldTracedData(object):
         return folded_data
 
     @staticmethod
-    def assert_equal_keys_equal(td_1, td_2, equal_keys):
-        """
-        Checks that the provided TracedData objects contain exactly the same values for each of the provided keys.
-
-        Raises an AssertionError if mis-matching keys are found, otherwise returns no value and has no side-effect.
-
-        :param td_1: TracedData object to check for value equality.
-        :type td_1: TracedData
-        :param td_2: TracedData object to check for value equality.
-        :type td_2: TracedData
-        :param equal_keys: Keys to check for equality in the TracedData objects.
-        :type equal_keys: iterable of str
-        """
-        for key in equal_keys:
-            assert td_1.get(key) == td_2.get(key), "Key '{}' should be the same in both td_1 and td_2 but is " \
-                                                   "different (has values '{}' and '{}' " \
-                                                   "respectively)".format(key, td_1.get(key), td_2.get(key))
-
-    @staticmethod
     def _is_control_code(code):
         return code in {
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
@@ -431,7 +412,7 @@ class FoldTracedData(object):
         td_2.hide_keys(set(td_2.keys()) - set(folded_dict.keys()),
                        Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
-        # Append one traced data to the other (to ensure we have a record of both histories), and return
+        # Append one traced data to the other (to ensure we have a record of both histories), and return.
         folded_td = td_1
         folded_td.append_traced_data("folded_with", td_2,
                                      Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))

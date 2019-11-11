@@ -80,36 +80,6 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertDictEqual(dict(folded_data[1].items()), {"x": "bcd"})
         self.assertDictEqual(dict(folded_data[2].items()), {"x": "e"})
 
-    def test_assert_equal_keys_equal(self):
-        td_1 = TracedData(
-            {"eq1": "5", "eq2": "6", "ne": "10"},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2_expect_pass = TracedData(
-            {"eq1": "5", "eq2": "6", "ne": "13"},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        td_2_expect_fail = TracedData(
-            {"eq1": "5", "eq2": "7", "ne": "10"},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        # This test is considered successful if no assertion is raised
-        FoldTracedData.assert_equal_keys_equal(td_1, td_2_expect_pass, {"eq1", "eq2"})
-
-        try:
-            FoldTracedData.assert_equal_keys_equal(td_1, td_2_expect_fail, {"eq1", "eq2"})
-            self.fail("No AssertionError raised")
-        except AssertionError as e:
-            if str(e) == "No AssertionError raised":
-                raise e
-
-            self.assertEqual(str(e),
-                             "Key 'eq2' should be the same in both td_1 and td_2 but is "
-                             "different (has values '6' and '7' respectively)")
-
     def test_reconcile_missing_values(self):
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
