@@ -30,6 +30,12 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertEqual(FoldStrategies.concatenate(None, "def"), "def")
         self.assertEqual(FoldStrategies.concatenate(None, None), None)
 
+    def test_matrix(self):
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_1, Codes.MATRIX_1), Codes.MATRIX_1)
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_0, Codes.MATRIX_1), Codes.MATRIX_1)
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_1, Codes.MATRIX_0), Codes.MATRIX_1)
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_0, Codes.MATRIX_0), Codes.MATRIX_0)
+
 
 class TestFoldTracedData(unittest.TestCase):
     @staticmethod
