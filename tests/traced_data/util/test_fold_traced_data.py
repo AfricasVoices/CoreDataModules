@@ -22,6 +22,14 @@ class TestReconciliationFunctions(unittest.TestCase):
                              "Values should be the same but are different "
                              "(differing values were '6' and '7')")
 
+    def test_concatenate(self):
+        self.assertEqual(FoldStrategies.concatenate("abc", "def"), "abc;def")
+        self.assertEqual(FoldStrategies.concatenate("abc", ""), "abc;")
+        self.assertEqual(FoldStrategies.concatenate("abc", None), "abc")
+        self.assertEqual(FoldStrategies.concatenate("", "def"), ";def")
+        self.assertEqual(FoldStrategies.concatenate(None, "def"), "def")
+        self.assertEqual(FoldStrategies.concatenate(None, None), None)
+
 
 class TestFoldTracedData(unittest.TestCase):
     @staticmethod
