@@ -183,34 +183,6 @@ class FoldTracedData(object):
         else:
             return value_2
 
-    @staticmethod
-    def reconcile_boolean_keys(user, td_1, td_2, keys):
-        """
-        Sets the given keys in two TracedData objects to the same value, of Codes.TRUE if the value in either
-        of those objects is Codes.TRUE, otherwise sets the values to Codes.FALSE.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param td_1: TracedData object to reconcile the boolean keys of.
-        :type td_1: TracedData
-        :param td_2: TracedData object to reconcile the boolean keys of.
-        :type td_2: TracedData
-        :param keys: Keys in each TracedData object to reconcile.
-        :type keys: iterable of str
-        """
-        bool_dict = dict()
-
-        for key in keys:
-            if td_1.get(key) == Codes.TRUE or td_2.get(key) == Codes.TRUE:
-                bool_dict[key] = Codes.TRUE
-            else:
-                bool_dict[key] = Codes.FALSE
-
-        td_1.append_data(bool_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-        td_2.append_data(bool_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-
-    # TODO: Support reconciling datetime strings
-
     @classmethod
     def reconcile_yes_no_keys(cls, user, td_1, td_2, keys):
         """

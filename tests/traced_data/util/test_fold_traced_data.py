@@ -107,23 +107,6 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
 
-    def test_reconcile_boolean_keys(self):
-        td_1 = TracedData(
-            {"a": Codes.TRUE, "b": Codes.FALSE, "c": Codes.FALSE, "d": Codes.NOT_CODED, "e": Codes.NOT_CODED},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2 = TracedData(
-            {"a": Codes.TRUE, "b": Codes.TRUE, "c": Codes.FALSE, "d": Codes.TRUE, "e": Codes.NOT_CODED},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        FoldTracedData.reconcile_boolean_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e"})
-
-        expected_dict = {"a": Codes.TRUE, "b": Codes.TRUE, "c": Codes.FALSE, "d": Codes.TRUE, "e": Codes.FALSE}
-        self.assertDictEqual(dict(td_1.items()), expected_dict)
-        self.assertDictEqual(dict(td_2.items()), expected_dict)
-
     def test_reconcile_yes_no_keys(self):
         td_1 = TracedData(
             {"a": Codes.YES, "b": Codes.NO, "c": Codes.YES, "d": Codes.NO, "e": Codes.NOT_CODED, "f": Codes.NOT_CODED,
