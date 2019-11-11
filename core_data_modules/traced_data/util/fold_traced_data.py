@@ -20,6 +20,11 @@ class FoldStrategies(object):
 
     @staticmethod
     def concatenate(x, y):
+        if x is None:
+            return y
+        if y is None:
+            return x
+
         return f"{x};{y}"
 
     @staticmethod
@@ -412,7 +417,9 @@ class FoldTracedData(object):
         # Fold the specified keys using the provided fold strategies.
         folded_dict = dict()
         for key, strategy in fold_strategies.items():
-            folded_dict[key] = strategy(td_1[key], td_2[key])
+            folded_value = strategy(td_1.get(key), td_2.get(key))
+            if folded_value is not None:
+                folded_dict[key] = folded_value
         td_1.append_data(folded_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
         td_2.append_data(folded_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
