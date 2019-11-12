@@ -179,8 +179,6 @@ class FoldStrategies(object):
         
 
 class FoldTracedData(object):
-    AMBIVALENT_BINARY_VALUE = "ambivalent"
-
     @staticmethod
     def group_by(data, group_id_fn):
         """
