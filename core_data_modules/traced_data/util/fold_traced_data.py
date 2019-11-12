@@ -137,51 +137,6 @@ class FoldTracedData(object):
         return folded_data
 
     @staticmethod
-    def _is_control_code(code):
-        return code in {
-            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
-        }
-
-    @staticmethod
-    def reconcile_missing_values(value_1, value_2):
-        """
-        Reconciles two missing values, by choosing the form of missing value with the highest precedence.
-
-        The precedence order for missing values is defined as follows (highest precedence listed first):
-         - Codes.STOP
-         - Codes.CODING_ERROR
-         - Codes.NOT_REVIEWED
-         - Codes.NOT_INTERNALLY_CONSISTENT
-         - Codes.NOT_CODED
-         - Codes.TRUE_MISSING
-         - Codes.SKIPPED
-         - Codes.WRONG_SCHEME
-         - Codes.NOISE_OTHER_CHANNEL
-         - None
-
-        :param value_1: Code to reconcile.
-        :type value_1: str
-        :param value_2: Code to reconcile.
-        :type value_2: str
-        :return: Reconciled code.
-        :rtype: str
-        """
-        # Precedence order in case of conflicts; highest precedence first
-        precedence_order = [
-            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
-        ]
-
-        assert value_1 in precedence_order, "value_1 ('{}') not a missing or stop code".format(value_1)
-        assert value_2 in precedence_order, "value_2 ('{}') not a missing or stop code".format(value_2)
-
-        if precedence_order.index(value_1) <= precedence_order.index(value_2):
-            return value_1
-        else:
-            return value_2
-
-    @staticmethod
     def fold_traced_data(user, td_1, td_2, fold_strategies):  # r_strategies: dict of (key -> strategy func)
         # Create (shallow) copies of the input TracedData so that we can fold without modifying the arguments.
         # TODO: Is this necessary?

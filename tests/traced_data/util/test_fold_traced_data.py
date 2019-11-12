@@ -112,10 +112,6 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertDictEqual(dict(folded_data[1].items()), {"x": "bcd"})
         self.assertDictEqual(dict(folded_data[2].items()), {"x": "e"})
 
-    def test_reconcile_missing_values(self):
-        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
-        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
-
     def test_fold_traced_data(self):
         td_1_dict = {
                 "equal_1": 4, "equal_2": "xyz",
