@@ -45,6 +45,15 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_1, Codes.MATRIX_0), Codes.MATRIX_1)
         self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_0, Codes.MATRIX_0), Codes.MATRIX_0)
 
+    def test_yes_no_amb(self):
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.YES, Codes.YES), Codes.YES)
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.NO, Codes.NO), Codes.NO)
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.YES, Codes.NO), FoldStrategies.AMBIVALENT_BINARY_VALUE)
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_CODED, Codes.NOT_CODED), Codes.NOT_CODED)
+
+        # TODO: Check that this test case is desired
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_REVIEWED, Codes.YES), Codes.YES)
+
 
 class TestFoldTracedData(unittest.TestCase):
     @staticmethod
