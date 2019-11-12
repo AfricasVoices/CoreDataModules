@@ -116,7 +116,7 @@ class TestFoldTracedData(unittest.TestCase):
         td_1_dict = {
                 "equal_1": 4, "equal_2": "xyz",
                 "concat": "abc",
-                "matrix_1": Codes.MATRIX_0, "matrix_2": Codes.STOP,
+                "matrix_1": Codes.MATRIX_0, "matrix_2": Codes.MATRIX_0,
                 "bool_1": Codes.FALSE, "bool_2": Codes.TRUE,
                 "yes_no_1": Codes.YES, "yes_no_2": Codes.YES,
                 "other_1": "other 1", "other_2": "other 2"
@@ -157,7 +157,7 @@ class TestFoldTracedData(unittest.TestCase):
             {
                 "equal_1": 4, "equal_2": "xyz",
                 "concat": "abc;def",
-                "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.STOP,
+                "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.MATRIX_0,
                 "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
                 "yes_no_1": Codes.YES, "yes_no_2": FoldStrategies.AMBIVALENT_BINARY_VALUE,
             }
