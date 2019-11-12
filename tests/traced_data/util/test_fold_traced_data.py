@@ -116,18 +116,6 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
 
-    def test_set_keys_to_value(self):
-        td = TracedData(
-            {"msg1": "abc", "msg2": "xy", "x": 4},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        FoldTracedData.set_keys_to_value("test_user", td, {"msg1"})
-        self.assertDictEqual(dict(td.items()), {"msg1": "MERGED", "msg2": "xy", "x": 4})
-
-        FoldTracedData.set_keys_to_value("test_user", td, {"msg2", "x"}, value="----")
-        self.assertDictEqual(dict(td.items()), {"msg1": "MERGED", "msg2": "----", "x": "----"})
-
     def test_fold_traced_data(self):
         td_1_dict = {
                 "equal_1": 4, "equal_2": "xyz",

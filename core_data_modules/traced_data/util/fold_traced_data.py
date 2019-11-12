@@ -1,5 +1,3 @@
-import time
-
 from core_data_modules.cleaners import Codes
 from core_data_modules.traced_data import Metadata
 from core_data_modules.util import TimeUtils
@@ -182,22 +180,6 @@ class FoldTracedData(object):
             return value_1
         else:
             return value_2
-
-    @staticmethod
-    def set_keys_to_value(user, td, keys, value="MERGED"):
-        """
-        Sets the given keys in a TracedData object to the same given value.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param td: TracedData object to set the keys of.
-        :type td: TracedData
-        :param keys: Keys to set.
-        :type keys: iterable of str
-        :param value: Value to set each key to.
-        :type value: str
-        """
-        td.append_data({key: value for key in keys}, Metadata(user, Metadata.get_call_location(), time.time()))
 
     @staticmethod
     def fold_traced_data(user, td_1, td_2, fold_strategies):  # r_strategies: dict of (key -> strategy func)
