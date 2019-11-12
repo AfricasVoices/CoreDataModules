@@ -176,7 +176,12 @@ class FoldStrategies(object):
             return x
         else:
             return cls.AMBIVALENT_BINARY_VALUE
-        
+
+    @staticmethod
+    def assert_label_ids_equal(x, y):
+        assert x["SchemeID"] == y["SchemeID"] and x["CodeID"] == y["CodeID"]
+        return x
+
 
 class FoldTracedData(object):
     @staticmethod
