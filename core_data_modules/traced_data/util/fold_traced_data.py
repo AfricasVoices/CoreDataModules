@@ -62,6 +62,9 @@ class FoldStrategies(object):
         
     @staticmethod
     def matrix(x, y):
+        assert x in {Codes.MATRIX_0, Codes.MATRIX_1}
+        assert y in {Codes.MATRIX_0, Codes.MATRIX_1}
+
         if x == Codes.MATRIX_1 or y == Codes.MATRIX_1:
             return Codes.MATRIX_1
         else:
