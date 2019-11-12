@@ -5,19 +5,46 @@ from core_data_modules.util import TimeUtils
 
 class FoldStrategies(object):
     """
-    Standard reconciliation functions for use when folding.
+    A standard collection of strategies available to use when folding.
     
-    All reconciliation functions take two values, apply some logic to produce the
+    All fold strategies are functions that take two values, and apply some logic to those values in order to produce
+    a single, folded result.
     """
     AMBIVALENT_BINARY_VALUE = "ambivalent"  # TODO: Move to Core
+    CONTROL_CODES = {
+        Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+        Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
+    }
 
     @staticmethod
     def assert_equal(x, y):
+        """
+        Checks that the values are equal, then returns `x`.
+        
+        :param x: Value to fold.
+        :type x: any
+        :param y: Value to fold.
+        :type y: any
+        :return: `x`.
+        :rtype: any
+        """
         assert x == y, f"Values should be the same but are different (differing values were '{x}' and '{y}')"
         return x
 
     @staticmethod
     def concatenate(x, y):
+        """
+        Concatenates x and y, separating them by a semicolon.
+        
+        If one of the values is None, the other value is returning without adding a semicolon anywhere.
+        
+        :param x: Value to fold.
+        :type x: str | None
+        :param y: Value to fold.
+        :type y: str | None
+        :return: x and y concatenated together, with a semicolon separating them.
+        :rtype: str | None
+        """
         if x is None:
             return y
         if y is None:
@@ -25,17 +52,44 @@ class FoldStrategies(object):
 
         return f"{x};{y}"
 
-    @staticmethod
-    def _is_control_code(code):
+    @classmethod
+    def _is_control_code(cls, code):
+        """
+        Check if the given code string is a control code.
+        
+        :param code: Code string to check.
+        :type code: str
+        :return: True if the code is a control code, False otherwise.
+        :rtype: bool
+        """
         # TODO: If we move this function to `Codes`, that will reduce the risk of us updating Core but not updating
         #       the body of this function.
-        return code in {
-            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
-        }
+        return code in cls.CONTROL_CODES
 
     @staticmethod
     def control_code(x, y):
+        """
+        Folds two control codes, by choosing the control code with the highest precedence.
+
+        The precedence order for control codes is defined as follows (highest precedence listed first):
+         - Codes.STOP
+         - Codes.CODING_ERROR
+         - Codes.NOT_REVIEWED
+         - Codes.NOT_INTERNALLY_CONSISTENT
+         - Codes.NOT_CODED
+         - Codes.TRUE_MISSING
+         - Codes.SKIPPED
+         - Codes.WRONG_SCHEME
+         - Codes.NOISE_OTHER_CHANNEL
+         - None
+        
+        :param x: Value to fold.
+        :type x: str | None
+        :param y: Value to fold.
+        :type y: str | None
+        :return: Folded control code.
+        :rtype: str | None
+        """
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
@@ -52,6 +106,16 @@ class FoldStrategies(object):
         
     @staticmethod
     def boolean_or(x, y):
+        """
+        Folds boolean codes with a boolean OR operation.
+        
+        :param x: Value to fold, either Codes.TRUE or Codes.FALSE.
+        :type x: str
+        :param y: Value to fold, either Codes.TRUE or Codes.FALSE.
+        :type y: str
+        :return: Codes.TRUE if `x` or `y` is Codes.TRUE, otherwise Codes.FALSE.
+        :rtype: str
+        """
         assert x in {Codes.TRUE, Codes.FALSE}
         assert y in {Codes.TRUE, Codes.FALSE}
 
@@ -62,6 +126,17 @@ class FoldStrategies(object):
         
     @staticmethod
     def matrix(x, y):
+        """
+        Folds matrix values such that if either input is Codes.MATRIX_1, returns Codes.MATRIX_1, otherwise returns
+        Codes.MATRIX_0
+        
+        :param x: Value to fold, either Codes.MATRIX_0 or Codes.MATRIX_1.
+        :type x: str
+        :param y: Value to fold, either Codes.MATRIX_0 or Codes.MATRIX_1.
+        :type y: str
+        :return: Codes.MATRIX_1 if `x` or `y` is Codes.MATRIX_1, otherwise Codes.MATRIX_0.
+        :rtype: str
+        """
         assert x in {Codes.MATRIX_0, Codes.MATRIX_1}
         assert y in {Codes.MATRIX_0, Codes.MATRIX_1}
 
@@ -72,6 +147,23 @@ class FoldStrategies(object):
 
     @classmethod
     def yes_no_amb(cls, x, y):
+        """
+        Folds yes/no/ambivalent values.
+
+        :param x: Value to fold, either a yes/no/ambivalent code or a control code.
+        :type x: str
+        :param y: Value to fold, either a yes/no/ambivalent code or a control code.
+        :type y: str
+        :return: Folded control code if both codes are control codes,
+                 the normal code if one code is a control code and the other a normal code,
+                 Codes.YES if both inputs are Codes.YES,
+                 Codes.NO if both inputs are Codes.NO,
+                 otherwise cls.AMBIVALENT_BINARY_VALUE.
+        :rtype: str
+        """
+        assert x in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or x in cls.CONTROL_CODES
+        assert y in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or y in cls.CONTROL_CODES
+
         if cls._is_control_code(x) and cls._is_control_code(y):
             return cls.control_code(x, y)
         elif cls._is_control_code(x):
