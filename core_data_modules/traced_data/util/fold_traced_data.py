@@ -183,48 +183,6 @@ class FoldTracedData(object):
         else:
             return value_2
 
-
-    @classmethod
-    def reconcile_binary_keys(cls, user, td_1, td_2, keys):
-        """
-        Sets the given keys in two TracedData objects to the same value, using the logic given below.
-
-        The value set for each key is:
-         - The result of cls.reconcile_missing_values if both value 1 and value 2 are missing.
-         - value 1 if value 2 is a control code and value 1 is not.
-         - value 2 if value 1 is a control code and value 2 is not.
-         - cls.AMBIVALENT_BINARY_VALUE if value 1 and value 2 are both cls.AMBIVALENT_BINARY_VALUE.
-         - the common value if value 1 == value 2.
-         - cls.AMBIVALENT_BINARY_VALUE if value 1 and and value 2 differ.
-
-        :param user: Identifier of the user running this program, for TracedData Metadata.
-        :type user: str
-        :param td_1: TracedData object to reconcile the binary keys of.
-        :type td_1: TracedData
-        :param td_2: TracedData object to reconcile the binary keys of.
-        :type td_2: TracedData
-        :param keys: Keys in each TracedData object to reconcile.
-        :type keys: iterable of str
-        """
-        binary_dict = dict()
-
-        for key in keys:
-            if cls._is_control_code(td_1.get(key)) and cls._is_control_code(td_2.get(key)):
-                binary_dict[key] = cls.reconcile_missing_values(td_1.get(key), td_2.get(key))
-            elif cls._is_control_code(td_1.get(key)):
-                binary_dict[key] = td_2.get(key)
-            elif cls._is_control_code(td_2.get(key)):
-                binary_dict[key] = td_1.get(key)
-            elif td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE or td_1.get(key) == cls.AMBIVALENT_BINARY_VALUE:
-                binary_dict[key] = cls.AMBIVALENT_BINARY_VALUE
-            elif td_1.get(key) == td_2.get(key):
-                binary_dict[key] = td_1.get(key)
-            else:
-                binary_dict[key] = cls.AMBIVALENT_BINARY_VALUE
-
-        td_1.append_data(binary_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-        td_2.append_data(binary_dict, Metadata(user, Metadata.get_call_location(), time.time()))
-
     @staticmethod
     def set_keys_to_value(user, td, keys, value="MERGED"):
         """

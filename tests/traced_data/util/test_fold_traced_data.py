@@ -116,31 +116,6 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
         self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
 
-    def test_reconcile_binary_keys(self):
-        td_1 = TracedData(
-            {"a": "integrate", "b": "return", "c": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-             "d": FoldTracedData.AMBIVALENT_BINARY_VALUE, "e": "integrate", "f": Codes.NOT_CODED,
-             "g": Codes.STOP, "h": Codes.NOT_CODED, "i": Codes.BOTH},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2 = TracedData(
-            {"a": "integrate", "b": "integrate", "c": "return", "d": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-             "e": FoldTracedData.AMBIVALENT_BINARY_VALUE, "f": Codes.NOT_CODED,
-             "g": Codes.NOT_CODED, "h": "integrate", "i": "integrate"},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        FoldTracedData.reconcile_binary_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e", "f", "g", "h", "i"})
-
-        expected_dict = {"a": "integrate", "b": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-                         "c": FoldTracedData.AMBIVALENT_BINARY_VALUE, "d": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-                         "e": FoldTracedData.AMBIVALENT_BINARY_VALUE, "f": Codes.NOT_CODED,
-                         "g": Codes.STOP, "h": "integrate", "i": FoldTracedData.AMBIVALENT_BINARY_VALUE}
-
-        self.assertDictEqual(dict(td_1.items()), expected_dict)
-        self.assertDictEqual(dict(td_2.items()), expected_dict)
-
     def test_set_keys_to_value(self):
         td = TracedData(
             {"msg1": "abc", "msg2": "xy", "x": 4},
