@@ -63,8 +63,8 @@ class FoldStrategies(object):
     @staticmethod
     def matrix(x, y):
         # TODO: Do the pipelines still need this check?
-        if x == Codes.STOP or y == Codes.STOP:
-            return Codes.STOP
+        # if x == Codes.STOP or y == Codes.STOP:
+        #     return Codes.STOP
         
         if x == Codes.MATRIX_1 or y == Codes.MATRIX_1:
             return Codes.MATRIX_1
