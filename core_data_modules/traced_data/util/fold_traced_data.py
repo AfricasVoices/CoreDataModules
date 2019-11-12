@@ -9,7 +9,7 @@ class FoldStrategies(object):
     
     All reconciliation functions take two values, apply some logic to produce the
     """
-    AMBIVALENT_BINARY_VALUE = "ambivalent"
+    AMBIVALENT_BINARY_VALUE = "ambivalent"  # TODO: Move to Core
 
     @staticmethod
     def assert_equal(x, y):
@@ -124,7 +124,7 @@ class FoldTracedData(object):
         :param fold_fn: Function to use to fold each pair of TracedData objects.
         :type fold_fn: function of (TracedData, TracedData) -> TracedData
         :return: Folded TracedData objects.
-        :rtype: iterable of TracedData
+        :rtype: list of TracedData
         """
         folded_data = []
 
@@ -137,7 +137,24 @@ class FoldTracedData(object):
         return folded_data
 
     @staticmethod
-    def fold_traced_data(user, td_1, td_2, fold_strategies):  # r_strategies: dict of (key -> strategy func)
+    def fold_traced_data(user, td_1, td_2, fold_strategies):
+        """
+        Folds two TracedData objects into a new TracedData object.
+
+        :param user: Identifier of the user running this program, for TracedData Metadata.
+        :type user: str
+        :param td_1: First TracedData object to fold.
+        :type td_1: TracedData
+        :param td_2: Second TracedData object to fold.
+        :type td_2: TracedData
+        :param fold_strategies: Dictionary of TracedData key to the folding strategy to apply to that key.
+                                A folding strategy is a function which folds two individual values.
+                                Standard folding functions are available at
+                                `core_data_modules.traced_data.util.FoldStrategies`.
+        :type fold_strategies: dict of str -> (function of (any, any) -> any)
+        :return: td_1 folded with td_2.
+        :rtype: TracedData
+        """
         # Create (shallow) copies of the input TracedData so that we can fold without modifying the arguments.
         # TODO: Is this necessary?
         td_1 = td_1.copy()
@@ -169,6 +186,26 @@ class FoldTracedData(object):
 
     @classmethod
     def fold_iterable_of_traced_data(cls, user, data, fold_id_fn, fold_strategies):
+        """
+        Folds an iterable of TracedData into a new iterable of TracedData.
+        
+        Objects with the same fold id (as determined by 'fold_id_fn') are folded together into a new TracedData object.
+        
+        :param user: Identifier of the user running this program, for TracedData Metadata.
+        :type user: str
+        :param data: TracedData objects to fold.
+        :type data: iterable of TracedData
+        :param fold_id_fn: Function which generates a fold id for a TracedData object.
+                           TracedData objects with the same fold id will be folded into a single, new TracedData object.
+        :type fold_id_fn: function of TracedData -> hashable
+        :param fold_strategies: Dictionary of TracedData key to the folding strategy to apply to that key.
+                                A folding strategy is a function which folds two individual values.
+                                Standard folding functions are available at
+                                `core_data_modules.traced_data.util.FoldStrategies`.
+        :type fold_strategies: dict of str -> (function of (any, any) -> any)
+        :return: Folded TracedData objects.
+        :rtype: list of TracedData
+        """
         return cls.fold_groups(
             cls.group_by(data, fold_id_fn),
             lambda td_1, td_2: cls.fold_traced_data(user, td_1, td_2, fold_strategies)
