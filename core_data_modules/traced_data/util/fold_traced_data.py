@@ -180,9 +180,7 @@ class FoldStrategies(object):
     @staticmethod
     def assert_label_ids_equal(x, y):
         """
-        Checks that two serialised labels are equal, then return the newest.
-
-        Labels are considered equal if they have the same code id and same scheme id. All other fields may differ.
+        Checks that two serialised labels have the same scheme ids and code ids, then return the newest.
 
         :param x: Value to fold - a `core_data_modules.data_models.Label` object in serialised form.
         :type x: dict
