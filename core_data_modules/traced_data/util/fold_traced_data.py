@@ -195,6 +195,32 @@ class FoldStrategies(object):
             f"and {{'SchemeID': '{y['SchemeID']}', 'CodeID': '{y['CodeID']}'}})"
         return x
 
+    @staticmethod
+    def list_of_labels(x, y):
+        # If both lists only contain true missing, return true missing, otherwise filter out that label.
+        if len(x) == 1 and len(y) == 1 and x["ControlCode"] == Codes.TRUE_MISSING and y["ControlCode"] == Codes.TRUE_MISSING:
+            return [x]
+        x = [l for l in x if l["ControlCode"] != Codes.TRUE_MISSING]
+        y = [l for l in y if l["ControlCode"] != Codes.TRUE_MISSING]
+
+        union = []
+        seen_labels = set()
+        nc = None
+        for label in x + y:
+            if label["ControlCode"] == Codes.NOT_CODED:
+                nc = label
+
+            if (label["SchemeID"], label["CodeID"]) in seen_labels:
+                continue
+
+            seen_labels.add((label["SchemeID"], label["CodeID"]))
+            union.append(label)
+
+        if nc is not None and len(union) == 0:
+            union = [nc]
+
+        return union
+
 
 class FoldTracedData(object):
     @staticmethod
