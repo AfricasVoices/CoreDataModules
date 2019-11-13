@@ -1,6 +1,7 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
+from core_data_modules.data_models import Label, Origin
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.util import FoldTracedData
 from core_data_modules.traced_data.util.fold_traced_data import FoldStrategies
@@ -8,8 +9,7 @@ from core_data_modules.traced_data.util.fold_traced_data import FoldStrategies
 
 class TestReconciliationFunctions(unittest.TestCase):
     def test_assert_equal(self):
-        # This test is considered successful if no assertion is raised
-        FoldStrategies.assert_equal("5", "5")
+        self.assertEqual(FoldStrategies.assert_equal("5", "5"), "5")
 
         try:
             FoldStrategies.assert_equal("6", "7")
@@ -53,6 +53,47 @@ class TestReconciliationFunctions(unittest.TestCase):
 
         # TODO: Check that this test case is desired
         self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_REVIEWED, Codes.YES), Codes.YES)
+
+    def test_assert_label_ids_equal(self):
+        self.assertEqual(FoldStrategies.assert_label_ids_equal(
+            Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+            Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        ), Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict())
+
+        self.assertEqual(FoldStrategies.assert_label_ids_equal(
+            Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+            Label("scheme-1", "code-2", "2019-10-14T12:20:14Z", Origin("y", "test-2", "manual")).to_dict()
+        ), Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict())
+
+        try:
+            FoldStrategies.assert_label_ids_equal(
+                Label("scheme-1", "code-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+                Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+            ),
+            self.fail("No AssertionError raised")
+        except AssertionError as e:
+            if str(e) == "No AssertionError raised":
+                raise e
+
+            self.assertEqual(str(e),
+                             "Labels should have the same SchemeID and CodeID, but at least one of those is different "
+                             "(differing values were {'SchemeID': 'scheme-1', 'CodeID': 'code-1'} "
+                             "and {'SchemeID': 'scheme-1', 'CodeID': 'code-2'})")
+
+        try:
+            FoldStrategies.assert_label_ids_equal(
+                Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+                Label("scheme-2", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+            ),
+            self.fail("No AssertionError raised")
+        except AssertionError as e:
+            if str(e) == "No AssertionError raised":
+                raise e
+
+            self.assertEqual(str(e),
+                             "Labels should have the same SchemeID and CodeID, but at least one of those is different "
+                             "(differing values were {'SchemeID': 'scheme-1', 'CodeID': 'code-2'} "
+                             "and {'SchemeID': 'scheme-2', 'CodeID': 'code-2'})")
 
 
 class TestFoldTracedData(unittest.TestCase):

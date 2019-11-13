@@ -179,7 +179,22 @@ class FoldStrategies(object):
 
     @staticmethod
     def assert_label_ids_equal(x, y):
-        assert x["SchemeID"] == y["SchemeID"] and x["CodeID"] == y["CodeID"]
+        """
+        Checks that two serialised labels are equal, then return the newest.
+
+        Labels are considered equal if they have the same code id and same scheme id. All other fields may differ.
+
+        :param x: Value to fold - a `core_data_modules.data_models.Label` object in serialised form.
+        :type x: dict
+        :param y: Value to fold - a `core_data_modules.data_models.Label` object in serialised form.
+        :type y: dict
+        :return: `x`
+        :rtype: dict
+        """
+        assert x["SchemeID"] == y["SchemeID"] and x["CodeID"] == y["CodeID"], \
+            f"Labels should have the same SchemeID and CodeID, but at least one of those is different " \
+            f"(differing values were {{'SchemeID': '{x['SchemeID']}', 'CodeID': '{x['CodeID']}'}} " \
+            f"and {{'SchemeID': '{y['SchemeID']}', 'CodeID': '{y['CodeID']}'}})"
         return x
 
 
