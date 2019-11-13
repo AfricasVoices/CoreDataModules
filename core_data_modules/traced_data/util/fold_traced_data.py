@@ -96,8 +96,8 @@ class FoldStrategies(object):
             Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
         ]
 
-        assert x in precedence_order, "value_1 ('{}') not a missing or stop code".format(x)
-        assert y in precedence_order, "value_2 ('{}') not a missing or stop code".format(y)
+        assert x in precedence_order, "value_1 ('{}') not a control code".format(x)
+        assert y in precedence_order, "value_2 ('{}') not a control code".format(y)
 
         if precedence_order.index(x) <= precedence_order.index(y):
             return x
