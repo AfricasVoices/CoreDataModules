@@ -11,10 +11,6 @@ class FoldStrategies(object):
     a single, folded result.
     """
     AMBIVALENT_BINARY_VALUE = "ambivalent"  # TODO: Move to Core
-    CONTROL_CODES = {
-        Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-        Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
-    }
 
     @staticmethod
     def assert_equal(x, y):
@@ -51,20 +47,6 @@ class FoldStrategies(object):
             return x
 
         return f"{x};{y}"
-
-    @classmethod
-    def _is_control_code(cls, code):
-        """
-        Check if the given code string is a control code.
-        
-        :param code: Code string to check.
-        :type code: str
-        :return: True if the code is a control code, False otherwise.
-        :rtype: bool
-        """
-        # TODO: If we move this function to `Codes`, that will reduce the risk of us updating Core but not updating
-        #       the body of this function.
-        return code in cls.CONTROL_CODES
 
     @staticmethod
     def control_code_by_precedence(x, y):
@@ -161,14 +143,14 @@ class FoldStrategies(object):
                  otherwise cls.AMBIVALENT_BINARY_VALUE.
         :rtype: str
         """
-        assert x in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or x in cls.CONTROL_CODES
-        assert y in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or y in cls.CONTROL_CODES
+        assert x in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or x in Codes.CONTROL_CODES
+        assert y in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or y in Codes.CONTROL_CODES
 
-        if cls._is_control_code(x) and cls._is_control_code(y):
+        if x in Codes.CONTROL_CODES and y in Codes.CONTROL_CODES:
             return cls.control_code_by_precedence(x, y)
-        elif cls._is_control_code(x):
+        elif x in Codes.CONTROL_CODES:
             return y
-        elif cls._is_control_code(y):
+        elif y in Codes.CONTROL_CODES:
             return x
         elif x == cls.AMBIVALENT_BINARY_VALUE or y == cls.AMBIVALENT_BINARY_VALUE:
             return cls.AMBIVALENT_BINARY_VALUE
