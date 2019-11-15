@@ -196,18 +196,19 @@ class FoldStrategies(object):
         return x
 
     @staticmethod
-    def list_of_labels(x, y):
+    def list_of_labels(scheme, x, y):
         # If both lists only contain true missing, return true missing, otherwise filter out that label.
-        if len(x) == 1 and len(y) == 1 and x["ControlCode"] == Codes.TRUE_MISSING and y["ControlCode"] == Codes.TRUE_MISSING:
+        if len(x) == 1 and scheme.get_code_with_code_id(x[0]["CodeID"]).control_code == Codes.TRUE_MISSING and \
+                len(y) == 1 and scheme.get_code_with_code_id(y[0]["CodeID"]).control_code == Codes.TRUE_MISSING:
             return [x]
-        x = [l for l in x if l["ControlCode"] != Codes.TRUE_MISSING]
-        y = [l for l in y if l["ControlCode"] != Codes.TRUE_MISSING]
+        x = [l for l in x if scheme.get_code_with_code_id("CodeID").control_code != Codes.TRUE_MISSING]
+        y = [l for l in y if scheme.get_code_with_code_id("CodeID").control_code != Codes.TRUE_MISSING]
 
         union = []
         seen_labels = set()
         nc = None
         for label in x + y:
-            if label["ControlCode"] == Codes.NOT_CODED:
+            if scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.NOT_CODED:
                 nc = label
 
             if (label["SchemeID"], label["CodeID"]) in seen_labels:
