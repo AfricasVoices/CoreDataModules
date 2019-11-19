@@ -321,7 +321,7 @@ class TracedData(Mapping):
         history.sort(key=lambda x: x["timestamp"])
         return history
 
-    def clear_history(self, user, file_sha):
+    def _clear_history(self, user, file_sha):
         """
         Appends the current data in this object, SHAs to the previous TracedData and to the file in which the history
         can be found, then dereferences the previous history.

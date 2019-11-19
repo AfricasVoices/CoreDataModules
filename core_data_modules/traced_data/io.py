@@ -467,4 +467,6 @@ class TracedDataJsonIO(object):
         file_sha = SHAUtils.sha_file_at_path(file_path)
 
         for td in data:
-            td.clear_history(user, file_sha)
+            # noinspection PyProtectedMember 
+            # because '_clear_history' should be thought of as package-private rather than class-private
+            td._clear_history(user, file_sha)
