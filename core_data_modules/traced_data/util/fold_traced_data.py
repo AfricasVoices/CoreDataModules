@@ -201,8 +201,8 @@ class FoldStrategies(object):
         if len(x) == 1 and scheme.get_code_with_code_id(x[0]["CodeID"]).control_code == Codes.TRUE_MISSING and \
                 len(y) == 1 and scheme.get_code_with_code_id(y[0]["CodeID"]).control_code == Codes.TRUE_MISSING:
             return [x]
-        x = [l for l in x if scheme.get_code_with_code_id("CodeID").control_code != Codes.TRUE_MISSING]
-        y = [l for l in y if scheme.get_code_with_code_id("CodeID").control_code != Codes.TRUE_MISSING]
+        x = [l for l in x if scheme.get_code_with_code_id(x["CodeID"]).control_code != Codes.TRUE_MISSING]
+        y = [l for l in y if scheme.get_code_with_code_id(y["CodeID"]).control_code != Codes.TRUE_MISSING]
 
         union = []
         seen_labels = set()
