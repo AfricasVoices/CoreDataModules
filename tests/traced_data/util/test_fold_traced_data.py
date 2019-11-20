@@ -97,13 +97,15 @@ class TestReconciliationFunctions(unittest.TestCase):
 
     def test_fold_list_of_labels(self):
         na_code = Code("code-NA", "Control", "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
+        nr_code = Code("code-NR", "Control", "NR", -10, "NA", True, control_code=Codes.NOT_REVIEWED)
         normal_1_code = Code("code-normal-1", "Normal", "Normal 1", 1, "normal_1", True)
         normal_2_code = Code("code-normal-2", "Normal", "Normal 2", 2, "normal_2", True)
-        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, normal_1_code, normal_2_code])
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, nr_code, normal_1_code, normal_2_code])
 
         scheme_2 = CodeScheme("scheme-2", "Scheme 2", "2", [])
 
         na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        nr_label = Label("scheme-1", "code-NR", "2019-10-01T12:25:18Z", Origin("x", "test", "automatic")).to_dict()
         na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
         normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
         normal_1_label_2 = Label("scheme-1", "code-normal-1", "2019-10-03T00:00:00Z", Origin("x", "test", "automatic")).to_dict()
@@ -126,10 +128,14 @@ class TestReconciliationFunctions(unittest.TestCase):
         
         # Test folding various combinations of only normal labels
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_1_label]), [normal_1_label])
-        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]), [normal_1_label, normal_2_label])
-        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label_2]), [normal_1_label, normal_2_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]),
+                         [normal_1_label, normal_2_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label_2]),
+                         [normal_1_label, normal_2_label])
 
-        # TODO: Test folding normal labels with a control code that isn't NA or NC
+        # Test folding normal labels with a control code that isn't NA or NC
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [nr_label]),
+                         [normal_1_label, normal_2_label, nr_label])
 
         # Test folding a label from a different code scheme
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_2, [normal_1_label], [na_label]))
