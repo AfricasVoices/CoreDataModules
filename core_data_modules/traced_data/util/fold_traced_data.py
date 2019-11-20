@@ -200,6 +200,14 @@ class FoldStrategies(object):
         # Ensure the lists contain each 1 code.
         assert len(x) > 0
         assert len(y) > 0
+
+        # Ensure that if a list contains true missing, it only contains that code.
+        for label in x:
+            if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.TRUE_MISSING:
+                assert len(x) == 1
+        for label in y:
+            if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.TRUE_MISSING:
+                assert len(y) == 1
         
         # If both lists only contain true missing, return true missing, otherwise filter out that label.
         if len(x) == 1 and code_scheme.get_code_with_code_id(x[0]["CodeID"]).control_code == Codes.TRUE_MISSING and \

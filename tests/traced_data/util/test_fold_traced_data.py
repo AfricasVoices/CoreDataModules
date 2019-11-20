@@ -96,16 +96,20 @@ class TestReconciliationFunctions(unittest.TestCase):
                              "and {'SchemeID': 'scheme-2', 'CodeID': 'code-2'})")
 
     def test_fold_list_of_labels(self):
-        na_code = Code("code-NA", "Control", "NA", 0, "NA", True, control_code=Codes.TRUE_MISSING)
-        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code])
+        na_code = Code("code-NA", "Control", "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
+        normal_1_code = Code("code-normal-1", "Normal", "Normal 1", 1, "normal_1", True)
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, normal_1_code])
 
         na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
         na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
 
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label], []))
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label]), [na_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label_2]), [na_label])
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, na_label], [na_label]))
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, normal_1_label], [na_label]))
 
 
 class TestFoldTracedData(unittest.TestCase):
