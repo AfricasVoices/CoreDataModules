@@ -133,6 +133,8 @@ class TestReconciliationFunctions(unittest.TestCase):
 
         # Test folding a label from a different code scheme
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_2, [normal_1_label], [na_label]))
+        # (make sure that test would have been ok with the correct code scheme)
+        FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [na_label])
 
         # TODO: Test folding normal codes with NC codes
 
