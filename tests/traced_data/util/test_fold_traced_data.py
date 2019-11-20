@@ -107,13 +107,22 @@ class TestReconciliationFunctions(unittest.TestCase):
         normal_1_label_2 = Label("scheme-1", "code-normal-1", "2019-10-03T00:00:00Z", Origin("x", "test", "automatic")).to_dict()
         normal_2_label = Label("scheme-2", "code-normal-2", "2019-10-01T15:00:00Z", Origin("x", "test", "automatic")).to_dict()
 
+        # Test empty lists are rejected
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label], []))
+
+        # Test lists containing only NA labels return a single NA label
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label]), [na_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label_2]), [na_label])
+
+        # Test lists containing an NA label and another label (including another NA label) are rejected
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, na_label], [na_label]))
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, normal_1_label], [na_label]))
+
+        # Test folding a normal label with an NA label
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [normal_1_label]), [normal_1_label])
+        
+        # Test folding various combinations of only normal labels
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_1_label]), [normal_1_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]), [normal_1_label, normal_2_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label_2]), [normal_1_label, normal_2_label])
