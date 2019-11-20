@@ -204,7 +204,7 @@ class FoldStrategies(object):
         # If both lists only contain true missing, return true missing, otherwise filter out that label.
         if len(x) == 1 and code_scheme.get_code_with_code_id(x[0]["CodeID"]).control_code == Codes.TRUE_MISSING and \
                 len(y) == 1 and code_scheme.get_code_with_code_id(y[0]["CodeID"]).control_code == Codes.TRUE_MISSING:
-            return [x]
+            return x
         x = [l for l in x if code_scheme.get_code_with_code_id(l["CodeID"]).control_code != Codes.TRUE_MISSING]
         y = [l for l in y if code_scheme.get_code_with_code_id(l["CodeID"]).control_code != Codes.TRUE_MISSING]
 
