@@ -101,11 +101,13 @@ class TestReconciliationFunctions(unittest.TestCase):
         normal_2_code = Code("code-normal-2", "Normal", "Normal 2", 2, "normal_2", True)
         scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, normal_1_code, normal_2_code])
 
+        scheme_2 = CodeScheme("scheme-2", "Scheme 2", "2", [])
+
         na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
         na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
         normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
         normal_1_label_2 = Label("scheme-1", "code-normal-1", "2019-10-03T00:00:00Z", Origin("x", "test", "automatic")).to_dict()
-        normal_2_label = Label("scheme-2", "code-normal-2", "2019-10-01T15:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_2_label = Label("scheme-1", "code-normal-2", "2019-10-01T15:00:00Z", Origin("x", "test", "automatic")).to_dict()
 
         # Test empty lists are rejected
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
@@ -129,7 +131,8 @@ class TestReconciliationFunctions(unittest.TestCase):
 
         # TODO: Test folding normal labels with a control code that isn't NA or NC
 
-        # TODO: Test folding a label from a different code scheme
+        # Test folding a label from a different code scheme
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_2, [normal_1_label], [na_label]))
 
         # TODO: Test folding normal codes with NC codes
 
