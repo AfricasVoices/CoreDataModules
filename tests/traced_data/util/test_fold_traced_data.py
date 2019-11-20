@@ -127,6 +127,12 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]), [normal_1_label, normal_2_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label_2]), [normal_1_label, normal_2_label])
 
+        # TODO: Test folding normal labels with a control code that isn't NA or NC
+
+        # TODO: Test folding a label from a different code scheme
+
+        # TODO: Test folding normal codes with NC codes
+
 
 class TestFoldTracedData(unittest.TestCase):
     @staticmethod
