@@ -104,6 +104,7 @@ class TestReconciliationFunctions(unittest.TestCase):
         na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
         na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
         normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label_2 = Label("scheme-1", "code-normal-1", "2019-10-03T00:00:00Z", Origin("x", "test", "automatic")).to_dict()
         normal_2_label = Label("scheme-2", "code-normal-2", "2019-10-01T15:00:00Z", Origin("x", "test", "automatic")).to_dict()
 
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
@@ -115,6 +116,7 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [normal_1_label]), [normal_1_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_1_label]), [normal_1_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]), [normal_1_label, normal_2_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label_2]), [normal_1_label, normal_2_label])
 
 
 class TestFoldTracedData(unittest.TestCase):
