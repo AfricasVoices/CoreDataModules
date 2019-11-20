@@ -226,6 +226,7 @@ class FoldStrategies(object):
         for label in x + y:
             if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.NOT_CODED:
                 nc = label
+                continue
 
             if (label["SchemeID"], label["CodeID"]) in seen_labels:
                 continue
