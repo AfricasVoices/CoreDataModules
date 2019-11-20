@@ -1,7 +1,7 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
-from core_data_modules.data_models import Label, Origin
+from core_data_modules.data_models import Label, Origin, CodeScheme, Code
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.util import FoldTracedData
 from core_data_modules.traced_data.util.fold_traced_data import FoldStrategies
@@ -94,6 +94,17 @@ class TestReconciliationFunctions(unittest.TestCase):
                              "Labels should have the same SchemeID and CodeID, but at least one of those is different "
                              "(differing values were {'SchemeID': 'scheme-1', 'CodeID': 'code-2'} "
                              "and {'SchemeID': 'scheme-2', 'CodeID': 'code-2'})")
+
+    def test_fold_list_of_labels(self):
+        na_code = Code("code-NA", "Control", "NA", 0, "NA", True, control_code=Codes.TRUE_MISSING)
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code])
+
+        na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
+
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label], []))
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label]), [na_label])
 
 
 class TestFoldTracedData(unittest.TestCase):
