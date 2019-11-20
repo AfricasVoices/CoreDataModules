@@ -97,7 +97,7 @@ class TestReconciliationFunctions(unittest.TestCase):
 
     def test_fold_list_of_labels(self):
         na_code = Code("code-NA", "Control", "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
-        nr_code = Code("code-NR", "Control", "NR", -10, "NA", True, control_code=Codes.NOT_REVIEWED)
+        nr_code = Code("code-NR", "Control", "NR", -20, "NA", True, control_code=Codes.NOT_REVIEWED)
         normal_1_code = Code("code-normal-1", "Normal", "Normal 1", 1, "normal_1", True)
         normal_2_code = Code("code-normal-2", "Normal", "Normal 2", 2, "normal_2", True)
         scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, nr_code, normal_1_code, normal_2_code])
