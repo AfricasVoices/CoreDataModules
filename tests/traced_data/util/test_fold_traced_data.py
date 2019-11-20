@@ -105,6 +105,7 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
         self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label], []))
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label]), [na_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label_2]), [na_label])
 
 
 class TestFoldTracedData(unittest.TestCase):
