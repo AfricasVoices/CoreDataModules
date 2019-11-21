@@ -255,6 +255,10 @@ class TracedDataCodaV2IO(object):
                 if labels is not None:
                     # Append each label that was assigned to this message for this scheme to the TracedData.
                     for label in reversed(labels):
+                        # Normalise the label's scheme id
+                        assert label.scheme_id.startswith(scheme.scheme_id)
+                        label.scheme_id = scheme.scheme_id
+
                         td.append_data({key_of_coded: label.to_dict()},
                                        Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
