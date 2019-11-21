@@ -321,6 +321,10 @@ class TracedDataCodaV2IO(object):
                     # and append the whole new list to the traced data.
                     td_labels_lut[label.scheme_id] = label
 
+                    # Normalise the label's scheme id
+                    assert label.scheme_id.startswith(scheme.scheme_id)
+                    label.scheme_id = scheme.scheme_id
+
                     td_labels = list(td_labels_lut.values())
                     td.append_data({coded_key: [label.to_dict() for label in td_labels]},
                                    Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
@@ -442,3 +446,31 @@ class TracedDataJsonIO(object):
         for line in f:
             data.append(TracedData.deserialize(json.loads(line)))
         return data
+
+    @classmethod
+    def flush_history_from_traced_data_iterable(cls, user, data, file_path):
+        """
+        Flushes the history of a TracedData iterable to a file.
+        
+        Each TracedData in the iterable passed in is updated to include:
+         - the latest values.
+         - the SHA of the exported file.
+         - the SHA of the previous TracedData.
+        The history is then deleted from memory.
+        
+        :param user: Identifier of the user running this program, for TracedData Metadata.
+        :type user: str
+        :param data: TracedData objects to flush the history from.
+        :type data: iterable of TracedData
+        :param file_path: Path to the file to flush the TracedData history to.
+        :type file_path: str
+        """
+        with open(file_path, "w") as f:
+            cls.export_traced_data_iterable_to_jsonl(data, f)
+
+        file_sha = SHAUtils.sha_file_at_path(file_path)
+
+        for td in data:
+            # noinspection PyProtectedMember 
+            # because '_clear_history' should be thought of as package-private rather than class-private
+            td._clear_history(user, file_sha)
