@@ -67,7 +67,7 @@ class FoldStrategies(object):
         return code in cls.CONTROL_CODES
 
     @staticmethod
-    def control_code(x, y):
+    def control_code_by_precedence(x, y):
         """
         Folds two control codes, by choosing the control code with the highest precedence.
 
@@ -96,8 +96,8 @@ class FoldStrategies(object):
             Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
         ]
 
-        assert x in precedence_order, "value_1 ('{}') not a missing or stop code".format(x)
-        assert y in precedence_order, "value_2 ('{}') not a missing or stop code".format(y)
+        assert x in precedence_order, "value_1 ('{}') not a control code".format(x)
+        assert y in precedence_order, "value_2 ('{}') not a control code".format(y)
 
         if precedence_order.index(x) <= precedence_order.index(y):
             return x
@@ -165,7 +165,7 @@ class FoldStrategies(object):
         assert y in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or y in cls.CONTROL_CODES
 
         if cls._is_control_code(x) and cls._is_control_code(y):
-            return cls.control_code(x, y)
+            return cls.control_code_by_precedence(x, y)
         elif cls._is_control_code(x):
             return y
         elif cls._is_control_code(y):
