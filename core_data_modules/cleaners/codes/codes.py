@@ -5,7 +5,7 @@ class Codes(object):
 
     YES = "yes"
     NO = "no"
-    BOTH = "both"
+    AMBIVALENT = "ambivalent"
 
     URBAN = "urban"
     RURAL = "rural"
