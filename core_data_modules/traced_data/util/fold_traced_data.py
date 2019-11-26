@@ -1,4 +1,6 @@
 from core_data_modules.cleaners import Codes
+from core_data_modules.cleaners.cleaning_utils import CleaningUtils
+from core_data_modules.data_models.code_scheme import CodeTypes
 from core_data_modules.traced_data import Metadata
 from core_data_modules.util import TimeUtils
 
@@ -10,6 +12,12 @@ class FoldStrategies(object):
     All fold strategies are functions that take two values, and apply some logic to those values in order to produce
     a single, folded result.
     """
+    # Precedence order in case of Control code conflicts; highest precedence first
+    _CONTROL_CODE_PRECEDENCE_ORDER = [
+        Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
+        Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
+    ]
+
     @staticmethod
     def assert_equal(x, y):
         """
@@ -46,8 +54,8 @@ class FoldStrategies(object):
 
         return f"{x};{y}"
 
-    @staticmethod
-    def control_code_by_precedence(x, y):
+    @classmethod
+    def control_code_by_precedence(cls, x, y):
         """
         Folds two control codes, by choosing the control code with the highest precedence.
 
@@ -70,16 +78,10 @@ class FoldStrategies(object):
         :return: Folded control code.
         :rtype: str | None
         """
-        # Precedence order in case of conflicts; highest precedence first
-        precedence_order = [
-            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
-        ]
+        assert x in cls._CONTROL_CODE_PRECEDENCE_ORDER, "x ('{}') not a control code".format(x)
+        assert y in cls._CONTROL_CODE_PRECEDENCE_ORDER, "y ('{}') not a control code".format(y)
 
-        assert x in precedence_order, "value_1 ('{}') not a control code".format(x)
-        assert y in precedence_order, "value_2 ('{}') not a control code".format(y)
-
-        if precedence_order.index(x) <= precedence_order.index(y):
+        if cls._CONTROL_CODE_PRECEDENCE_ORDER.index(x) <= cls._CONTROL_CODE_PRECEDENCE_ORDER.index(y):
             return x
         else:
             return y
@@ -156,7 +158,64 @@ class FoldStrategies(object):
             return x
         else:
             return Codes.AMBIVALENT
+
+    @classmethod
+    def control_label_by_precedence(cls, code_scheme, x, y):
+        # Ensure the labels belong to this code scheme
+        assert x["SchemeID"] == code_scheme.scheme_id
+        assert y["SchemeID"] == code_scheme.scheme_id
+
+        # Get the codes for each label input
+        x_code = code_scheme.get_code_with_code_id(x["CodeID"])
+        y_code = code_scheme.get_code_with_code_id(y["CodeID"])
         
+        # Ensure the codes are control codes with a known precedence
+        assert x_code.code_type == CodeTypes.CONTROL and x_code.control_code in cls._CONTROL_CODE_PRECEDENCE_ORDER
+        assert y_code.code_type == CodeTypes.CONTROL and y_code.control_code in cls._CONTROL_CODE_PRECEDENCE_ORDER
+
+        if cls._CONTROL_CODE_PRECEDENCE_ORDER.index(x_code.control_code) <= \
+                cls._CONTROL_CODE_PRECEDENCE_ORDER.index(y_code.control_code):
+            return x
+        else:
+            return y
+
+    @staticmethod
+    def _code_has_match_value(code, match_value):
+        return match_value in code.match_values
+
+    @classmethod
+    def yes_no_amb_label(cls, code_scheme, x, y):
+        # Ensure the labels belong to this code scheme
+        assert x["SchemeID"] == code_scheme.scheme_id
+        assert y["SchemeID"] == code_scheme.scheme_id
+        
+        # Get the codes for each label input
+        x_code = code_scheme.get_code_with_code_id(x["CodeID"])
+        y_code = code_scheme.get_code_with_code_id(y["CodeID"])
+        
+        # Ensure the codes are either control codes or a Yes/No/Ambivalent code
+        assert x_code.code_type == CodeTypes.CONTROL or cls._code_has_match_value(x_code, Codes.YES) or \
+            cls._code_has_match_value(x_code, Codes.NO) or cls._code_has_match_value(x_code, Codes.AMBIVALENT)
+        assert y_code.code_type == CodeTypes.CONTROL or cls._code_has_match_value(y_code, Codes.YES) or \
+            cls._code_has_match_value(y_code, Codes.NO) or cls._code_has_match_value(y_code, Codes.AMBIVALENT)
+
+        # Perform the actual label folding
+        if x_code.code_type == CodeTypes.CONTROL and y_code.code_type == CodeTypes.CONTROL:
+            return cls.control_label_by_precedence(code_scheme, x, y)
+        elif x_code.code_type == CodeTypes.CONTROL:
+            return y
+        elif y_code.code_type == CodeTypes.CONTROL:
+            return x
+        elif Codes.AMBIVALENT in x_code.match_values:        
+            return x
+        elif Codes.AMBIVALENT in y_code.match_values:
+            return y
+        elif x == y:
+            return x
+        else:
+            return CleaningUtils.make_label_from_cleaner_code(code_scheme, Codes.AMBIVALENT,
+                                                              Metadata.get_call_location())
+
 
 class FoldTracedData(object):
     @staticmethod
