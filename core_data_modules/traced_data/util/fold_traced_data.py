@@ -140,7 +140,7 @@ class FoldStrategies(object):
                  the normal code if one code is a control code and the other a normal code,
                  Codes.YES if both inputs are Codes.YES,
                  Codes.NO if both inputs are Codes.NO,
-                 otherwise cls.AMBIVALENT_BINARY_VALUE.
+                 otherwise Codes.AMBIVALENT.
         :rtype: str
         """
         assert x in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or x in Codes.CONTROL_CODES
@@ -162,8 +162,8 @@ class FoldStrategies(object):
     @classmethod
     def control_label_by_precedence(cls, code_scheme, x, y):
         """
-        Folds two control labels, by choosing the label with the control code of the highest precedence.
-        
+        Folds control labels, by choosing the label with the control code of the highest precedence.
+
         The precedence order for control codes is defined as follows (highest precedence listed first):
          - Codes.STOP
          - Codes.CODING_ERROR
