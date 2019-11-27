@@ -211,6 +211,19 @@ class Code:
             validators.validate_list(self.match_values, "match_values")
             for i, match_value in enumerate(self.match_values):
                 validators.validate_string(match_value, f"match_values[{i}]")
+                
+    def has_match_value(self, match_value):
+        """
+        Returns whether the requested match_value is present in this code's match_values.
+
+        :param match_value: Value to search for in this code.
+        :type match_value: str
+        :return: Whether the requested match_value is present in this code's match_values.
+        :rtype: boolean
+        """
+        if self.match_values is None:
+            return False
+        return match_value in self.match_values
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

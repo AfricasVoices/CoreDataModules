@@ -202,10 +202,6 @@ class FoldStrategies(object):
         else:
             return y
 
-    @staticmethod
-    def _code_has_match_value(code, match_value):
-        return match_value in code.match_values
-
     @classmethod
     def yes_no_amb_label(cls, code_scheme, x, y):
         # Ensure the labels belong to this code scheme
@@ -217,10 +213,10 @@ class FoldStrategies(object):
         y_code = code_scheme.get_code_with_code_id(y["CodeID"])
         
         # Ensure the codes are either control codes or a Yes/No/Ambivalent code
-        assert x_code.code_type == CodeTypes.CONTROL or cls._code_has_match_value(x_code, Codes.YES) or \
-            cls._code_has_match_value(x_code, Codes.NO) or cls._code_has_match_value(x_code, Codes.AMBIVALENT)
-        assert y_code.code_type == CodeTypes.CONTROL or cls._code_has_match_value(y_code, Codes.YES) or \
-            cls._code_has_match_value(y_code, Codes.NO) or cls._code_has_match_value(y_code, Codes.AMBIVALENT)
+        assert x_code.code_type == CodeTypes.CONTROL or x_code.has_match_value(Codes.YES) or \
+            x_code.has_match_value(Codes.NO) or x_code.has_match_value(Codes.AMBIVALENT)
+        assert y_code.code_type == CodeTypes.CONTROL or y_code.has_match_value(Codes.YES) or \
+            y_code.has_match_value(Codes.NO) or y_code.has_match_value(Codes.AMBIVALENT)
 
         # Perform the actual label folding
         if x_code.code_type == CodeTypes.CONTROL and y_code.code_type == CodeTypes.CONTROL:
@@ -229,15 +225,16 @@ class FoldStrategies(object):
             return y
         elif y_code.code_type == CodeTypes.CONTROL:
             return x
-        elif Codes.AMBIVALENT in x_code.match_values:        
+        elif x_code.has_match_value(Codes.AMBIVALENT):
             return x
-        elif Codes.AMBIVALENT in y_code.match_values:
+        elif y_code.has_match_value(Codes.AMBIVALENT):
             return y
-        elif x == y:
+        elif x_code.code_id == y_code.code_id:
             return x
         else:
-            return CleaningUtils.make_label_from_cleaner_code(code_scheme, Codes.AMBIVALENT,
-                                                              Metadata.get_call_location())
+            return CleaningUtils.make_label_from_cleaner_code(
+                code_scheme, code_scheme.get_code_with_match_value(Codes.AMBIVALENT), Metadata.get_call_location()
+            ).to_dict()
 
 
 class FoldTracedData(object):
