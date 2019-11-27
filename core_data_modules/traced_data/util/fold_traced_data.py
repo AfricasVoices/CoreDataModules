@@ -213,19 +213,22 @@ class FoldStrategies(object):
             if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.TRUE_MISSING:
                 assert len(y) == 1
         
-        # If both lists only contain true missing, return true missing, otherwise filter out that label.
+        # If both lists only contain true missing, return true missing, otherwise filter out that label from both lists.
         if len(x) == 1 and code_scheme.get_code_with_code_id(x[0]["CodeID"]).control_code == Codes.TRUE_MISSING and \
                 len(y) == 1 and code_scheme.get_code_with_code_id(y[0]["CodeID"]).control_code == Codes.TRUE_MISSING:
             return x
         x = [label for label in x if code_scheme.get_code_with_code_id(label["CodeID"]).control_code != Codes.TRUE_MISSING]
         y = [label for label in y if code_scheme.get_code_with_code_id(label["CodeID"]).control_code != Codes.TRUE_MISSING]
 
+        # Compute the union of both lists, choosing the first label if there are multiple labels with the same code id.
+        # Searches for the presence of any NC labels, but does not add them to the union list.
         union = []
         seen_labels = set()
         nc = None
         for label in x + y:
             if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.NOT_CODED:
-                nc = label
+                if nc is not None:
+                    nc = label
                 continue
 
             if (label["SchemeID"], label["CodeID"]) in seen_labels:
@@ -234,6 +237,7 @@ class FoldStrategies(object):
             seen_labels.add((label["SchemeID"], label["CodeID"]))
             union.append(label)
 
+        # If the union list is empty and there was an NC code, return NC.
         if nc is not None and len(union) == 0:
             union = [nc]
 
