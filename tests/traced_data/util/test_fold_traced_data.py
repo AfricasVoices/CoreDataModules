@@ -1,6 +1,8 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
+from core_data_modules.data_models import Code, CodeScheme, Label, Origin
+from core_data_modules.data_models.code_scheme import CodeTypes
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.util import FoldTracedData
 from core_data_modules.traced_data.util.fold_traced_data import FoldStrategies
@@ -53,6 +55,29 @@ class TestReconciliationFunctions(unittest.TestCase):
 
         # TODO: Check that this test case is desired
         self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_REVIEWED, Codes.YES), Codes.YES)
+
+    def test_control_label_by_precedence(self):
+        na_code = Code("code-NA", CodeTypes.CONTROL, "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
+        nc_code = Code("code-NC", CodeTypes.CONTROL, "NC", -30, "NC", True, control_code=Codes.NOT_CODED)
+        stop_code = Code("code-STOP", CodeTypes.CONTROL, "STOP", -40, "STOP", True, control_code=Codes.STOP)
+        normal_1_code = Code("code-normal-1", CodeTypes.NORMAL, "Normal 1", 1, "normal_1", True)
+        
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, nc_code, stop_code, normal_1_code])
+        
+        na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        nc_label = Label("scheme-1", "code-NC", "2019-10-01T12:30:00Z", Origin("x", "test", "automatic")).to_dict()
+        stop_label = Label("scheme-1", "code-STOP", "2019-10-01T12:30:00Z", Origin("x", "test", "automatic")).to_dict()
+        na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+
+        # Test normal codes rejected
+        self.assertRaises(AssertionError,
+                          lambda: FoldStrategies.control_label_by_precedence(scheme_1, na_label, normal_1_label))
+        
+        # Test some control code combinations
+        self.assertEqual(FoldStrategies.control_label_by_precedence(scheme_1, na_label, nc_label), nc_label)
+        self.assertEqual(FoldStrategies.control_label_by_precedence(scheme_1, na_label, na_label_2), na_label)
+        self.assertEqual(FoldStrategies.control_label_by_precedence(scheme_1, stop_label, nc_label), stop_label)
 
 
 class TestFoldTracedData(unittest.TestCase):
