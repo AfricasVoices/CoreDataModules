@@ -161,6 +161,29 @@ class FoldStrategies(object):
 
     @classmethod
     def control_label_by_precedence(cls, code_scheme, x, y):
+        """
+        Folds two control labels, by choosing the label with the control code of the highest precedence.
+        
+        The precedence order for control codes is defined as follows (highest precedence listed first):
+         - Codes.STOP
+         - Codes.CODING_ERROR
+         - Codes.NOT_REVIEWED
+         - Codes.NOT_INTERNALLY_CONSISTENT
+         - Codes.NOT_CODED
+         - Codes.TRUE_MISSING
+         - Codes.SKIPPED
+         - Codes.WRONG_SCHEME
+         - Codes.NOISE_OTHER_CHANNEL
+        
+        :param code_scheme: Code scheme for the labels which are being folded.
+        :type code_scheme: core_data_modules.data_models.CodeScheme
+        :param x: Serialised core_data_modules.data_models.Label to fold.
+        :type x: dict
+        :param y: Serialised core_data_modules.data_models.Label to fold.
+        :type y: dict
+        :return: Serialised core_data_modules.data_models.Label with the control code of the highest precedence.
+        :rtype: dict
+        """
         # Ensure the labels belong to this code scheme
         assert x["SchemeID"] == code_scheme.scheme_id
         assert y["SchemeID"] == code_scheme.scheme_id
