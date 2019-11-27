@@ -204,6 +204,22 @@ class FoldStrategies(object):
 
     @classmethod
     def yes_no_amb_label(cls, code_scheme, x, y):
+        """
+        Folds yes/no/ambivalent labels.
+        
+        :param code_scheme: Code scheme for the labels which are being folded.
+        :type code_scheme: core_data_modules.data_models.CodeScheme
+        :param x: Serialised core_data_modules.data_models.Label to fold.
+        :type x: dict
+        :param y: Serialised core_data_modules.data_models.Label to fold.
+        :type y: dict
+        :return: Folded control label if both labels are for control codes,
+                 the normal label if one label is for a control code and the other for a normal code,
+                 a yes label if both inputs have match values Codes.YES,
+                 a no label if both inputs have match values Codes.NO,
+                 otherwise creates a new label from the Codes.AMBIVALENT code in the code_scheme.
+        :rtype: 
+        """
         # Ensure the labels belong to this code scheme
         assert x["SchemeID"] == code_scheme.scheme_id
         assert y["SchemeID"] == code_scheme.scheme_id
