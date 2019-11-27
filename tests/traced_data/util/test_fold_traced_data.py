@@ -23,8 +23,8 @@ class TestReconciliationFunctions(unittest.TestCase):
                              "(differing values were '6' and '7')")
 
     def test_control_code(self):
-        self.assertEqual(FoldStrategies.control_code(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
-        self.assertEqual(FoldStrategies.control_code(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
+        self.assertEqual(FoldStrategies.control_code_by_precedence(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
+        self.assertEqual(FoldStrategies.control_code_by_precedence(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
 
     def test_concatenate(self):
         self.assertEqual(FoldStrategies.concatenate("abc", "def"), "abc;def")
