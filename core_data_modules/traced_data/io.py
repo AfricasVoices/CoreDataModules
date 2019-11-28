@@ -321,6 +321,10 @@ class TracedDataCodaV2IO(object):
                     # and append the whole new list to the traced data.
                     td_labels_lut[label.scheme_id] = label
 
+                    # Normalise the label's scheme id
+                    assert label.scheme_id.startswith(scheme.scheme_id)
+                    label.scheme_id = scheme.scheme_id
+
                     td_labels = list(td_labels_lut.values())
                     td.append_data({coded_key: [label.to_dict() for label in td_labels]},
                                    Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
