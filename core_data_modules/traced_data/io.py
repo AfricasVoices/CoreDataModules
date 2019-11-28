@@ -352,6 +352,16 @@ class TracedDataCodaV2IO(object):
                         Metadata(user, Metadata.get_call_location(), time.time())
                     )
 
+                # Normalise the scheme ids of all the imported labels
+                labels = td.get(coded_key)
+                for label in labels:
+                    assert label["SchemeID"].startswith(scheme.scheme_id)
+                    label["SchemeID"] = scheme.scheme_id
+                td.append_data(
+                    {coded_key: [label for label in labels]},
+                    Metadata(user, Metadata.get_call_location(), time.time())
+                )
+
 
 class TracedDataCSVIO(object):
     @staticmethod
