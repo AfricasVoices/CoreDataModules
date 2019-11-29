@@ -10,7 +10,6 @@ class FoldStrategies(object):
     All fold strategies are functions that take two values, and apply some logic to those values in order to produce
     a single, folded result.
     """
-    AMBIVALENT_BINARY_VALUE = "ambivalent"  # TODO: Move to Core
     CONTROL_CODES = {
         Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
         Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
@@ -161,8 +160,8 @@ class FoldStrategies(object):
                  otherwise cls.AMBIVALENT_BINARY_VALUE.
         :rtype: str
         """
-        assert x in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or x in cls.CONTROL_CODES
-        assert y in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or y in cls.CONTROL_CODES
+        assert x in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or x in cls.CONTROL_CODES
+        assert y in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or y in cls.CONTROL_CODES
 
         if cls._is_control_code(x) and cls._is_control_code(y):
             return cls.control_code_by_precedence(x, y)
@@ -170,12 +169,12 @@ class FoldStrategies(object):
             return y
         elif cls._is_control_code(y):
             return x
-        elif x == cls.AMBIVALENT_BINARY_VALUE or y == cls.AMBIVALENT_BINARY_VALUE:
-            return cls.AMBIVALENT_BINARY_VALUE
+        elif x == Codes.AMBIVALENT or y == Codes.AMBIVALENT:
+            return Codes.AMBIVALENT
         elif x == y:
             return x
         else:
-            return cls.AMBIVALENT_BINARY_VALUE
+            return Codes.AMBIVALENT
         
 
 class FoldTracedData(object):

@@ -48,7 +48,7 @@ class TestReconciliationFunctions(unittest.TestCase):
     def test_yes_no_amb(self):
         self.assertEqual(FoldStrategies.yes_no_amb(Codes.YES, Codes.YES), Codes.YES)
         self.assertEqual(FoldStrategies.yes_no_amb(Codes.NO, Codes.NO), Codes.NO)
-        self.assertEqual(FoldStrategies.yes_no_amb(Codes.YES, Codes.NO), FoldStrategies.AMBIVALENT_BINARY_VALUE)
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.YES, Codes.NO), Codes.AMBIVALENT)
         self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_CODED, Codes.NOT_CODED), Codes.NOT_CODED)
 
         # TODO: Check that this test case is desired
@@ -159,6 +159,6 @@ class TestFoldTracedData(unittest.TestCase):
                 "concat": "abc;def",
                 "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.MATRIX_0,
                 "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
-                "yes_no_1": Codes.YES, "yes_no_2": FoldStrategies.AMBIVALENT_BINARY_VALUE,
+                "yes_no_1": Codes.YES, "yes_no_2": Codes.AMBIVALENT
             }
         )
