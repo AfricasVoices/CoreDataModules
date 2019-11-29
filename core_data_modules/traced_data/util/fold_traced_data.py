@@ -1,5 +1,3 @@
-import json
-
 from core_data_modules.cleaners import Codes
 from core_data_modules.traced_data import Metadata
 from core_data_modules.util import TimeUtils
@@ -321,8 +319,6 @@ class FoldTracedData(object):
         
         # Fold the specified keys using the provided fold strategies.
         folded_dict = dict()
-        print(f"td1: {json.dumps(td_1.serialize())}")
-        print(f"td2: {json.dumps(td_2.serialize())}")
         for key, strategy in fold_strategies.items():
             folded_value = strategy(td_1.get(key), td_2.get(key))
             if folded_value is not None:
