@@ -203,6 +203,9 @@ class FoldStrategies(object):
         assert len(x) > 0, x
         assert len(y) > 0, y
 
+        _x = x
+        _y = y
+
         # Ensure that all the codes in each list belong to the code_scheme
         for label in x + y:
             assert label["SchemeID"] == code_scheme.scheme_id
@@ -242,6 +245,8 @@ class FoldStrategies(object):
         # If the union list is empty and there was an NC code, return NC.
         if nc is not None and len(union) == 0:
             union = [nc]
+            
+        assert len(union) > 0, f"{_x}\n{_y}\n{union}"
 
         return union
 
