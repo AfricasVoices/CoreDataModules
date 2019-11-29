@@ -34,3 +34,5 @@ class Codes(object):
     QUESTION = "question"
     GREETING = "greeting"
     OPT_IN = "opt_in"
+    SIMILAR_CONTENT = "similar_content"
+    PARTICIPATION_INCENTIVE = "participation_incentive"
