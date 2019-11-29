@@ -232,7 +232,7 @@ class FoldStrategies(object):
         nc = None
         for label in x + y:
             if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.NOT_CODED:
-                if nc is not None:
+                if nc is None:
                     nc = label
                 continue
 
