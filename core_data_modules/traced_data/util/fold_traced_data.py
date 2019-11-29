@@ -200,11 +200,8 @@ class FoldStrategies(object):
     @staticmethod
     def list_of_labels(code_scheme, x, y):
         # Ensure the lists contain each 1 code.
-        assert len(x) > 0, x
-        assert len(y) > 0, y
-
-        _x = x
-        _y = y
+        assert len(x) > 0
+        assert len(y) > 0
 
         # Ensure that all the codes in each list belong to the code_scheme
         for label in x + y:
@@ -246,7 +243,7 @@ class FoldStrategies(object):
         if nc is not None and len(union) == 0:
             union = [nc]
             
-        assert len(union) > 0, f"{_x}\n{_y}\n{union}"
+        assert len(union) > 0
 
         return union
 
