@@ -200,8 +200,8 @@ class FoldStrategies(object):
     @staticmethod
     def list_of_labels(code_scheme, x, y):
         # Ensure the lists contain each 1 code.
-        assert len(x) > 0
-        assert len(y) > 0
+        assert len(x) > 0, x
+        assert len(y) > 0, y
 
         # Ensure that all the codes in each list belong to the code_scheme
         for label in x + y:
