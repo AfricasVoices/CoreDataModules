@@ -175,7 +175,25 @@ class FoldStrategies(object):
             return x
         else:
             return Codes.AMBIVALENT
-        
+
+    @staticmethod
+    def assert_label_ids_equal(x, y):
+        """
+        Checks that two serialised labels have the same scheme ids and code ids, then return the newest.
+
+        :param x: Value to fold - a `core_data_modules.data_models.Label` object in serialised form.
+        :type x: dict
+        :param y: Value to fold - a `core_data_modules.data_models.Label` object in serialised form.
+        :type y: dict
+        :return: `x`
+        :rtype: dict
+        """
+        assert x["SchemeID"] == y["SchemeID"] and x["CodeID"] == y["CodeID"], \
+            f"Labels should have the same SchemeID and CodeID, but at least one of those is different " \
+            f"(differing values were {{'SchemeID': '{x['SchemeID']}', 'CodeID': '{x['CodeID']}'}} " \
+            f"and {{'SchemeID': '{y['SchemeID']}', 'CodeID': '{y['CodeID']}'}})"
+        return x
+
 
 class FoldTracedData(object):
     @staticmethod
