@@ -353,12 +353,12 @@ class TracedDataCodaV2IO(object):
                     )
 
                 # Normalise the scheme ids of all the imported labels
-                labels = td.get(coded_key)
+                labels = [Label.from_dict(d) for d in td[coded_key]]
                 for label in labels:
-                    assert label["SchemeID"].startswith(scheme.scheme_id)
-                    label["SchemeID"] = scheme.scheme_id
+                    assert label.scheme_id.startswith(scheme.scheme_id)
+                    label.scheme_id = scheme.scheme_id
                 td.append_data(
-                    {coded_key: [label for label in labels]},
+                    {coded_key: [label.to_dict() for label in labels]},
                     Metadata(user, Metadata.get_call_location(), time.time())
                 )
 
