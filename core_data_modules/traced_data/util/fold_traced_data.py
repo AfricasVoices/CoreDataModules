@@ -10,7 +10,6 @@ class FoldStrategies(object):
     All fold strategies are functions that take two values, and apply some logic to those values in order to produce
     a single, folded result.
     """
-    AMBIVALENT_BINARY_VALUE = "ambivalent"  # TODO: Move to Core
 
     @staticmethod
     def assert_equal(x, y):
@@ -143,8 +142,8 @@ class FoldStrategies(object):
                  otherwise cls.AMBIVALENT_BINARY_VALUE.
         :rtype: str
         """
-        assert x in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or x in Codes.CONTROL_CODES
-        assert y in {Codes.YES, Codes.NO, cls.AMBIVALENT_BINARY_VALUE} or y in Codes.CONTROL_CODES
+        assert x in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or x in Codes.CONTROL_CODES
+        assert y in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or y in Codes.CONTROL_CODES
 
         if x in Codes.CONTROL_CODES and y in Codes.CONTROL_CODES:
             return cls.control_code_by_precedence(x, y)
@@ -152,13 +151,31 @@ class FoldStrategies(object):
             return y
         elif y in Codes.CONTROL_CODES:
             return x
-        elif x == cls.AMBIVALENT_BINARY_VALUE or y == cls.AMBIVALENT_BINARY_VALUE:
-            return cls.AMBIVALENT_BINARY_VALUE
+        elif x == Codes.AMBIVALENT or y == Codes.AMBIVALENT:
+            return Codes.AMBIVALENT
         elif x == y:
             return x
         else:
-            return cls.AMBIVALENT_BINARY_VALUE
-        
+            return Codes.AMBIVALENT
+
+    @staticmethod
+    def assert_label_ids_equal(x, y):
+        """
+        Checks that two serialised labels have the same scheme ids and code ids, then return the newest.
+
+        :param x: Value to fold - a `core_data_modules.data_models.Label` object in serialised form.
+        :type x: dict
+        :param y: Value to fold - a `core_data_modules.data_models.Label` object in serialised form.
+        :type y: dict
+        :return: `x`
+        :rtype: dict
+        """
+        assert x["SchemeID"] == y["SchemeID"] and x["CodeID"] == y["CodeID"], \
+            f"Labels should have the same SchemeID and CodeID, but at least one of those is different " \
+            f"(differing values were {{'SchemeID': '{x['SchemeID']}', 'CodeID': '{x['CodeID']}'}} " \
+            f"and {{'SchemeID': '{y['SchemeID']}', 'CodeID': '{y['CodeID']}'}})"
+        return x
+
 
 class FoldTracedData(object):
     @staticmethod
