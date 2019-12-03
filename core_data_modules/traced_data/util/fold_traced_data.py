@@ -222,23 +222,23 @@ class FoldStrategies(object):
         # Compute the union of both lists, choosing the first label if there are multiple labels with the same code id.
         # Searches for the presence of any NC labels, but does not add them to the union list.
         union = []
-        seen_labels = set()
-        nc = None
+        union_code_ids = set()
+        nc_label = None
         for label in x + y:
             if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.NOT_CODED:
-                if nc is None:
-                    nc = label
+                if nc_label is None:
+                    nc_label = label
                 continue
 
-            if (label["SchemeID"], label["CodeID"]) in seen_labels:
+            if label["CodeID"] in union_code_ids:
                 continue
 
-            seen_labels.add((label["SchemeID"], label["CodeID"]))
             union.append(label)
+            union_code_ids.add(label["CodeID"])
 
         # If the union list is empty and there was an NC code, return NC.
-        if nc is not None and len(union) == 0:
-            union = [nc]
+        if nc_label is not None and len(union) == 0:
+            union = [nc_label]
             
         assert len(union) > 0
 
