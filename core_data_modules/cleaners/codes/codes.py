@@ -19,6 +19,7 @@ class Codes(object):
 
     # Control Codes
     STOP = "STOP"
+    DELETED = "DELETED"
     TRUE_MISSING = "NA"
     SKIPPED = "NS"
     NOT_INTERNALLY_CONSISTENT = "NIC"
