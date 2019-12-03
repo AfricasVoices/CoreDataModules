@@ -236,7 +236,7 @@ class FoldStrategies(object):
             union.append(label)
             union_code_ids.add(label["CodeID"])
 
-        # If the union list is empty and there was an NC code, return NC.
+        # If the union list is empty and there was an NC label, return NC.
         if nc_label is not None and len(union) == 0:
             union = [nc_label]
             
