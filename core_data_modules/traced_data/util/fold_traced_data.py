@@ -248,7 +248,7 @@ class FoldStrategies(object):
         
         # Ensure the codes are either control codes or a Yes/No/Ambivalent code
         assert x_code.code_type == CodeTypes.CONTROL or x_code.has_match_value(Codes.YES) or \
-            x_code.has_match_value(Codes.NO) or x_code.has_match_value(Codes.AMBIVALENT)
+            x_code.has_match_value(Codes.NO) or x_code.has_match_value(Codes.AMBIVALENT), x_code.to_firebase_map()
         assert y_code.code_type == CodeTypes.CONTROL or y_code.has_match_value(Codes.YES) or \
             y_code.has_match_value(Codes.NO) or y_code.has_match_value(Codes.AMBIVALENT)
 
