@@ -123,37 +123,7 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertListEqual([td["x"] for td in grouped[1]], ["5", "9"])
         self.assertListEqual([td["x"] for td in grouped[2]], ["8"])
 
-    def test_fold_groups(self):
-        data = [TracedData({"x": c}, Metadata("test_user", Metadata.get_call_location(), i))
-                for i, c in enumerate(["a", "b", "c", "d", "e"])]
-
-        groups = [
-            [data[0]],
-            [data[1], data[2], data[3]],
-            [data[4]]
-        ]
-
-        def fold_fn(td_1, td_2):
-            td_1 = td_1.copy()
-            td_2 = td_2.copy()
-
-            folded_dict = {"x": "{}{}".format(td_1["x"], td_2["x"])}
-
-            td_1.append_data(folded_dict, Metadata("test_user", Metadata.get_call_location(), 10))
-            td_2.append_data(folded_dict, Metadata("test_user", Metadata.get_call_location(), 11))
-
-            folded = td_1
-            td_1.append_traced_data("folded_with", td_2, Metadata("test_user", Metadata.get_call_location(), 12))
-
-            return folded
-
-        folded_data = FoldTracedData.fold_groups(groups, fold_fn)
-
-        self.assertDictEqual(dict(folded_data[0].items()), {"x": "a"})
-        self.assertDictEqual(dict(folded_data[1].items()), {"x": "bcd"})
-        self.assertDictEqual(dict(folded_data[2].items()), {"x": "e"})
-
-    def test_fold_traced_data(self):
+    def test_fold_traced_data_group(self):
         td_1_dict = {
                 "equal_1": 4, "equal_2": "xyz",
                 "concat": "abc",
@@ -172,8 +142,18 @@ class TestFoldTracedData(unittest.TestCase):
                 "other_1": "other",
             }
 
+        td_3_dict = {
+            "equal_1": 4, "equal_2": "xyz",
+            "concat": "gh",
+            "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.MATRIX_0,
+            "bool_1": Codes.FALSE, "bool_2": Codes.TRUE,
+            "yes_no_1": Codes.YES, "yes_no_2": Codes.YES,
+            "other_1": "other",
+        }
+
         td_1 = TracedData(td_1_dict, Metadata("test_user", Metadata.get_call_location(), 0))
         td_2 = TracedData(td_2_dict, Metadata("test_user", Metadata.get_call_location(), 1))
+        td_3 = TracedData(td_3_dict, Metadata("test_user", Metadata.get_call_location(), 2))
 
         fold_strategies = {
             "equal_1": FoldStrategies.assert_equal,
@@ -186,18 +166,19 @@ class TestFoldTracedData(unittest.TestCase):
             "yes_no_1": FoldStrategies.yes_no_amb,
             "yes_no_2": FoldStrategies.yes_no_amb
         }
-        folded_td = FoldTracedData.fold_traced_data("test_user", td_1, td_2, fold_strategies)
+        folded_td = FoldTracedData.fold_traced_data_group("test_user", [td_1, td_2, td_3], fold_strategies)
 
         # Test input tds unchanged
         self.assertDictEqual(dict(td_1.items()), td_1_dict)
         self.assertDictEqual(dict(td_2.items()), td_2_dict)
-        
+        self.assertDictEqual(dict(td_3.items()), td_3_dict)
+
         # Test folded td has expected values
         self.assertDictEqual(
             dict(folded_td.items()),
             {
                 "equal_1": 4, "equal_2": "xyz",
-                "concat": "abc;def",
+                "concat": "abc;def;gh",
                 "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.MATRIX_0,
                 "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
                 "yes_no_1": Codes.YES, "yes_no_2": Codes.AMBIVALENT

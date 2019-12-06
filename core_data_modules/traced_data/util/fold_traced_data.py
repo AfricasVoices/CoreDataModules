@@ -202,39 +202,14 @@ class FoldTracedData(object):
         return grouped_lut.values()
 
     @staticmethod
-    def fold_groups(groups, fold_fn):
-        """
-        Folds the TracedData objects in each group of a list of groups using the provided fold function.
-
-        :param groups: Groups of TracedData objects. The TracedData objects in each group will be folded into a single
-                       TracedData object by repeated application of fold_fn.
-        :type groups: iterable of iterable of TracedData
-        :param fold_fn: Function to use to fold each pair of TracedData objects.
-        :type fold_fn: function of (TracedData, TracedData) -> TracedData
-        :return: Folded TracedData objects.
-        :rtype: list of TracedData
-        """
-        folded_data = []
-
-        for group in groups:
-            folded_td = group.pop(0)
-            while len(group) > 0:
-                folded_td = fold_fn(folded_td, group.pop(0))
-            folded_data.append(folded_td)
-
-        return folded_data
-
-    @staticmethod
-    def fold_traced_data(user, td_1, td_2, fold_strategies):
+    def fold_traced_data_group(user, group, fold_strategies):
         """
         Folds two TracedData objects into a new TracedData object.
 
         :param user: Identifier of the user running this program, for TracedData Metadata.
         :type user: str
-        :param td_1: First TracedData object to fold.
-        :type td_1: TracedData
-        :param td_2: Second TracedData object to fold.
-        :type td_2: TracedData
+        :param group: Group of TracedData objects to fold into one.
+        :type group: list of TracedData
         :param fold_strategies: Dictionary of TracedData key to the folding strategy to apply to that key.
                                 A folding strategy is a function which folds two individual values.
                                 Standard folding functions are available at
@@ -245,31 +220,28 @@ class FoldTracedData(object):
         """
         # Create (shallow) copies of the input TracedData so that we can fold without modifying the arguments.
         # TODO: Is this necessary?
-        td_1 = td_1.copy()
-        td_2 = td_2.copy()
+        group = [td.copy() for td in group]
         
-        # Fold the specified keys using the provided fold strategies.
+        # Fold the specified keys using the provided fold strategies
         folded_dict = dict()
         for key, strategy in fold_strategies.items():
-            folded_value = strategy(td_1.get(key), td_2.get(key))
-            if folded_value is not None:
-                folded_dict[key] = folded_value
-        td_1.append_data(folded_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
-        td_2.append_data(folded_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+            folded_value = group[0].get(key)
+            for td in group[1:]:
+                folded_value = strategy(folded_value, td.get(key))
+            folded_dict[key] = folded_value
 
-        # Hide any keys which weren't specified in the list of fold strategies.
-        # TODO: Add a note about what would happen if we didn't do this?
-        # TODO: Do this here or pull this up into the pipelines. If in the pipelines, there would be no 'magic' here
-        td_1.hide_keys(set(td_1.keys()) - set(folded_dict.keys()),
-                       Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
-        td_2.hide_keys(set(td_2.keys()) - set(folded_dict.keys()),
-                       Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+        # Append the folded data to each TracedData, and hide any keys which weren't folded.
+        for td in group:
+            td.append_data(folded_dict, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+            td.hide_keys(set(td.keys()) - set(folded_dict.keys()),
+                         Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
 
-        # Append one traced data to the other (to ensure we have a record of both histories), and return.
-        folded_td = td_1
-        folded_td.append_traced_data("folded_with", td_2,
-                                     Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
-        
+        # Combine all the TracedDatas into a single object, so that we have a single history for each
+        folded_td = group[0]
+        for td in group[1:]:
+            folded_td.append_traced_data("folded_with", td,
+                                         Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+
         return folded_td
 
     @classmethod
@@ -294,7 +266,5 @@ class FoldTracedData(object):
         :return: Folded TracedData objects.
         :rtype: list of TracedData
         """
-        return cls.fold_groups(
-            cls.group_by(data, fold_id_fn),
-            lambda td_1, td_2: cls.fold_traced_data(user, td_1, td_2, fold_strategies)
-        )
+        groups_to_fold = cls.group_by(data, fold_id_fn)
+        return [cls.fold_traced_data_group(user, group, fold_strategies) for group in groups_to_fold]
