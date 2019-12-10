@@ -1,7 +1,8 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
-from core_data_modules.data_models import Label, Origin, CodeScheme, Code
+from core_data_modules.data_models import Code, CodeScheme, Label, Origin
+from core_data_modules.data_models.code_scheme import CodeTypes
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.util import FoldTracedData
 from core_data_modules.traced_data.util.fold_traced_data import FoldStrategies
@@ -53,6 +54,29 @@ class TestReconciliationFunctions(unittest.TestCase):
 
         # TODO: Check that this test case is desired
         self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_REVIEWED, Codes.YES), Codes.YES)
+
+    def test_control_label_by_precedence(self):
+        na_code = Code("code-NA", CodeTypes.CONTROL, "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
+        nc_code = Code("code-NC", CodeTypes.CONTROL, "NC", -30, "NC", True, control_code=Codes.NOT_CODED)
+        stop_code = Code("code-STOP", CodeTypes.CONTROL, "STOP", -40, "STOP", True, control_code=Codes.STOP)
+        normal_1_code = Code("code-normal-1", CodeTypes.NORMAL, "Normal 1", 1, "normal_1", True)
+
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, nc_code, stop_code, normal_1_code])
+
+        na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        nc_label = Label("scheme-1", "code-NC", "2019-10-01T12:30:00Z", Origin("x", "test", "automatic")).to_dict()
+        stop_label = Label("scheme-1", "code-STOP", "2019-10-01T12:30:00Z", Origin("x", "test", "automatic")).to_dict()
+        na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+
+        # Test normal codes rejected
+        self.assertRaises(AssertionError,
+                          lambda: FoldStrategies.control_label_by_precedence(scheme_1, na_label, normal_1_label))
+
+        # Test some control code combinations
+        self.assertEqual(FoldStrategies.control_label_by_precedence(scheme_1, na_label, nc_label), nc_label)
+        self.assertEqual(FoldStrategies.control_label_by_precedence(scheme_1, na_label, na_label_2), na_label)
+        self.assertEqual(FoldStrategies.control_label_by_precedence(scheme_1, stop_label, nc_label), stop_label)
 
     def test_assert_label_ids_equal(self):
         self.assertEqual(FoldStrategies.assert_label_ids_equal(
@@ -127,7 +151,7 @@ class TestReconciliationFunctions(unittest.TestCase):
 
         # Test folding a normal label with an NA label
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [normal_1_label]), [normal_1_label])
-        
+
         # Test folding various combinations of only normal labels
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_1_label]), [normal_1_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]),
@@ -150,6 +174,50 @@ class TestReconciliationFunctions(unittest.TestCase):
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [nc_label]), [normal_1_label])
         self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_2_label, nc_label]),
                          [normal_1_label, normal_2_label])
+
+    def test_yes_no_amb_label(self):
+        na_code = Code("code-NA", CodeTypes.CONTROL, "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
+        nr_code = Code("code-NR", CodeTypes.CONTROL, "NR", -20, "NR", True, control_code=Codes.NOT_REVIEWED)
+        nc_code = Code("code-NC", CodeTypes.CONTROL, "NC", -30, "NC", True, control_code=Codes.NOT_CODED)
+        stop_code = Code("code-STOP", CodeTypes.CONTROL, "STOP", -40, "STOP", True, control_code=Codes.STOP)
+        normal_1_code = Code("code-normal-1", CodeTypes.NORMAL, "Normal 1", 1, "normal_1", True)
+        yes_code = Code("code-yes", CodeTypes.NORMAL, "Yes", 5, "yes", True, match_values=[Codes.YES])
+        no_code = Code("code-no", CodeTypes.NORMAL, "No", 5, "no", True, match_values=[Codes.NO])
+        amb_code = Code("code-amb", CodeTypes.NORMAL, "Ambivalent", 5, "amb", True, match_values=[Codes.AMBIVALENT])
+        question_code = Code("code-question", CodeTypes.META, "Question", 10, "question", True, meta_code=Codes.QUESTION)
+
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1",
+                              [na_code, nr_code, nc_code, stop_code, normal_1_code,
+                               yes_code, no_code, amb_code, question_code])
+
+        na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        na_label_scheme_2 = Label("scheme-2", "code-NA", "2019-10-01T12:21:19Z", Origin("x", "test", "automatic")).to_dict()
+        nr_label = Label("scheme-1", "code-NR", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        nc_label = Label("scheme-1", "code-NC", "2019-10-01T12:30:00Z", Origin("x", "test", "automatic")).to_dict()
+        question_label = Label("scheme-1", "code-question", "2019-10-01T14:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        yes_label = Label("scheme-1", "code-yes", "2019-10-01T19:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        yes_label_2 = Label("scheme-1", "code-yes", "2019-10-01T20:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        no_label = Label("scheme-1", "code-no", "2019-10-01T20:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        amb_label = Label("scheme-1", "code-amb", "2019-10-01T21:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z",
+                               Origin("x", "test", "automatic")).to_dict()
+
+        # Test labels not part of this code scheme
+        self.assertRaises(AssertionError, lambda: FoldStrategies.yes_no_amb_label(scheme_1, na_label, na_label_scheme_2))
+
+        # Ensure labels that are not control codes or yes/no/ambivalent rejected
+        self.assertRaises(AssertionError, lambda: FoldStrategies.yes_no_amb_label(scheme_1, question_label, na_label))
+        self.assertRaises(AssertionError, lambda: FoldStrategies.yes_no_amb_label(scheme_1, normal_1_label, na_label))
+
+        # Test some valid combinations
+        self.assertEqual(FoldStrategies.yes_no_amb_label(scheme_1, yes_label, yes_label), yes_label)
+        self.assertEqual(FoldStrategies.yes_no_amb_label(scheme_1, yes_label_2, yes_label), yes_label_2)
+        self.assertEqual(FoldStrategies.yes_no_amb_label(scheme_1, no_label, no_label), no_label)
+        self.assertEqual(FoldStrategies.yes_no_amb_label(scheme_1, yes_label, no_label)["CodeID"], amb_label["CodeID"])
+        self.assertEqual(FoldStrategies.yes_no_amb_label(scheme_1, nc_label, nc_label), nc_label)
+
+        # TODO: Check that this test case is desired
+        self.assertEqual(FoldStrategies.yes_no_amb_label(scheme_1, nr_label, yes_label), yes_label)
 
 
 class TestFoldTracedData(unittest.TestCase):

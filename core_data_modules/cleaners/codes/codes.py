@@ -28,9 +28,16 @@ class Codes(object):
     WRONG_SCHEME = "WS"
     NOISE_OTHER_CHANNEL = "NOC"
 
+    CONTROL_CODES = {
+        STOP, TRUE_MISSING, SKIPPED, NOT_INTERNALLY_CONSISTENT, CODING_ERROR, NOT_REVIEWED, NOT_CODED, WRONG_SCHEME,
+        NOISE_OTHER_CHANNEL
+    }
+
     # Meta Codes
     PUSH_BACK = "push_back"
     SHOWTIME_QUESTION = "showtime_question"
     QUESTION = "question"
     GREETING = "greeting"
     OPT_IN = "opt_in"
+    SIMILAR_CONTENT = "similar_content"
+    PARTICIPATION_INCENTIVE = "participation_incentive"

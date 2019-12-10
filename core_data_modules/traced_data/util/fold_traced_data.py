@@ -1,4 +1,6 @@
 from core_data_modules.cleaners import Codes
+from core_data_modules.cleaners.cleaning_utils import CleaningUtils
+from core_data_modules.data_models.code_scheme import CodeTypes
 from core_data_modules.traced_data import Metadata
 from core_data_modules.util import TimeUtils
 
@@ -10,10 +12,11 @@ class FoldStrategies(object):
     All fold strategies are functions that take two values, and apply some logic to those values in order to produce
     a single, folded result.
     """
-    CONTROL_CODES = {
+    # Precedence order in case of Control code conflicts; highest precedence first
+    _CONTROL_CODE_PRECEDENCE_ORDER = [
         Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
         Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
-    }
+    ]
 
     @staticmethod
     def assert_equal(x, y):
@@ -52,21 +55,7 @@ class FoldStrategies(object):
         return f"{x};{y}"
 
     @classmethod
-    def _is_control_code(cls, code):
-        """
-        Check if the given code string is a control code.
-        
-        :param code: Code string to check.
-        :type code: str
-        :return: True if the code is a control code, False otherwise.
-        :rtype: bool
-        """
-        # TODO: If we move this function to `Codes`, that will reduce the risk of us updating Core but not updating
-        #       the body of this function.
-        return code in cls.CONTROL_CODES
-
-    @staticmethod
-    def control_code_by_precedence(x, y):
+    def control_code_by_precedence(cls, x, y):
         """
         Folds two control codes, by choosing the control code with the highest precedence.
 
@@ -89,16 +78,10 @@ class FoldStrategies(object):
         :return: Folded control code.
         :rtype: str | None
         """
-        # Precedence order in case of conflicts; highest precedence first
-        precedence_order = [
-            Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
-        ]
+        assert x in cls._CONTROL_CODE_PRECEDENCE_ORDER, "x ('{}') not a control code".format(x)
+        assert y in cls._CONTROL_CODE_PRECEDENCE_ORDER, "y ('{}') not a control code".format(y)
 
-        assert x in precedence_order, "value_1 ('{}') not a control code".format(x)
-        assert y in precedence_order, "value_2 ('{}') not a control code".format(y)
-
-        if precedence_order.index(x) <= precedence_order.index(y):
+        if cls._CONTROL_CODE_PRECEDENCE_ORDER.index(x) <= cls._CONTROL_CODE_PRECEDENCE_ORDER.index(y):
             return x
         else:
             return y
@@ -157,17 +140,17 @@ class FoldStrategies(object):
                  the normal code if one code is a control code and the other a normal code,
                  Codes.YES if both inputs are Codes.YES,
                  Codes.NO if both inputs are Codes.NO,
-                 otherwise cls.AMBIVALENT_BINARY_VALUE.
+                 otherwise Codes.AMBIVALENT.
         :rtype: str
         """
-        assert x in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or x in cls.CONTROL_CODES
-        assert y in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or y in cls.CONTROL_CODES
+        assert x in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or x in Codes.CONTROL_CODES
+        assert y in {Codes.YES, Codes.NO, Codes.AMBIVALENT} or y in Codes.CONTROL_CODES
 
-        if cls._is_control_code(x) and cls._is_control_code(y):
+        if x in Codes.CONTROL_CODES and y in Codes.CONTROL_CODES:
             return cls.control_code_by_precedence(x, y)
-        elif cls._is_control_code(x):
+        elif x in Codes.CONTROL_CODES:
             return y
-        elif cls._is_control_code(y):
+        elif y in Codes.CONTROL_CODES:
             return x
         elif x == Codes.AMBIVALENT or y == Codes.AMBIVALENT:
             return Codes.AMBIVALENT
@@ -175,6 +158,49 @@ class FoldStrategies(object):
             return x
         else:
             return Codes.AMBIVALENT
+
+    @classmethod
+    def control_label_by_precedence(cls, code_scheme, x, y):
+        """
+        Folds control labels, by choosing the label with the control code of the highest precedence.
+
+        The precedence order for control codes is defined as follows (highest precedence listed first):
+         - Codes.STOP
+         - Codes.CODING_ERROR
+         - Codes.NOT_REVIEWED
+         - Codes.NOT_INTERNALLY_CONSISTENT
+         - Codes.NOT_CODED
+         - Codes.TRUE_MISSING
+         - Codes.SKIPPED
+         - Codes.WRONG_SCHEME
+         - Codes.NOISE_OTHER_CHANNEL
+
+        :param code_scheme: Code scheme for the labels which are being folded.
+        :type code_scheme: core_data_modules.data_models.CodeScheme
+        :param x: Serialised core_data_modules.data_models.Label to fold.
+        :type x: dict
+        :param y: Serialised core_data_modules.data_models.Label to fold.
+        :type y: dict
+        :return: Serialised core_data_modules.data_models.Label with the control code of the highest precedence.
+        :rtype: dict
+        """
+        # Ensure the labels belong to this code scheme
+        assert x["SchemeID"] == code_scheme.scheme_id
+        assert y["SchemeID"] == code_scheme.scheme_id
+
+        # Get the codes for each label input
+        x_code = code_scheme.get_code_with_code_id(x["CodeID"])
+        y_code = code_scheme.get_code_with_code_id(y["CodeID"])
+
+        # Ensure the codes are control codes with a known precedence
+        assert x_code.code_type == CodeTypes.CONTROL and x_code.control_code in cls._CONTROL_CODE_PRECEDENCE_ORDER
+        assert y_code.code_type == CodeTypes.CONTROL and y_code.control_code in cls._CONTROL_CODE_PRECEDENCE_ORDER
+
+        if cls._CONTROL_CODE_PRECEDENCE_ORDER.index(x_code.control_code) <= \
+                cls._CONTROL_CODE_PRECEDENCE_ORDER.index(y_code.control_code):
+            return x
+        else:
+            return y
 
     @staticmethod
     def assert_label_ids_equal(x, y):
@@ -194,6 +220,56 @@ class FoldStrategies(object):
             f"and {{'SchemeID': '{y['SchemeID']}', 'CodeID': '{y['CodeID']}'}})"
         return x
 
+    @classmethod
+    def yes_no_amb_label(cls, code_scheme, x, y):
+        """
+        Folds yes/no/ambivalent labels.
+
+        :param code_scheme: Code scheme for the labels which are being folded.
+        :type code_scheme: core_data_modules.data_models.CodeScheme
+        :param x: Serialised core_data_modules.data_models.Label to fold.
+        :type x: dict
+        :param y: Serialised core_data_modules.data_models.Label to fold.
+        :type y: dict
+        :return: Folded control label if both labels are for control codes,
+                 the normal label if one label is for a control code and the other for a normal code,
+                 a yes label if both inputs have match values Codes.YES,
+                 a no label if both inputs have match values Codes.NO,
+                 otherwise creates a new label from the Codes.AMBIVALENT code in the code_scheme.
+        :rtype:
+        """
+        # Ensure the labels belong to this code scheme
+        assert x["SchemeID"] == code_scheme.scheme_id
+        assert y["SchemeID"] == code_scheme.scheme_id
+
+        # Get the codes for each label input
+        x_code = code_scheme.get_code_with_code_id(x["CodeID"])
+        y_code = code_scheme.get_code_with_code_id(y["CodeID"])
+
+        # Ensure the codes are either control codes or a Yes/No/Ambivalent code
+        assert x_code.code_type == CodeTypes.CONTROL or x_code.has_match_value(Codes.YES) or \
+            x_code.has_match_value(Codes.NO) or x_code.has_match_value(Codes.AMBIVALENT)
+        assert y_code.code_type == CodeTypes.CONTROL or y_code.has_match_value(Codes.YES) or \
+            y_code.has_match_value(Codes.NO) or y_code.has_match_value(Codes.AMBIVALENT)
+
+        # Perform the actual label folding
+        if x_code.code_type == CodeTypes.CONTROL and y_code.code_type == CodeTypes.CONTROL:
+            return cls.control_label_by_precedence(code_scheme, x, y)
+        elif x_code.code_type == CodeTypes.CONTROL:
+            return y
+        elif y_code.code_type == CodeTypes.CONTROL:
+            return x
+        elif x_code.has_match_value(Codes.AMBIVALENT):
+            return x
+        elif y_code.has_match_value(Codes.AMBIVALENT):
+            return y
+        elif x_code.code_id == y_code.code_id:
+            return x
+        else:
+            return CleaningUtils.make_label_from_cleaner_code(
+                code_scheme, code_scheme.get_code_with_match_value(Codes.AMBIVALENT), Metadata.get_call_location()
+            ).to_dict()
+
     @staticmethod
     def list_of_labels(code_scheme, x, y):
         # Ensure the lists contain each 1 code.
@@ -211,7 +287,7 @@ class FoldStrategies(object):
         for label in y:
             if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.TRUE_MISSING:
                 assert len(y) == 1
-        
+
         # If both lists only contain true missing, return true missing, otherwise filter out true missing from both lists.
         if len(x) == 1 and code_scheme.get_code_with_code_id(x[0]["CodeID"]).control_code == Codes.TRUE_MISSING and \
                 len(y) == 1 and code_scheme.get_code_with_code_id(y[0]["CodeID"]).control_code == Codes.TRUE_MISSING:
@@ -239,7 +315,7 @@ class FoldStrategies(object):
         # If the union list is empty and there was an NC label, return NC.
         if nc_label is not None and len(union) == 0:
             union = [nc_label]
-            
+
         assert len(union) > 0
 
         return union
