@@ -74,7 +74,8 @@ class FoldStrategies(object):
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
+            Codes.NOT_CODED, Codes.DELETED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME,
+            Codes.NOISE_OTHER_CHANNEL, None
         ]
 
         assert x in precedence_order, "value_1 ('{}') not a control code".format(x)
