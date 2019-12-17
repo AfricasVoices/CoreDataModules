@@ -1,7 +1,7 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
-from core_data_modules.data_models import Label, Origin
+from core_data_modules.data_models import Label, Origin, CodeScheme, Code
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.util import FoldTracedData
 from core_data_modules.traced_data.util.fold_traced_data import FoldStrategies
@@ -94,6 +94,62 @@ class TestReconciliationFunctions(unittest.TestCase):
                              "Labels should have the same SchemeID and CodeID, but at least one of those is different "
                              "(differing values were {'SchemeID': 'scheme-1', 'CodeID': 'code-2'} "
                              "and {'SchemeID': 'scheme-2', 'CodeID': 'code-2'})")
+
+    def test_fold_list_of_labels(self):
+        na_code = Code("code-NA", "Control", "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
+        nr_code = Code("code-NR", "Control", "NR", -20, "NR", True, control_code=Codes.NOT_REVIEWED)
+        nc_code = Code("code-NC", "Control", "NC", -30, "NC", True, control_code=Codes.NOT_CODED)
+        normal_1_code = Code("code-normal-1", "Normal", "Normal 1", 1, "normal_1", True)
+        normal_2_code = Code("code-normal-2", "Normal", "Normal 2", 2, "normal_2", True)
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, nr_code, nc_code, normal_1_code, normal_2_code])
+
+        scheme_2 = CodeScheme("scheme-2", "Scheme 2", "2", [])
+
+        na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        nr_label = Label("scheme-1", "code-NR", "2019-10-01T12:25:18Z", Origin("x", "test", "automatic")).to_dict()
+        nc_label = Label("scheme-1", "code-NC", "2019-10-01T12:30:00Z", Origin("x", "test", "automatic")).to_dict()
+        na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label_2 = Label("scheme-1", "code-normal-1", "2019-10-03T00:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_2_label = Label("scheme-1", "code-normal-2", "2019-10-01T15:00:00Z", Origin("x", "test", "automatic")).to_dict()
+
+        # Test empty lists are rejected
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label], []))
+
+        # Test lists containing only NA labels return a single NA label
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label]), [na_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label_2]), [na_label])
+
+        # Test lists containing an NA label and another label (including another NA label) are rejected
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, na_label], [na_label]))
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, normal_1_label], [na_label]))
+
+        # Test folding a normal label with an NA label
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [normal_1_label]), [normal_1_label])
+        
+        # Test folding various combinations of only normal labels
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_1_label]), [normal_1_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]),
+                         [normal_1_label, normal_2_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label_2]),
+                         [normal_1_label, normal_2_label])
+
+        # Test folding normal labels with a control code that isn't NA or NC
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [nr_label]),
+                         [normal_1_label, normal_2_label, nr_label])
+
+        # Test folding a label from a different code scheme
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_2, [normal_1_label], [na_label]))
+        # (make sure that test would have been ok with the correct code scheme)
+        FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [na_label])
+
+        # Test folding normal codes with NC codes
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [nc_label], [nc_label]), [nc_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [nc_label]), [nc_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [nc_label]), [normal_1_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_2_label, nc_label]),
+                         [normal_1_label, normal_2_label])
 
 
 class TestFoldTracedData(unittest.TestCase):
