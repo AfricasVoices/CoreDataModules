@@ -74,7 +74,8 @@ class FoldStrategies(object):
         # Precedence order in case of conflicts; highest precedence first
         precedence_order = [
             Codes.STOP, Codes.CODING_ERROR, Codes.NOT_REVIEWED, Codes.NOT_INTERNALLY_CONSISTENT,
-            Codes.NOT_CODED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME, Codes.NOISE_OTHER_CHANNEL, None
+            Codes.NOT_CODED, Codes.DELETED, Codes.TRUE_MISSING, Codes.SKIPPED, Codes.WRONG_SCHEME,
+            Codes.NOISE_OTHER_CHANNEL, None
         ]
 
         assert x in precedence_order, "value_1 ('{}') not a control code".format(x)
@@ -175,6 +176,56 @@ class FoldStrategies(object):
             f"(differing values were {{'SchemeID': '{x['SchemeID']}', 'CodeID': '{x['CodeID']}'}} " \
             f"and {{'SchemeID': '{y['SchemeID']}', 'CodeID': '{y['CodeID']}'}})"
         return x
+
+    @staticmethod
+    def list_of_labels(code_scheme, x, y):
+        # Ensure the lists contain each 1 code.
+        assert len(x) > 0
+        assert len(y) > 0
+
+        # Ensure that all the codes in each list belong to the code_scheme
+        for label in x + y:
+            assert label["SchemeID"] == code_scheme.scheme_id
+
+        # Ensure that if a list contains true missing, it only contains that code.
+        for label in x:
+            if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.TRUE_MISSING:
+                assert len(x) == 1
+        for label in y:
+            if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.TRUE_MISSING:
+                assert len(y) == 1
+        
+        # If both lists only contain true missing, return true missing, otherwise filter out true missing from both lists.
+        if len(x) == 1 and code_scheme.get_code_with_code_id(x[0]["CodeID"]).control_code == Codes.TRUE_MISSING and \
+                len(y) == 1 and code_scheme.get_code_with_code_id(y[0]["CodeID"]).control_code == Codes.TRUE_MISSING:
+            return x
+        x = [label for label in x if code_scheme.get_code_with_code_id(label["CodeID"]).control_code != Codes.TRUE_MISSING]
+        y = [label for label in y if code_scheme.get_code_with_code_id(label["CodeID"]).control_code != Codes.TRUE_MISSING]
+
+        # Compute the union of both lists, choosing the first label if there are multiple labels with the same code id.
+        # Searches for the presence of any NC labels, but does not add them to the union list.
+        union = []
+        union_code_ids = set()
+        nc_label = None
+        for label in x + y:
+            if code_scheme.get_code_with_code_id(label["CodeID"]).control_code == Codes.NOT_CODED:
+                if nc_label is None:
+                    nc_label = label
+                continue
+
+            if label["CodeID"] in union_code_ids:
+                continue
+
+            union.append(label)
+            union_code_ids.add(label["CodeID"])
+
+        # If the union list is empty and there was an NC label, return NC.
+        if nc_label is not None and len(union) == 0:
+            union = [nc_label]
+            
+        assert len(union) > 0
+
+        return union
 
 
 class FoldTracedData(object):
