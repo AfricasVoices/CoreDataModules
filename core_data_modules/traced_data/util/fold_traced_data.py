@@ -279,7 +279,8 @@ class FoldTracedData(object):
             folded_value = group[0].get(key)
             for td in group[1:]:
                 folded_value = strategy(folded_value, td.get(key))
-            folded_dict[key] = folded_value
+            if folded_value is not None:
+                folded_dict[key] = folded_value
 
         # Append the folded data to each TracedData, and hide any keys which weren't folded.
         for td in group:
