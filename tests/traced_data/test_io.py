@@ -329,15 +329,16 @@ class TestTracedDataCodaV2IO(unittest.TestCase):
             imported_code_ids.append([code["CodeID"] for code in td["msg_coded"]])
 
         expected_code_ids = [
-            {msg_scheme.get_code_with_match_value("food").code_id},
-            {msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id},
-            {msg_scheme.get_code_with_match_value("food").code_id, msg_scheme.get_code_with_match_value("water").code_id},
-            {msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id},
-            {msg_scheme.get_code_with_match_value("water").code_id},
-            {msg_scheme.get_code_with_control_code(Codes.NOT_CODED).code_id}
+            [msg_scheme.get_code_with_match_value("food").code_id],
+            [msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id],
+            [msg_scheme.get_code_with_match_value("food").code_id, msg_scheme.get_code_with_match_value("water").code_id],
+            [msg_scheme.get_code_with_control_code(Codes.TRUE_MISSING).code_id],
+            [msg_scheme.get_code_with_match_value("water").code_id],
+            [msg_scheme.get_code_with_control_code(Codes.NOT_CODED).code_id]
         ]
 
         for x, y in zip(imported_code_ids, expected_code_ids):
+            self.assertEqual(len(x), len(y))
             self.assertSetEqual(set(x), set(y))
 
 
