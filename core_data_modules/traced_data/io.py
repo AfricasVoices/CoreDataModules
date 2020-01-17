@@ -361,15 +361,15 @@ class TracedDataCodaV2IO(object):
                 # De-duplicate the imported labels by selecting the first label with each code id.
                 # This is required in cases where the same label was applied to this message under different columns
                 # of the same code scheme, and is possible now that we have normalised the scheme ids.
-                deduplicated_labels = []
+                unique_labels_by_code_id = []
                 seen_code_ids = set()
                 for label in labels:
                     if label.code_id not in seen_code_ids:
-                        deduplicated_labels.append(label)
+                        unique_labels_by_code_id.append(label)
                         seen_code_ids.add(label.code_id)
                 
                 td.append_data(
-                    {coded_key: [label.to_dict() for label in deduplicated_labels]},
+                    {coded_key: [label.to_dict() for label in unique_labels_by_code_id]},
                     Metadata(user, Metadata.get_call_location(), time.time())
                 )
 
