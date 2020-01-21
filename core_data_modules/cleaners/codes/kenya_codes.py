@@ -1,4 +1,6 @@
 class KenyaCodes(object):
+    KENYAN_TELEPHONE = "kenyan telephone"
+
     # Counties
     BARINGO = "baringo"
     BOMET = "bomet"
