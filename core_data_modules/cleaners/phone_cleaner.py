@@ -1,6 +1,7 @@
 import re
 
 from core_data_modules.cleaners import Codes
+from core_data_modules.cleaners.codes import KenyaCodes
 from core_data_modules.cleaners.codes.somalia_codes import SomaliaCodes
 
 
@@ -36,7 +37,7 @@ class PhoneCleaner(object):
     @classmethod
     def clean_operator(cls, phone_number):
         """
-        Returns the operator code for the given (Somali) phone number.
+        Returns the operator code for the given phone number.
 
         >>> PhoneCleaner.clean_operator("+252 612 000")
         'hormud'
@@ -44,6 +45,8 @@ class PhoneCleaner(object):
         'hormud'
         >>> PhoneCleaner.clean_operator("  a 252 624 000")
         'somtel'
+        >>> PhoneCleaner.clean_operator("+2547123123")
+        'kenyan telephone'
         >>> PhoneCleaner.clean_operator("not a phone number")
         'NC'
 
@@ -53,7 +56,7 @@ class PhoneCleaner(object):
         :return: Code of telephone operator or Codes.NOT_CODED
         :rtype: str
         """
-        somalia_operator_prefixes = {
+        operator_map = {
             "25261": SomaliaCodes.HORMUD,
             "25262": SomaliaCodes.SOMTEL,
             "25263": SomaliaCodes.TELESOM,
@@ -63,10 +66,21 @@ class PhoneCleaner(object):
             "25267": SomaliaCodes.NATIONLINK,
             "25268": SomaliaCodes.SOMNET,
             "25269": SomaliaCodes.NATIONLINK,
-            "25290": SomaliaCodes.GOLIS
+            "25290": SomaliaCodes.GOLIS,
+
+            "254": KenyaCodes.KENYAN_TELEPHONE
         }
 
         normalised_phone_number = cls.normalise_phone(phone_number)
-        normalised_prefix = normalised_phone_number[:5]
 
-        return somalia_operator_prefixes.get(normalised_prefix, Codes.NOT_CODED)
+        # Search the operator map for a match for this phone number, and ensure this number matches only one operator
+        operator_code = None
+        for prefix in operator_map:
+            if normalised_phone_number.startswith(prefix):
+                assert operator_code is None
+                operator_code = operator_map[prefix]
+
+        if operator_code is None:
+            operator_code = Codes.NOT_CODED
+
+        return operator_code

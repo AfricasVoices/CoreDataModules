@@ -172,6 +172,18 @@
           "OriginType": "Manual"
         },
         "Confidence": 1
+      },
+      {
+        "Checked": true,
+        "CodeID": "code-b8e40cba",
+        "DateTimeUTC": "2019-01-25T11:14:05.522Z",
+        "SchemeID": "Scheme-c4855fcb-1",
+        "Origin": {
+          "Name": "test_user",
+          "OriginID": "test_user_id",
+          "OriginType": "Manual"
+        },
+        "Confidence": 1
       }
     ]
   }
