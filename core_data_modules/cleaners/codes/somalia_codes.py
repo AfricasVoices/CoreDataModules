@@ -54,8 +54,8 @@ class SomaliaCodes(object):
     JALALAQSI = "jalalaqsi"
     JAMAAME = "jamaame"
     JARIIBAN = "jariiban"
-    JOWHAR = "jowhar"
     JILIB = "jilib"
+    JOWHAR = "jowhar"
     KARAAN = "karaan"
     KAXDA = "kaxda"
     KISMAYO = "kismayo"
@@ -160,9 +160,9 @@ class SomaliaCodes(object):
         CABDLCASIIS,
         DAYNILE,
         DHARKENLEY,
+        HAWL_WADAAG,
         HELIWA,
         HODAN,
-        HAWL_WADAAG,
         KARAAN,
         KAXDA,
         SHANGAANI,
