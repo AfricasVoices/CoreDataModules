@@ -125,7 +125,7 @@ class SomaliaCodes(object):
     WOQOOYI_GALBEED = "woqooyi galbeed"
 
     # States
-    # BANADIR, as defined above
+    # BANADIR, as defined above (Banadir is also the name of region so can't re-declare the token here)
     GALMUDUG = "galmudug"
     HIR_SHABELLE = "hir-shabelle"
     JUBBALAND = "jubbaland"
