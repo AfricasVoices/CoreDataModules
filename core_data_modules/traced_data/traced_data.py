@@ -50,12 +50,10 @@ class Metadata(object):
         :rtype: str
         """
         # Access the previous frame to find out where this function was called from.
-        # Setting context to 0 prevents collection of the surrounding lines in the source file, which substantially
-        # improves performance.
-        frame = inspect.getframeinfo(inspect.currentframe().f_back, context=0)
-        file_path = frame[0]
-        line_number = frame[1]
-        function_name = frame[2]
+        frame = inspect.currentframe().f_back
+        file_path = frame.f_code.co_filename
+        line_number = frame.f_lineno
+        function_name = frame.f_code.co_name
 
         return "{}:{}:{}".format(file_path, str(line_number), function_name)
 
