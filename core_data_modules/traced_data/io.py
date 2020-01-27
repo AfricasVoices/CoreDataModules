@@ -1,9 +1,9 @@
 import csv
 import io
-import json
 import time
 
 import pytz
+import rapidjson as json
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import Codes
@@ -168,7 +168,7 @@ class TracedDataCodaV2IO(object):
 
             coda_messages.append(message)
 
-        json.dump([m.to_firebase_map() for m in coda_messages], f, sort_keys=True, indent=2, separators=(", ", ": "))
+        json.dump([m.to_firebase_map() for m in coda_messages], f, sort_keys=True, indent=2)
 
     @staticmethod
     def _make_empty_file():
