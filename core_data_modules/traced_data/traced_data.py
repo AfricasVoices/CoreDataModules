@@ -123,25 +123,37 @@ class TracedData(Mapping):
     def get_sha(self):
         return self._sha
 
-    def get_latest_cache(self):
-        latest = dict()
+    def _get_latest_items(self):
+        """
+        Returns a dictionary containing the latest data for this object.
+
+        Note that this function will be slow because it does not use the cache. This is so this function can be
+        used to create a new cache. For fast retrieval of the latest items via the cache, use iter(TracedData).
+
+        :return: Dict containing the latest items in this TracedData.
+        :rtype: dict
+        """
+        latest_items = dict()
         if self._prev is not None:
-            latest.update(self._prev.get_latest_cache())
+            latest_items.update(self._prev._get_latest_items())
 
         for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            latest.update(traced_values.get_latest_cache())
+            latest_items.update(traced_values._get_latest_items())
 
-        for key in self._data.keys():
-            if self._data[key] == self._TOMBSTONE_VALUE:
-                if key in latest:
-                    del latest[key]
+        for key, value in self._data.items():
+            if value == self._TOMBSTONE_VALUE:
+                if key in latest_items:
+                    del latest_items[key]
             else:
-                latest[key] = self._data[key]
+                latest_items[key] = value
 
-        return latest
+        return latest_items
 
     def regenerate_cache(self):
-        self._cache = self.get_latest_cache()
+        """
+        Regenerates the cache of latest items by doing a complete search of the history tree.
+        """
+        self._cache = self._get_latest_items()
 
     def append_data(self, new_data, new_metadata):
         """
@@ -157,10 +169,11 @@ class TracedData(Mapping):
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
 
+        # If the cache exists, updated it with the latest values
         if self._cache is not None:
             for traced_values in filter(lambda v: type(v) == TracedData, new_data.values()):
                 if traced_values._cache is None:
-                    self._cache.update(traced_values.get_latest_cache())
+                    self._cache.update(traced_values._get_latest_items())
                 else:
                     self._cache.update(traced_values._cache)
 
