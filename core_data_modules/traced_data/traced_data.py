@@ -1,6 +1,6 @@
 import inspect
 import time
-from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
+from collections import Mapping, KeysView, ValuesView, ItemsView
 
 from core_data_modules.util import TimeUtils
 from core_data_modules.util.sha_utils import SHAUtils
@@ -119,9 +119,42 @@ class TracedData(Mapping):
         self._data = data
         self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha)
         self._metadata = metadata
+        self._cache = None
 
     def get_sha(self):
         return self._sha
+
+    def _get_latest_items(self):
+        """
+        Returns a dictionary containing the latest data for this object.
+
+        Note that this function will be slow because it does not use the cache. This is so this function can be
+        used to create a new cache. For fast retrieval of the latest items via the cache, use iter(TracedData).
+
+        :return: Dict containing the latest items in this TracedData.
+        :rtype: dict
+        """
+        latest_items = dict()
+        if self._prev is not None:
+            latest_items.update(self._prev._get_latest_items())
+
+        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
+            latest_items.update(traced_values._get_latest_items())
+
+        for key, value in self._data.items():
+            if value == self._TOMBSTONE_VALUE:
+                if key in latest_items:
+                    del latest_items[key]
+            else:
+                latest_items[key] = value
+
+        return latest_items
+
+    def regenerate_cache(self):
+        """
+        Regenerates the cache of latest items by doing a complete search of the history tree.
+        """
+        self._cache = self._get_latest_items()
 
     def append_data(self, new_data, new_metadata):
         """
@@ -136,6 +169,21 @@ class TracedData(Mapping):
         self._data = new_data
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
+
+        # If the cache exists, updated it with the latest values
+        if self._cache is not None:
+            for traced_values in filter(lambda v: type(v) == TracedData, new_data.values()):
+                if traced_values._cache is None:
+                    self._cache.update(traced_values._get_latest_items())
+                else:
+                    self._cache.update(traced_values._cache)
+
+            for key in new_data.keys():
+                if new_data[key] == self._TOMBSTONE_VALUE:
+                    if key in self._cache:
+                        del self._cache[key]
+                else:
+                    self._cache[key] = self._data[key]
 
     def append_traced_data(self, key_of_appended, traced_data, new_metadata):
         """
@@ -214,61 +262,31 @@ class TracedData(Mapping):
         return SHAUtils.sha_dict({"data": cls._replace_traced_with_sha(data), "prev_sha": prev_sha})
 
     def __getitem__(self, key):
-        if key in self._data:
-            if self._data[key] == self._TOMBSTONE_VALUE:
-                raise KeyError(key)
-            return self._data[key]
+        if self._cache is None:
+            self.regenerate_cache()
 
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                if traced_values[key] == self._TOMBSTONE_VALUE:
-                    raise KeyError(key)
-                return traced_values[key]
-
-        if self._prev is not None:
-            return self._prev[key]
-
-        raise KeyError(key)
+        return self._cache[key]
 
     def get(self, key, default=None):
-        if key in self._data:
-            if self._data[key] == self._TOMBSTONE_VALUE:
-                return default
-            return self._data[key]
+        if self._cache is None:
+            self.regenerate_cache()
 
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                if traced_values[key] == self._TOMBSTONE_VALUE:
-                    return default
-                return traced_values[key]
-
-        if self._prev is not None:
-            return self._prev.get(key, default)
-
-        return default
+        return self._cache.get(key, default)
 
     def __len__(self):
         return sum(1 for _ in self)
 
     def __contains__(self, key):
-        if key in self._data:
-            if self._data[key] == self._TOMBSTONE_VALUE:
-                return False
-            return True
+        if self._cache is None:
+            self.regenerate_cache()
 
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                if traced_values[key] == self._TOMBSTONE_VALUE:
-                    return False
-                return True
-
-        if self._prev is not None:
-            return key in self._prev
-
-        return False
+        return key in self._cache
 
     def __iter__(self):
-        return _TracedDataKeysIterator(self)
+        if self._cache is None:
+            self.regenerate_cache()
+
+        return iter(filter(lambda k: type(self._cache[k]) != TracedData, self._cache))
 
     def keys(self):
         return KeysView(self)
@@ -477,54 +495,3 @@ class TracedData(Mapping):
                 update_td,
                 Metadata(user, Metadata.get_call_location(), time.time())
             )
-
-
-# noinspection PyProtectedMember
-class _TracedDataKeysIterator(Iterator):
-    """Iterator over the keys of a TracedData object"""
-
-    def __init__(self, traced_data, seen_keys=None):
-        if seen_keys is None:
-            seen_keys = set()
-        self.traced_data = traced_data
-        self.next_keys = iter(traced_data._data)
-        self.next_traced_datas = []
-        self.seen_keys = seen_keys
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        while True:
-            # Search for a new key in the iterator for the current TracedData instance.
-            try:
-                while True:
-                    key = next(self.next_keys)
-
-                    if self.traced_data._data[key] == TracedData._TOMBSTONE_VALUE:
-                        self.seen_keys.add(key)
-                        continue
-
-                    # If this key points to another TracedData, add that TracedData to a queue of objects to return 
-                    # after returning the other keys
-                    if type(self.traced_data[key]) == TracedData:
-                        self.next_traced_datas.append(_TracedDataKeysIterator(self.traced_data[key], self.seen_keys))
-                        continue
-
-                    if key not in self.seen_keys:
-                        self.seen_keys.add(key)
-                        return key
-            except StopIteration:
-                # We ran out of keys with non-TracedData values.
-                # Now return all the keys from the TracedData values.
-                while len(self.next_traced_datas) > 0:
-                    try:
-                        return next(self.next_traced_datas[0])
-                    except StopIteration:
-                        self.next_traced_datas.pop(0)
-
-                # We ran out of keys which we haven't yet returned. Try the prev TracedData.
-                self.traced_data = self.traced_data._prev
-                if self.traced_data is None:
-                    raise StopIteration()
-                self.next_keys = iter(self.traced_data._data)
