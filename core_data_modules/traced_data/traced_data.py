@@ -160,7 +160,10 @@ class TracedData(Mapping):
 
         if self._cache is not None:
             for traced_values in filter(lambda v: type(v) == TracedData, new_data.values()):
-                self._cache.update(traced_values.get_latest_cache())
+                if traced_values._cache is None:
+                    self._cache.update(traced_values.get_latest_cache())
+                else:
+                    self._cache.update(traced_values._cache)
 
             for key in new_data.keys():
                 if new_data[key] == self._TOMBSTONE_VALUE:
