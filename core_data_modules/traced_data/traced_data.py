@@ -153,23 +153,21 @@ class TracedData(Mapping):
         :param new_metadata: Metadata about this update
         :type new_metadata: Metadata
         """
-        if self._cache is None:
-            self.regenerate_cache()
-
         self._prev = TracedData(self._data, self._metadata, self._prev)
         self._data = new_data
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
 
-        for traced_values in filter(lambda v: type(v) == TracedData, new_data.values()):
-            self._cache.update(traced_values.get_latest_cache())
+        if self._cache is not None:
+            for traced_values in filter(lambda v: type(v) == TracedData, new_data.values()):
+                self._cache.update(traced_values.get_latest_cache())
 
-        for key in new_data.keys():
-            if new_data[key] == self._TOMBSTONE_VALUE:
-                if key in self._cache:
-                    del self._cache[key]
-            else:
-                self._cache[key] = self._data[key]
+            for key in new_data.keys():
+                if new_data[key] == self._TOMBSTONE_VALUE:
+                    if key in self._cache:
+                        del self._cache[key]
+                else:
+                    self._cache[key] = self._data[key]
 
     def append_traced_data(self, key_of_appended, traced_data, new_metadata):
         """

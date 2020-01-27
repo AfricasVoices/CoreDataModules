@@ -459,7 +459,7 @@ class TestTracedDataJsonIO(unittest.TestCase):
 
         self.assertEqual(len(expected), len(imported))
         for x, y in zip(expected, imported):
-            x_attributes = {k: getattr(x, k) for k in dir(x) if not k.startswith("__") and not callable(getattr(x, k))}
-            y_attributes = {k: getattr(y, k) for k in dir(y) if not k.startswith("__") and not callable(getattr(y, k))}
+            x_attributes = {k: getattr(x, k) for k in dir(x) if not k.startswith("__") and not callable(getattr(x, k)) and k != "_cache"}
+            y_attributes = {k: getattr(y, k) for k in dir(y) if not k.startswith("__") and not callable(getattr(y, k)) and k != "_cache"}
 
             self.assertDictEqual(x_attributes, y_attributes)
