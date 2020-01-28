@@ -49,7 +49,7 @@ class Metadata(object):
         :return Caller location in the format 'path/to/file.py:line_number:function_name'
         :rtype: str
         """
-        # Access the previous frame to find out where this function was called from.
+        # Access the caller's stack frame to find out where this function was called from.
         frame = inspect.currentframe().f_back
         file_path = frame.f_code.co_filename
         line_number = frame.f_lineno
