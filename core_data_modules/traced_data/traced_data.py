@@ -169,7 +169,7 @@ class TracedData(Mapping):
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
 
-        # If the cache exists, updated it with the latest values
+        # If the cache exists, update it with the latest values
         if self._cache is not None:
             for traced_values in filter(lambda v: type(v) == TracedData, new_data.values()):
                 if traced_values._cache is None:
