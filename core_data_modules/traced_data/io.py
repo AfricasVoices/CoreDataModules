@@ -462,7 +462,7 @@ class TracedDataJsonIO(object):
         """
         data = []
         for line in f:
-            data.append(TracedData.deserialize(json.loads(line)))
+            data.append(TracedData.deserialize(rapidjson.loads(line)))
         return data
 
     @classmethod
