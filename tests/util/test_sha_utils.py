@@ -15,6 +15,18 @@ class TestSHAUtils(unittest.TestCase):
             "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         )
 
+    def test_stringify_dict(self):
+        self.assertEqual(
+            SHAUtils.stringify_dict({"a": "abcd", "b": False, "c": 4.2}),
+            '{"a": "abcd", "b": false, "c": 4.2}'
+        )
+        
+    def test_sha_dict(self):
+        self.assertEqual(
+            SHAUtils.sha_dict({"a": "abcd", "b": False, "c": 4.2}),
+            "0aa016c7af66da04cbfaf6a2e1a861f99213e094e4ce2e01e04945d85185bad4"
+        )
+
     def test_sha_file_at_path(self):
         self.assertEqual(
             # 6.3 KiB file of random base64 data and new lines
