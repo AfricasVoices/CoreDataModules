@@ -106,7 +106,7 @@ class TracedData(Mapping):
     """
     _TOMBSTONE_VALUE = "#HIDDEN-VALUE-44dce0a0-e79c-48cf-8d8e-ec59137ef0d0"
 
-    def __init__(self, data, metadata, _prev=None):
+    def __init__(self, data, metadata, _prev=None, _sha=None):
         """
         :param data: Dict containing data to insert.
         :type data: dict
@@ -117,7 +117,7 @@ class TracedData(Mapping):
         """
         self._prev = _prev
         self._data = data
-        self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha)
+        self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha) if _sha is None else _sha
         self._metadata = metadata
         self._cache = None
 
@@ -165,7 +165,7 @@ class TracedData(Mapping):
         :param new_metadata: Metadata about this update
         :type new_metadata: Metadata
         """
-        self._prev = TracedData(self._data, self._metadata, self._prev)
+        self._prev = TracedData(self._data, self._metadata, self._prev, self._sha)
         self._data = new_data
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
@@ -312,7 +312,7 @@ class TracedData(Mapping):
 
     def copy(self):
         # Data, Metadata, and prev are read only so no need to recursively copy those.
-        return TracedData(self._data, self._metadata, self._prev)
+        return TracedData(self._data, self._metadata, self._prev, self._sha)
 
     def get_history(self, key):
         """
