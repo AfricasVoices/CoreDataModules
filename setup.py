@@ -7,6 +7,6 @@ setup(
     url="https://github.com/AfricasVoices/CoreDataModules",
     packages=["core_data_modules"],
     setup_requires=["pytest-runner"],
-    install_requires=["deprecation", "six", "unicodecsv", "python-dateutil", "pytz"],
+    install_requires=["deprecation", "six", "unicodecsv", "python-dateutil", "pytz", "python-rapidjson"],
     tests_require=["pytest<=3.6.4"]
 )

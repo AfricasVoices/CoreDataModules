@@ -4,6 +4,7 @@ import json
 import time
 
 import pytz
+import rapidjson
 from dateutil.parser import isoparse
 
 from core_data_modules.cleaners import Codes
@@ -443,7 +444,7 @@ class TracedDataJsonIO(object):
             assert isinstance(td, TracedData), _td_type_error_string
 
         for td in data:
-            json.dump(td.serialize(), f, sort_keys=True)
+            rapidjson.dump(td.serialize(), f, sort_keys=True)
             f.write("\n")
 
     @staticmethod
@@ -461,7 +462,7 @@ class TracedDataJsonIO(object):
         """
         data = []
         for line in f:
-            data.append(TracedData.deserialize(json.loads(line)))
+            data.append(TracedData.deserialize(rapidjson.loads(line)))
         return data
 
     @classmethod
