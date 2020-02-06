@@ -369,6 +369,8 @@ class TracedDataCSVIO(object):
         :param headers: Headers to export. If this is None, all headers will be exported.
         :type headers: list of str
         """
+        missing_fields = set()
+        
         data = list(data)
         for td in data:
             assert isinstance(td, TracedData), _td_type_error_string
@@ -384,8 +386,16 @@ class TracedDataCSVIO(object):
         writer.writeheader()
 
         for td in data:
-            row = {key: td.get(key) for key in headers}
+            for key in headers:
+                if key not in td:
+                    missing_fields.add(key)
+            
+            row = {key: td.get(key, Codes.MATRIX_0) for key in headers}
             writer.writerow(row)
+
+        print("Missing fields")
+        for field in missing_fields:
+            print(field)
 
     @staticmethod
     def import_csv_to_traced_data_iterable(user, f):
