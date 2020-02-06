@@ -387,10 +387,10 @@ class TracedDataCSVIO(object):
 
         for td in data:
             for key in headers:
-                if key not in td:
+                if key not in td and not key.endswith("raw"):
                     missing_fields.add(key)
             
-            row = {key: td.get(key, Codes.MATRIX_0) for key in headers}
+            row = {key: td.get(key) if key.endswith("raw") else td.get(key, Codes.MATRIX_0) for key in headers}
             writer.writerow(row)
 
         print("Missing fields")
