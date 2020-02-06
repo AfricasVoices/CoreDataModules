@@ -45,11 +45,18 @@ class FoldTracedData(object):
         """
         folded_data = []
 
+        group_count = len(groups)
+        progress = 0
         for group in groups:
             folded_td = group.pop(0)
             while len(group) > 0:
                 folded_td = fold_fn(folded_td, group.pop(0))
             folded_data.append(folded_td)
+
+            progress += 1
+            if progress % 1000 == 0:
+                print(f"Progress: {progress} / {group_count}")
+        print(f"Progress: {group_count} / {group_count}")
 
         return folded_data
 
