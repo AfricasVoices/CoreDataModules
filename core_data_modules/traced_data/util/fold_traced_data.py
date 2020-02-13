@@ -181,17 +181,17 @@ class FoldTracedData(object):
                     matrix_dict[key] = Codes.MATRIX_1
                 continue
 
-            assert td_1.get(key, Codes.MATRIX_0) in possible_matrix_values, \
+            assert td_1.get(key) in possible_matrix_values, \
                 "td_1.get('{}') is not '{}' or '{}' (has value '{}')".format(
                     key, Codes.MATRIX_0, Codes.MATRIX_1, td_1.get(key))
-            assert td_2.get(key, Codes.MATRIX_0) in possible_matrix_values, \
+            assert td_2.get(key) in possible_matrix_values, \
                 "td_2.get('{}') is not '{}' or '{}' (has value '{}')".format(
                     key, Codes.MATRIX_0, Codes.MATRIX_1, td_2.get(key))
 
             if td_1.get(key) == Codes.MATRIX_1 or td_2.get(key) == Codes.MATRIX_1:
                 matrix_dict[key] = Codes.MATRIX_1
             else:
-                pass
+                matrix_dict[key] = Codes.MATRIX_0
 
         td_1.append_data(matrix_dict, Metadata(user, Metadata.get_call_location(), time.time()))
         td_2.append_data(matrix_dict, Metadata(user, Metadata.get_call_location(), time.time()))
