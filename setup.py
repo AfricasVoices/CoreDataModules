@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="CoreDataModules",
-    version="0.13.0",
+    version="0.13.1",
     python_requires=">=3.6.0",
     url="https://github.com/AfricasVoices/CoreDataModules",
     packages=["core_data_modules"],
