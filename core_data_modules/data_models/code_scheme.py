@@ -93,9 +93,12 @@ class CodeScheme(object):
         validators.validate_string(self.version, "version")
 
         validators.validate_list(self.codes, "codes")
+        code_ids = set()
         for i, code in enumerate(self.codes):
             assert isinstance(code, Code), f"self.codes[{i}] is not of type Code"
             code.validate()
+            assert code.code_id not in code_ids, f"Scheme contains two codes with id {code.code_id}"
+            code_ids.add(code.code_id)
 
         if self.documentation is not None:
             validators.validate_dict(self.documentation, "documentation")
