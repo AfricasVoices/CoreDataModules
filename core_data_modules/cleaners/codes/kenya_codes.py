@@ -342,7 +342,6 @@ class KenyaCodes(object):
     WUNDANYI = "wundanyi"
     YATTA = "yatta"
 
-    
     CONSTITUENCY_TO_COUNTY_MAP = {
         CHANGAMWE: MOMBASA,
         JOMVU: MOMBASA,
