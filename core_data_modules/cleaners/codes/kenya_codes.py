@@ -173,7 +173,7 @@ class KenyaCodes(object):
     KISUMU_CENTRAL = "kisumu central"
     KISUMU_EAST = "kisumu east"
     KISUMU_WEST = "kisumu west"
-    KITITU_CHACHE_SOUTH = "kititu chache south"
+    KITUTU_CHACHE_SOUTH = "kitutu chache south"
     KITUI_CENTRAL = "kitui central"
     KITUI_EAST = "kitui east"
     KITUI_RURAL = "kitui rural"
@@ -612,7 +612,7 @@ class KenyaCodes(object):
         NYARIBARI_MASABA: KISII,
         NYARIBARI_CHACHE: KISII,
         KITUTU_CHACHE_NORTH: KISII,
-        KITITU_CHACHE_SOUTH: KISII,
+        KITUTU_CHACHE_SOUTH: KISII,
         KITUTU_MASABA: NYAMIRA,
         WEST_MUGIRANGO: NYAMIRA,
         NORTH_MUGIRANGO: NYAMIRA,
