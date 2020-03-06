@@ -57,7 +57,7 @@ class KenyaCodes(object):
     ALEGO_USONGA = "alego usonga"
     AWENDO = "awendo"
     BAHATI = "bahati"
-    BALAMBALA = " balambala"
+    BALAMBALA = "balambala"
     BANISA = "banisa"
     BARINGO_CENTRAL = "baringo central"
     BARINGO_NORTH = "baringo north"
