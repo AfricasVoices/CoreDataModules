@@ -233,7 +233,7 @@ class KenyaCodes(object):
     MBEERE_SOUTH = "mbeere south"
     MBITA = "mbita"
     MBOONI = "mbooni"
-    MGOTIO = "mgotio"
+    MOGOTIO = "mogotio"
     MOIBEN = "moiben"
     MOLO = "molo"
     MOSOP = "mosop"
@@ -503,7 +503,7 @@ class KenyaCodes(object):
         BARINGO_NORTH: BARINGO,
         BARINGO_CENTRAL: BARINGO,
         BARINGO_SOUTH: BARINGO,
-        MGOTIO: BARINGO,
+        MOGOTIO: BARINGO,
         ELDAMA_RAVINE: BARINGO,
         LAIKIPIA_WEST: LAIKIPIA,
         LAIKIPIA_EAST: LAIKIPIA,
