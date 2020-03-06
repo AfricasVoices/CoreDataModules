@@ -149,7 +149,7 @@ class KenyaCodes(object):
     KESSES = "kesses"
     KHWISERO = "khwisero"
     KIAMBAA = "kiambaa"
-    KIAMBU = "kiambu"
+    KIAMBU = "kiambu"  # (Shadows county name "kiambu")
     KIBRA = "kibra"
     KIBWEZI_EAST = "kibwezi east"
     KIBWEZI_WEST = "kibwezi west"
@@ -209,7 +209,7 @@ class KenyaCodes(object):
     MACHAKOS_TOWN = "machakos town"
     MAGARINI = "magarini"
     MAKADARA = "makadara"
-    MAKUENI = "makueni"
+    MAKUENI = "makueni"  # (Shadows county name "makueni")
     MALAVA = "malava"
     MALINDI = "malindi"
     MANDERA_EAST = "mandera east"
@@ -329,7 +329,7 @@ class KenyaCodes(object):
     UGENYA = "ugenya"
     UGUNJA = "ugunja"
     URIRI = "uriri"
-    VIHIGA = "vihiga"
+    VIHIGA = "vihiga"  # (Shadows county name "vihiga")
     VOI = "voi"
     WAJIR_EAST = "wajir east"
     WAJIR_NORTH = "wajir north"
