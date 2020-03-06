@@ -112,7 +112,7 @@ class KenyaCodes(object):
     GITHUNGURI = "githunguri"
     HAMISI = "hamisi"
     HOMA_BAY_TOWN = "homa bay town"
-    IGAMBANG_OMBE = "igambang`ombe"
+    IGAMBANG_OMBE = "igambang'ombe"
     IGEMBE_CENTRAL = "igembe central"
     IGEMBE_NORTH = "igembe north"
     IGEMBE_SOUTH = "igembe south"
