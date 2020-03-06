@@ -123,6 +123,7 @@ class KenyaCodes(object):
     JOMVU = "jomvu"
     JUJA = "juja"
     KABETE = "kabete"
+    KABONDO_KASIPUL = "kabondo kasipul"
     KABUCHAI = "kabuchai"
     KACHELIBA = "kacheliba"
     KAITI = "kaiti"
@@ -142,7 +143,6 @@ class KenyaCodes(object):
     KARACHUONYO = "karachuonyo"
     KASARANI = "kasarani"
     KASIPUL = "kasipul"
-    KASIPUL_KABONDO = "kabondo kasipul"
     KATHIANI = "kathiani"
     KEIYO_NORTH = "keiyo north"
     KEIYO_SOUTH = "keiyo south"
@@ -589,7 +589,7 @@ class KenyaCodes(object):
         MUHORONI: KISUMU,
         NYAKACH: KISUMU,
         KASIPUL: HOMA_BAY,
-        KASIPUL_KABONDO : HOMA_BAY,
+        KABONDO_KASIPUL: HOMA_BAY,
         KARACHUONYO: HOMA_BAY,
         RANGWE: HOMA_BAY,
         HOMA_BAY_TOWN: HOMA_BAY,
