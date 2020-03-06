@@ -287,7 +287,7 @@ class KenyaCodes(object):
     ROYSAMBU = "roysambu"
     RUARAKA = "ruaraka"
     RUIRU = "ruiru"
-    RUNYEJES = "runyejes"
+    RUNYENJES = "runyenjes"
     SABATIA = "sabatia"
     SABOTI = "saboti"
     SAKU = "saku"
@@ -406,7 +406,7 @@ class KenyaCodes(object):
         IGAMBANG_OMBE: THARAKA_NITHI,
         THARAKA: THARAKA_NITHI,
         MANYATTA: EMBU,
-        RUNYEJES: EMBU,
+        RUNYENJES: EMBU,
         MBEERE_SOUTH: EMBU,
         MBEERE_NORTH: EMBU,
         MWINGI_NORTH: KITUI,
