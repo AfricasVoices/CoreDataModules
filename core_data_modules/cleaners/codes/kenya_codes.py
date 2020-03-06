@@ -604,7 +604,6 @@ class KenyaCodes(object):
         KURIA_WEST: MIGORI,
         KURIA_EAST: MIGORI,
         BONCHARI: KISII,
-        BONCHARI: KISII,
         SOUTH_MUGIRANGO: KISII,
         BOMACHOGE_BORABU: KISII,
         BOBASI: KISII,
