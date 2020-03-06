@@ -69,7 +69,6 @@ class KenyaCodes(object):
     BOMET_CENTRAL = "bomet central"
     BOMET_EAST = "bomet east"
     BONCHARI = "bonchari"
-    BONCHARI = "bonchari"
     BONDO = "bondo"
     BORABU = "borabu"
     BUDALANGI = "budalangi"
