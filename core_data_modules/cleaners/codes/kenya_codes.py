@@ -237,7 +237,7 @@ class KenyaCodes(object):
     MOIBEN = "moiben"
     MOLO = "molo"
     MOSOP = "mosop"
-    MOUNT_ELGON = "mount elgon"
+    MT_ELGON = "mt. elgon"
     MOYALE = "moyale"
     MSAMBWENI = "msambweni"
     MUHORONI = "muhoroni"
@@ -565,7 +565,7 @@ class KenyaCodes(object):
         BUTULA: BUSIA,
         FUNYULA: BUSIA,
         BUDALANGI: BUSIA,
-        MOUNT_ELGON: BUNGOMA,
+        MT_ELGON: BUNGOMA,
         SIRISIA: BUNGOMA,
         KABUCHAI: BUNGOMA,
         BUMULA: BUNGOMA,
