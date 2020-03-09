@@ -57,7 +57,7 @@ class KenyaCodes(object):
     ALEGO_USONGA = "alego usonga"
     AWENDO = "awendo"
     BAHATI = "bahati"
-    BALAMBALA = " balambala"
+    BALAMBALA = "balambala"
     BANISA = "banisa"
     BARINGO_CENTRAL = "baringo central"
     BARINGO_NORTH = "baringo north"
@@ -68,7 +68,6 @@ class KenyaCodes(object):
     BOMACHOGE_CHACHE = "bomachoge chache"
     BOMET_CENTRAL = "bomet central"
     BOMET_EAST = "bomet east"
-    BONCHARI = "bonchari"
     BONCHARI = "bonchari"
     BONDO = "bondo"
     BORABU = "borabu"
@@ -113,7 +112,7 @@ class KenyaCodes(object):
     GITHUNGURI = "githunguri"
     HAMISI = "hamisi"
     HOMA_BAY_TOWN = "homa bay town"
-    IGAMBANG_OMBE = "igambang`ombe"
+    IGAMBANG_OMBE = "igambang'ombe"
     IGEMBE_CENTRAL = "igembe central"
     IGEMBE_NORTH = "igembe north"
     IGEMBE_SOUTH = "igembe south"
@@ -124,6 +123,7 @@ class KenyaCodes(object):
     JOMVU = "jomvu"
     JUJA = "juja"
     KABETE = "kabete"
+    KABONDO_KASIPUL = "kabondo kasipul"
     KABUCHAI = "kabuchai"
     KACHELIBA = "kacheliba"
     KAITI = "kaiti"
@@ -143,14 +143,13 @@ class KenyaCodes(object):
     KARACHUONYO = "karachuonyo"
     KASARANI = "kasarani"
     KASIPUL = "kasipul"
-    KASIPUL_KABONDO = "kabondo kasipul"
     KATHIANI = "kathiani"
     KEIYO_NORTH = "keiyo north"
     KEIYO_SOUTH = "keiyo south"
     KESSES = "kesses"
     KHWISERO = "khwisero"
     KIAMBAA = "kiambaa"
-    KIAMBU = "kiambu"
+    KIAMBU = "kiambu"  # (Shadows county name "kiambu")
     KIBRA = "kibra"
     KIBWEZI_EAST = "kibwezi east"
     KIBWEZI_WEST = "kibwezi west"
@@ -174,7 +173,7 @@ class KenyaCodes(object):
     KISUMU_CENTRAL = "kisumu central"
     KISUMU_EAST = "kisumu east"
     KISUMU_WEST = "kisumu west"
-    KITITU_CHACHE_SOUTH = "kititu chache south"
+    KITUTU_CHACHE_SOUTH = "kitutu chache south"
     KITUI_CENTRAL = "kitui central"
     KITUI_EAST = "kitui east"
     KITUI_RURAL = "kitui rural"
@@ -210,7 +209,7 @@ class KenyaCodes(object):
     MACHAKOS_TOWN = "machakos town"
     MAGARINI = "magarini"
     MAKADARA = "makadara"
-    MAKUENI = "makueni"
+    MAKUENI = "makueni"  # (Shadows county name "makueni")
     MALAVA = "malava"
     MALINDI = "malindi"
     MANDERA_EAST = "mandera east"
@@ -234,7 +233,7 @@ class KenyaCodes(object):
     MBEERE_SOUTH = "mbeere south"
     MBITA = "mbita"
     MBOONI = "mbooni"
-    MGOTIO = "mgotio"
+    MOGOTIO = "mogotio"
     MOIBEN = "moiben"
     MOLO = "molo"
     MOSOP = "mosop"
@@ -288,7 +287,7 @@ class KenyaCodes(object):
     ROYSAMBU = "roysambu"
     RUARAKA = "ruaraka"
     RUIRU = "ruiru"
-    RUNYEJES = "runyejes"
+    RUNYENJES = "runyenjes"
     SABATIA = "sabatia"
     SABOTI = "saboti"
     SAKU = "saku"
@@ -330,7 +329,7 @@ class KenyaCodes(object):
     UGENYA = "ugenya"
     UGUNJA = "ugunja"
     URIRI = "uriri"
-    VIHIGA = "vihiga"
+    VIHIGA = "vihiga"  # (Shadows county name "vihiga")
     VOI = "voi"
     WAJIR_EAST = "wajir east"
     WAJIR_NORTH = "wajir north"
@@ -343,7 +342,6 @@ class KenyaCodes(object):
     WUNDANYI = "wundanyi"
     YATTA = "yatta"
 
-    
     CONSTITUENCY_TO_COUNTY_MAP = {
         CHANGAMWE: MOMBASA,
         JOMVU: MOMBASA,
@@ -408,7 +406,7 @@ class KenyaCodes(object):
         IGAMBANG_OMBE: THARAKA_NITHI,
         THARAKA: THARAKA_NITHI,
         MANYATTA: EMBU,
-        RUNYEJES: EMBU,
+        RUNYENJES: EMBU,
         MBEERE_SOUTH: EMBU,
         MBEERE_NORTH: EMBU,
         MWINGI_NORTH: KITUI,
@@ -505,7 +503,7 @@ class KenyaCodes(object):
         BARINGO_NORTH: BARINGO,
         BARINGO_CENTRAL: BARINGO,
         BARINGO_SOUTH: BARINGO,
-        MGOTIO: BARINGO,
+        MOGOTIO: BARINGO,
         ELDAMA_RAVINE: BARINGO,
         LAIKIPIA_WEST: LAIKIPIA,
         LAIKIPIA_EAST: LAIKIPIA,
@@ -590,7 +588,7 @@ class KenyaCodes(object):
         MUHORONI: KISUMU,
         NYAKACH: KISUMU,
         KASIPUL: HOMA_BAY,
-        KASIPUL_KABONDO : HOMA_BAY,
+        KABONDO_KASIPUL: HOMA_BAY,
         KARACHUONYO: HOMA_BAY,
         RANGWE: HOMA_BAY,
         HOMA_BAY_TOWN: HOMA_BAY,
@@ -606,7 +604,6 @@ class KenyaCodes(object):
         KURIA_WEST: MIGORI,
         KURIA_EAST: MIGORI,
         BONCHARI: KISII,
-        BONCHARI: KISII,
         SOUTH_MUGIRANGO: KISII,
         BOMACHOGE_BORABU: KISII,
         BOBASI: KISII,
@@ -614,7 +611,7 @@ class KenyaCodes(object):
         NYARIBARI_MASABA: KISII,
         NYARIBARI_CHACHE: KISII,
         KITUTU_CHACHE_NORTH: KISII,
-        KITITU_CHACHE_SOUTH: KISII,
+        KITUTU_CHACHE_SOUTH: KISII,
         KITUTU_MASABA: NYAMIRA,
         WEST_MUGIRANGO: NYAMIRA,
         NORTH_MUGIRANGO: NYAMIRA,
