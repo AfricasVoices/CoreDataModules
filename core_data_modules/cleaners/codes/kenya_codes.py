@@ -297,7 +297,7 @@ class KenyaCodes(object):
     SEME = "seme"
     SHINYALU = "shinyalu"
     SIGOR = "sigor"
-    SIGOWET_SION = "sigowet sion"
+    SIGOWET_SOIN = "sigowet/soin"
     SIRISIA = "sirisia"
     SOTIK = "sotik"
     SOUTH_IMENTI = "south imenti"
@@ -535,7 +535,7 @@ class KenyaCodes(object):
         AINAMOI: KERICHO,
         BURETI: KERICHO,
         BELGUT: KERICHO,
-        SIGOWET_SION: KERICHO,
+        SIGOWET_SOIN: KERICHO,
         SOTIK: BOMET,
         CHEPALUNGU: BOMET,
         BOMET_EAST: BOMET,
