@@ -195,7 +195,7 @@ class KenyaCodes(object):
     LAISAMIS = "laisamis"
     LAMU_EAST = "lamu east"
     LAMU_WEST = "lamu west"
-    LANG_ATA = "lang`ata"
+    LANG_ATA = "lang'ata"
     LARI = "lari"
     LIKONI = "likoni"
     LIKUYANI = "likuyani"
