@@ -58,7 +58,7 @@ class KenyaCodes(object):
     AWENDO = "awendo"
     BAHATI = "bahati"
     BALAMBALA = "balambala"
-    BANISA = "banisa"
+    BANISSA = "banissa"
     BARINGO_CENTRAL = "baringo central"
     BARINGO_NORTH = "baringo north"
     BARINGO_SOUTH = "baringo south"
@@ -382,7 +382,7 @@ class KenyaCodes(object):
         TARBAJ: WAJIR,
         ELDAS: WAJIR,
         MANDERA_WEST: MANDERA,
-        BANISA: MANDERA,
+        BANISSA: MANDERA,
         MANDERA_NORTH: MANDERA,
         MANDERA_SOUTH: MANDERA,
         MANDERA_EAST: MANDERA,
