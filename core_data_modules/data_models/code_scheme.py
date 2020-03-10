@@ -88,9 +88,19 @@ class CodeScheme(object):
         return ret
 
     def _validate_code_properties_unique(self, properties, property_name):
+        """
+        Given a list of properties from this scheme's codes, asserts that each property is unique.
+        
+        Fails with an AssertionError if a duplicate property is found, otherwise passes through with no side-effects.
+        
+        :param properties: Properties to check for duplicates.
+        :type properties: list of str
+        :param property_name: Name of the property being checked (for inclusion in the error message).
+        :type property_name: str
+        """
         seen = set()
         for p in properties:
-            assert p not in seen, f"Scheme {self.scheme_id} contains two codes with {property_name} {p}"
+            assert p not in seen, f"Scheme '{self.scheme_id}' contains two codes with {property_name} '{p}'"
             seen.add(p)
 
     def validate(self):
