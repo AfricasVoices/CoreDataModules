@@ -87,28 +87,31 @@ class CodeScheme(object):
 
         return ret
 
+    def _validate_code_values_unique(self, values, key_name):
+        seen = set()
+        for v in values:
+            assert v not in seen, f"Scheme {self.scheme_id} contains two codes with {key_name} {v}"
+
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
         validators.validate_string(self.name, "name")
         validators.validate_string(self.version, "version")
 
         validators.validate_list(self.codes, "codes")
-        code_ids = set()
-        numeric_values = set()
-        string_values = set()
         for i, code in enumerate(self.codes):
             assert isinstance(code, Code), f"self.codes[{i}] is not of type Code"
             code.validate()
 
-            assert code.code_id not in code_ids, \
-                f"Scheme {self.scheme_id} contains two codes with id {code.code_id}"
-            assert code.numeric_value not in numeric_values, \
-                f"Scheme {self.scheme_id} contains two codes with numeric value {code.numeric_value}"
-            assert code.string_value not in string_values, \
-                f"Scheme {self.scheme_id} contains two codes with string value {code.string_value}"
-            code_ids.add(code.code_id)
-            numeric_values.add(code.numeric_value)
-            string_values.add(code.string_value)
+        self._validate_code_values_unique([c.code_id for c in self.codes], "code_id")
+        self._validate_code_values_unique([c.numeric_value for c in self.codes], "numeric_value")
+        self._validate_code_values_unique([c.string_value for c in self.codes], "string_value")
+        self._validate_code_values_unique([c.control_code for c in self.codes if c.code_type == CodeTypes.CONTROL], "control_code")
+        self._validate_code_values_unique([c.meta_code for c in self.codes if c.code_type == CodeTypes.META], "meta_code")
+
+        match_values = []
+        for code in self.codes:
+            match_values.extend(code.match_values)
+        self._validate_code_values_unique(match_values, "match value")
 
         if self.documentation is not None:
             validators.validate_dict(self.documentation, "documentation")
