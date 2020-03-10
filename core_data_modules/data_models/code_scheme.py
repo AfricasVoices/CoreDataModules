@@ -94,11 +94,21 @@ class CodeScheme(object):
 
         validators.validate_list(self.codes, "codes")
         code_ids = set()
+        numeric_values = set()
+        string_values = set()
         for i, code in enumerate(self.codes):
             assert isinstance(code, Code), f"self.codes[{i}] is not of type Code"
             code.validate()
-            assert code.code_id not in code_ids, f"Scheme contains two codes with id {code.code_id}"
+
+            assert code.code_id not in code_ids, \
+                f"Scheme contains two codes with id {code.code_id}"
+            assert code.numeric_value not in numeric_values, \
+                f"Scheme contains two codes with numeric value {code.numeric_value}"
+            assert code.string_value not in string_values, \
+                f"Scheme contains two codes with string value {code.string_value}"
             code_ids.add(code.code_id)
+            numeric_values.add(code.numeric_value)
+            string_values.add(code.string_value)
 
         if self.documentation is not None:
             validators.validate_dict(self.documentation, "documentation")
