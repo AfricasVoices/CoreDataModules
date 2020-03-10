@@ -101,11 +101,11 @@ class CodeScheme(object):
             code.validate()
 
             assert code.code_id not in code_ids, \
-                f"Scheme contains two codes with id {code.code_id}"
+                f"Scheme {self.scheme_id} contains two codes with id {code.code_id}"
             assert code.numeric_value not in numeric_values, \
-                f"Scheme contains two codes with numeric value {code.numeric_value}"
+                f"Scheme {self.scheme_id} contains two codes with numeric value {code.numeric_value}"
             assert code.string_value not in string_values, \
-                f"Scheme contains two codes with string value {code.string_value}"
+                f"Scheme {self.scheme_id} contains two codes with string value {code.string_value}"
             code_ids.add(code.code_id)
             numeric_values.add(code.numeric_value)
             string_values.add(code.string_value)
