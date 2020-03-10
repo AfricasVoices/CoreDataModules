@@ -58,7 +58,7 @@ class KenyaCodes(object):
     AWENDO = "awendo"
     BAHATI = "bahati"
     BALAMBALA = "balambala"
-    BANISA = "banisa"
+    BANISSA = "banissa"
     BARINGO_CENTRAL = "baringo central"
     BARINGO_NORTH = "baringo north"
     BARINGO_SOUTH = "baringo south"
@@ -195,7 +195,7 @@ class KenyaCodes(object):
     LAISAMIS = "laisamis"
     LAMU_EAST = "lamu east"
     LAMU_WEST = "lamu west"
-    LANG_ATA = "lang`ata"
+    LANG_ATA = "lang'ata"
     LARI = "lari"
     LIKONI = "likoni"
     LIKUYANI = "likuyani"
@@ -237,7 +237,7 @@ class KenyaCodes(object):
     MOIBEN = "moiben"
     MOLO = "molo"
     MOSOP = "mosop"
-    MOUNT_ELGON = "mount elgon"
+    MT_ELGON = "mt. elgon"
     MOYALE = "moyale"
     MSAMBWENI = "msambweni"
     MUHORONI = "muhoroni"
@@ -297,7 +297,7 @@ class KenyaCodes(object):
     SEME = "seme"
     SHINYALU = "shinyalu"
     SIGOR = "sigor"
-    SIGOWET_SION = "sigowet sion"
+    SIGOWET_SOIN = "sigowet/soin"
     SIRISIA = "sirisia"
     SOTIK = "sotik"
     SOUTH_IMENTI = "south imenti"
@@ -382,7 +382,7 @@ class KenyaCodes(object):
         TARBAJ: WAJIR,
         ELDAS: WAJIR,
         MANDERA_WEST: MANDERA,
-        BANISA: MANDERA,
+        BANISSA: MANDERA,
         MANDERA_NORTH: MANDERA,
         MANDERA_SOUTH: MANDERA,
         MANDERA_EAST: MANDERA,
@@ -535,7 +535,7 @@ class KenyaCodes(object):
         AINAMOI: KERICHO,
         BURETI: KERICHO,
         BELGUT: KERICHO,
-        SIGOWET_SION: KERICHO,
+        SIGOWET_SOIN: KERICHO,
         SOTIK: BOMET,
         CHEPALUNGU: BOMET,
         BOMET_EAST: BOMET,
@@ -565,7 +565,7 @@ class KenyaCodes(object):
         BUTULA: BUSIA,
         FUNYULA: BUSIA,
         BUDALANGI: BUSIA,
-        MOUNT_ELGON: BUNGOMA,
+        MT_ELGON: BUNGOMA,
         SIRISIA: BUNGOMA,
         KABUCHAI: BUNGOMA,
         BUMULA: BUNGOMA,
