@@ -110,7 +110,8 @@ class CodeScheme(object):
 
         match_values = []
         for code in self.codes:
-            match_values.extend(code.match_values)
+            if code.match_values is not None:
+                match_values.extend(code.match_values)
         self._validate_code_values_unique(match_values, "match value")
 
         if self.documentation is not None:
