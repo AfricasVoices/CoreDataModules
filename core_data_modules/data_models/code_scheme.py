@@ -87,10 +87,11 @@ class CodeScheme(object):
 
         return ret
 
-    def _validate_code_values_unique(self, values, key_name):
+    def _validate_code_properties_unique(self, properties, property_name):
         seen = set()
-        for v in values:
-            assert v not in seen, f"Scheme {self.scheme_id} contains two codes with {key_name} {v}"
+        for p in properties:
+            assert p not in seen, f"Scheme {self.scheme_id} contains two codes with {property_name} {p}"
+            seen.add(p)
 
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
@@ -102,17 +103,17 @@ class CodeScheme(object):
             assert isinstance(code, Code), f"self.codes[{i}] is not of type Code"
             code.validate()
 
-        self._validate_code_values_unique([c.code_id for c in self.codes], "code_id")
-        self._validate_code_values_unique([c.numeric_value for c in self.codes], "numeric_value")
-        self._validate_code_values_unique([c.string_value for c in self.codes], "string_value")
-        self._validate_code_values_unique([c.control_code for c in self.codes if c.code_type == CodeTypes.CONTROL], "control_code")
-        self._validate_code_values_unique([c.meta_code for c in self.codes if c.code_type == CodeTypes.META], "meta_code")
+        self._validate_code_properties_unique([c.code_id for c in self.codes], "code_id")
+        self._validate_code_properties_unique([c.numeric_value for c in self.codes], "numeric_value")
+        self._validate_code_properties_unique([c.string_value for c in self.codes], "string_value")
+        self._validate_code_properties_unique([c.control_code for c in self.codes if c.code_type == CodeTypes.CONTROL], "control_code")
+        self._validate_code_properties_unique([c.meta_code for c in self.codes if c.code_type == CodeTypes.META], "meta_code")
 
         match_values = []
         for code in self.codes:
             if code.match_values is not None:
                 match_values.extend(code.match_values)
-        self._validate_code_values_unique(match_values, "match value")
+        self._validate_code_properties_unique(match_values, "match value")
 
         if self.documentation is not None:
             validators.validate_dict(self.documentation, "documentation")
