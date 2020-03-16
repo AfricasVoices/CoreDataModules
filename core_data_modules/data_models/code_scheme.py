@@ -104,13 +104,13 @@ class CodeScheme(object):
             seen.add(v)
 
     def validate(self):
-        validators.validate_string(self.scheme_id, "scheme_id")
-        validators.validate_string(self.name, "name")
-        validators.validate_string(self.version, "version")
+        validators.validate_string(self.scheme_id, f"CodeScheme id '{self.scheme_id}'")
+        validators.validate_string(self.name, f"'name' property of CodeScheme with id '{self.scheme_id}'")
+        validators.validate_string(self.version, f"'version' property of CodeScheme with id '{self.scheme_id}'")
 
-        validators.validate_list(self.codes, "codes")
+        validators.validate_list(self.codes, f"'codes' property of CodeScheme with id '{self.scheme_id}'")
         for i, code in enumerate(self.codes):
-            assert isinstance(code, Code), f"self.codes[{i}] is not of type Code"
+            assert isinstance(code, Code), f"'codes[{i}]' of CodeScheme with id '{self.scheme_id}' is not of type Code"
             code.validate()
 
         self._validate_code_values_unique([c.code_id for c in self.codes], "code_id")
@@ -126,8 +126,10 @@ class CodeScheme(object):
         self._validate_code_values_unique(match_values, "match value")
 
         if self.documentation is not None:
-            validators.validate_dict(self.documentation, "documentation")
-            validators.validate_string(self.documentation["URI"], "documentation[URI]")
+            validators.validate_dict(
+                self.documentation, f"'documentation' property of CodeScheme with id '{self.scheme_id}")
+            validators.validate_string(
+                self.documentation.get("URI"), f"'documentation[URI]' property of CodeScheme with id '{self.scheme_id}'")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
