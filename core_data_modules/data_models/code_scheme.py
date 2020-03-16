@@ -220,8 +220,8 @@ class Code:
         validators.validate_string(self.display_text, f"'display_text' property of Code with id '{self.code_id}'")
 
         validators.validate_string(self.code_type, f"'code_type' property of Code with id '{self.code_id}'")
-        assert self.code_type in self.VALID_CODE_TYPES, f"'code_type' property of Code with id '{self.code_id}' " \
-                                                        f"({self.code_type}) is not one of {self.VALID_CODE_TYPES}"
+        assert self.code_type in self.VALID_CODE_TYPES, f"'code_type' property '{self.code_type}' of Code with id " \
+                                                        f"'{self.code_id}' is not one of {self.VALID_CODE_TYPES}"
         if self.code_type == CodeTypes.CONTROL:
             validators.validate_string(self.control_code, f"'control_code' property of Code with id '{self.code_id}'")
         if self.code_type == CodeTypes.META:
@@ -229,7 +229,7 @@ class Code:
 
         if self.shortcut is not None:
             validators.validate_string(self.shortcut, f"'shortcut' property of Code with id '{self.code_id}'")
-            assert len(self.shortcut) == 1, f"'shortcut' property of Code with id '{self.code_id}' ({self.shortcut}) " \
+            assert len(self.shortcut) == 1, f"'shortcut' property '{self.shortcut}' of Code with id '{self.code_id}' " \
                                             f"is not a single character"
 
         validators.validate_int(self.numeric_value, f"'numeric_value' property of Code with id '{self.code_id}'")
