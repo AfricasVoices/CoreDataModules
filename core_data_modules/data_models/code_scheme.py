@@ -216,31 +216,33 @@ class Code:
         return ret
 
     def validate(self):
-        validators.validate_string(self.code_id, "code_id")
-        validators.validate_string(self.display_text, "display_text")
+        validators.validate_string(self.code_id, f"Code id '{self.code_id}'")
+        validators.validate_string(self.display_text, f"'display_text' property of Code with id '{self.code_id}'")
 
-        validators.validate_string(self.code_type, "code_type")
-        assert self.code_type in self.VALID_CODE_TYPES, f"CodeType '{self.code_type}' invalid"
+        validators.validate_string(self.code_type, f"'code_type' property of Code with id '{self.code_id}'")
+        assert self.code_type in self.VALID_CODE_TYPES, f"'code_type' property of Code with id '{self.code_id}' " \
+                                                        f"({self.code_type}) is not one of {self.VALID_CODE_TYPES}"
         if self.code_type == CodeTypes.CONTROL:
-            validators.validate_string(self.control_code, "control_code")
+            validators.validate_string(self.control_code, f"'control_code' property of Code with id '{self.code_id}'")
         if self.code_type == CodeTypes.META:
-            validators.validate_string(self.meta_code, "meta_code")
+            validators.validate_string(self.meta_code, f"'meta_code' property of Code with id '{self.code_id}'")
 
         if self.shortcut is not None:
-            validators.validate_string(self.shortcut, "shortcut")
-            assert len(self.shortcut) == 1, f"shortcut {self.shortcut} is not a single character"
+            validators.validate_string(self.shortcut, f"'shortcut' property of Code with id '{self.code_id}'")
+            assert len(self.shortcut) == 1, f"'shortcut' property of Code with id '{self.code_id}' ({self.shortcut}) " \
+                                            f"is not a single character"
 
-        validators.validate_int(self.numeric_value, "numeric_value")
-        validators.validate_string(self.string_value, "string_value")
-        validators.validate_bool(self.visible_in_coda, "visible_in_coda")
+        validators.validate_int(self.numeric_value, f"'numeric_value' property of Code with id '{self.code_id}'")
+        validators.validate_string(self.string_value, f"'string_value' property of Code with id '{self.code_id}'")
+        validators.validate_bool(self.visible_in_coda, f"'visible_in_coda' property of Code with id '{self.code_id}'")
 
         if self.color is not None:
-            validators.validate_string(self.color, "color")
+            validators.validate_string(self.color, f"'color' property of Code with id '{self.code_id}'")
 
         if self.match_values is not None:
-            validators.validate_list(self.match_values, "match_values")
+            validators.validate_list(self.match_values, f"'match_values' property of Code with id '{self.code_id}'")
             for i, match_value in enumerate(self.match_values):
-                validators.validate_string(match_value, f"match_values[{i}]")
+                validators.validate_string(match_value, f"'match_values[{i}]' property of Code with id '{self.code_id}'")
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
