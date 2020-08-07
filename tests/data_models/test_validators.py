@@ -1,9 +1,21 @@
 import unittest
 
+from dateutil.parser import isoparse
+
 from core_data_modules.data_models import validators
 
 
 class TestValidators(unittest.TestCase):
+    def test_validate_datetime(self):
+        dt = isoparse("2019-05-10T12:37:04+03:00")
+        self.assertEqual(dt, validators.validate_datetime(dt))
+
+        with self.assertRaisesRegex(AssertionError, "dt not a datetime"):
+            validators.validate_datetime("2019-05-10T12:37:04+03:00", "dt")
+
+        with self.assertRaisesRegex(AssertionError, "dt not timezone-aware"):
+            validators.validate_datetime(isoparse("2019-05-10T12:37:04"), "dt")
+
     def test_validate_url(self):
         # Test valid URLs
         valid_urls = [

@@ -1,10 +1,8 @@
 import inspect
 import time
-from collections import Mapping, KeysView, ValuesView, ItemsView, Iterator
+from collections import Mapping, KeysView, ValuesView, ItemsView
 
-import six
-from deprecation import deprecated
-
+from core_data_modules.util import TimeUtils
 from core_data_modules.util.sha_utils import SHAUtils
 
 
@@ -21,8 +19,9 @@ class Metadata(object):
         :type user: str
         :param source: Identifier of the program, or similar, which generated the new data.
         :type source: str
-        :param timestamp: When the updated data was generated.
-        :type timestamp: float
+        :param timestamp: When the updated data was generated, in timezone-aware ISO 8601 format.
+                          e.g. 2019-08-13T21:20:22+00:00
+        :type timestamp: str
         """
         self.user = user
         self.source = source
@@ -30,21 +29,33 @@ class Metadata(object):
 
     def __eq__(self, other):
         return self.user == other.user and self.source == other.source and self.timestamp == other.timestamp
+    
+    def serialize(self):
+        return {
+            "User": self.user,
+            "Source": self.source,
+            "Timestamp": self.timestamp
+        }
+
+    @classmethod
+    def deserialize(cls, d):
+        return cls(d["User"], d["Source"], d["Timestamp"])
 
     @staticmethod
     def get_call_location():
         """
         Returns the location where this function was called from.
 
-        :return Caller location in the format 'path/to/file.py:line:function_name'
+        :return Caller location in the format 'path/to/file.py:line_number:function_name'
         :rtype: str
         """
-        frame = inspect.stack()[1]  # Access the previous frame to find out where this function was called from.
-        f = frame[1]
-        line = frame[2]
-        name = frame[3]
+        # Access the caller's stack frame to find out where this function was called from.
+        frame = inspect.currentframe().f_back
+        file_path = frame.f_code.co_filename
+        line_number = frame.f_lineno
+        function_name = frame.f_code.co_name
 
-        return "{}:{}:{}".format(f, str(line), name)
+        return "{}:{}:{}".format(file_path, str(line_number), function_name)
 
     @staticmethod
     def get_function_location(func):
@@ -93,8 +104,9 @@ class TracedData(Mapping):
     >>> traced_data["gender"]
     'f'
     """
+    _TOMBSTONE_VALUE = "#HIDDEN-VALUE-44dce0a0-e79c-48cf-8d8e-ec59137ef0d0"
 
-    def __init__(self, data, metadata, _prev=None):
+    def __init__(self, data, metadata, _prev=None, _sha=None):
         """
         :param data: Dict containing data to insert.
         :type data: dict
@@ -105,8 +117,44 @@ class TracedData(Mapping):
         """
         self._prev = _prev
         self._data = data
-        self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha)
+        self._sha = self._sha_with_prev(data, None if _prev is None else _prev._sha) if _sha is None else _sha
         self._metadata = metadata
+        self._cache = None
+
+    def get_sha(self):
+        return self._sha
+
+    def _get_latest_items(self):
+        """
+        Returns a dictionary containing the latest data for this object.
+
+        Note that this function will be slow because it does not use the cache. This is so this function can be
+        used to create a new cache. For fast retrieval of the latest items via the cache, use iter(TracedData).
+
+        :return: Dict containing the latest items in this TracedData.
+        :rtype: dict
+        """
+        latest_items = dict()
+        if self._prev is not None:
+            latest_items.update(self._prev._get_latest_items())
+
+        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
+            latest_items.update(traced_values._get_latest_items())
+
+        for key, value in self._data.items():
+            if value == self._TOMBSTONE_VALUE:
+                if key in latest_items:
+                    del latest_items[key]
+            else:
+                latest_items[key] = value
+
+        return latest_items
+
+    def regenerate_cache(self):
+        """
+        Regenerates the cache of latest items by doing a complete search of the history tree.
+        """
+        self._cache = self._get_latest_items()
 
     def append_data(self, new_data, new_metadata):
         """
@@ -117,10 +165,25 @@ class TracedData(Mapping):
         :param new_metadata: Metadata about this update
         :type new_metadata: Metadata
         """
-        self._prev = TracedData(self._data, self._metadata, self._prev)
+        self._prev = TracedData(self._data, self._metadata, self._prev, self._sha)
         self._data = new_data
         self._sha = self._sha_with_prev(self._data, self._prev._sha)
         self._metadata = new_metadata
+
+        # If the cache exists, update it with the latest values
+        if self._cache is not None:
+            for traced_values in filter(lambda v: type(v) == TracedData, new_data.values()):
+                if traced_values._cache is None:
+                    self._cache.update(traced_values._get_latest_items())
+                else:
+                    self._cache.update(traced_values._cache)
+
+            for key in new_data.keys():
+                if new_data[key] == self._TOMBSTONE_VALUE:
+                    if key in self._cache:
+                        del self._cache[key]
+                else:
+                    self._cache[key] = self._data[key]
 
     def append_traced_data(self, key_of_appended, traced_data, new_metadata):
         """
@@ -145,6 +208,26 @@ class TracedData(Mapping):
                     common_key, self[common_key], traced_data[common_key])
 
         self.append_data({key_of_appended: traced_data}, new_metadata)
+
+    def hide_keys(self, keys, new_metadata):
+        """
+        Hides the given keys from this TracedData.
+
+        Analogous to deleting keys from a Python dictionary, in that hidden keys will not be returned from this
+        TracedData, and requests for hidden keys will raise KeyErrors. However, the keys will be preserved in the
+        TracedData history.
+
+        :param keys: Keys to hide in this TracedData
+        :type keys: iterable of str
+        :param new_metadata: Metadata about this update
+        :type new_metadata: Metadata
+        """
+        # Check that all the keys to be hidden are actually in this TracedData.
+        for key in keys:
+            if key not in self:
+                raise KeyError(key)
+
+        self.append_data({k: self._TOMBSTONE_VALUE for k in keys}, new_metadata)
 
     @staticmethod
     def _replace_traced_with_sha(data):
@@ -179,93 +262,40 @@ class TracedData(Mapping):
         return SHAUtils.sha_dict({"data": cls._replace_traced_with_sha(data), "prev_sha": prev_sha})
 
     def __getitem__(self, key):
-        if key in self._data:
-            return self._data[key]
+        if self._cache is None:
+            self.regenerate_cache()
 
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                return traced_values[key]
-
-        if self._prev is not None:
-            return self._prev[key]
-
-        raise KeyError(key)
+        return self._cache[key]
 
     def get(self, key, default=None):
-        if key in self._data:
-            return self._data[key]
+        if self._cache is None:
+            self.regenerate_cache()
 
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                return traced_values[key]
-
-        if self._prev is not None:
-            return self._prev.get(key, default)
-
-        return default
+        return self._cache.get(key, default)
 
     def __len__(self):
         return sum(1 for _ in self)
 
     def __contains__(self, key):
-        if key in self._data:
-            return True
+        if self._cache is None:
+            self.regenerate_cache()
 
-        for traced_values in filter(lambda v: type(v) == TracedData, self._data.values()):
-            if key in traced_values:
-                return True
-
-        if self._prev is not None:
-            return key in self._prev
-
-        return False
+        return key in self._cache
 
     def __iter__(self):
-        return _TracedDataKeysIterator(self)
+        if self._cache is None:
+            self.regenerate_cache()
 
-    if six.PY2:
-        @deprecated(deprecated_in="v0")
-        def has_key(self, key):
-            return key in self
+        return iter(filter(lambda k: type(self._cache[k]) != TracedData, self._cache))
 
-        def keys(self):
-            return list(self)
+    def keys(self):
+        return KeysView(self)
 
-        def values(self):
-            return [self[key] for key in self]
+    def values(self):
+        return ValuesView(self)
 
-        def items(self):
-            return [(key, self[key]) for key in self]
-
-        def iterkeys(self):
-            return iter(self)
-
-        def itervalues(self):
-            for key in self:
-                yield self[key]
-
-        def iteritems(self):
-            for key in self:
-                yield (key, self[key])
-
-        def viewkeys(self):
-            return KeysView(self)
-
-        def viewvalues(self):
-            return ValuesView(self)
-
-        def viewitems(self):
-            return ItemsView(self)
-
-    if six.PY3:
-        def keys(self):
-            return KeysView(self)
-
-        def values(self):
-            return ValuesView(self)
-
-        def items(self):
-            return ItemsView(self)
+    def items(self):
+        return ItemsView(self)
 
     def __eq__(self, other):
         if type(other) != TracedData:
@@ -282,7 +312,7 @@ class TracedData(Mapping):
 
     def copy(self):
         # Data, Metadata, and prev are read only so no need to recursively copy those.
-        return TracedData(self._data, self._metadata, self._prev)
+        return TracedData(self._data, self._metadata, self._prev, self._sha)
 
     def get_history(self, key):
         """
@@ -309,6 +339,61 @@ class TracedData(Mapping):
 
         history.sort(key=lambda x: x["timestamp"])
         return history
+
+    def _clear_history(self, user, file_sha):
+        """
+        Appends the current data in this object, SHAs to the previous TracedData and to the file in which the history
+        can be found, then dereferences the previous history.
+        
+        :param user: Identifier of the user running this program, for TracedData Metadata.
+        :type user: str
+        :param file_sha: SHA of the file containing the history of this TracedData (and possibly other objects).
+        :type file_sha: str
+        """
+        keep_data = {k: v for k, v in self.items()}
+
+        keep_data["_PrevTracedDataFileSHA"] = file_sha
+        keep_data["_PrevTracedDataSHA"] = self._sha
+
+        self.append_data(keep_data, Metadata(user, Metadata.get_call_location(), TimeUtils.utc_now_as_iso_string()))
+        self._prev = None
+        self._sha = self._sha_with_prev(self._data, None)
+
+    def serialize(self):
+        serialized_history = []
+
+        traced_data = self
+        while traced_data is not None:
+            serialized_history.append(
+                {
+                    "Data": {k: v for k, v in traced_data._data.items() if type(v) != TracedData},
+                    "NestedTracedData": {k: v.serialize() for k, v in traced_data._data.items() if type(v) == TracedData},
+                    "SHA": traced_data._sha,
+                    "Metadata": traced_data._metadata.serialize(),
+                }
+            )
+            traced_data = traced_data._prev
+
+        return serialized_history
+
+    @classmethod
+    def deserialize(cls, serialized_history):
+        traced_data = None
+
+        for d in reversed(serialized_history):
+            data = d["Data"]
+            for k, v in d["NestedTracedData"].items():
+                data[k] = cls.deserialize(v)
+            sha = d["SHA"]
+            metadata = Metadata.deserialize(d["Metadata"])
+
+            if traced_data is None:
+                traced_data = cls(data, metadata)
+            else:
+                traced_data.append_data(data, metadata)
+            assert traced_data._sha == sha
+        
+        return traced_data
 
     @staticmethod
     def join_iterables(user, join_on_key, data_1, data_2, data_2_label):
@@ -410,58 +495,3 @@ class TracedData(Mapping):
                 update_td,
                 Metadata(user, Metadata.get_call_location(), time.time())
             )
-
-
-# noinspection PyProtectedMember
-class _TracedDataKeysIterator(Iterator):
-    """Iterator over the keys of a TracedData object"""
-
-    def __init__(self, traced_data, seen_keys=None):
-        if seen_keys is None:
-            seen_keys = set()
-        self.traced_data = traced_data
-        self.next_keys = six.iterkeys(traced_data._data)
-        self.next_traced_datas = []
-        self.seen_keys = seen_keys
-
-    def __iter__(self):
-        return self
-
-    def _next_item(self):
-        while True:
-            # Search for a new key in the iterator for the current TracedData instance.
-            try:
-                while True:
-                    key = next(self.next_keys)
-
-                    # If this key points to another TracedData, add that TracedData to a queue of objects to return 
-                    # after returning the other keys
-                    if type(self.traced_data[key]) == TracedData:
-                        self.next_traced_datas.append(_TracedDataKeysIterator(self.traced_data[key], self.seen_keys))
-                        continue
-
-                    if key not in self.seen_keys:
-                        self.seen_keys.add(key)
-                        return key
-            except StopIteration:
-                # We ran out of keys with non-TracedData values.
-                # Now return all the keys from the TracedData values.
-                while len(self.next_traced_datas) > 0:
-                    try:
-                        return next(self.next_traced_datas[0])
-                    except StopIteration:
-                        self.next_traced_datas.pop(0)
-
-                # We ran out of keys which we haven't yet returned. Try the prev TracedData.
-                self.traced_data = self.traced_data._prev
-                if self.traced_data is None:
-                    raise StopIteration()
-                self.next_keys = six.iterkeys(self.traced_data._data)
-
-    if six.PY2:
-        def next(self):
-            return self._next_item()
-
-    if six.PY3:
-        def __next__(self):
-            return self._next_item()

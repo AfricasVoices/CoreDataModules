@@ -1,4 +1,23 @@
 class SomaliaCodes(object):
+    # Mogadishu sub-district names
+    BOONDHEERE = "boondheere"
+    CABDLCASIIS = "cabdlcasiis"
+    DAYNILE = "daynile"
+    DHARKENLEY = "dharkenley"
+    HAWL_WADAAG = "hawl wadaag"
+    HELIWA = "heliwa"
+    HODAN = "hodan"
+    KARAAN = "karaan"
+    KAXDA = "kaxda"
+    SHANGAANI = "shangaani"
+    SHIBIS = "shibis"
+    WAABERI = "waaberi"
+    WADAJIR = "wadajir"
+    WARDHIIGLEEY = "wardhiigleey"
+    XAMAR_JAABJAB = "xamar jaabjab"
+    XAMAR_WEYNE = "xamar weyne"
+    YAAQSHID = "yaaqshid"
+
     # Canonical district names
     ADAN_YABAAL = "adan yabaal"
     AFGOOYE = "afgooye"
@@ -13,7 +32,6 @@ class SomaliaCodes(object):
     BELET_WEYNE = "belet weyne"
     BELET_XAAWO = "belet xaawo"
     BERBERA = "berbera"
-    BOONDHEERE = "boondheere"
     BORAMA = "borama"
     BOSSASO = "bossaso"
     BUAALE = "bu'aale"
@@ -22,7 +40,6 @@ class SomaliaCodes(object):
     BURTINLE = "burtinle"
     BUUHOODLE = "buuhoodle"
     BUUR_HAKABA = "buur hakaba"
-    CABDLCASIIS = "cabdlcasiis"
     CABUDWAAQ = "cabudwaaq"
     CADAADO = "cadaado"
     CADALE = "cadale"
@@ -34,8 +51,6 @@ class SomaliaCodes(object):
     CEEL_DHEER = "ceel dheer"
     CEEL_WAAQ = "ceel waaq"
     CEERIGAABO = "ceerigaabo"
-    DAYNILE = "daynile"
-    DHARKENLEY = "dharkenley"
     DHUUSAMARREEB = "dhuusamarreeb"
     DIINSOOR = "diinsoor"
     DOOLOW = "doolow"
@@ -46,18 +61,13 @@ class SomaliaCodes(object):
     GAROWE = "garowe"
     GEBILEY = "gebiley"
     HARGEYSA = "hargeysa"
-    HAWL_WADAAG = "hawl wadaag"
-    HELIWA = "heliwa"
     HOBYO = "hobyo"
-    HODAN = "hodan"
     ISKUSHUBAN = "iskushuban"
     JALALAQSI = "jalalaqsi"
     JAMAAME = "jamaame"
     JARIIBAN = "jariiban"
-    JOWHAR = "jowhar"
     JILIB = "jilib"
-    KARAAN = "karaan"
-    KAXDA = "kaxda"
+    JOWHAR = "jowhar"
     KISMAYO = "kismayo"
     KURTUNWAAREY = "kurtunwaarey"
     LAAS_CAANOOD = "laas caanood"
@@ -73,22 +83,14 @@ class SomaliaCodes(object):
     RAB_DHUURE = "rab dhuure"
     SAAKOW = "saakow"
     SABLAALE = "sablaale"
-    SHANGAANI = "shangaani"
     SHEIKH = "sheikh"
-    SHIBIS = "shibis"
     TALEEX = "taleex"
     TAYEEGLOW = "tayeeglow"
-    WAABERI = "waaberi"
     WAAJID = "waajid"
-    WADAJIR = "wadajir"
-    WARDHIIGLEEY = "wardhiigleey"
     WANLA_WEYN = "wanla weyn"
-    XAMAR_JAABJAB = "xamar jaabjab"
-    XAMAR_WEYNE = "xamar weyne"
     XARARDHEERE = "xarardheere"
     XUDUN = "xudun"
     XUDUR = "xudur"
-    YAAQSHID = "yaaqshid"
     ZEYLAC = "zeylac"
     MOGADISHU = "mogadishu"
 
@@ -123,7 +125,7 @@ class SomaliaCodes(object):
     WOQOOYI_GALBEED = "woqooyi galbeed"
 
     # States
-    # BANADIR, as defined above
+    # BANADIR, as defined above (Banadir is also the name of a region so can't re-declare the token here)
     GALMUDUG = "galmudug"
     HIR_SHABELLE = "hir-shabelle"
     JUBBALAND = "jubbaland"
@@ -160,9 +162,9 @@ class SomaliaCodes(object):
         CABDLCASIIS,
         DAYNILE,
         DHARKENLEY,
+        HAWL_WADAAG,
         HELIWA,
         HODAN,
-        HAWL_WADAAG,
         KARAAN,
         KAXDA,
         SHANGAANI,

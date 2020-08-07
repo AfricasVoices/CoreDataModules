@@ -1,8 +1,155 @@
 import unittest
 
 from core_data_modules.cleaners import Codes
+from core_data_modules.data_models import Label, Origin, CodeScheme, Code
 from core_data_modules.traced_data import Metadata, TracedData
 from core_data_modules.traced_data.util import FoldTracedData
+from core_data_modules.traced_data.util.fold_traced_data import FoldStrategies
+
+
+class TestReconciliationFunctions(unittest.TestCase):
+    def test_assert_equal(self):
+        self.assertEqual(FoldStrategies.assert_equal("5", "5"), "5")
+
+        try:
+            FoldStrategies.assert_equal("6", "7")
+            self.fail("No AssertionError raised")
+        except AssertionError as e:
+            if str(e) == "No AssertionError raised":
+                raise e
+
+            self.assertEqual(str(e),
+                             "Values should be the same but are different "
+                             "(differing values were '6' and '7')")
+
+    def test_control_code(self):
+        self.assertEqual(FoldStrategies.control_code_by_precedence(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
+        self.assertEqual(FoldStrategies.control_code_by_precedence(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
+
+    def test_concatenate(self):
+        self.assertEqual(FoldStrategies.concatenate("abc", "def"), "abc;def")
+        self.assertEqual(FoldStrategies.concatenate("abc", ""), "abc;")
+        self.assertEqual(FoldStrategies.concatenate("abc", None), "abc")
+        self.assertEqual(FoldStrategies.concatenate("", "def"), ";def")
+        self.assertEqual(FoldStrategies.concatenate(None, "def"), "def")
+        self.assertEqual(FoldStrategies.concatenate(None, None), None)
+        
+    def test_boolean_or(self):
+        self.assertEqual(FoldStrategies.boolean_or(Codes.TRUE, Codes.TRUE), Codes.TRUE)
+        self.assertEqual(FoldStrategies.boolean_or(Codes.FALSE, Codes.TRUE), Codes.TRUE)
+        self.assertEqual(FoldStrategies.boolean_or(Codes.FALSE, Codes.FALSE), Codes.FALSE)
+
+    def test_matrix(self):
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_1, Codes.MATRIX_1), Codes.MATRIX_1)
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_0, Codes.MATRIX_1), Codes.MATRIX_1)
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_1, Codes.MATRIX_0), Codes.MATRIX_1)
+        self.assertEqual(FoldStrategies.matrix(Codes.MATRIX_0, Codes.MATRIX_0), Codes.MATRIX_0)
+
+    def test_yes_no_amb(self):
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.YES, Codes.YES), Codes.YES)
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.NO, Codes.NO), Codes.NO)
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.YES, Codes.NO), Codes.AMBIVALENT)
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_CODED, Codes.NOT_CODED), Codes.NOT_CODED)
+
+        # TODO: Check that this test case is desired
+        self.assertEqual(FoldStrategies.yes_no_amb(Codes.NOT_REVIEWED, Codes.YES), Codes.YES)
+
+    def test_assert_label_ids_equal(self):
+        self.assertEqual(FoldStrategies.assert_label_ids_equal(
+            Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+            Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        ), Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict())
+
+        self.assertEqual(FoldStrategies.assert_label_ids_equal(
+            Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+            Label("scheme-1", "code-2", "2019-10-14T12:20:14Z", Origin("y", "test-2", "manual")).to_dict()
+        ), Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict())
+
+        try:
+            FoldStrategies.assert_label_ids_equal(
+                Label("scheme-1", "code-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+                Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+            ),
+            self.fail("No AssertionError raised")
+        except AssertionError as e:
+            if str(e) == "No AssertionError raised":
+                raise e
+
+            self.assertEqual(str(e),
+                             "Labels should have the same SchemeID and CodeID, but at least one of those is different "
+                             "(differing values were {'SchemeID': 'scheme-1', 'CodeID': 'code-1'} "
+                             "and {'SchemeID': 'scheme-1', 'CodeID': 'code-2'})")
+
+        try:
+            FoldStrategies.assert_label_ids_equal(
+                Label("scheme-1", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict(),
+                Label("scheme-2", "code-2", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+            ),
+            self.fail("No AssertionError raised")
+        except AssertionError as e:
+            if str(e) == "No AssertionError raised":
+                raise e
+
+            self.assertEqual(str(e),
+                             "Labels should have the same SchemeID and CodeID, but at least one of those is different "
+                             "(differing values were {'SchemeID': 'scheme-1', 'CodeID': 'code-2'} "
+                             "and {'SchemeID': 'scheme-2', 'CodeID': 'code-2'})")
+
+    def test_fold_list_of_labels(self):
+        na_code = Code("code-NA", "Control", "NA", -10, "NA", True, control_code=Codes.TRUE_MISSING)
+        nr_code = Code("code-NR", "Control", "NR", -20, "NR", True, control_code=Codes.NOT_REVIEWED)
+        nc_code = Code("code-NC", "Control", "NC", -30, "NC", True, control_code=Codes.NOT_CODED)
+        normal_1_code = Code("code-normal-1", "Normal", "Normal 1", 1, "normal_1", True)
+        normal_2_code = Code("code-normal-2", "Normal", "Normal 2", 2, "normal_2", True)
+        scheme_1 = CodeScheme("scheme-1", "Scheme 1", "1", [na_code, nr_code, nc_code, normal_1_code, normal_2_code])
+
+        scheme_2 = CodeScheme("scheme-2", "Scheme 2", "2", [])
+
+        na_label = Label("scheme-1", "code-NA", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        nr_label = Label("scheme-1", "code-NR", "2019-10-01T12:25:18Z", Origin("x", "test", "automatic")).to_dict()
+        nc_label = Label("scheme-1", "code-NC", "2019-10-01T12:30:00Z", Origin("x", "test", "automatic")).to_dict()
+        na_label_2 = Label("scheme-1", "code-NA", "2019-10-01T13:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label = Label("scheme-1", "code-normal-1", "2019-10-01T12:20:14Z", Origin("x", "test", "automatic")).to_dict()
+        normal_1_label_2 = Label("scheme-1", "code-normal-1", "2019-10-03T00:00:00Z", Origin("x", "test", "automatic")).to_dict()
+        normal_2_label = Label("scheme-1", "code-normal-2", "2019-10-01T15:00:00Z", Origin("x", "test", "automatic")).to_dict()
+
+        # Test empty lists are rejected
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [], []))
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label], []))
+
+        # Test lists containing only NA labels return a single NA label
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label]), [na_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [na_label_2]), [na_label])
+
+        # Test lists containing an NA label and another label (including another NA label) are rejected
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, na_label], [na_label]))
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_1, [na_label, normal_1_label], [na_label]))
+
+        # Test folding a normal label with an NA label
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [normal_1_label]), [normal_1_label])
+        
+        # Test folding various combinations of only normal labels
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_1_label]), [normal_1_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label]),
+                         [normal_1_label, normal_2_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [normal_1_label_2]),
+                         [normal_1_label, normal_2_label])
+
+        # Test folding normal labels with a control code that isn't NA or NC
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label, normal_2_label], [nr_label]),
+                         [normal_1_label, normal_2_label, nr_label])
+
+        # Test folding a label from a different code scheme
+        self.assertRaises(AssertionError, lambda: FoldStrategies.list_of_labels(scheme_2, [normal_1_label], [na_label]))
+        # (make sure that test would have been ok with the correct code scheme)
+        FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [na_label])
+
+        # Test folding normal codes with NC codes
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [nc_label], [nc_label]), [nc_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [na_label], [nc_label]), [nc_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [nc_label]), [normal_1_label])
+        self.assertEqual(FoldStrategies.list_of_labels(scheme_1, [normal_1_label], [normal_2_label, nc_label]),
+                         [normal_1_label, normal_2_label])
 
 
 class TestFoldTracedData(unittest.TestCase):
@@ -62,165 +209,11 @@ class TestFoldTracedData(unittest.TestCase):
         self.assertDictEqual(dict(folded_data[1].items()), {"x": "bcd"})
         self.assertDictEqual(dict(folded_data[2].items()), {"x": "e"})
 
-    def test_assert_equal_keys_equal(self):
-        td_1 = TracedData(
-            {"eq1": "5", "eq2": "6", "ne": "10"},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2_expect_pass = TracedData(
-            {"eq1": "5", "eq2": "6", "ne": "13"},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        td_2_expect_fail = TracedData(
-            {"eq1": "5", "eq2": "7", "ne": "10"},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        # This test is considered successful if no assertion is raised
-        FoldTracedData.assert_equal_keys_equal(td_1, td_2_expect_pass, {"eq1", "eq2"})
-
-        try:
-            FoldTracedData.assert_equal_keys_equal(td_1, td_2_expect_fail, {"eq1", "eq2"})
-            self.fail("No AssertionError raised")
-        except AssertionError as e:
-            if str(e) == "No AssertionError raised":
-                raise e
-
-            self.assertEqual(str(e),
-                             "Key 'eq2' should be the same in both td_1 and td_2 but is "
-                             "different (has values '6' and '7' respectively)")
-
-    def test_reconcile_missing_values(self):
-        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.TRUE_MISSING, Codes.NOT_CODED), Codes.NOT_CODED)
-        self.assertEqual(FoldTracedData.reconcile_missing_values(Codes.STOP, Codes.NOT_CODED), Codes.STOP)
-
-    def test_reconcile_keys_by_concatenation(self):
-        def make_tds():
-            td_1 = TracedData(
-                {"msg1": "abc", "msg2": "xy", "x": 4},
-                Metadata("test_user", Metadata.get_call_location(), 0)
-            )
-
-            td_2 = TracedData(
-                {"msg1": "def", "msg2": "xy", "x": 5},
-                Metadata("test_user", Metadata.get_call_location(), 1)
-            )
-
-            return td_1, td_2
-
-        td_1, td_2 = make_tds()
-        FoldTracedData.reconcile_keys_by_concatenation("test_user", td_1, td_2, {"msg1", "msg2"})
-        self.assertDictEqual(dict(td_1.items()), {"msg1": "abc;def", "msg2": "xy;xy", "x": 4})
-        self.assertDictEqual(dict(td_2.items()), {"msg1": "abc;def", "msg2": "xy;xy", "x": 5})
-
-        td_1, td_2 = make_tds()
-        FoldTracedData.reconcile_keys_by_concatenation("test_user", td_1, td_2, {"msg1", "msg2"}, concat_delimiter="--")
-        self.assertDictEqual(dict(td_1.items()), {"msg1": "abc--def", "msg2": "xy--xy", "x": 4})
-        self.assertDictEqual(dict(td_2.items()), {"msg1": "abc--def", "msg2": "xy--xy", "x": 5})
-
-    def test_reconcile_matrix_keys(self):
-        td_1 = TracedData(
-            {"a": Codes.MATRIX_0, "b": Codes.MATRIX_1, Codes.NOT_REVIEWED: Codes.MATRIX_1,
-             Codes.NOT_CODED: Codes.MATRIX_1, "c": Codes.STOP},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2 = TracedData(
-            {"a": Codes.MATRIX_0, "b": Codes.MATRIX_0, Codes.NOT_REVIEWED: Codes.MATRIX_0,
-             Codes.NOT_CODED: Codes.MATRIX_0, "c": Codes.MATRIX_0},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        # TODO: Update dictionaries above to test for the various cases of missing data
-
-        FoldTracedData.reconcile_matrix_keys("test_user", td_1, td_2, td_1.keys())
-
-        expected_dict = {"a": Codes.MATRIX_0, "b": Codes.MATRIX_1, Codes.NOT_REVIEWED: Codes.MATRIX_1,
-                         Codes.NOT_CODED: Codes.MATRIX_0, "c": Codes.STOP}
-        self.assertDictEqual(dict(td_1.items()), expected_dict)
-        self.assertDictEqual(dict(td_2.items()), expected_dict)
-
-    def test_reconcile_boolean_keys(self):
-        td_1 = TracedData(
-            {"a": Codes.TRUE, "b": Codes.FALSE, "c": Codes.FALSE, "d": Codes.NOT_CODED, "e": Codes.NOT_CODED},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2 = TracedData(
-            {"a": Codes.TRUE, "b": Codes.TRUE, "c": Codes.FALSE, "d": Codes.TRUE, "e": Codes.NOT_CODED},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        FoldTracedData.reconcile_boolean_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e"})
-
-        expected_dict = {"a": Codes.TRUE, "b": Codes.TRUE, "c": Codes.FALSE, "d": Codes.TRUE, "e": Codes.FALSE}
-        self.assertDictEqual(dict(td_1.items()), expected_dict)
-        self.assertDictEqual(dict(td_2.items()), expected_dict)
-
-    def test_reconcile_yes_no_keys(self):
-        td_1 = TracedData(
-            {"a": Codes.YES, "b": Codes.NO, "c": Codes.YES, "d": Codes.NO, "e": Codes.NOT_CODED, "f": Codes.NOT_CODED,
-             "g": Codes.BOTH, "h": Codes.STOP},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2 = TracedData(
-            {"a": Codes.YES, "b": Codes.YES, "c": Codes.NO, "d": Codes.NO, "e": Codes.YES, "f": Codes.NOT_CODED,
-             "g": Codes.YES, "h": Codes.YES},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        FoldTracedData.reconcile_yes_no_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e", "f", "g", "h"})
-
-        expected_dict = {"a": Codes.YES, "b": Codes.BOTH, "c": Codes.BOTH, "d": Codes.NO, "e": Codes.YES,
-                         "f": Codes.NOT_CODED, "g": Codes.BOTH, "h": Codes.STOP}
-        self.assertDictEqual(dict(td_1.items()), expected_dict)
-        self.assertDictEqual(dict(td_2.items()), expected_dict)
-
-    def test_reconcile_binary_keys(self):
-        td_1 = TracedData(
-            {"a": "integrate", "b": "return", "c": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-             "d": FoldTracedData.AMBIVALENT_BINARY_VALUE, "e": "integrate", "f": Codes.NOT_CODED,
-             "g": Codes.STOP, "h": Codes.NOT_CODED, "i": Codes.BOTH},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        td_2 = TracedData(
-            {"a": "integrate", "b": "integrate", "c": "return", "d": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-             "e": FoldTracedData.AMBIVALENT_BINARY_VALUE, "f": Codes.NOT_CODED,
-             "g": Codes.NOT_CODED, "h": "integrate", "i": "integrate"},
-            Metadata("test_user", Metadata.get_call_location(), 1)
-        )
-
-        FoldTracedData.reconcile_binary_keys("test_user", td_1, td_2, {"a", "b", "c", "d", "e", "f", "g", "h", "i"})
-
-        expected_dict = {"a": "integrate", "b": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-                         "c": FoldTracedData.AMBIVALENT_BINARY_VALUE, "d": FoldTracedData.AMBIVALENT_BINARY_VALUE,
-                         "e": FoldTracedData.AMBIVALENT_BINARY_VALUE, "f": Codes.NOT_CODED,
-                         "g": Codes.STOP, "h": "integrate", "i": FoldTracedData.AMBIVALENT_BINARY_VALUE}
-
-        self.assertDictEqual(dict(td_1.items()), expected_dict)
-        self.assertDictEqual(dict(td_2.items()), expected_dict)
-
-    def test_set_keys_to_value(self):
-        td = TracedData(
-            {"msg1": "abc", "msg2": "xy", "x": 4},
-            Metadata("test_user", Metadata.get_call_location(), 0)
-        )
-
-        FoldTracedData.set_keys_to_value("test_user", td, {"msg1"})
-        self.assertDictEqual(dict(td.items()), {"msg1": "MERGED", "msg2": "xy", "x": 4})
-
-        FoldTracedData.set_keys_to_value("test_user", td, {"msg2", "x"}, value="----")
-        self.assertDictEqual(dict(td.items()), {"msg1": "MERGED", "msg2": "----", "x": "----"})
-
-    def test_fold_td(self):
+    def test_fold_traced_data(self):
         td_1_dict = {
                 "equal_1": 4, "equal_2": "xyz",
                 "concat": "abc",
-                "matrix_1": Codes.MATRIX_0, "matrix_2": Codes.STOP,
+                "matrix_1": Codes.MATRIX_0, "matrix_2": Codes.MATRIX_0,
                 "bool_1": Codes.FALSE, "bool_2": Codes.TRUE,
                 "yes_no_1": Codes.YES, "yes_no_2": Codes.YES,
                 "other_1": "other 1", "other_2": "other 2"
@@ -238,42 +231,31 @@ class TestFoldTracedData(unittest.TestCase):
         td_1 = TracedData(td_1_dict, Metadata("test_user", Metadata.get_call_location(), 0))
         td_2 = TracedData(td_2_dict, Metadata("test_user", Metadata.get_call_location(), 1))
 
-        folded_td = FoldTracedData.fold_traced_data(
-            "test_user", td_1, td_2, equal_keys={"equal_1", "equal_2"}, concat_keys={"concat"},
-            matrix_keys={"matrix_1", "matrix_2"}, bool_keys={"bool_1", "bool_2"}, yes_no_keys={"yes_no_1", "yes_no_2"},
-            concat_delimiter=". "
-        )
+        fold_strategies = {
+            "equal_1": FoldStrategies.assert_equal,
+            "equal_2": FoldStrategies.assert_equal,
+            "concat": FoldStrategies.concatenate,
+            "bool_1": FoldStrategies.boolean_or,
+            "bool_2": FoldStrategies.boolean_or,
+            "matrix_1": FoldStrategies.matrix,
+            "matrix_2": FoldStrategies.matrix,
+            "yes_no_1": FoldStrategies.yes_no_amb,
+            "yes_no_2": FoldStrategies.yes_no_amb
+        }
+        folded_td = FoldTracedData.fold_traced_data("test_user", td_1, td_2, fold_strategies)
 
         # Test input tds unchanged
         self.assertDictEqual(dict(td_1.items()), td_1_dict)
         self.assertDictEqual(dict(td_2.items()), td_2_dict)
-
+        
         # Test folded td has expected values
         self.assertDictEqual(
             dict(folded_td.items()),
             {
                 "equal_1": 4, "equal_2": "xyz",
-                "concat": "abc. def",
-                "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.STOP,
+                "concat": "abc;def",
+                "matrix_1": Codes.MATRIX_1, "matrix_2": Codes.MATRIX_0,
                 "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
-                "yes_no_1": Codes.YES, "yes_no_2": Codes.BOTH,
-                "other_1": "MERGED", "other_2": "MERGED"
-            }
-        )
-
-        # Test folding only some keys
-        folded_td = FoldTracedData.fold_traced_data(
-            "test_user", td_1, td_2, matrix_keys={"matrix_1"}, bool_keys={"bool_1", "bool_2"}
-        )
-
-        self.assertDictEqual(
-            dict(folded_td.items()),
-            {
-                "equal_1": "MERGED", "equal_2": "MERGED",
-                "concat": "MERGED",
-                "matrix_1": Codes.MATRIX_1, "matrix_2": "MERGED",
-                "bool_1": Codes.TRUE, "bool_2": Codes.TRUE,
-                "yes_no_1": "MERGED", "yes_no_2": "MERGED",
-                "other_1": "MERGED", "other_2": "MERGED"
+                "yes_no_1": Codes.YES, "yes_no_2": Codes.AMBIVALENT
             }
         )

@@ -24,5 +24,5 @@ class IOUtils(object):
         :type path: str
         """
         dir_path = os.path.dirname(path)
-        if dir_path is not "":
+        if dir_path != "":
             cls.ensure_dirs_exist(dir_path)
