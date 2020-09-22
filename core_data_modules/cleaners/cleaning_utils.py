@@ -8,7 +8,8 @@ from core_data_modules.util import TimeUtils
 
 class CleaningUtils(object):
     @staticmethod
-    def make_label_from_cleaner_code(scheme, code, origin_id, origin_name="Pipeline Auto-Coder", date_time_utc=None):
+    def make_label_from_cleaner_code(scheme, code, origin_id, origin_name="Pipeline Auto-Coder", date_time_utc=None,
+                                     set_checked=False):
         """
         Constructs a new Label object from a code determined by a pipeline cleaner.
 
@@ -23,6 +24,8 @@ class CleaningUtils(object):
         :param date_time_utc: Date to set in the label as an ISO string in UTC, or None.
                               If None, uses the current system time in UTC.
         :type date_time_utc: str | None
+        :param set_checked: Whether to set the `checked` property of the returned Label.
+        :type set_checked: bool
         :return: A new label.
         :rtype: Label
         """
@@ -31,7 +34,7 @@ class CleaningUtils(object):
 
         origin = Origin(origin_id, origin_name, "External")
 
-        return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=False)
+        return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=set_checked)
 
     @classmethod
     def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme):
