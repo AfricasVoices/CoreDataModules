@@ -8,7 +8,8 @@ from core_data_modules.util import TimeUtils
 
 class CleaningUtils(object):
     @staticmethod
-    def make_label_from_cleaner_code(scheme, code, origin_id, origin_name="Pipeline Auto-Coder", date_time_utc=None):
+    def make_label_from_cleaner_code(scheme, code, origin_id, origin_name="Pipeline Auto-Coder", date_time_utc=None,
+                                     set_checked=False):
         """
         Constructs a new Label object from a code determined by a pipeline cleaner.
 
@@ -23,6 +24,8 @@ class CleaningUtils(object):
         :param date_time_utc: Date to set in the label as an ISO string in UTC, or None.
                               If None, uses the current system time in UTC.
         :type date_time_utc: str | None
+        :param set_checked: Whether to set the `checked` property of the returned Label.
+        :type set_checked: bool
         :return: A new label.
         :rtype: Label
         """
@@ -31,10 +34,10 @@ class CleaningUtils(object):
 
         origin = Origin(origin_id, origin_name, "External")
 
-        return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=False)
+        return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=set_checked)
 
     @classmethod
-    def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme):
+    def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme, set_checked=False):
         """
         Applies a cleaning function to an iterable of TracedData objects, updating each with a new Label object.
 
@@ -50,6 +53,8 @@ class CleaningUtils(object):
         :type cleaner: function of str -> str
         :param scheme: Scheme containing codes which the strings returned from the `cleaner` can be matched against.
         :type scheme: Scheme
+        :param set_checked: Whether to set the `checked` property of the applied Labels.
+        :type set_checked: bool
         """
         for td in data:
             # Skip data that isn't present
@@ -65,6 +70,6 @@ class CleaningUtils(object):
             # Construct a label for the clean_value returned by the cleaner
             code_id = scheme.get_code_with_match_value(clean_value)
             origin_id = Metadata.get_function_location(cleaner)
-            label = cls.make_label_from_cleaner_code(scheme, code_id, origin_id)
+            label = cls.make_label_from_cleaner_code(scheme, code_id, origin_id, set_checked=set_checked)
 
             td.append_data({clean_key: label.to_dict()}, Metadata(user, Metadata.get_call_location(), time.time()))
