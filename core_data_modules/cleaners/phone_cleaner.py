@@ -1,7 +1,7 @@
 import re
 
 from core_data_modules.cleaners import Codes
-from core_data_modules.cleaners.codes import KenyaCodes
+from core_data_modules.cleaners.codes import KenyaCodes, EthiopiaCodes
 from core_data_modules.cleaners.codes.somalia_codes import SomaliaCodes
 
 
@@ -57,6 +57,13 @@ class PhoneCleaner(object):
         :rtype: str
         """
         operator_map = {
+            # Map all Ethiopian numbers to 'Ethiopian telephone' rather than 'Ethio Telecom'. This is because even
+            # though Ethio Telecom is a state monopoly as of Dec. 2020, the market is being liberalised so we won't be
+            # able to assume 251 is being served by Ethio Telecom in the long term.
+            "251": EthiopiaCodes.ETHIOPIAN_TELEPHONE,
+
+            "254": KenyaCodes.KENYAN_TELEPHONE,
+
             "25261": SomaliaCodes.HORMUD,
             "25262": SomaliaCodes.SOMTEL,
             "25263": SomaliaCodes.TELESOM,
@@ -67,8 +74,6 @@ class PhoneCleaner(object):
             "25268": SomaliaCodes.SOMNET,
             "25269": SomaliaCodes.NATIONLINK,
             "25290": SomaliaCodes.GOLIS,
-
-            "254": KenyaCodes.KENYAN_TELEPHONE
         }
 
         normalised_phone_number = cls.normalise_phone(phone_number)
