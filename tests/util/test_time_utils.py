@@ -1,5 +1,5 @@
 import unittest
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from dateutil.parser import isoparse
 
@@ -17,6 +17,8 @@ class TestTimeUtils(unittest.TestCase):
             TimeUtils.floor_timestamp_at_resolution(isoparse("2019-05-04T13:46:17.123456Z"), timedelta(hours=2)),
             isoparse("2019-05-04T12:00Z")
         )
+
+        datetime.fromisoformat("2019-05-04T12:00:00+03:00")
 
         with self.assertRaisesRegex(AssertionError, "Resolution (.*) longer than 1 day"):
             TimeUtils.floor_timestamp_at_resolution(isoparse("2000-01-01T12:00"), timedelta(days=3))
