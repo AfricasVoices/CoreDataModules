@@ -209,57 +209,56 @@ def filter_opt_ins(data, consent_withdrawn_key, analysis_configurations):
 #                 labelled.append(td)
 #                 break
 #     return labelled
-#
-# @classmethod
-# def filter_fully_labelled(cls, data, consent_withdrawn_key, coding_plans):
-#     """
-#     Filters a list of message or participant data for objects that opted-in and are fully labelled under all of
-#     the given coding plans.
-#
-#     For the definition of "labelled", see `AnalysisUtils.labelled`
-#
-#     :param data: Message or participant data to filter.
-#     :type data: TracedData iterable
-#     :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
-#     :type consent_withdrawn_key: str
-#     :param coding_plans: Coding plans specifying the fields in each TracedData object in `data` to look up.
-#     :type coding_plans: list of src.lib.pipeline_configuration.CodingPlan
-#     :return: data, filtered for only the objects that opted-in and are labelled under all of the coding plans.
-#     :rtype: list of TracedData
-#     """
-#     labelled = []
-#     for td in data:
-#         td_is_labelled = True
-#         for plan in coding_plans:
-#             if not cls.labelled(td, consent_withdrawn_key, plan):
-#                 td_is_labelled = False
-#
-#         if td_is_labelled:
-#             labelled.append(td)
-#
-#     return labelled
-#
-# @classmethod
-# def filter_relevant(cls, data, consent_withdrawn_key, coding_plans):
-#     """
-#     Filters a list of message or participant data for objects that are relevant to at least one of the given coding
-#     plans.
-#
-#     For the definition of "relevant", see `AnalysisUtils.relevant`
-#
-#     :param data: Message or participant data to filter.
-#     :type data: TracedData iterable
-#     :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
-#     :type consent_withdrawn_key: str
-#     :param coding_plans: Coding plans specifying the fields in each TracedData object in `data` to look up.
-#     :type coding_plans: list of src.lib.pipeline_configuration.CodingPlan
-#     :return: data, filtered for only the objects that are relevant to at least one of the coding plans.
-#     :rtype: list of TracedData
-#     """
-#     relevant = []
-#     for td in data:
-#         for plan in coding_plans:
-#             if cls.relevant(td, consent_withdrawn_key, plan):
-#                 relevant.append(td)
-#                 break
-#     return relevant
+
+def filter_fully_labelled(data, consent_withdrawn_key, analysis_configurations):
+    """
+    Filters a list of message or participant data for objects that opted-in and are fully labelled under all of
+    the given coding plans.
+
+    For the definition of "labelled", see `AnalysisUtils.labelled`
+
+    :param data: Message or participant data to filter.
+    :type data: TracedData iterable
+    :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
+    :type consent_withdrawn_key: str
+    :param coding_plans: Coding plans specifying the fields in each TracedData object in `data` to look up.
+    :type coding_plans: list of src.lib.pipeline_configuration.CodingPlan
+    :return: data, filtered for only the objects that opted-in and are labelled under all of the coding plans.
+    :rtype: list of TracedData
+    """
+    fully_labelled = []
+    for td in data:
+        td_is_labelled = True
+        for config in analysis_configurations:
+            if not labelled(td, consent_withdrawn_key, config):
+                td_is_labelled = False
+
+        if td_is_labelled:
+            fully_labelled.append(td)
+
+    return fully_labelled
+
+
+def filter_relevant(data, consent_withdrawn_key, analysis_configurations):
+    """
+    Filters a list of message or participant data for objects that are relevant to at least one of the given coding
+    plans.
+
+    For the definition of "relevant", see `AnalysisUtils.relevant`
+
+    :param data: Message or participant data to filter.
+    :type data: TracedData iterable
+    :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
+    :type consent_withdrawn_key: str
+    :param coding_plans: Coding plans specifying the fields in each TracedData object in `data` to look up.
+    :type coding_plans: list of src.lib.pipeline_configuration.CodingPlan
+    :return: data, filtered for only the objects that are relevant to at least one of the coding plans.
+    :rtype: list of TracedData
+    """
+    relevant_data = []
+    for td in data:
+        for config in analysis_configurations:
+            if relevant(td, consent_withdrawn_key, config):
+                relevant_data.append(td)
+                break
+    return relevant_data
