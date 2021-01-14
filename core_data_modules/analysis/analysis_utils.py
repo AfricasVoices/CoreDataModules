@@ -1,14 +1,17 @@
 from core_data_modules.cleaners import Codes
+from core_data_modules.data_models.code_scheme import CodeTypes
 
 
 class AnalysisConfiguration(object):
     def __init__(self, dataset_name, coded_field, code_scheme):
-        self.dataset_name = dataset_name,
+        self.dataset_name = dataset_name
         self.coded_field = coded_field
         self.code_scheme = code_scheme
 
 
-def _get_codes_from_td(td, coded_field, code_scheme):
+def get_codes_from_td(td, analysis_configuration):
+    coded_field = analysis_configuration.coded_field
+
     if coded_field not in td:
         return []
 
@@ -17,11 +20,11 @@ def _get_codes_from_td(td, coded_field, code_scheme):
     else:
         labels = [td[coded_field]]
 
-    return [code_scheme.get_code_with_code_id(label["CodeID"]) for label in labels]
+    return [analysis_configuration.code_scheme.get_code_with_code_id(label["CodeID"]) for label in labels]
 
 
-def responded(td, coded_field, code_scheme):
-    codes = _get_codes_from_td(td, coded_field, code_scheme)
+def responded(td, analysis_configuration):
+    codes = get_codes_from_td(td, analysis_configuration)
     assert len(codes) >= 1
     if len(codes) > 1:
         # If there is an NA or NS code, there shouldn't be any other codes present.
@@ -46,7 +49,7 @@ def withdrew_consent(td, consent_withdrawn_key):
     return td[consent_withdrawn_key] == Codes.TRUE
 
 
-def opt_in(td, consent_withdrawn_key, coded_field, code_scheme):
+def opt_in(td, consent_withdrawn_key, analysis_configuration):
     """
     Returns whether the given TracedData object contains a response to the given coding_plan.
 
@@ -63,77 +66,74 @@ def opt_in(td, consent_withdrawn_key, coded_field, code_scheme):
     :return: Whether `td` contains a response to `coding_plan` and did not withdraw consent.
     :rtype: bool
     """
-    return not withdrew_consent(td, consent_withdrawn_key) and responded(td, coded_field, code_scheme)
+    if withdrew_consent(td, consent_withdrawn_key):
+        return False
 
-# @classmethod
-# def labelled(cls, td, consent_withdrawn_key, coded_field, code_scheme):
-#     """
-#     Returns whether the given TracedData object has been labelled under the given coding_plan.
-#
-#     An object is considered labelled if all of the following hold:
-#      - Consent was not withdrawn.
-#      - A response was received (see `AnalysisUtils.responded` for the definition of this).
-#      - The response has been assigned at least one label under each coding configuration.
-#      - None of the assigned labels have the control code NOT_REVIEWED.
-#
-#     :param td: TracedData to check.
-#     :type td: TracedData
-#     :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
-#     :type consent_withdrawn_key: str
-#     :param coding_plan: A coding plan specifying the field names to look up in `td`, and the code scheme to use
-#                         to interpret those values.
-#     :type coding_plan: src.lib.pipeline_configuration.CodingPlan
-#     :return: Whether `td` contains a labelled response to `coding_plan` and did not withdraw consent.
-#     :rtype: bool
-#     """
-#     if cls.withdrew_consent(td, consent_withdrawn_key):
-#         return False
-#
-#     if not cls.responded(td, coded_field, code_scheme):
-#         return False
-#
-#     codes = cls._get_codes_from_td(td, coded_field, code_scheme)
-#     if len(codes) == 0:
-#         return False
-#     for code in codes:
-#         if code.control_code == Codes.NOT_REVIEWED:
-#             return False
-#
-#     return True
-#
-# @classmethod
-# def relevant(cls, td, consent_withdrawn_key, coding_plan):
-#     """
-#     Returns whether the given TracedData object contains a relevant response to the given coding_plan.
-#
-#     A response is considered relevant if it is labelled with a normal code under any of its coding configurations.
-#     Returns False for participants who withdrew their consent to have their data analysed.
-#
-#     :param td: TracedData to check.
-#     :type td: TracedData
-#     :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
-#     :type consent_withdrawn_key: str
-#     :param coding_plan: A coding plan specifying the field names to look up in `td`, and the code scheme to use
-#                         to interpret those values.
-#     :type coding_plan: src.lib.pipeline_configuration.CodingPlan
-#     :return: Whether `td` contains a relevant response to `coding_plan`.
-#     :rtype: bool
-#     """
-#     if cls.withdrew_consent(td, consent_withdrawn_key):
-#         return False
-#
-#     if not cls.labelled(td, consent_withdrawn_key, coding_plan):
-#         return False
-#
-#     for cc in coding_plan.coding_configurations:
-#         if not cc.include_in_individuals_file:
-#             continue
-#
-#         codes = cls._get_td_codes_for_coding_configuration(td, cc)
-#         for code in codes:
-#             if code.code_type == CodeTypes.NORMAL:
-#                 return True
-#     return False
+    return responded(td, analysis_configuration)
+
+
+def labelled(td, consent_withdrawn_key, analysis_configuration):
+    """
+    Returns whether the given TracedData object has been labelled under the given coding_plan.
+
+    An object is considered labelled if all of the following hold:
+     - Consent was not withdrawn.
+     - A response was received (see `AnalysisUtils.responded` for the definition of this).
+     - The response has been assigned at least one label under each coding configuration.
+     - None of the assigned labels have the control code NOT_REVIEWED.
+
+    :param td: TracedData to check.
+    :type td: TracedData
+    :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
+    :type consent_withdrawn_key: str
+    :param coding_plan: A coding plan specifying the field names to look up in `td`, and the code scheme to use
+                        to interpret those values.
+    :type coding_plan: src.lib.pipeline_configuration.CodingPlan
+    :return: Whether `td` contains a labelled response to `coding_plan` and did not withdraw consent.
+    :rtype: bool
+    """
+    if not responded(td, analysis_configuration):
+        return False
+
+    codes = get_codes_from_td(td, analysis_configuration)
+    if len(codes) == 0:
+        return False
+    for code in codes:
+        if code.control_code == Codes.NOT_REVIEWED:
+            return False
+
+    return True
+
+
+def relevant(td, consent_withdrawn_key, analysis_configuration):
+    """
+    Returns whether the given TracedData object contains a relevant response to the given coding_plan.
+
+    A response is considered relevant if it is labelled with a normal code under any of its coding configurations.
+    Returns False for participants who withdrew their consent to have their data analysed.
+
+    :param td: TracedData to check.
+    :type td: TracedData
+    :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
+    :type consent_withdrawn_key: str
+    :param coding_plan: A coding plan specifying the field names to look up in `td`, and the code scheme to use
+                        to interpret those values.
+    :type coding_plan: src.lib.pipeline_configuration.CodingPlan
+    :return: Whether `td` contains a relevant response to `coding_plan`.
+    :rtype: bool
+    """
+    if withdrew_consent(td, consent_withdrawn_key):
+        return False
+
+    if not labelled(td, consent_withdrawn_key, analysis_configuration):
+        return False
+
+    codes = get_codes_from_td(td, analysis_configuration)
+    for code in codes:
+        if code.code_type == CodeTypes.NORMAL:
+            return True
+
+    return False
 #
 # @classmethod
 # def filter_responded(cls, data, coding_plans):
@@ -178,7 +178,7 @@ def filter_opt_ins(data, consent_withdrawn_key, analysis_configurations):
     opt_ins = []
     for td in data:
         for config in analysis_configurations:
-            if opt_in(td, consent_withdrawn_key, config.coded_field, config.code_scheme):
+            if opt_in(td, consent_withdrawn_key, config):
                 opt_ins.append(td)
                 break
     return opt_ins
