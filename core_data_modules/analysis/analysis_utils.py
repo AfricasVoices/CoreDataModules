@@ -7,6 +7,7 @@ class AnalysisConfiguration(object):
         self.coded_field = coded_field
         self.code_scheme = code_scheme
 
+
 def _get_codes_from_td(td, coded_field, code_scheme):
     if coded_field not in td:
         return []

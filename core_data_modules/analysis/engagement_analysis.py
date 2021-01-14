@@ -2,6 +2,12 @@ from collections import OrderedDict
 
 from core_data_modules.analysis import analysis_utils
 
+engagement_counts_headers = [
+    "Dataset",
+    "Total Messages", "Total Messages with Opt-Ins",
+    "Total Participants", "Total Participants with Opt-Ins"
+]
+
 
 def engagement_counts(messages, individuals, consent_withdrawn_field, analysis_configurations):
     engagement_counts = OrderedDict()  # of dataset name to counts
