@@ -9,7 +9,7 @@ engagement_counts_headers = [
 ]
 
 
-def engagement_counts(messages, individuals, consent_withdrawn_field, analysis_configurations):
+def compute_engagement_counts(messages, individuals, consent_withdrawn_field, analysis_configurations):
     engagement_counts = OrderedDict()  # of dataset name to counts
 
     for config in analysis_configurations:

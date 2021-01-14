@@ -178,7 +178,7 @@ def filter_opt_ins(data, consent_withdrawn_key, analysis_configurations):
     opt_ins = []
     for td in data:
         for config in analysis_configurations:
-            if opt_in(td, consent_withdrawn_key, analysis_configurations.coded_field, analysis_configurations.code_scheme):
+            if opt_in(td, consent_withdrawn_key, config.coded_field, config.code_scheme):
                 opt_ins.append(td)
                 break
     return opt_ins
