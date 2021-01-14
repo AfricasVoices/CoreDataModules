@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 commands:
   test-python:
     parameters:
@@ -24,7 +24,6 @@ commands:
           when: always
       - store_test_results:
           path: ~/test-results
-
 jobs:
   python-3.6:
     docker:
