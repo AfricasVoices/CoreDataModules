@@ -5,7 +5,7 @@ from core_data_modules.analysis import analysis_utils
 engagement_counts_headers = [
     "Dataset",
     "Total Messages", "Total Messages with Opt-Ins", "Total Labelled Messages", "Total Relevant Messages",
-    "Total Participants", "Total Participants with Opt-Ins"
+    "Total Participants", "Total Participants with Opt-Ins", "Total Relevant Participants"
 ]
 
 
@@ -22,8 +22,8 @@ def compute_engagement_counts(messages, individuals, consent_withdrawn_field, an
             "Total Relevant Messages": len(analysis_utils.filter_relevant(messages, consent_withdrawn_field, [config])),
 
             "Total Participants": "-",
-            "Total Participants with Opt-Ins": len(analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, [config]))
-            # "Total Relevant Participants": len(AnalysisUtils.filter_relevant(individuals, consent_withdrawn_field, [config]))
+            "Total Participants with Opt-Ins": len(analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, [config])),
+            "Total Relevant Participants": len(analysis_utils.filter_relevant(individuals, consent_withdrawn_field, [config]))
         })
 
     engagement_counts["Total"] = OrderedDict({
@@ -35,7 +35,8 @@ def compute_engagement_counts(messages, individuals, consent_withdrawn_field, an
         "Total Relevant Messages": len(analysis_utils.filter_relevant(messages, consent_withdrawn_field, analysis_configurations)),
 
         "Total Participants": len(individuals),
-        "Total Participants with Opt-Ins": len(analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, analysis_configurations))
+        "Total Participants with Opt-Ins": len(analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, analysis_configurations)),
+        "Total Relevant Participants": len(analysis_utils.filter_relevant(individuals, consent_withdrawn_field, analysis_configurations))
     })
 
     return engagement_counts
