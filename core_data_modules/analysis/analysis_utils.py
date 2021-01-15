@@ -92,6 +92,9 @@ def labelled(td, consent_withdrawn_key, analysis_configuration):
     :return: Whether `td` contains a labelled response to `coding_plan` and did not withdraw consent.
     :rtype: bool
     """
+    if withdrew_consent(td, consent_withdrawn_key):
+        return False
+
     if not responded(td, analysis_configuration):
         return False
 
