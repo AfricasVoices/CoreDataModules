@@ -53,40 +53,47 @@ def _set_survey_counts_percentages(survey_counts, total_survey_counts, survey_co
                 _compute_percentage_str(survey_counts[theme_name], total_survey_counts[theme_name])
 
 
+def _compute_theme_distributions_for_rqa(individuals, consent_withdrawn_field, theme_config, survey_configurations):
+    themes = OrderedDict()  # of rqa code -> (dict of survey_code -> dict of count/%)
+
+    # For each code in the rqa code scheme, add an entry
+    themes["Total Relevant Participants"] = _make_survey_counts_dict(survey_configurations)
+    for code in _non_stop_codes(theme_config.code_scheme.codes):
+        themes[f"{theme_config.dataset_name}_{code.string_value}"] = _make_survey_counts_dict(survey_configurations)
+
+    # Iterate over the individuals, increasing the counts as needed
+    for ind in individuals:
+        if analysis_utils.relevant(ind, consent_withdrawn_field, theme_config):
+            _update_survey_counts_dict(themes["Total Relevant Participants"], ind, survey_configurations)
+
+        for code in analysis_utils.get_codes_from_td(ind, theme_config):
+            _update_survey_counts_dict(themes[f"{theme_config.dataset_name}_{code.string_value}"],
+                                       ind, survey_configurations)
+
+    _set_survey_counts_percentages(
+        themes["Total Relevant Participants"], themes["Total Relevant Participants"],
+        survey_configurations
+    )
+
+    for code in _normal_codes(theme_config.code_scheme.codes):
+        _set_survey_counts_percentages(
+            themes[f"{theme_config.dataset_name}_{code.string_value}"], themes["Total Relevant Participants"],
+            survey_configurations
+        )
+
+    return themes
+
+
 def compute_theme_distributions(individuals, consent_withdrawn_field, theme_configurations, survey_configurations):
-    theme_distributions = OrderedDict()  # of TODO
+    theme_distributions = OrderedDict()  # of dataset_name -> theme ->
 
     individuals = analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, theme_configurations)
 
     # For each theme configuration, create a dict of theme dataset_name -> (dict of survey code -> count/%)
     for theme_config in theme_configurations:
-        themes = OrderedDict()  # of survey_code -> count/%
-        theme_distributions[theme_config.dataset_name] = themes
-
-        # For each code in the rqa code scheme, add an entry
-        themes["Total Relevant Participants"] = _make_survey_counts_dict(survey_configurations)
-        for code in _non_stop_codes(theme_config.code_scheme.codes):
-            themes[f"{theme_config.dataset_name}_{code.string_value}"] = _make_survey_counts_dict(survey_configurations)
-
-        # Iterate over the individuals, increasing the counts as needed
-        for ind in individuals:
-            if analysis_utils.relevant(ind, consent_withdrawn_field, theme_config):
-                _update_survey_counts_dict(themes["Total Relevant Participants"], ind, survey_configurations)
-
-            for code in analysis_utils.get_codes_from_td(ind, theme_config):
-                _update_survey_counts_dict(themes[f"{theme_config.dataset_name}_{code.string_value}"],
-                                           ind, survey_configurations)
-
-        _set_survey_counts_percentages(
-            themes["Total Relevant Participants"], themes["Total Relevant Participants"],
-            survey_configurations
+        theme_distributions[theme_config.dataset_name] = _compute_theme_distributions_for_rqa(
+            individuals, consent_withdrawn_field, theme_config, survey_configurations
         )
-
-        for code in _normal_codes(theme_config.code_scheme.codes):
-            _set_survey_counts_percentages(
-                themes[f"{theme_config.dataset_name}_{code.string_value}"],  themes["Total Relevant Participants"],
-                survey_configurations
-            )
 
     return theme_distributions
 
