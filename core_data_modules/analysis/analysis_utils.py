@@ -1,3 +1,5 @@
+import csv
+
 from core_data_modules.cleaners import Codes
 from core_data_modules.data_models.code_scheme import CodeTypes
 
@@ -265,3 +267,11 @@ def filter_relevant(data, consent_withdrawn_key, analysis_configurations):
                 relevant_data.append(td)
                 break
     return relevant_data
+
+
+def write_csv(data, headers, f):
+    writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n")
+    writer.writeheader()
+
+    for row in data:
+        writer.writerow(row)
