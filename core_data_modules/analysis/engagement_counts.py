@@ -49,7 +49,7 @@ def compute_engagement_counts(messages, individuals, consent_withdrawn_field, an
 
         "Total Messages": len(messages),
         "Total Messages with Opt-Ins": len(analysis_utils.filter_opt_ins(messages, consent_withdrawn_field, analysis_configurations)),
-        "Total Labelled Messages": len(analysis_utils.filter_fully_labelled(messages, consent_withdrawn_field, analysis_configurations)),
+        "Total Labelled Messages": len(analysis_utils.filter_partially_labelled(messages, consent_withdrawn_field, analysis_configurations)),
         "Total Relevant Messages": len(analysis_utils.filter_relevant(messages, consent_withdrawn_field, analysis_configurations)),
 
         "Total Participants": len(individuals),
