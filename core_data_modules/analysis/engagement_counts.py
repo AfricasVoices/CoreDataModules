@@ -60,7 +60,7 @@ def compute_engagement_counts(messages, individuals, consent_withdrawn_field, an
     return engagement_counts
 
 
-def write_engagement_counts_csv(messages, individuals, consent_withdrawn_field, analysis_configurations, f):
+def export_engagement_counts_csv(messages, individuals, consent_withdrawn_field, analysis_configurations, f):
     """
     Computes the engagement_counts and exports them to a CSV.
 

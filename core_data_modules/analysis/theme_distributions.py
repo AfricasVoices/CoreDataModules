@@ -217,10 +217,10 @@ def compute_theme_distributions(individuals, consent_withdrawn_field, theme_conf
     return theme_distributions
 
 
-def write_theme_distributions_csv(individuals, consent_withdrawn_field,
-                                  theme_configurations, breakdown_configurations, f):
+def export_theme_distributions_csv(individuals, consent_withdrawn_field,
+                                   theme_configurations, breakdown_configurations, f):
     """
-    Computes the theme_distributions and writes them to a CSV.
+    Computes the theme_distributions and exports them to a CSV.
 
     The CSV will contain the headers:
      - Dataset, set to the dataset_name in each of the `theme_configurations`, de-duplicated for clarity).
