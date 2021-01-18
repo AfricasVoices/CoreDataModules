@@ -8,5 +8,8 @@ setup(
     packages=["core_data_modules"],
     setup_requires=["pytest-runner"],
     install_requires=["python-dateutil", "pytz"],
+    extras_require={
+        "mapping": ["matplotlib", "pandas", "numpy", "mapclassify"]
+    },
     tests_require=["pytest<=3.6.4"]
 )
