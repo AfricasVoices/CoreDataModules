@@ -4,14 +4,18 @@
 A library of reusable AVF functionality and data structures.
 
 It includes the primary data structure in which all runs are stored, helper functions 
-for IO and hashing, and the cleaning library.
+for IO/hashing/time/logging, a cleaning library, and standardised analysis functions.
 
 ## Installation
 CoreDataModules is not available on PyPI, so must instead be installed from this GitHub repository.
 Do so with the following command, setting `<version>` to the tag to install e.g. `v0.0.1`:
-```
+```bash
 $ pipenv install -e git+https://www.github.com/AfricasVoices/CoreDataModules@<version>#egg=CoreDataModules
+```
 
+To use the `core_data_modules.analysis.mapping` module, include the extra dependencies for mapping:
+```bash
+$ pipenv install -e git+https://www.github.com/AfricasVoices/CoreDataModules@<version>#egg=CoreDataModules[mapping]
 ```
 
 ## API Overview

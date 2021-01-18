@@ -1,17 +1,60 @@
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas
-from mapclassify import FisherJenks
-from matplotlib.colors import LinearSegmentedColormap
-from matplotlib.patches import Patch
+try:
+    # For Python 3.7+
+    import importlib.resources as resources
+except ImportError:
+    # Use backport for Python 3.6
+    import importlib_resources as resources
+
+try:
+    import geopandas as geopandas
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas
+    from mapclassify import FisherJenks
+    from matplotlib.colors import LinearSegmentedColormap
+    from matplotlib.patches import Patch
+except ImportError as e:
+    raise ImportError("A mapping dependency couldn't be imported. To use the analysis.mapping module, "
+                      "make sure core_data_modules' `mapping` extra is installed") from e
 
 from core_data_modules.logging import Logger
+from .geojson import somalia as somalia_geojson
 
 log = Logger(__name__)
 
 
 _AVF_COLOR_MAP = LinearSegmentedColormap.from_list("avf_color_map", ["#ffffff", "#993e46"])
 _WATER_COLOR = "#edf5ff"
+
+
+# Cache standard geojson for speed when generating lots of maps.
+_geodata_cache = dict()
+
+
+def get_standard_geodata(country, admin_level):
+    """
+    Gets the geometry for one of the standard geo-datasets provided by CoreDataModules.
+
+    :param country: Country to retrieve the geo-dataset for.
+    :type country: "somalia"  # TODO: Add Kenya
+    :param admin_level: Administrative level to use for the
+                        If country is "somalia", the valid values are:
+                         - "regions"
+                        # TODO: Add remaining regions
+    :type admin_level: str
+    :return: GeoDataFrame for the requested dataset.
+    :rtype: geopandas.GeoDataFrame
+    """
+    if (country, admin_level) not in _geodata_cache:
+        if country == "somalia":
+            module = somalia_geojson
+        else:
+            raise ValueError("Only 'somalia' is supported as a valid country")  # TODO: Add Kenya
+
+        with resources.path(module, f"{admin_level}.geojson") as f:
+            _geodata_cache[(country, admin_level)] = geopandas.read_file(f)
+
+    return _geodata_cache[(country, admin_level)].copy()
 
 
 def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_columns=None,
@@ -85,8 +128,6 @@ def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_co
               frameon=False, handlelength=1.8, handleheight=1.8, labelspacing=0, prop=dict(size=5.5))
 
     # Add a label to each administrative region showing its absolute frequency.
-    # The font size and label position names are currently hard-coded for Somali Regions counties.
-    # TODO: Modify once per-map configuration needs are better understood by testing on other maps.
     if label_position_columns is not None:
         for i, admin_region in geo_data.iterrows():
             # Skip rows that don't have a label x/y position set.
