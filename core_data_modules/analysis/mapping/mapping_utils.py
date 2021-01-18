@@ -1,11 +1,4 @@
 try:
-    # For Python 3.7+
-    import importlib.resources as resources
-except ImportError:
-    # Use backport for Python 3.6
-    import importlib_resources as resources
-
-try:
     import geopandas as geopandas
     import matplotlib.pyplot as plt
     import numpy as np
@@ -13,6 +6,13 @@ try:
     from mapclassify import FisherJenks
     from matplotlib.colors import LinearSegmentedColormap
     from matplotlib.patches import Patch
+
+    try:
+        # For Python 3.7+
+        import importlib.resources as resources
+    except ImportError:
+        # Use backport for Python 3.6
+        import importlib_resources as resources
 except ImportError as e:
     raise ImportError("A mapping dependency couldn't be imported. To use the analysis.mapping module, "
                       "make sure core_data_modules' `mapping` extra is installed") from e
