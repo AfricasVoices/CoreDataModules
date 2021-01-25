@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 from urllib.parse import urlparse
 
@@ -41,13 +42,30 @@ def validate_datetime(dt, variable_name=""):
     return dt
 
 
-def validate_iso_string(s, variable_name=""):
-    validate_string(s, variable_name)
-    try:
-        isoparse(s)
-    except:
-        assert False, "{} not an ISO string".format(variable_name)
-    return s
+if sys.version_info >= (3, 7):
+    # Most iso validations happen on machine-generated strings which are in a very specific sub-set format of
+    # the ISO8601 standard. For speed, use the highly-optimized native checker available in Python 3.7+, and only fall
+    # back to the more generic isoparse if this fails.
+    # In our experiments, datetime.fromisoformat is about 20x faster than isoparse.
+    def validate_iso_string(s, variable_name=""):
+        validate_string(s, variable_name)
+        try:
+            datetime.fromisoformat(s.replace("Z", "+00:00"))
+        except ValueError:
+            try:
+                isoparse(s)
+            except ValueError:
+                assert False, "{} not an ISO string".format(variable_name)
+        return s
+else:
+    # Use isoparse only, as datetime.fromisoformat was only introduced in Python 3.7.
+    def validate_iso_string(s, variable_name=""):
+        validate_string(s, variable_name)
+        try:
+            isoparse(s)
+        except ValueError:
+            assert False, "{} not an ISO string".format(variable_name)
+        return s
 
 
 def validate_utc_iso_string(s, variable_name=""):
