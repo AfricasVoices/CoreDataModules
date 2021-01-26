@@ -48,7 +48,7 @@ def compute_repeat_participations(individuals, consent_withdrawn_field, analysis
     # of individuals who opted-in.
     for rp in repeat_participations.values():
         rp["% of Participants with Opt-Ins"] = \
-            analysis_utils.compute_percentage_str(rp["Number of Participans with Opt-Ins"], len(opt_in_individuals))
+            analysis_utils.compute_percentage_str(rp["Number of Participants with Opt-Ins"], len(opt_in_individuals))
 
     return repeat_participations
 
