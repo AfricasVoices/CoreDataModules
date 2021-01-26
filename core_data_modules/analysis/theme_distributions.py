@@ -84,25 +84,6 @@ def _increment_breakdowns(breakdowns, individual, breakdown_configurations):
             breakdowns[f"{config.dataset_name}:{code.string_value}"] += 1
 
 
-def _compute_percentage_str(x, y):
-    """
-    Formats x as a percentage of y as a string to 1 decimal place.
-
-    If y is 0, returns "-".
-
-    :param x: Dividend.
-    :type x: number
-    :param y: Divisor.
-    :type y: number
-    :return: "-" if y == 0, otherwise x / y to 1 decimal place.
-    :rtype: str
-    """
-    if y == 0:
-        return "-"
-    else:
-        return str(round(x / y * 100, 1))
-
-
 def _compute_breakdown_percentages(breakdowns, total_breakdowns, breakdown_configurations):
     """
     Sets the percentage fields in a breakdowns dict, in-place.
@@ -115,13 +96,13 @@ def _compute_breakdown_percentages(breakdowns, total_breakdowns, breakdown_confi
     :type breakdown_configurations: iterable of core_data_modules.analysis.AnalysisConfiguration
     """
     breakdowns["Total Participants %"] = \
-        _compute_percentage_str(breakdowns["Total Participants"], total_breakdowns["Total Participants"])
+        analysis_utils.compute_percentage_str(breakdowns["Total Participants"], total_breakdowns["Total Participants"])
 
     for config in breakdown_configurations:
         for code in _non_stop_codes(config.code_scheme.codes):
             theme_name = f"{config.dataset_name}:{code.string_value}"
             breakdowns[f"{theme_name} %"] = \
-                _compute_percentage_str(breakdowns[theme_name], total_breakdowns[theme_name])
+                analysis_utils.compute_percentage_str(breakdowns[theme_name], total_breakdowns[theme_name])
 
 
 def _compute_theme_distributions_for_theme_configuration(individuals, consent_withdrawn_field, theme_configuration,

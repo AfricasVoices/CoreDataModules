@@ -279,6 +279,25 @@ def filter_relevant(data, consent_withdrawn_key, analysis_configurations):
     return relevant_data
 
 
+def compute_percentage_str(x, y):
+    """
+    Formats x as a percentage of y as a string to 1 decimal place.
+
+    If y is 0, returns "-".
+
+    :param x: Dividend.
+    :type x: number
+    :param y: Divisor.
+    :type y: number
+    :return: "-" if y == 0, otherwise x / y to 1 decimal place.
+    :rtype: str
+    """
+    if y == 0:
+        return "-"
+    else:
+        return str(round(x / y * 100, 1))
+
+
 def write_csv(data, headers, f):
     """
     Writes data to a CSV.
