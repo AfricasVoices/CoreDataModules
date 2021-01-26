@@ -67,7 +67,7 @@ def export_repeat_participations_csv(individuals, consent_withdrawn_field, analy
     :type f: file-like
     """
     analysis_utils.write_csv(
-        compute_repeat_participations(individuals, consent_withdrawn_field, analysis_configurations),
+        compute_repeat_participations(individuals, consent_withdrawn_field, analysis_configurations).values(),
         repeat_participations_keys,
         f
     )
