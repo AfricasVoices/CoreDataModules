@@ -5,8 +5,9 @@ from core_data_modules.data_models.code_scheme import CodeTypes
 
 
 class AnalysisConfiguration(object):
-    def __init__(self, dataset_name, coded_field, code_scheme):
+    def __init__(self, dataset_name, raw_field, coded_field, code_scheme):
         self.dataset_name = dataset_name
+        self.raw_field = raw_field
         self.coded_field = coded_field
         self.code_scheme = code_scheme
 
