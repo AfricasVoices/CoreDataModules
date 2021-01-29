@@ -5,4 +5,4 @@ WORKDIR /app
 
 ADD . /app
 
-CMD python setup.py test --addopts "--doctest-modules --junitxml=test_results.xml"
+CMD python setup.py test --extras --addopts "--doctest-modules --junitxml=test_results.xml"
