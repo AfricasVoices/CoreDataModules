@@ -19,3 +19,13 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+3RD PARTY EXCEPTIONS
+
+The geometry data for Somalia is a redistribution of a dataset from OCHA Somalia,
+with features and properties modified by Africa's Voices Foundation.
+Those files, along with their source and licence, are:
+
+- `geojson/somalia_regions.geojson`: Adapted from data produced by OCHA Somalia.
+Retrieved from https://data.humdata.org/dataset/somalia-administrative-boundaries
+January 2020. Licence "Other: humanitarian use only"
