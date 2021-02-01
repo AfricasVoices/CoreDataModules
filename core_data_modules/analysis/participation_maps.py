@@ -72,8 +72,8 @@ def export_participation_maps(individuals, consent_withdrawn_field, theme_config
         [admin_region_configuration]
     )
 
-    map_index = 1
     for config in theme_configurations:
+        map_index = 1
         log.info(f"Exporting map to '{file_prefix}{config.dataset_name}_{map_index}_total_relevant.png'...")
         config_total_frequencies = dict()
         for region_code in _normal_codes(admin_region_configuration.code_scheme.codes):
