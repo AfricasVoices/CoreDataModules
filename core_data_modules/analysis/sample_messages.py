@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from core_data_modules.analysis import analysis_utils
 
-sample_messages_keys = ["Episode", "Code Scheme", "Code", "Sample Message"]
+sample_messages_keys = ["Episode", "Code Scheme", "Code", "Message"]
 
 
 def _filter_codes_by_ids(codes, code_ids=None):
@@ -58,7 +58,7 @@ def compute_sample_messages(messages, consent_withdrawn_field, analysis_configur
                     "Episode": config.raw_field,
                     "Code Scheme": config.code_scheme.name,
                     "Code": code_string_value,
-                    "Sample Message": msg
+                    "Message": msg
                 })
 
     return samples
