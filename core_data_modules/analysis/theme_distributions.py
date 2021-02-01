@@ -134,7 +134,7 @@ def _compute_theme_distributions_for_theme_configuration(individuals, consent_wi
     # Create initial breakdowns dicts for 'Total Participants' and for each theme in this theme_configuration.
     themes["Total Relevant Participants"] = _make_breakdowns_dict(breakdown_configurations)
     for code in _non_stop_codes(theme_configuration.code_scheme.codes):
-        themes[f"{theme_configuration.dataset_name}_{code.string_value}"] = \
+        themes[code.string_value] = \
             _make_breakdowns_dict(breakdown_configurations)
 
     # Iterate over the individuals, incrementing:
@@ -145,7 +145,7 @@ def _compute_theme_distributions_for_theme_configuration(individuals, consent_wi
             _increment_breakdowns(themes["Total Relevant Participants"], ind, breakdown_configurations)
 
         for code in analysis_utils.get_codes_from_td(ind, theme_configuration):
-            _increment_breakdowns(themes[f"{theme_configuration.dataset_name}_{code.string_value}"],
+            _increment_breakdowns(themes[code.string_value],
                                   ind, breakdown_configurations)
 
     # Compute the percentages in each breakdown dict, for the Total Relevant Participants and for each theme,
@@ -156,7 +156,7 @@ def _compute_theme_distributions_for_theme_configuration(individuals, consent_wi
     )
     for code in _normal_codes(theme_configuration.code_scheme.codes):
         _compute_breakdown_percentages(
-            themes[f"{theme_configuration.dataset_name}_{code.string_value}"], themes["Total Relevant Participants"],
+            themes[code.string_value], themes["Total Relevant Participants"],
             breakdown_configurations
         )
 
