@@ -55,7 +55,7 @@ class EthiopiaCodes(object):
     GUJI = "guji"
     GURAGHE = "guraghe"
     HADIYA = "hadiya"
-    HALABA = "halaba"
+    HALABA_SPECIAL = "halaba special"
     HARARI = "harari"  # (Shadows region name "harari")
     HARI_ZONE_5 = "hari/zone 5"
     HORO_GUDRU_WELLEGA = "horo gudru wellega"
@@ -149,7 +149,7 @@ class EthiopiaCodes(object):
         GUJI: OROMIA,
         GURAGHE: SNNP,
         HADIYA: SNNP,
-        HALABA: SNNP,
+        HALABA_SPECIAL: SNNP,
         HARARI: HARARI,
         HARI_ZONE_5: AFAR,
         HORO_GUDRU_WELLEGA: OROMIA,
