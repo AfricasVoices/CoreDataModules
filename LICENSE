@@ -22,13 +22,33 @@ SOFTWARE.
 
 3RD PARTY EXCEPTIONS
 
-The geometry data for Somalia is a redistribution of a dataset from OCHA Somalia,
+The geometry datasets are redistributions of publicly-available datasets,
 with features and properties modified by Africa's Voices Foundation.
 Those files, along with their source and licence, are:
 
-- `core_data_modules/analysis/mapping/geojson/somalia/regions.geojson`: Adapted from data produced by OCHA Somalia.
+- `core_data_modules/analysis/mapping/geojson/somalia/regions.geojson`:
+Adapted from data produced by OCHA Somalia.
 Retrieved from https://data.humdata.org/dataset/somalia-administrative-boundaries
 January 2020. Licence "Other: humanitarian use only"
+
+- `core_data_modules/analysis/mapping/geojson/somalia/districts.geojson`:
+Adapted from data produced by OCHA Somalia.
+Retrieved from https://data.humdata.org/dataset/somalia-administrative-boundaries
+April 2020. Licence "Other: humanitarian use only"
+
+- `core_data_modules/analysis/mapping/geojson/somalia/mogadishu_sub_districts.geojson`:
+Adapted from data produced by FAO Somalia using OpenStreetMap data.
+Retrieved from https://spatial.faoswalim.org/layers/geonode:Mogadishu_Adminbnda_Districts_UNOCHA
+May 2020. Licence:
+"
+    *Open Data Commons Open Database License / OSM (ODbL/OSM)*
+
+    + You are free to copy, distribute, transmit and adapt our data, as long as you credit OpenStreetMap and its contributors
+
+    + If you alter or build upon our data, you may distribute the result only under the same licence.
+
+    + For more info see http://www.openstreetmap.org/copyright
+"
 
 - `core_data_modules/analysis/mapping/geojson/kenya/counties.geojson`: Adapted from data produced by OCHA ROSEA.
 Retrieved from https://data.humdata.org/dataset/ken-administrative-boundaries
