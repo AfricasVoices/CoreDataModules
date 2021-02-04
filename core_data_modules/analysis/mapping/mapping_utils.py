@@ -18,8 +18,8 @@ except ImportError as e:
     raise ImportError("A mapping dependency couldn't be imported. To use the core_data_modules.analysis.mapping "
                       "module, make sure core_data_modules' `mapping` extra is installed") from e
 
-from core_data_modules.analysis.mapping import geojson as somalia_geojson
 from core_data_modules.analysis.mapping.geojson import kenya as kenya_geojson
+from core_data_modules.analysis.mapping.geojson import somalia as somalia_geojson
 from core_data_modules.logging import Logger
 
 log = Logger(__name__)
