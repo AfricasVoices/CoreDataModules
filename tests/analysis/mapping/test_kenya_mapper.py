@@ -26,7 +26,7 @@ class TestKenyaMapper(unittest.TestCase):
         rand = Random(0)
         return {r: max(0, rand.randint(-30, 100)) for r in regions}
 
-    def test_export_kenya_constituencies_map(self):
+    def test_export_kenya_constituencies_frequencies_map(self):
         constituencies = mapping_utils.get_standard_geodata("kenya", "constituencies")["ADM2_AVF"]
         frequencies = self.generate_distributions(constituencies)
 
@@ -35,7 +35,7 @@ class TestKenyaMapper(unittest.TestCase):
 
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/constituencies.png", _IMAGE_TOLERANCE))
 
-    def test_export_kenya_counties_map(self):
+    def test_export_kenya_counties_frequencies_map(self):
         counties = mapping_utils.get_standard_geodata("kenya", "counties")["ADM1_AVF"]
         frequencies = self.generate_distributions(counties)
 
