@@ -38,11 +38,16 @@ def get_standard_geodata(country, admin_level):
     Gets the geometry for one of the standard geo-datasets provided by CoreDataModules.
 
     :param country: Country to retrieve the geo-dataset for.
-    :type country: "somalia"  # TODO: Add Kenya
-    :param admin_level: Administrative level to use for the
-                        If country is "somalia", the valid values are:
+    :type country: "kenya" | "somalia"
+    :param admin_level: Map type to retrieve.
+                        If `country` is "kenya", the valid values are:
+                         - "counties"
+                         - "constituencies"
+                         - "lakes"
+                        If `country` `is "somalia", the valid values are:
                          - "regions"
-                        # TODO: Add remaining regions
+                         - "districts"
+                         - "mogadishu sub districts"
     :type admin_level: str
     :return: GeoDataFrame for the requested dataset.
     :rtype: geopandas.GeoDataFrame
