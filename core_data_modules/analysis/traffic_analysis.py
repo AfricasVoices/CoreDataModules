@@ -56,6 +56,8 @@ def compute_traffic_analysis(messages, consent_withdrawn_field, analysis_configu
             )
         })
 
+    return traffic_analysis
+
 
 def export_traffic_analysis_csv(messages, consent_withdrawn_field, analysis_configurations, time_field, traffic_labels,
                                 f):
