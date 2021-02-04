@@ -55,7 +55,7 @@ def compute_sample_messages(messages, consent_withdrawn_field, analysis_configur
 
             for msg in sample_messages:
                 samples.append({
-                    "Episode": config.raw_field,
+                    "Episode": config.dataset_name,
                     "Code Scheme": config.code_scheme.name,
                     "Code": code_string_value,
                     "Message": msg
