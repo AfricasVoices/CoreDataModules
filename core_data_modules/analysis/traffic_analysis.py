@@ -42,14 +42,14 @@ def compute_traffic_analysis(messages, consent_withdrawn_field, analysis_configu
     opt_in_messages = analysis_utils.filter_opt_ins(messages, consent_withdrawn_field, analysis_configurations)
 
     traffic_analysis = []
-    for tl in traffic_labels:
+    for traffic_label in traffic_labels:
         opt_in_messages_in_time_range = [msg for msg in opt_in_messages if
-                                         tl.start_date <= isoparse(msg[time_field]) < tl.end_date]
+                                         traffic_label.start_date <= isoparse(msg[time_field]) < traffic_label.end_date]
 
         traffic_analysis.append({
-            "Start Date": tl.start_date.isoformat(),
-            "End Date": tl.end_date.isoformat(),
-            "Label": tl.label,
+            "Start Date": traffic_label.start_date.isoformat(),
+            "End Date": traffic_label.end_date.isoformat(),
+            "Label": traffic_label.label,
             "Messages with Opt-Ins": len(opt_in_messages_in_time_range),
             "Relevant Messages": len(analysis_utils.filter_relevant(
                 opt_in_messages_in_time_range, consent_withdrawn_field, analysis_configurations)
