@@ -6,6 +6,7 @@ try:
     from mapclassify import FisherJenks
     from matplotlib.colors import LinearSegmentedColormap
     from matplotlib.patches import Patch
+    from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 
     try:
         # For Python 3.7+
@@ -17,6 +18,7 @@ except ImportError as e:
     raise ImportError("A mapping dependency couldn't be imported. To use the core_data_modules.analysis.mapping "
                       "module, make sure core_data_modules' `mapping` extra is installed") from e
 
+from core_data_modules.analysis.mapping.geojson import kenya as kenya_geojson
 from core_data_modules.analysis.mapping.geojson import somalia as somalia_geojson
 from core_data_modules.logging import Logger
 
@@ -36,20 +38,27 @@ def get_standard_geodata(country, admin_level):
     Gets the geometry for one of the standard geo-datasets provided by CoreDataModules.
 
     :param country: Country to retrieve the geo-dataset for.
-    :type country: "somalia"  # TODO: Add Kenya
-    :param admin_level: Administrative level to use for the
-                        If country is "somalia", the valid values are:
+    :type country: "kenya" | "somalia"
+    :param admin_level: Map type to retrieve.
+                        If `country` is "kenya", the valid values are:
+                         - "counties"
+                         - "constituencies"
+                         - "lakes"
+                        If `country` `is "somalia", the valid values are:
                          - "regions"
-                        # TODO: Add remaining regions
+                         - "districts"
+                         - "mogadishu sub districts"
     :type admin_level: str
     :return: GeoDataFrame for the requested dataset.
     :rtype: geopandas.GeoDataFrame
     """
     if (country, admin_level) not in _geodata_cache:
-        if country == "somalia":
+        if country == "kenya":
+            module = kenya_geojson
+        elif country == "somalia":
             module = somalia_geojson
         else:
-            raise ValueError("Only 'somalia' is supported as a valid country")  # TODO: Add Kenya
+            raise ValueError("Only 'kenya' and 'somalia' are supported as valid countries")
 
         with resources.path(module, f"{admin_level}.geojson") as f:
             _geodata_cache[(country, admin_level)] = geopandas.read_file(f)
@@ -58,7 +67,7 @@ def get_standard_geodata(country, admin_level):
 
 
 def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_columns=None,
-                       callout_position_columns=None, ax=None):
+                       callout_position_columns=None, show_legend=True, ax=None):
     """
     Plots a map of the given geo data with a choropleth showing the frequency of responses in each administrative
     region.
@@ -87,6 +96,9 @@ def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_co
                                      for this feature.
                                      If None, no callout lines are drawn.
     :type callout_position_columns: (str, str) | None
+    :param show_legend: Whether to draw a legend for the choropleth. The legend will be drawn to the bottom-right
+                        corner.
+    :type show_legend: bool
     :param ax: Axes on which to draw the plot. If None, draws to a new figure.
     :type ax: matplotlib.pyplot.Artist | None
     """
@@ -113,19 +125,20 @@ def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_co
     plt.axis("off")
 
     # Add the choropleth legend.
-    legend_elements = [
-        Patch(label="0", facecolor=_AVF_COLOR_MAP(0), linewidth=0.1, edgecolor="black")
-    ]
-    for bin_id in range(1, len(bin_edges)):
-        range_min = bin_edges[bin_id - 1] + 1
-        range_max = bin_edges[bin_id]
-        legend_elements.append(Patch(
-            label=range_min if range_min == range_max else f"{range_min} - {range_max}",
-            facecolor=_AVF_COLOR_MAP(float(bin_id) / number_of_classes),
-            linewidth=0.1, edgecolor="black"
-        ))
-    ax.legend(handles=legend_elements, title="Participants", title_fontsize=6, loc="lower right",
-              frameon=False, handlelength=1.8, handleheight=1.8, labelspacing=0, prop=dict(size=5.5))
+    if show_legend:
+        legend_elements = [
+            Patch(label="0", facecolor=_AVF_COLOR_MAP(0), linewidth=0.1, edgecolor="black")
+        ]
+        for bin_id in range(1, len(bin_edges)):
+            range_min = bin_edges[bin_id - 1] + 1
+            range_max = bin_edges[bin_id]
+            legend_elements.append(Patch(
+                label=range_min if range_min == range_max else f"{range_min} - {range_max}",
+                facecolor=_AVF_COLOR_MAP(float(bin_id) / number_of_classes),
+                linewidth=0.1, edgecolor="black"
+            ))
+        ax.legend(handles=legend_elements, title="Participants", title_fontsize=6, loc="lower right",
+                  frameon=False, handlelength=1.8, handleheight=1.8, labelspacing=0, prop=dict(size=5.5))
 
     # Add a label to each administrative region showing its absolute frequency.
     if label_position_columns is not None:
@@ -152,3 +165,55 @@ def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_co
                          xy=xy, xytext=xytext,
                          arrowprops=dict(facecolor="black", arrowstyle="-", linewidth=0.1, shrinkA=0, shrinkB=0),
                          ha="center", va="center", fontsize=3.8)
+
+
+def plot_inset_frequency_map(geo_data, admin_id_column, frequencies, inset_region, inset_position, zoom, ax):
+    """
+    Plots a map of the given geo data with a choropleth showing the frequency of responses in each administrative
+    region as an inset on another axes.
+
+    :param geo_data: GeoData to plot.
+    :type geo_data: geopandas.GeoDataFrame
+    :param admin_id_column: Column in `geo_data` of the administrative region ids.
+    :type admin_id_column: str
+    :param frequencies: Dictionary of admin_id -> frequency.
+    :type frequencies: dict of str -> int
+    :param inset_region: Map co-ordinates to plot in the inset map, in the form (x1, y1, x2, y2).
+    :type inset_region: (float, float, float, float)
+    :param inset_position: Map co-ordinates to center the inset on, in the form (x, y).
+    :type inset_position: (float, float)
+    :param zoom: Zoom factor.
+    :type zoom: float
+    :param ax: Axes on which to draw the plot. If None, draws to a new figure.
+    :type ax: matplotlib.pyplot.Axes
+    """
+    inset_ax = zoomed_inset_axes(ax, zoom=zoom, loc="center", bbox_to_anchor=inset_position,
+                                 bbox_transform=ax.transData)
+    plt.setp(inset_ax.spines.values(), linewidth=0.2, color="black")
+    inset_ax.set_xlim(inset_region[0], inset_region[2])
+    inset_ax.set_ylim(inset_region[1], inset_region[3])
+    inset_ax.set_xticklabels('')
+    inset_ax.set_yticklabels('')
+    rectangle, connectors = ax.indicate_inset_zoom(inset_ax, edgecolor="black", alpha=1, linewidth=0.2)
+    for c in connectors:
+        c.set_visible(False)
+    inset_ax.xaxis.set_visible(False)
+    inset_ax.yaxis.set_visible(False)
+
+    plot_frequency_map(geo_data, admin_id_column, frequencies, ax=inset_ax, show_legend=False)
+    inset_ax.axis("on")
+
+
+def plot_water_bodies(geo_data, ax=None):
+    """
+    Plots a map of the given `geo_data`, shaded with color `_WATER_COLOR`.
+
+    The map is plotted to the specified axes or to the active matplotlib figure.
+    Use matplotlib.pyplot to access and manipulate the result.
+
+    :param geo_data: GeoData to plot.
+    :type geo_data: geopandas.GeoDataFrame
+    :param ax: Axes on which to draw the plot. If None, draws to a new figure.
+    :type ax: matplotlib.pyplot.Artist | None
+    """
+    geo_data.plot(ax=ax, linewidth=0.1, edgecolor="black", facecolor=_WATER_COLOR)
