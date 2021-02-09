@@ -110,7 +110,10 @@ def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_co
     frequencies_to_class = [f for f in frequencies.values() if f != 0]
     number_of_classes = min(5, len(set(frequencies_to_class)))
     bin_edges = [0]
-    if number_of_classes > 0:
+    if number_of_classes == 1:
+        # FisherJenks hits a RuntimeWarning when there is only 1 class, so handle this case directly.
+        bin_edges.append(max(frequencies_to_class))
+    elif number_of_classes > 1:
         bin_edges.extend(FisherJenks(np.array(frequencies_to_class), k=number_of_classes).bins)
 
     # Get the color for each region by searching for the appropriate bin for each frequency.
