@@ -185,7 +185,7 @@ class FoldStrategies(object):
 
         # Ensure that all the codes in each list belong to the code_scheme
         for label in x + y:
-            assert label["SchemeID"] == code_scheme.scheme_id
+            assert label["SchemeID"] == code_scheme.scheme_id, f"{label['SchemeID']} != {code_scheme.scheme_id}"
 
         # Ensure that if a list contains true missing, it only contains that code.
         for label in x:
