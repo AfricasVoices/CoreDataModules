@@ -29,6 +29,7 @@ def get_codes_from_td(td, analysis_configuration):
     coded_field = analysis_configuration.coded_field
 
     if coded_field not in td:
+        print(f'{coded_field} not in td for {td["uid"]}')
         return []
 
     # TracedData can contain a single label or a list of labels. Read into a list of labels in all cases.
@@ -59,10 +60,7 @@ def responded(td, analysis_configuration):
     :rtype: bool
     """
     codes = get_codes_from_td(td, analysis_configuration)
-    if len(codes) >= 1:
-        print(f"{td['uid']}")
-        print(td)
-        exit()
+    assert len(codes) >= 1
 
     if len(codes) > 1:
         # If there is an NA or NS code, there shouldn't be any other codes present.
