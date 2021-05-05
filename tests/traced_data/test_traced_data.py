@@ -6,11 +6,15 @@ from core_data_modules.traced_data import TracedData, Metadata
 
 
 class TestMetadata(unittest.TestCase):
+    def nested_call_location(self):
+        return Metadata.get_call_location(depth=2)
+
     def test_get_call_location(self):
-        call_location = Metadata.get_call_location()
-        # call_location contains an absolute path, but this only tests the end of that path so that it can run
-        # independently of the project's location.
-        self.assertTrue(call_location.endswith("tests/traced_data/test_traced_data.py:10:test_get_call_location"))
+        # Metadata.get_call_location contains an absolute path, but this only tests the end of that path so that it can
+        # run independently of the project's location.
+        self.assertTrue(Metadata.get_call_location().endswith("tests/traced_data/test_traced_data.py:15:test_get_call_location"))
+        self.assertTrue(Metadata.get_call_location(depth=1).endswith("tests/traced_data/test_traced_data.py:16:test_get_call_location"))
+        self.assertTrue(self.nested_call_location().endswith("tests/traced_data/test_traced_data.py:17:test_get_call_location"))
 
     def dummy_function(self, a):
         pass
@@ -19,7 +23,7 @@ class TestMetadata(unittest.TestCase):
         function_location = Metadata.get_function_location(self.dummy_function)
         # call_location contains an absolute path, but this only tests the end of that path so that it can run
         # independently of the project's location.
-        self.assertTrue(function_location.endswith("tests/traced_data/test_traced_data.py:15:dummy_function"))
+        self.assertTrue(function_location.endswith("tests/traced_data/test_traced_data.py:19:dummy_function"))
 
 
 class TestTracedData(unittest.TestCase):
