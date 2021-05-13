@@ -42,15 +42,22 @@ class Metadata(object):
         return cls(d["User"], d["Source"], d["Timestamp"])
 
     @staticmethod
-    def get_call_location():
+    def get_call_location(depth=1):
         """
-        Returns the location where this function was called from.
+        Returns the location where this function was called from n places up the call stack.
 
+        :param depth: Number of frames to go back in the call stack. Depth 1 returns the immediate caller, depth 2
+                      the caller's caller etc.
+        :type depth: int
         :return Caller location in the format 'path/to/file.py:line_number:function_name'
         :rtype: str
         """
         # Access the caller's stack frame to find out where this function was called from.
-        frame = inspect.currentframe().f_back
+        frame = inspect.currentframe()
+        while depth > 0:
+            frame = frame.f_back
+            depth -= 1
+
         file_path = frame.f_code.co_filename
         line_number = frame.f_lineno
         function_name = frame.f_code.co_name
