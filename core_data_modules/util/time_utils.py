@@ -13,6 +13,10 @@ class TimeUtils(object):
         return pytz.utc.localize(datetime.utcnow()).isoformat(timespec="microseconds")
 
     @staticmethod
+    def datetime_to_utc_iso_string(dt):
+        return dt.astimezone(pytz.utc).isoformat(timespec="microseconds")
+
+    @staticmethod
     def floor_timestamp_at_resolution(dt, resolution):
         """
         Rounds the given datetime down to the nearest multiple of the specified time resolution on that date.
