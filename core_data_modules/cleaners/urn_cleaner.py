@@ -30,7 +30,6 @@ class URNCleaner(object):
             raise ValueError
         if urn.startswith("tel:"):
             # Set the operator name from the phone number
-            assert urn.startswith("tel:+")
             return PhoneCleaner.clean_operator(urn)
         elif urn.startswith("deleted:"):
             return Codes.DELETED
