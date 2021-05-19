@@ -11,7 +11,7 @@ class DemographicCleaner(object):
         Identifies the gender in the given string.
 
         >>> DemographicCleaner.clean_gender("KiUMe")
-        'male'
+        'man'
 
         :param text: Text to clean.
         :type text: str
