@@ -1,7 +1,7 @@
 class Codes(object):
     # Demographic codes
-    MALE = "male"
-    FEMALE = "female"
+    MAN = "man"
+    WOMAN = "woman"
 
     YES = "yes"
     NO = "no"
