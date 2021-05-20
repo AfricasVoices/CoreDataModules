@@ -16,7 +16,7 @@ class EthiopiaLocations(object):
         True
         >>> EthiopiaLocations.is_location_code(KenyaCodes.NANDI)
         False
-        >>> EthiopiaLocations.is_location_code(Codes.MALE)
+        >>> EthiopiaLocations.is_location_code(Codes.MAN)
         False
 
         :param text: Text to test if contains a location code
