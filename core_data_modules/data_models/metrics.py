@@ -37,7 +37,7 @@ class MessagesMetrics(object):
             "messages_count": self.messages_count,
             "messages_with_label": self.messages_with_label,
             "not_coded_messages": self.not_coded_messages,
-            "wrong_scheme_messages": wrong_scheme_messages
+            "wrong_scheme_messages": self.wrong_scheme_messages
         }
 
     def validate(self):
