@@ -12,9 +12,9 @@ class TestDemographicCleaner(unittest.TestCase):
 
     def test_clean_gender(self):
         test_cases = {
-            "kiume": Codes.MALE,
-            "female": Codes.FEMALE,
-            "  KiUme": Codes.MALE
+            "kiume": Codes.MAN,
+            "female": Codes.WOMAN,
+            "  KiUme": Codes.MAN
         }
 
         self.run_cleaner_tests(DemographicCleaner.clean_gender, test_cases)

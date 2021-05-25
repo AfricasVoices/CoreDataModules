@@ -3,7 +3,7 @@ class Patterns(object):
     Lists regex patterns for cleaning Swahili demographics.
     """
     # TODO: This file is for the Swahili Demographic Cleaner, but includes regexes for English.
-    male = (r'[ki]*[mwana]*ume|\b[ae]*m+[ae]le*|\bchail\b|lion|'
+    man = (r'[ki]*[mwana]*ume|\b[ae]*m+[ae]le*|\bchail\b|lion|'
             r'\bchal[1l4]\b|\b(ni)*ch[ae]*[lr][eiy]*\b|'
             r'\bcharl[iy]\b|\bjali\b|\b[ae]*maie\b|\bm[ae]n\b|'
             r'\bchaliz*\b|\bbou*[iy]z*|\bbwo[iy]\b|\bgu[iy]\b|'
@@ -13,7 +13,7 @@ class Patterns(object):
             r'\bsume\b|\bkijana\b|\bdaddy\b|'
             r'n*dich[uw]+o|wuo[wy]*i+|wou[wy]*i')  # luo starts here
 
-    female = (r'\ba*f[yeai]*m[ae]*i*[kl]e*|\bfm\b|'
+    woman = (r'\ba*f[yeai]*m[ae]*i*[kl]e*|\bfm\b|'
               r'\bm[ae]d[ae]ma*\b|\bd[ae]m[aeu]*\b|'
               r'\bch[ei]c*k*\b|\bl[ae]d[iy]\b|\bmshi*\b|'
               r'\bbmr[ae]sh\b|\bmsu*pa*\b|\bg[aiu]rl\b|'

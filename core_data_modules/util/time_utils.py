@@ -13,6 +13,20 @@ class TimeUtils(object):
         return pytz.utc.localize(datetime.utcnow()).isoformat(timespec="microseconds")
 
     @staticmethod
+    def datetime_to_utc_iso_string(dt):
+        """
+        Converts the given datetime to an ISO-8601 string in UTC.
+
+        >>> from dateutil.parser import isoparse
+        >>> TimeUtils.datetime_to_utc_iso_string(isoparse("2021-05-30T15:30:00.105+03:00"))
+        '2021-05-30T12:30:00.105000+00:00'
+
+        :return: The given datetime as an ISO-8601 string in UTC.
+        :rtype: str
+        """
+        return dt.astimezone(pytz.utc).isoformat(timespec="microseconds")
+
+    @staticmethod
     def floor_timestamp_at_resolution(dt, resolution):
         """
         Rounds the given datetime down to the nearest multiple of the specified time resolution on that date.

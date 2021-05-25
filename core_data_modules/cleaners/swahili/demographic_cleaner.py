@@ -11,16 +11,16 @@ class DemographicCleaner(object):
         Identifies the gender in the given string.
 
         >>> DemographicCleaner.clean_gender("KiUMe")
-        'male'
+        'man'
 
         :param text: Text to clean.
         :type text: str
-        :return: Codes.male, Codes.female, or None if no gender could be identified.
+        :return: Codes.Man, Codes.Woman, or None if no gender could be identified.
         :rtype: str
         """
         patterns = {
-            Codes.MALE: Patterns.male,
-            Codes.FEMALE: Patterns.female
+            Codes.MAN: Patterns.man,
+            Codes.WOMAN: Patterns.woman
         }
 
         return RegexUtils.clean_with_patterns(text, patterns)

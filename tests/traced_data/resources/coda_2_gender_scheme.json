@@ -6,25 +6,27 @@
     {
       "CodeID": "code-63dcde9a",
       "CodeType": "Normal",
-      "DisplayText": "male",
+      "DisplayText": "man",
       "NumericValue": 1,
-      "StringValue": "male",
+      "StringValue": "man",
       "Shortcut": "m",
       "VisibleInCoda": true,
       "MatchValues" : [
-        "male"
+        "male",
+        "man"
       ]
     },
     {
       "CodeID": "code-86a4602c",
       "CodeType": "Normal",
-      "DisplayText": "female",
+      "DisplayText": "woman",
       "NumericValue": 2,
-      "StringValue" : "female",
+      "StringValue" : "woman",
       "Shortcut": "f",
       "VisibleInCoda": true,
       "MatchValues" : [
-        "female"
+        "female",
+        "woman"
       ]
     },
     {

@@ -22,7 +22,7 @@ class TestDemographicCleaner(unittest.TestCase):
         self.assertTrue(DemographicCleaner.is_only_yes_no("my"))
 
     def test_clean_genders(self):
-        self.assertEqual(DemographicCleaner.clean_gender("woman"), Codes.FEMALE)
+        self.assertEqual(DemographicCleaner.clean_gender("woman"), Codes.WOMAN)
 
     def test_clean_yes_no(self):
         self.assertEqual(DemographicCleaner.clean_yes_no("haa"), Codes.YES)
