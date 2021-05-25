@@ -1,6 +1,18 @@
 from core_data_modules.data_models import validators
 
 
+"""
+This module contains Python representations of the objects needed to construct entries in a Coda V2 messages file,
+and contains functions for validating, serializing, and de-serializing.
+
+The data formats are specified here:
+https://github.com/AfricasVoices/CodaV2/blob/master/docs/data_formats.md#messages
+
+Changes to this file will need to be synced with changes to that specification, and with all other uses of that
+specification.
+"""
+
+
 class MessagesMetrics(object):
     def __init__(self, messages_count, messages_with_label, not_coded_messages, wrong_scheme_messages):
         self.messages_count = messages_count
