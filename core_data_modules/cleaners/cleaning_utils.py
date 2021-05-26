@@ -37,6 +37,19 @@ class CleaningUtils(object):
         return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=set_checked)
 
     @classmethod
+    def apply_cleaner_to_text(cls, text, cleaner, scheme, set_checked=False):
+        clean_value = cleaner(text)
+
+        # Don't label data which the cleaners couldn't code
+        if clean_value == Codes.NOT_CODED:
+            return None
+
+        # Construct a label for the clean_value returned by the cleaner
+        code_id = scheme.get_code_with_match_value(clean_value)
+        origin_id = Metadata.get_function_location(cleaner)
+        return cls.make_label_from_cleaner_code(scheme, code_id, origin_id, set_checked=set_checked)
+
+    @classmethod
     def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme, set_checked=False):
         """
         Applies a cleaning function to an iterable of TracedData objects, updating each with a new Label object.
@@ -61,15 +74,8 @@ class CleaningUtils(object):
             if raw_key not in td:
                 continue
            
-            clean_value = cleaner(td[raw_key])
-
-            # Don't label data which the cleaners couldn't code
-            if clean_value == Codes.NOT_CODED:
+            label = cls.apply_cleaner_to_text(td[raw_key], cleaner, scheme, set_checked)
+            if label is None:
                 continue
-
-            # Construct a label for the clean_value returned by the cleaner
-            code_id = scheme.get_code_with_match_value(clean_value)
-            origin_id = Metadata.get_function_location(cleaner)
-            label = cls.make_label_from_cleaner_code(scheme, code_id, origin_id, set_checked=set_checked)
 
             td.append_data({clean_key: label.to_dict()}, Metadata(user, Metadata.get_call_location(), time.time()))
