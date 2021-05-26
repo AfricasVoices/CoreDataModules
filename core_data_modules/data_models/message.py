@@ -59,6 +59,23 @@ class Message(object):
     def to_dict(self):
         return self.to_firebase_map()
 
+    def get_latest_labels(self):
+        """
+        Returns the latest label assigned to each code scheme.
+        """
+        latest_labels = []
+        seen_scheme_ids = set()
+        # Labels are guaranteed to be sorted newest first, so take the first with each unique scheme id.
+        for label in self.labels:
+            if label.scheme_id in seen_scheme_ids:
+                continue
+
+            seen_scheme_ids.add(label.scheme_id)
+            if label.code_id != "SPECIAL-MANUALLY_UNCODED":
+                latest_labels.append(label)
+
+        return latest_labels
+
     def validate(self):
         validators.validate_string(self.message_id, "message_id")
         validators.validate_string(self.text, "text")
