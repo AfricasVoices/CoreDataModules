@@ -14,7 +14,7 @@ class CleaningUtils(object):
         Constructs a new Label object from a code determined by a pipeline cleaner.
 
         :param scheme: Scheme which the `code` argument belongs to.
-        :type scheme: Scheme
+        :type scheme: core_data_modules.data_models.CodeScheme
         :param code: Code to construct the label from.
         :type code: Code
         :param origin_id: Identifier of the origin of this label.
@@ -37,7 +37,19 @@ class CleaningUtils(object):
         return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=set_checked)
 
     @classmethod
-    def apply_cleaner_to_text(cls, text, cleaner, scheme, set_checked=False):
+    def apply_cleaner_to_text(cls, cleaner, text, scheme, set_checked=False):
+        """
+        Applies a cleaning function to a text, and returns a label if the cleaned value wasn't NC.
+
+        :param cleaner: Cleaning function to apply.
+        :type cleaner: function of str -> str
+        :param text: Text to apply the cleaner to.
+        :type text: str
+        :param scheme: Scheme containing codes which the string returned from the `cleaner` can be matched against.
+        :type scheme: core_data_modules.data_models.CodeScheme
+        :param set_checked: Whether to set the `checked` property of the applied Label.
+        :type set_checked: bool
+        """
         clean_value = cleaner(text)
 
         # Don't label data which the cleaners couldn't code
@@ -65,7 +77,7 @@ class CleaningUtils(object):
         :param cleaner: Cleaning function to apply to each TracedData[`raw_key`].
         :type cleaner: function of str -> str
         :param scheme: Scheme containing codes which the strings returned from the `cleaner` can be matched against.
-        :type scheme: Scheme
+        :type scheme: core_data_modules.data_models.CodeScheme
         :param set_checked: Whether to set the `checked` property of the applied Labels.
         :type set_checked: bool
         """
@@ -74,7 +86,7 @@ class CleaningUtils(object):
             if raw_key not in td:
                 continue
            
-            label = cls.apply_cleaner_to_text(td[raw_key], cleaner, scheme, set_checked)
+            label = cls.apply_cleaner_to_text(cleaner, td[raw_key], scheme, set_checked)
             if label is None:
                 continue
 
