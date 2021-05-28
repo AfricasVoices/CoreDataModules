@@ -13,6 +13,27 @@ specification.
 """
 
 
+def get_latest_labels(labels):
+    """
+    Returns the latest label assigned to each code scheme.
+
+    :param labels: Labels to search.
+    :type labels: list of Label
+    """
+    latest_labels = []
+    seen_scheme_ids = set()
+    # Labels are guaranteed to be sorted newest first, so take the first with each unique scheme id.
+    for label in labels:
+        if label.scheme_id in seen_scheme_ids:
+            continue
+
+        seen_scheme_ids.add(label.scheme_id)
+        if label.code_id != "SPECIAL-MANUALLY_UNCODED":
+            latest_labels.append(label)
+
+    return latest_labels
+
+
 class Message(object):
     def __init__(self, message_id, text, creation_date_time_utc, labels):
         """
@@ -63,18 +84,7 @@ class Message(object):
         """
         Returns the latest label assigned to each code scheme.
         """
-        latest_labels = []
-        seen_scheme_ids = set()
-        # Labels are guaranteed to be sorted newest first, so take the first with each unique scheme id.
-        for label in self.labels:
-            if label.scheme_id in seen_scheme_ids:
-                continue
-
-            seen_scheme_ids.add(label.scheme_id)
-            if label.code_id != "SPECIAL-MANUALLY_UNCODED":
-                latest_labels.append(label)
-
-        return latest_labels
+        return get_latest_labels(self.labels)
 
     def validate(self):
         validators.validate_string(self.message_id, "message_id")
