@@ -76,6 +76,9 @@ class Message(object):
             "Labels": firebase_labels
         }
 
+    def copy(self):
+        return Message.from_firebase_map(self.to_firebase_map())
+
     # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
     def to_dict(self):
         return self.to_firebase_map()
