@@ -41,7 +41,7 @@ class Message(object):
         :type text: str
         :type creation_date_time_utc: str
         :type labels: list of Label
-        :type sequence_number: int
+        :type sequence_number: int | None
         """
         self.message_id = message_id
         self.text = text
