@@ -172,7 +172,7 @@ class Label(object):
             self.code_id == other.code_id and \
             self.date_time_utc == other.date_time_utc and \
             self.checked == other.checked and \
-            self.confidence == other.confidence and\
+            self.confidence == other.confidence and \
             self.label_set == other.label_set and \
             self.origin == other.origin
 
