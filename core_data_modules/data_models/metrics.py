@@ -13,7 +13,7 @@ specification.
 """
 
 
-class MessagesMetrics(object):
+class MessageMetrics(object):
     def __init__(self, messages_count, messages_with_label, not_coded_messages, wrong_scheme_messages):
         self.messages_count = messages_count
         self.messages_with_label = messages_with_label
