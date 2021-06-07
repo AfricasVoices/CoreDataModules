@@ -13,6 +13,27 @@ specification.
 """
 
 
+def get_latest_labels(labels):
+    """
+    Returns the latest label assigned to each code scheme.
+
+    :param labels: Labels to search.
+    :type labels: list of Label
+    """
+    latest_labels = []
+    seen_scheme_ids = set()
+    # Labels are guaranteed to be sorted newest first, so take the first with each unique scheme id.
+    for label in labels:
+        if label.scheme_id in seen_scheme_ids:
+            continue
+
+        seen_scheme_ids.add(label.scheme_id)
+        if label.code_id != "SPECIAL-MANUALLY_UNCODED":
+            latest_labels.append(label)
+
+    return latest_labels
+
+
 class Message(object):
     def __init__(self, message_id, text, creation_date_time_utc, labels):
         """
@@ -55,9 +76,18 @@ class Message(object):
             "Labels": firebase_labels
         }
 
+    def copy(self):
+        return Message.from_firebase_map(self.to_firebase_map())
+
     # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
     def to_dict(self):
         return self.to_firebase_map()
+
+    def get_latest_labels(self):
+        """
+        Returns the latest label assigned to each code scheme.
+        """
+        return get_latest_labels(self.labels)
 
     def validate(self):
         validators.validate_string(self.message_id, "message_id")
@@ -111,16 +141,16 @@ class Label(object):
             "CodeID": self.code_id,
             "DateTimeUTC": self.date_time_utc
         }
-        
+
         if self.checked is not None:
             ret["Checked"] = self.checked
-            
+
         if self.confidence is not None:
             ret["Confidence"] = self.confidence
-            
+
         if self.label_set is not None:
             ret["LabelSet"] = self.label_set
-            
+
         ret["Origin"] = self.origin.to_firebase_map()
 
         return ret
