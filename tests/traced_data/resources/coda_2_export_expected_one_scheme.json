@@ -3,6 +3,7 @@
     "CreationDateTimeUTC": "2018-11-01T02:19:04+00:00", 
     "Labels": [], 
     "MessageID": "10e5ede4715c80885bf4ca6f9ea87d841cbd24cd0b6bd1af5f1edc9b561052de", 
+    "SequenceNumber": null, 
     "Text": "hiya"
   }, 
   {
@@ -21,12 +22,14 @@
       }
     ], 
     "MessageID": "cf2e5bff1ef03dcd20d1a0b18ef7d89fc80a3554434165753672f6f40fde1d25", 
+    "SequenceNumber": null, 
     "Text": "woman"
   }, 
   {
     "CreationDateTimeUTC": "2018-11-02T16:00:29+00:00", 
     "Labels": [], 
     "MessageID": "cc6a778404ea557da5543d7cba14f75030dd069f56c80af62b0d7e1840a1ff67", 
+    "SequenceNumber": null, 
     "Text": "boy"
   }, 
   {
@@ -45,6 +48,7 @@
       }
     ], 
     "MessageID": "48b676e2b107da679512b793d5fd4cc4329f0c7c17a97cf6e0e3d1005b600b03", 
+    "SequenceNumber": null, 
     "Text": "man"
   }
 ]
