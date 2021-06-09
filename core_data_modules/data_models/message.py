@@ -167,6 +167,19 @@ class Label(object):
     def from_dict(cls, d):
         return cls.from_firebase_map(d)
 
+    def __eq__(self, other):
+        if not isinstance(other, Label):
+            return False
+
+        return \
+            self.scheme_id == other.scheme_id and \
+            self.code_id == other.code_id and \
+            self.date_time_utc == other.date_time_utc and \
+            self.checked == other.checked and \
+            self.confidence == other.confidence and \
+            self.label_set == other.label_set and \
+            self.origin == other.origin
+
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
         validators.validate_string(self.code_id, "code_id")
@@ -223,6 +236,16 @@ class Origin(object):
             ret["Metadata"] = self.metadata
 
         return ret
+
+    def __eq__(self, other):
+        if not isinstance(other, Origin):
+            return False
+
+        return \
+            self.origin_id == other.origin_id and \
+            self.name == other.name and \
+            self.origin_type == other.origin_type and \
+            self.metadata == other.metadata
 
     def validate(self):
         validators.validate_string(self.origin_id, "origin_id")
