@@ -103,6 +103,9 @@ class Message(object):
             assert isinstance(label, Label), "self.labels[{}] is not of type Label".format(i)
             label.validate()
 
+        if self.sequence_number is not None:
+            validators.validate_int(self.sequence_number, "sequence_number")
+
 
 class Label(object):
     def __init__(self, scheme_id, code_id, date_time_utc, origin, checked=None, confidence=None, label_set=None):
