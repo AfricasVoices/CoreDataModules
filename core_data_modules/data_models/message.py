@@ -35,18 +35,19 @@ def get_latest_labels(labels):
 
 
 class Message(object):
-    def __init__(self, message_id, text, creation_date_time_utc, labels):
+    def __init__(self, message_id, text, creation_date_time_utc, labels, sequence_number=None):
         """
         :type message_id: str
         :type text: str
         :type creation_date_time_utc: str
         :type labels: list of Label
+        :type sequence_number: int | None
         """
-        # Note: Ignoring sequence_number
         self.message_id = message_id
         self.text = text
         self.creation_date_time_utc = creation_date_time_utc
         self.labels = labels
+        self.sequence_number = sequence_number
 
         self.validate()
 
@@ -60,7 +61,9 @@ class Message(object):
         for label_map in data["Labels"]:
             labels.append(Label.from_firebase_map(label_map))
 
-        return cls(message_id, text, creation_date_time_utc, labels)
+        sequence_number = data.get("SequenceNumber")
+
+        return cls(message_id, text, creation_date_time_utc, labels, sequence_number)
 
     def to_firebase_map(self):
         self.validate()
@@ -73,7 +76,8 @@ class Message(object):
             "MessageID": self.message_id,
             "Text": self.text,
             "CreationDateTimeUTC": self.creation_date_time_utc,
-            "Labels": firebase_labels
+            "Labels": firebase_labels,
+            "SequenceNumber": self.sequence_number
         }
 
     def copy(self):
@@ -98,6 +102,9 @@ class Message(object):
         for i, label in enumerate(self.labels):
             assert isinstance(label, Label), "self.labels[{}] is not of type Label".format(i)
             label.validate()
+
+        if self.sequence_number is not None:
+            validators.validate_int(self.sequence_number, "sequence_number")
 
 
 class Label(object):
