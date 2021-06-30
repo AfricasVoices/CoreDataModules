@@ -35,19 +35,21 @@ def get_latest_labels(labels):
 
 
 class Message(object):
-    def __init__(self, message_id, text, creation_date_time_utc, labels, sequence_number=None):
+    def __init__(self, message_id, text, creation_date_time_utc, labels, sequence_number=None, last_updated=None):
         """
         :type message_id: str
         :type text: str
         :type creation_date_time_utc: str
         :type labels: list of Label
         :type sequence_number: int | None
+        :type last_updated: datetime.datetime | None
         """
         self.message_id = message_id
         self.text = text
         self.creation_date_time_utc = creation_date_time_utc
         self.labels = labels
         self.sequence_number = sequence_number
+        self.last_updated = last_updated
 
         self.validate()
 
@@ -62,8 +64,9 @@ class Message(object):
             labels.append(Label.from_firebase_map(label_map))
 
         sequence_number = data.get("SequenceNumber")
+        last_updated = data.get("LastUpdated")
 
-        return cls(message_id, text, creation_date_time_utc, labels, sequence_number)
+        return cls(message_id, text, creation_date_time_utc, labels, sequence_number, last_updated)
 
     def to_firebase_map(self):
         self.validate()
@@ -72,13 +75,18 @@ class Message(object):
         for label in self.labels:
             firebase_labels.append(label.to_firebase_map())
 
-        return {
+        firebase_map = {
             "MessageID": self.message_id,
             "Text": self.text,
             "CreationDateTimeUTC": self.creation_date_time_utc,
             "Labels": firebase_labels,
             "SequenceNumber": self.sequence_number
         }
+
+        if self.last_updated is not None:
+            firebase_map["LastUpdated"] = self.last_updated
+
+        return firebase_map
 
     def copy(self):
         return Message.from_firebase_map(self.to_firebase_map())
@@ -105,6 +113,9 @@ class Message(object):
 
         if self.sequence_number is not None:
             validators.validate_int(self.sequence_number, "sequence_number")
+
+        if self.last_updated is not None:
+            validators.validate_datetime(self.last_updated, "last_updated")
 
 
 class Label(object):
