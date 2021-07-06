@@ -130,7 +130,7 @@ class Message(object):
                 validators.validate_datetime(self.last_updated, "last_updated")
             except AssertionError:
                 assert type(self.last_updated) == firestore.firestore.SERVER_TIMESTAMP, \
-                    "last_updated is not a valid datetime or Firestore sentinel"
+                    f"last_updated '{self.last_updated} is not a valid datetime or Firestore sentinel"
 
 
 class Label(object):
