@@ -66,12 +66,14 @@ class Message(object):
 
         sequence_number = data.get("SequenceNumber")
 
-        # Convert the last_updated timestamp from a Firebase timestamp to a Python datetime.
-        # Firebase timestamps record to nanosecond precision whereas Python only record to microsecond precision,
-        # but this loss of precision during the conversion is ok in this case because Firestore truncates all
-        # timestamps to microsecond precision in the Firestore.
-        # https://firebase.google.com/docs/reference/unity/struct/firebase/firestore/timestamp#summary
-        last_updated = datetime.fromisoformat(data.get("LastUpdated").isoformat(timespec="microseconds"))
+        last_updated = data.get("LastUpdated")
+        if last_updated is not None:
+            # Convert the last_updated timestamp from a Firebase timestamp to a Python datetime.
+            # Firebase timestamps record to nanosecond precision whereas Python only record to microsecond precision,
+            # but this loss of precision during the conversion is ok in this case because Firestore truncates all
+            # timestamps to microsecond precision in the Firestore.
+            # https://firebase.google.com/docs/reference/unity/struct/firebase/firestore/timestamp#summary
+            last_updated = datetime.fromisoformat(last_updated.isoformat(timespec="microseconds"))
 
         return cls(message_id, text, creation_date_time_utc, labels, sequence_number, last_updated)
 
