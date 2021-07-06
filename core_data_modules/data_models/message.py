@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from firebase_admin import firestore
+
 from core_data_modules.data_models import validators
 
 """
@@ -43,7 +45,7 @@ class Message(object):
         :type creation_date_time_utc: str
         :type labels: list of Label
         :type sequence_number: int | None
-        :type last_updated: datetime.datetime | None
+        :type last_updated: datetime.datetime | firestore.firestore.SERVER_TIMESTAMP | None
         """
         self.message_id = message_id
         self.text = text
@@ -124,7 +126,11 @@ class Message(object):
             validators.validate_int(self.sequence_number, "sequence_number")
 
         if self.last_updated is not None:
-            validators.validate_datetime(self.last_updated, "last_updated")
+            try:
+                validators.validate_datetime(self.last_updated, "last_updated")
+            except AssertionError:
+                assert type(self.last_updated) == firestore.firestore.SERVER_TIMESTAMP, \
+                    "last_updated is not a valid datetime or Firestore sentinel"
 
 
 class Label(object):
