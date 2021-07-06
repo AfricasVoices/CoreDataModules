@@ -7,7 +7,7 @@ setup(
     url="https://github.com/AfricasVoices/CoreDataModules",
     packages=["core_data_modules"],
     setup_requires=["pytest-runner"],
-    install_requires=["python-dateutil", "pytz"],
+    install_requires=["python-dateutil", "pytz", "firebase_admin", "pyparsing==2.4.7"],
     extras_require={
         # Version constraints, the explicit references to scipy and pyproj, and the backport dependency
         # `importlib_resources` are needed to support python 3.6.

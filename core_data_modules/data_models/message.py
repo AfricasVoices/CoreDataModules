@@ -1,5 +1,8 @@
-from core_data_modules.data_models import validators
+from datetime import datetime
 
+from firebase_admin import firestore
+
+from core_data_modules.data_models import validators
 
 """
 This module contains Python representations of the objects needed to construct entries in a Coda V2 messages file,
@@ -35,19 +38,21 @@ def get_latest_labels(labels):
 
 
 class Message(object):
-    def __init__(self, message_id, text, creation_date_time_utc, labels, sequence_number=None):
+    def __init__(self, message_id, text, creation_date_time_utc, labels, sequence_number=None, last_updated=None):
         """
         :type message_id: str
         :type text: str
         :type creation_date_time_utc: str
         :type labels: list of Label
         :type sequence_number: int | None
+        :type last_updated: datetime.datetime | firestore.firestore.SERVER_TIMESTAMP | None
         """
         self.message_id = message_id
         self.text = text
         self.creation_date_time_utc = creation_date_time_utc
         self.labels = labels
         self.sequence_number = sequence_number
+        self.last_updated = last_updated
 
         self.validate()
 
@@ -63,7 +68,16 @@ class Message(object):
 
         sequence_number = data.get("SequenceNumber")
 
-        return cls(message_id, text, creation_date_time_utc, labels, sequence_number)
+        last_updated = data.get("LastUpdated")
+        if last_updated is not None:
+            # Convert the last_updated timestamp from a Firebase timestamp to a Python datetime.
+            # Firebase timestamps record to nanosecond precision whereas Python only record to microsecond precision,
+            # but this loss of precision during the conversion is ok in this case because Firestore truncates all
+            # timestamps to microsecond precision in the Firestore.
+            # https://firebase.google.com/docs/reference/unity/struct/firebase/firestore/timestamp#summary
+            last_updated = datetime.fromisoformat(last_updated.isoformat(timespec="microseconds"))
+
+        return cls(message_id, text, creation_date_time_utc, labels, sequence_number, last_updated)
 
     def to_firebase_map(self):
         self.validate()
@@ -72,13 +86,18 @@ class Message(object):
         for label in self.labels:
             firebase_labels.append(label.to_firebase_map())
 
-        return {
+        firebase_map = {
             "MessageID": self.message_id,
             "Text": self.text,
             "CreationDateTimeUTC": self.creation_date_time_utc,
             "Labels": firebase_labels,
             "SequenceNumber": self.sequence_number
         }
+
+        if self.last_updated is not None:
+            firebase_map["LastUpdated"] = self.last_updated
+
+        return firebase_map
 
     def copy(self):
         return Message.from_firebase_map(self.to_firebase_map())
@@ -105,6 +124,13 @@ class Message(object):
 
         if self.sequence_number is not None:
             validators.validate_int(self.sequence_number, "sequence_number")
+
+        if self.last_updated is not None:
+            try:
+                validators.validate_datetime(self.last_updated, "last_updated")
+            except AssertionError:
+                assert self.last_updated == firestore.firestore.SERVER_TIMESTAMP, \
+                    f"last_updated '{self.last_updated} is not a valid datetime or Firestore sentinel"
 
 
 class Label(object):
