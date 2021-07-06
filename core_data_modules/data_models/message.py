@@ -1,5 +1,6 @@
-from core_data_modules.data_models import validators
+from datetime import datetime
 
+from core_data_modules.data_models import validators
 
 """
 This module contains Python representations of the objects needed to construct entries in a Coda V2 messages file,
@@ -64,7 +65,13 @@ class Message(object):
             labels.append(Label.from_firebase_map(label_map))
 
         sequence_number = data.get("SequenceNumber")
-        last_updated = data.get("LastUpdated")
+
+        # Convert the last_updated timestamp from a Firebase timestamp to a Python datetime.
+        # Firebase timestamps record to nanosecond precision whereas Python only record to microsecond precision,
+        # but this loss of precision during the conversion is ok in this case because Firestore truncates all
+        # timestamps to microsecond precision in the Firestore.
+        # https://firebase.google.com/docs/reference/unity/struct/firebase/firestore/timestamp#summary
+        last_updated = datetime.fromisoformat(data.get("LastUpdated").isoformat(timespec="microseconds"))
 
         return cls(message_id, text, creation_date_time_utc, labels, sequence_number, last_updated)
 
