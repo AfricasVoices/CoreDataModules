@@ -70,11 +70,8 @@ class Message(object):
 
         last_updated = data.get("LastUpdated")
 
-        print(f"Type of last_updated: {last_updated} is {type(last_updated)}")
         if type(last_updated) == str:
-            print(f"Type of last_updated: {last_updated} is {type(last_updated)}")
             last_updated = datetime.fromisoformat(last_updated)
-            print(f"New type of last_updated: {last_updated} is {type(last_updated)}")
 
         if last_updated is not None:
             # Convert the last_updated timestamp from a Firebase timestamp to a Python datetime.
