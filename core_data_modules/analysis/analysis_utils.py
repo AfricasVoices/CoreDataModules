@@ -43,7 +43,7 @@ def get_codes_from_td(td, analysis_configuration):
     return codes
 
 
-def responded(td, analysis_configuration):
+def responded(td, consent_withdrawn_key, analysis_configuration):
     """
     Returns whether the given TracedData object contains a response under the given analysis_configuration.
 
@@ -58,6 +58,9 @@ def responded(td, analysis_configuration):
     :return: Whether `td` contains a response under the `analysis_configuration`.
     :rtype: bool
     """
+    if withdrew_consent(td, consent_withdrawn_key):
+        return False
+
     codes = get_codes_from_td(td, analysis_configuration)
     assert len(codes) >= 1
     if len(codes) > 1:
@@ -83,7 +86,7 @@ def withdrew_consent(td, consent_withdrawn_key):
     return td[consent_withdrawn_key] == Codes.TRUE
 
 
-def opt_in(td, consent_withdrawn_key, analysis_configuration):
+def opt_in(td, consent_withdrawn_key):
     """
     Returns whether the given TracedData object contains an opt-in response under the given analysis_configuration.
 
@@ -96,16 +99,10 @@ def opt_in(td, consent_withdrawn_key, analysis_configuration):
     :type td: core_data_modules.traced_data.TracedData
     :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
     :type consent_withdrawn_key: str
-    :param analysis_configuration: Analysis configuration to use to check if the TracedData contains an opt-in.
-                                   This determines the coded_field to check and the code_scheme to use to interpret it.
-    :type analysis_configuration: AnalysisConfiguration
     :return: Whether `td` contains a response under the `analysis_configuration` and did not withdraw consent.
     :rtype: bool
     """
-    if withdrew_consent(td, consent_withdrawn_key):
-        return False
-
-    return responded(td, analysis_configuration)
+    return not withdrew_consent(td, consent_withdrawn_key)
 
 
 def labelled(td, consent_withdrawn_key, analysis_configuration):
@@ -128,10 +125,7 @@ def labelled(td, consent_withdrawn_key, analysis_configuration):
     :return: Whether `td` contains a labelled response to `coding_plan` and did not withdraw consent.
     :rtype: bool
     """
-    if withdrew_consent(td, consent_withdrawn_key):
-        return False
-
-    if not responded(td, analysis_configuration):
+    if not responded(td, consent_withdrawn_key, analysis_configuration):
         return False
 
     codes = get_codes_from_td(td, analysis_configuration)
@@ -173,7 +167,7 @@ def relevant(td, consent_withdrawn_key, analysis_configuration):
     return False
 
 
-def filter_opt_ins(data, consent_withdrawn_key, analysis_configurations):
+def filter_opt_ins(data, consent_withdrawn_key):
     """
     Filters a list of message or participant data for objects that opted-in and contained a response under at least
     one of the given analysis_configurations.
@@ -189,13 +183,36 @@ def filter_opt_ins(data, consent_withdrawn_key, analysis_configurations):
     :return: data, filtered for only the objects that opted-in and responded to at least one of the analysis_configurations.
     :rtype: list of core_data_modules.traced_data.TracedData
     """
-    opt_ins = []
+    filtered = []
+    for td in data:
+        if opt_in(td, consent_withdrawn_key):
+            filtered.append(td)
+    return filtered
+
+
+def filter_responded(data, consent_withdrawn_key, analysis_configurations):
+    """
+    Filters a list of message or participant data for objects that opted-in and contained a response under at least
+    one of the given analysis_configurations.
+
+    For the definition of "opt-in", see `AnalysisUtils.opt_in`.
+
+    :param data: Message or participant data to filter.
+    :type data: iterable of core_data_modules.traced_data.TracedData
+    :param consent_withdrawn_key: Key in the TracedData of the consent withdrawn field.
+    :type consent_withdrawn_key: str
+    :param analysis_configurations: Analysis configurations to use to check if each TracedData contains an opt-in.
+    :type analysis_configurations: iterable of AnalysisConfiguration
+    :return: data, filtered for only the objects that opted-in and responded to at least one of the analysis_configurations.
+    :rtype: list of core_data_modules.traced_data.TracedData
+    """
+    filtered = []
     for td in data:
         for config in analysis_configurations:
-            if opt_in(td, consent_withdrawn_key, config):
-                opt_ins.append(td)
+            if responded(td, consent_withdrawn_key, config):
+                filtered.append(td)
                 break
-    return opt_ins
+    return filtered
 
 
 def filter_partially_labelled(data, consent_withdrawn_key, analysis_configurations):

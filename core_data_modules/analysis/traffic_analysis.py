@@ -39,7 +39,7 @@ def compute_traffic_analysis(messages, consent_withdrawn_field, analysis_configu
     :return: List of dictionaries containing the keys `traffic_analysis_keys`.
     :rtype: list of (dict of str -> str | int)
     """
-    opt_in_messages = analysis_utils.filter_opt_ins(messages, consent_withdrawn_field, analysis_configurations)
+    opt_in_messages = analysis_utils.filter_responded(messages, consent_withdrawn_field, analysis_configurations)
 
     traffic_analysis = []
     for traffic_label in traffic_labels:

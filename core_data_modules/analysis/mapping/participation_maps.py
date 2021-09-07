@@ -48,7 +48,7 @@ def export_participation_maps(individuals, consent_withdrawn_field, theme_config
     # Export a map showing the total participations
     log.info(f"Exporting map to '{file_prefix}total_participants.png'...")
     region_distributions = theme_distributions.compute_theme_distributions(
-        analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, theme_configurations),
+        analysis_utils.filter_responded(individuals, consent_withdrawn_field, theme_configurations),
         consent_withdrawn_field,
         [admin_region_configuration],
         []
