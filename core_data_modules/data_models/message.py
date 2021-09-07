@@ -1,5 +1,8 @@
-from core_data_modules.data_models import validators
+from datetime import datetime
 
+from firebase_admin import firestore
+
+from core_data_modules.data_models import validators
 
 """
 This module contains Python representations of the objects needed to construct entries in a Coda V2 messages file,
@@ -13,19 +16,43 @@ specification.
 """
 
 
+def get_latest_labels(labels):
+    """
+    Returns the latest label assigned to each code scheme.
+
+    :param labels: Labels to search.
+    :type labels: list of Label
+    """
+    latest_labels = []
+    seen_scheme_ids = set()
+    # Labels are guaranteed to be sorted newest first, so take the first with each unique scheme id.
+    for label in labels:
+        if label.scheme_id in seen_scheme_ids:
+            continue
+
+        seen_scheme_ids.add(label.scheme_id)
+        if label.code_id != "SPECIAL-MANUALLY_UNCODED":
+            latest_labels.append(label)
+
+    return latest_labels
+
+
 class Message(object):
-    def __init__(self, message_id, text, creation_date_time_utc, labels):
+    def __init__(self, message_id, text, creation_date_time_utc, labels, sequence_number=None, last_updated=None):
         """
         :type message_id: str
         :type text: str
         :type creation_date_time_utc: str
         :type labels: list of Label
+        :type sequence_number: int | None
+        :type last_updated: datetime.datetime | firestore.firestore.SERVER_TIMESTAMP | None
         """
-        # Note: Ignoring sequence_number
         self.message_id = message_id
         self.text = text
         self.creation_date_time_utc = creation_date_time_utc
         self.labels = labels
+        self.sequence_number = sequence_number
+        self.last_updated = last_updated
 
         self.validate()
 
@@ -39,7 +66,18 @@ class Message(object):
         for label_map in data["Labels"]:
             labels.append(Label.from_firebase_map(label_map))
 
-        return cls(message_id, text, creation_date_time_utc, labels)
+        sequence_number = data.get("SequenceNumber")
+
+        last_updated = data.get("LastUpdated")
+        if last_updated is not None:
+            # Convert the last_updated timestamp from a Firebase timestamp to a Python datetime.
+            # Firebase timestamps record to nanosecond precision whereas Python only record to microsecond precision,
+            # but this loss of precision during the conversion is ok in this case because Firestore truncates all
+            # timestamps to microsecond precision in the Firestore.
+            # https://firebase.google.com/docs/reference/unity/struct/firebase/firestore/timestamp#summary
+            last_updated = datetime.fromisoformat(last_updated.isoformat(timespec="microseconds"))
+
+        return cls(message_id, text, creation_date_time_utc, labels, sequence_number, last_updated)
 
     def to_firebase_map(self):
         self.validate()
@@ -48,16 +86,31 @@ class Message(object):
         for label in self.labels:
             firebase_labels.append(label.to_firebase_map())
 
-        return {
+        firebase_map = {
             "MessageID": self.message_id,
             "Text": self.text,
             "CreationDateTimeUTC": self.creation_date_time_utc,
-            "Labels": firebase_labels
+            "Labels": firebase_labels,
+            "SequenceNumber": self.sequence_number
         }
+
+        if self.last_updated is not None:
+            firebase_map["LastUpdated"] = self.last_updated
+
+        return firebase_map
+
+    def copy(self):
+        return Message.from_firebase_map(self.to_firebase_map())
 
     # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
     def to_dict(self):
         return self.to_firebase_map()
+
+    def get_latest_labels(self):
+        """
+        Returns the latest label assigned to each code scheme.
+        """
+        return get_latest_labels(self.labels)
 
     def validate(self):
         validators.validate_string(self.message_id, "message_id")
@@ -68,6 +121,16 @@ class Message(object):
         for i, label in enumerate(self.labels):
             assert isinstance(label, Label), "self.labels[{}] is not of type Label".format(i)
             label.validate()
+
+        if self.sequence_number is not None:
+            validators.validate_int(self.sequence_number, "sequence_number")
+
+        if self.last_updated is not None:
+            try:
+                validators.validate_datetime(self.last_updated, "last_updated")
+            except AssertionError:
+                assert self.last_updated == firestore.firestore.SERVER_TIMESTAMP, \
+                    f"last_updated '{self.last_updated} is not a valid datetime or Firestore sentinel"
 
 
 class Label(object):
@@ -111,16 +174,16 @@ class Label(object):
             "CodeID": self.code_id,
             "DateTimeUTC": self.date_time_utc
         }
-        
+
         if self.checked is not None:
             ret["Checked"] = self.checked
-            
+
         if self.confidence is not None:
             ret["Confidence"] = self.confidence
-            
+
         if self.label_set is not None:
             ret["LabelSet"] = self.label_set
-            
+
         ret["Origin"] = self.origin.to_firebase_map()
 
         return ret
@@ -132,6 +195,19 @@ class Label(object):
     @classmethod
     def from_dict(cls, d):
         return cls.from_firebase_map(d)
+
+    def __eq__(self, other):
+        if not isinstance(other, Label):
+            return False
+
+        return \
+            self.scheme_id == other.scheme_id and \
+            self.code_id == other.code_id and \
+            self.date_time_utc == other.date_time_utc and \
+            self.checked == other.checked and \
+            self.confidence == other.confidence and \
+            self.label_set == other.label_set and \
+            self.origin == other.origin
 
     def validate(self):
         validators.validate_string(self.scheme_id, "scheme_id")
@@ -189,6 +265,16 @@ class Origin(object):
             ret["Metadata"] = self.metadata
 
         return ret
+
+    def __eq__(self, other):
+        if not isinstance(other, Origin):
+            return False
+
+        return \
+            self.origin_id == other.origin_id and \
+            self.name == other.name and \
+            self.origin_type == other.origin_type and \
+            self.metadata == other.metadata
 
     def validate(self):
         validators.validate_string(self.origin_id, "origin_id")
