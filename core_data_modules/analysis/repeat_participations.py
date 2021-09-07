@@ -35,11 +35,11 @@ def compute_repeat_participations(individuals, consent_withdrawn_field, analysis
 
     # Compute the number of individuals who participated each of 1 to (number of analysis_configurations) times.
     # An individual is considered to have 'participated' if they are an opt-in to an analysis_configuration.
-    opt_in_individuals = analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, analysis_configurations)
+    opt_in_individuals = analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field)
     for ind in opt_in_individuals:
         episodes_participated = 0
         for config in analysis_configurations:
-            if analysis_utils.opt_in(ind, consent_withdrawn_field, config):
+            if analysis_utils.responded(ind, consent_withdrawn_field, config):
                 episodes_participated += 1
         assert episodes_participated != 0, f"Found an individual with no participation in any episode: {ind.items()}"
         repeat_participations[episodes_participated]["Number of Participants with Opt-Ins"] += 1
