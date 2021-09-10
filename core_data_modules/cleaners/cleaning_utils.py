@@ -14,7 +14,7 @@ class CleaningUtils(object):
         Constructs a new Label object from a code determined by a pipeline cleaner.
 
         :param scheme: Scheme which the `code` argument belongs to.
-        :type scheme: Scheme
+        :type scheme: core_data_modules.data_models.CodeScheme
         :param code: Code to construct the label from.
         :type code: Code
         :param origin_id: Identifier of the origin of this label.
@@ -37,6 +37,31 @@ class CleaningUtils(object):
         return Label(scheme.scheme_id, code.code_id, date_time_utc, origin, checked=set_checked)
 
     @classmethod
+    def apply_cleaner_to_text(cls, cleaner, text, scheme, set_checked=False):
+        """
+        Applies a cleaning function to a text, and returns a label if the cleaned value wasn't NC.
+
+        :param cleaner: Cleaning function to apply.
+        :type cleaner: function of str -> str
+        :param text: Text to apply the cleaner to.
+        :type text: str
+        :param scheme: Scheme containing codes which the string returned from the `cleaner` can be matched against.
+        :type scheme: core_data_modules.data_models.CodeScheme
+        :param set_checked: Whether to set the `checked` property of the applied Label.
+        :type set_checked: bool
+        """
+        clean_value = cleaner(text)
+
+        # Don't label data which the cleaners couldn't code
+        if clean_value == Codes.NOT_CODED:
+            return None
+
+        # Construct a label for the clean_value returned by the cleaner
+        code_id = scheme.get_code_with_match_value(clean_value)
+        origin_id = Metadata.get_function_location(cleaner)
+        return cls.make_label_from_cleaner_code(scheme, code_id, origin_id, set_checked=set_checked)
+
+    @classmethod
     def apply_cleaner_to_traced_data_iterable(cls, user, data, raw_key, clean_key, cleaner, scheme, set_checked=False):
         """
         Applies a cleaning function to an iterable of TracedData objects, updating each with a new Label object.
@@ -52,7 +77,7 @@ class CleaningUtils(object):
         :param cleaner: Cleaning function to apply to each TracedData[`raw_key`].
         :type cleaner: function of str -> str
         :param scheme: Scheme containing codes which the strings returned from the `cleaner` can be matched against.
-        :type scheme: Scheme
+        :type scheme: core_data_modules.data_models.CodeScheme
         :param set_checked: Whether to set the `checked` property of the applied Labels.
         :type set_checked: bool
         """
@@ -61,15 +86,8 @@ class CleaningUtils(object):
             if raw_key not in td:
                 continue
            
-            clean_value = cleaner(td[raw_key])
-
-            # Don't label data which the cleaners couldn't code
-            if clean_value == Codes.NOT_CODED:
+            label = cls.apply_cleaner_to_text(cleaner, td[raw_key], scheme, set_checked)
+            if label is None:
                 continue
-
-            # Construct a label for the clean_value returned by the cleaner
-            code_id = scheme.get_code_with_match_value(clean_value)
-            origin_id = Metadata.get_function_location(cleaner)
-            label = cls.make_label_from_cleaner_code(scheme, code_id, origin_id, set_checked=set_checked)
 
             td.append_data({clean_key: label.to_dict()}, Metadata(user, Metadata.get_call_location(), time.time()))

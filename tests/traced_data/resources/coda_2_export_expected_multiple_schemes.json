@@ -26,6 +26,7 @@
       }
     ], 
     "MessageID": "b74dc36b91c7ad911f1115bc6f19d0b7c30f2c82af4a0b68cb4b5808714bb8fc", 
+    "SequenceNumber": null, 
     "Text": "mog"
   }, 
   {
@@ -44,12 +45,14 @@
       }
     ], 
     "MessageID": "a5855dcdc9badec09a79f2b01a99fd2148f51cef49cc9de5bfaf0ad85751391d", 
+    "SequenceNumber": null, 
     "Text": "kismayo"
   }, 
   {
     "CreationDateTimeUTC": "2018-11-01T04:19:30+00:00", 
     "Labels": [], 
     "MessageID": "8fc4a768155f591d0364540a40034d664ed7b85914d4464346bdd3ff1302c00e", 
+    "SequenceNumber": null, 
     "Text": "kismyo"
   }, 
   {
@@ -68,6 +71,7 @@
       }
     ], 
     "MessageID": "79f3c771e28be83951975c3796cc8084474559e9157121e3a55d1c4185917436", 
+    "SequenceNumber": null, 
     "Text": "kismay"
   }
 ]
