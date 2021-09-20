@@ -35,12 +35,12 @@ def compute_engagement_counts(messages, individuals, consent_withdrawn_field, an
             "Dataset": config.dataset_name,
 
             "Total Messages": "-", # Can't report this for individual weeks because the data has been overwritten with "STOP"
-            "Total Messages with Opt-Ins": len(analysis_utils.filter_opt_ins(messages, consent_withdrawn_field, [config])),
+            "Total Messages with Opt-Ins": len(analysis_utils.filter_responded(messages, consent_withdrawn_field, [config])),
             "Total Labelled Messages": len(analysis_utils.filter_fully_labelled(messages, consent_withdrawn_field, [config])),
             "Total Relevant Messages": len(analysis_utils.filter_relevant(messages, consent_withdrawn_field, [config])),
 
             "Total Participants": "-",
-            "Total Participants with Opt-Ins": len(analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, [config])),
+            "Total Participants with Opt-Ins": len(analysis_utils.filter_responded(individuals, consent_withdrawn_field, [config])),
             "Total Relevant Participants": len(analysis_utils.filter_relevant(individuals, consent_withdrawn_field, [config]))
         })
 
@@ -48,12 +48,12 @@ def compute_engagement_counts(messages, individuals, consent_withdrawn_field, an
         "Dataset": "Total",
 
         "Total Messages": len(messages),
-        "Total Messages with Opt-Ins": len(analysis_utils.filter_opt_ins(messages, consent_withdrawn_field, analysis_configurations)),
+        "Total Messages with Opt-Ins": len(analysis_utils.filter_responded(messages, consent_withdrawn_field, analysis_configurations)),
         "Total Labelled Messages": len(analysis_utils.filter_partially_labelled(messages, consent_withdrawn_field, analysis_configurations)),
         "Total Relevant Messages": len(analysis_utils.filter_relevant(messages, consent_withdrawn_field, analysis_configurations)),
 
         "Total Participants": len(individuals),
-        "Total Participants with Opt-Ins": len(analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, analysis_configurations)),
+        "Total Participants with Opt-Ins": len(analysis_utils.filter_responded(individuals, consent_withdrawn_field, analysis_configurations)),
         "Total Relevant Participants": len(analysis_utils.filter_relevant(individuals, consent_withdrawn_field, analysis_configurations))
     })
 

@@ -187,7 +187,7 @@ def compute_theme_distributions(individuals, consent_withdrawn_field, theme_conf
     :return: Dictionary of theme dataset_name -> theme -> breakdowns.
     :rtype: dict of str -> str -> (str -> (int | str))
     """
-    individuals = analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field, theme_configurations)
+    individuals = analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field)
 
     theme_distributions = OrderedDict()  # of dataset_name -> theme -> breakdowns
     for theme_config in theme_configurations:
