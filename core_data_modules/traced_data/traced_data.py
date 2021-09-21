@@ -209,7 +209,7 @@ class TracedData(Mapping):
         # Fail if there are keys in both objects with differing values.
         common_keys = set(self).intersection(set(traced_data))
         for common_key in common_keys:
-            if self[common_key] == traced_data[common_key]:
+            if self[common_key] != traced_data[common_key]:
                 print("Key '{}' is common to both TracedData objects, but values are different " \
                 "(self[common_key] == '{}' but traced_data[common_key] == '{}', for uid '{}')".format(
                     common_key, self[common_key], traced_data[common_key], traced_data['avf_phone_id']))
