@@ -211,8 +211,8 @@ class TracedData(Mapping):
         for common_key in common_keys:
             assert self[common_key] == traced_data[common_key], \
                 "Key '{}' is common to both TracedData objects, but values are different " \
-                "(self[common_key] == '{}' but traced_data[common_key] == '{}')".format(
-                    common_key, self[common_key], traced_data[common_key])
+                "(self[common_key] == '{}' but traced_data[common_key] == '{}') for uid {}".format(
+                    common_key, self[common_key], traced_data[common_key], traced_data['uid'])
 
         self.append_data({key_of_appended: traced_data}, new_metadata)
 
