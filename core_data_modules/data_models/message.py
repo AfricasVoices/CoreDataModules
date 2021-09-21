@@ -69,6 +69,10 @@ class Message(object):
         sequence_number = data.get("SequenceNumber")
 
         last_updated = data.get("LastUpdated")
+
+        if type(last_updated) == str:
+            last_updated = datetime.fromisoformat(last_updated)
+
         if last_updated is not None:
             # Convert the last_updated timestamp from a Firebase timestamp to a Python datetime.
             # Firebase timestamps record to nanosecond precision whereas Python only record to microsecond precision,
