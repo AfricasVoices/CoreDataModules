@@ -8,12 +8,7 @@ try:
     from matplotlib.patches import Patch
     from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 
-    try:
-        # For Python 3.7+
-        import importlib.resources as resources
-    except ImportError:
-        # Use backport for Python 3.6
-        import importlib_resources as resources
+    import importlib.resources as resources
 except ImportError as e:
     raise ImportError("A mapping dependency couldn't be imported. To use the core_data_modules.analysis.mapping "
                       "module, make sure core_data_modules' `mapping` extra is installed") from e
