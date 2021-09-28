@@ -103,8 +103,14 @@ class Message(object):
         return Message.from_firebase_map(self.to_firebase_map())
 
     # TODO: Revisit the need for this once the TracedData objects-as-values problems are solved
-    def to_dict(self):
-        return self.to_firebase_map()
+    def to_dict(self, serialize_datetimes_to_str=False):
+        d = self.to_firebase_map()
+
+        if serialize_datetimes_to_str:
+            if "LastUpdated" in d:
+                d["LastUpdated"] = d["LastUpdated"].isoformat()
+
+        return d
 
     def get_latest_labels(self):
         """
