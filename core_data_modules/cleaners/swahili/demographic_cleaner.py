@@ -171,3 +171,37 @@ class DemographicCleaner(object):
     def clean_age(cls, text):
         """Aliases DemographicCleaner.clean_number"""
         return cls.clean_number(text)
+
+    @classmethod
+    def clean_age_within_range(cls, text, min_age_inclusive=10, max_age_inclusive=99):
+        """
+        Returns age if age is between the specified min and max acceptable ages, otherwise returns Codes.NOT_CODED
+
+        >>> DemographicCleaner.clean_age_within_range("24")
+        24
+        >>> DemographicCleaner.clean_age_within_range("I'm 24 years")
+        24
+        >>> DemographicCleaner.clean_age_within_range("102")
+        'NC'
+        >>> DemographicCleaner.clean_age_within_range("30", min_age_inclusive=45, max_age_inclusive=55)
+        'NC'
+        >>> DemographicCleaner.clean_age_within_range("30 years", min_age_inclusive=45, max_age_inclusive=55)
+        'NC'
+
+        :param text: Text to interpret age for then clamp to the given range.
+        :type text: str
+        :param min_age_inclusive: Minimum age to accept as valid.
+        :type min_age_inclusive: int
+        :param max_age_inclusive: Maximum age to accept as valid.
+        :type max_age_inclusive: int
+        :return: age if min_age_inclusive <= age <= max_age_inclusive else Codes.NOT_CODED
+        :rtype: int | Codes.NOT_CODED
+        """
+        age = cls.clean_age(text)
+        if age == Codes.NOT_CODED:
+            return age
+
+        if age < min_age_inclusive or age > max_age_inclusive:
+            return Codes.NOT_CODED
+
+        return age
