@@ -7,8 +7,7 @@ setup(
     url="https://github.com/AfricasVoices/CoreDataModules",
     packages=["core_data_modules"],
     setup_requires=["pytest-runner"],
-    install_requires=["protobuf<3.18.0", "google-auth<2", "pyparsing<3",  # Compatibility constraints for firebase_admin
-                      "firebase_admin", "python-dateutil", "pytz"],
+    install_requires=["firebase_admin", "python-dateutil", "pytz"],
     extras_require={
         "mapping": ["numpy", "pandas", "matplotlib<3.4.0", "geopandas", "descartes", "mapclassify"]
     },
