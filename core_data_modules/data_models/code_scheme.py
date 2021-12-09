@@ -87,6 +87,9 @@ class CodeScheme(object):
 
         return ret
 
+    def copy(self):
+        return CodeScheme.from_firebase_map(self.to_firebase_map())
+
     def _validate_code_values_unique(self, values, property_name):
         """
         Given a list of values from this scheme's codes, asserts that each is unique.
