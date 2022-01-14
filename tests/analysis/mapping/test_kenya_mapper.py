@@ -8,7 +8,7 @@ from matplotlib.testing.compare import compare_images
 
 from core_data_modules.analysis.mapping import kenya_mapper, mapping_utils
 
-_IMAGE_TOLERANCE = 0.0000001
+_IMAGE_TOLERANCE = 0.1
 
 
 class TestKenyaMapper(unittest.TestCase):
