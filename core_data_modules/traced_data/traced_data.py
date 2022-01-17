@@ -1,6 +1,6 @@
 import inspect
 import time
-from collections import Mapping, KeysView, ValuesView, ItemsView
+from collections.abc import Mapping, KeysView, ValuesView, ItemsView
 
 from core_data_modules.util import TimeUtils
 from core_data_modules.util.sha_utils import SHAUtils

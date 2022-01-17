@@ -1,4 +1,4 @@
-import collections
+import collections.abc
 import time
 import unittest
 
@@ -133,7 +133,7 @@ class TestTracedData(unittest.TestCase):
 
     def test___iter__(self):
         td = self.generate_test_data()
-        self.assertIsInstance(iter(td), collections.Iterator)
+        self.assertIsInstance(iter(td), collections.abc.Iterator)
         self.assertSetEqual(set(iter(td)), {"id", "phone", "gender"})
 
         self.append_test_data(td)
@@ -143,7 +143,7 @@ class TestTracedData(unittest.TestCase):
         td = self.generate_test_data()
 
         keys = td.keys()
-        self.assertIsInstance(keys, collections.KeysView)
+        self.assertIsInstance(keys, collections.abc.KeysView)
 
         # Test that the contents of the returned data are the same
         self.assertSetEqual(set(keys), {"id", "phone", "gender"})
@@ -167,7 +167,7 @@ class TestTracedData(unittest.TestCase):
         td = self.generate_test_data()
 
         values = td.values()
-        self.assertIsInstance(values, collections.ValuesView)
+        self.assertIsInstance(values, collections.abc.ValuesView)
 
         # Test that the contents of the returned data are the same
         self.assertSetEqual(set(values), {"0", "+441632000001", "man"})
@@ -185,7 +185,7 @@ class TestTracedData(unittest.TestCase):
         td = self.generate_test_data()
 
         items = td.items()
-        self.assertIsInstance(items, collections.ItemsView)
+        self.assertIsInstance(items, collections.abc.ItemsView)
         self.assertDictEqual(dict(td.items()),
                              dict([("id", "0"), ("phone", "+441632000001"), ("gender", "man")]))
 
@@ -263,7 +263,7 @@ class TestTracedData(unittest.TestCase):
             {"id": "A", "gender": "male", "age": 55, "country": "Kenya"}
         ]
         
-        self.assertEquals(len(merged_dicts), len(expected_dicts))
+        self.assertEqual(len(merged_dicts), len(expected_dicts))
 
         for merged, expected in zip(merged_dicts, expected_dicts):
             self.assertDictEqual(merged, expected)

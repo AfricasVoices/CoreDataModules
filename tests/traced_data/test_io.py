@@ -1,5 +1,4 @@
-# coding=utf-8
-import collections
+import collections.abc
 import filecmp
 import json
 import shutil
@@ -13,8 +12,8 @@ from core_data_modules.cleaners import Codes, english
 from core_data_modules.cleaners.cleaning_utils import CleaningUtils
 from core_data_modules.data_models import CodeScheme
 from core_data_modules.traced_data import Metadata, TracedData
-from core_data_modules.traced_data.io import TracedDataCSVIO, TracedDataJsonIO, \
-    _td_type_error_string, TracedDataCodaV2IO
+from core_data_modules.traced_data.io import (TracedDataCSVIO, TracedDataJsonIO,
+                                              _td_type_error_string, TracedDataCodaV2IO)
 
 
 def generate_traced_data_iterable():
@@ -359,7 +358,7 @@ class TestTracedDataCSVIO(unittest.TestCase):
                 TracedDataCSVIO.export_traced_data_iterable_to_csv(data[0], f)
                 self.fail("Exporting the wrong data type did not raise an assertion error")
             except AssertionError as e:
-                self.assertEquals(str(e), _td_type_error_string)
+                self.assertEqual(str(e), _td_type_error_string)
 
         # Test exporting normal data, including requesting an unknown header.
         data = generate_traced_data_iterable()
@@ -411,7 +410,7 @@ class TestTracedDataJsonIO(unittest.TestCase):
                 TracedDataJsonIO.export_traced_data_iterable_to_jsonl(data[0], f)
                 self.fail("Exporting the wrong data type did not raise an assertion error")
             except AssertionError as e:
-                self.assertEquals(str(e), _td_type_error_string)
+                self.assertEqual(str(e), _td_type_error_string)
 
         # Test normal export
         data = self.generate_test_data()
