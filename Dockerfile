@@ -1,8 +1,10 @@
 ARG PYTHON_VERSION
 FROM python:${PYTHON_VERSION}-slim
 
+RUN pip install pytest
+
 WORKDIR /app
-
 ADD . /app
+RUN pip install -e .[mapping]
 
-CMD python setup.py test --extras --addopts "--doctest-modules --junitxml=test_results.xml"
+CMD pytest --doctest-modules --junitxml=test_results.xml
