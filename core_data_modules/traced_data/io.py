@@ -401,7 +401,7 @@ class TracedDataCSVIO(object):
                 for key in td:
                     headers.add(key)
 
-        writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n")
+        writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n", quoting=csv.QUOTE_ALL)
         writer.writeheader()
 
         for td in data:

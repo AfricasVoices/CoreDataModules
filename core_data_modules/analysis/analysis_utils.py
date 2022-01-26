@@ -321,7 +321,7 @@ def write_csv(data, headers, f):
     :param f: File to write the CSV to.
     :type f: file-like
     """
-    writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n")
+    writer = csv.DictWriter(f, fieldnames=headers, lineterminator="\n", quoting=csv.QUOTE_ALL)
     writer.writeheader()
 
     for row in data:
