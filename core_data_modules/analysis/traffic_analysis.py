@@ -52,7 +52,7 @@ def compute_traffic_analysis(messages, consent_withdrawn_field, analysis_configu
         messages_with_opt_ins = len(opt_in_messages_in_time_range)
         relevant_messages = len(analysis_utils.filter_relevant(
             opt_in_messages_in_time_range, consent_withdrawn_field, analysis_configurations)
-        ),
+        )
 
         traffic_analysis.append({
             "Start Date": traffic_label.start_date.isoformat(),
