@@ -19,7 +19,9 @@ class TrafficLabel(object):
         self.label = label
 
 
-traffic_analysis_keys = ["Start Date", "End Date", "Label", "Messages with Opt-Ins", "Relevant Messages"]
+traffic_analysis_keys = [
+    "Start Date", "End Date", "Label", "Messages with Opt-Ins", "Relevant Messages", "Relevant Messages (%)"
+]
 
 
 def compute_traffic_analysis(messages, consent_withdrawn_field, analysis_configurations, time_field, traffic_labels):
