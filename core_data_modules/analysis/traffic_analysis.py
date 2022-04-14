@@ -1,6 +1,7 @@
 from dateutil.parser import isoparse
 
 from core_data_modules.analysis import analysis_utils
+from core_data_modules.analysis.analysis_utils import compute_percentage_str
 
 
 class TrafficLabel(object):
@@ -18,7 +19,9 @@ class TrafficLabel(object):
         self.label = label
 
 
-traffic_analysis_keys = ["Start Date", "End Date", "Label", "Messages with Opt-Ins", "Relevant Messages"]
+traffic_analysis_keys = [
+    "Start Date", "End Date", "Label", "Messages with Opt-Ins", "Relevant Messages", "Relevant Messages (%)"
+]
 
 
 def compute_traffic_analysis(messages, consent_withdrawn_field, analysis_configurations, time_field, traffic_labels):
@@ -46,14 +49,18 @@ def compute_traffic_analysis(messages, consent_withdrawn_field, analysis_configu
         opt_in_messages_in_time_range = [msg for msg in opt_in_messages if
                                          traffic_label.start_date <= isoparse(msg[time_field]) < traffic_label.end_date]
 
+        messages_with_opt_ins = len(opt_in_messages_in_time_range)
+        relevant_messages = len(analysis_utils.filter_relevant(
+            opt_in_messages_in_time_range, consent_withdrawn_field, analysis_configurations)
+        )
+
         traffic_analysis.append({
             "Start Date": traffic_label.start_date.isoformat(),
             "End Date": traffic_label.end_date.isoformat(),
             "Label": traffic_label.label,
-            "Messages with Opt-Ins": len(opt_in_messages_in_time_range),
-            "Relevant Messages": len(analysis_utils.filter_relevant(
-                opt_in_messages_in_time_range, consent_withdrawn_field, analysis_configurations)
-            )
+            "Messages with Opt-Ins": messages_with_opt_ins,
+            "Relevant Messages": relevant_messages,
+            "Relevant Messages (%)": compute_percentage_str(relevant_messages, messages_with_opt_ins)
         })
 
     return traffic_analysis
