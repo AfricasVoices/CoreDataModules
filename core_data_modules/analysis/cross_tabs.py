@@ -58,12 +58,14 @@ def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configurat
         config_1_normal_codes = _normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_1))
         config_2_normal_codes = _normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_2))
 
-        # Cross-tab analysis only supports individuals which have at most 1 normal code for now.
-        assert len(config_1_normal_codes) <= 1, config_1_normal_codes
-        assert len(config_2_normal_codes) <= 1, config_2_normal_codes
-
+        # Skip individuals that don't have a normal code in both datasets, because it's impossible to compute a
+        # cross-tab for these individuals.
         if len(config_1_normal_codes) == 0 or len(config_2_normal_codes) == 0:
             continue
+
+        # Cross-tab analysis only supports individuals which have 1 normal code for now.
+        assert len(config_1_normal_codes) == 1, config_1_normal_codes
+        assert len(config_2_normal_codes) == 1, config_2_normal_codes
 
         cross_tab_key = (config_1_normal_codes[0].string_value, config_2_normal_codes[0].string_value)
         cross_tab_counts[cross_tab_key][_NUMBER_OF_INDIVIDUALS_HEADER] += 1
