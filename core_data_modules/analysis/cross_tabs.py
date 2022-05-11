@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 from core_data_modules.analysis import analysis_utils
-from core_data_modules.analysis.analysis_utils import get_codes_from_td
 from core_data_modules.data_models import CodeTypes
 
 _NUMBER_OF_INDIVIDUALS_HEADER = "Number of Individuals"
@@ -56,8 +55,8 @@ def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configurat
     # Count up all the individuals in each category.
     individuals = analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field)
     for ind in individuals:
-        config_1_normal_codes = _normal_codes(get_codes_from_td(ind, analysis_configuration_1))
-        config_2_normal_codes = _normal_codes(get_codes_from_td(ind, analysis_configuration_2))
+        config_1_normal_codes = _normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_1))
+        config_2_normal_codes = _normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_2))
 
         # Cross-tab analysis only supports individuals which have at most 1 normal code for now.
         assert len(config_1_normal_codes) <= 1, config_1_normal_codes
