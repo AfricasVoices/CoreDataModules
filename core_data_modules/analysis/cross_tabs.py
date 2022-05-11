@@ -42,13 +42,13 @@ def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configurat
 
     # Initialise the cross_tab_counts dict with all the possible combinations in the 2 given code schemes, with counts
     # initially set to 0.
-    for code_1 in _normal_codes(analysis_configuration_1.code_scheme.codes):
-        for code_2 in _normal_codes(analysis_configuration_2.code_scheme.codes):
+    for config_1_code in _normal_codes(analysis_configuration_1.code_scheme.codes):
+        for config_2_code in _normal_codes(analysis_configuration_2.code_scheme.codes):
             # Assign the count dict for this pair of codes
             # e.g. { "gender": "man", "age_category": "10_to_14", "Number of Individuals": 0 }
-            cross_tab_counts[(code_1.string_value, code_2.string_value)] = {
-                analysis_configuration_1.dataset_name: code_1.string_value,
-                analysis_configuration_2.dataset_name: code_2.string_value,
+            cross_tab_counts[(config_1_code.string_value, config_2_code.string_value)] = {
+                analysis_configuration_1.dataset_name: config_1_code.string_value,
+                analysis_configuration_2.dataset_name: config_2_code.string_value,
                 _NUMBER_OF_INDIVIDUALS_HEADER: 0
             }
 
@@ -71,17 +71,17 @@ def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configurat
         cross_tab_counts[cross_tab_key][_NUMBER_OF_INDIVIDUALS_HEADER] += 1
 
     # Compute percentages
-    for code_1 in _normal_codes(analysis_configuration_1.code_scheme.codes):
+    for config_1_code in _normal_codes(analysis_configuration_1.code_scheme.codes):
         # Count the total number of individuals with code_1
         code_1_total = 0
-        for code_2 in _normal_codes(analysis_configuration_2.code_scheme.codes):
-            cross_tab_key = (code_1.string_value, code_2.string_value)
+        for config_2_code in _normal_codes(analysis_configuration_2.code_scheme.codes):
+            cross_tab_key = (config_1_code.string_value, config_2_code.string_value)
             code_1_total += cross_tab_counts[cross_tab_key][_NUMBER_OF_INDIVIDUALS_HEADER]
 
         # For each code 2, compute the percentage occurrence of this code within the other code 2s for this code 1.
         # For example, compute the percentage distributions of gender for each age-range.
-        for code_2 in _normal_codes(analysis_configuration_2.code_scheme.codes):
-            cross_tab_key = (code_1.string_value, code_2.string_value)
+        for config_2_code in _normal_codes(analysis_configuration_2.code_scheme.codes):
+            cross_tab_key = (config_1_code.string_value, config_2_code.string_value)
             pair_count = cross_tab_counts[cross_tab_key][_NUMBER_OF_INDIVIDUALS_HEADER]
             percent_key = f"{analysis_configuration_2.dataset_name} / {analysis_configuration_1.dataset_name} (%)"
             cross_tab_counts[cross_tab_key][percent_key] = analysis_utils.compute_percentage_str(pair_count, code_1_total)
