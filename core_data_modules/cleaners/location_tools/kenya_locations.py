@@ -28,8 +28,8 @@ class KenyaLocations(object):
         return text in KenyaCodes.WARDS or text in KenyaCodes.CONSTITUENCIES or \
                text in KenyaCodes.COUNTIES
 
-    @staticmethod
-    def ward_for_location_code(location_code):
+    @classmethod
+    def ward_for_location_code(cls, location_code):
         """
         Returns the Kenya ward for the provided Kenya location code.
 
@@ -50,27 +50,6 @@ class KenyaLocations(object):
 
         return Codes.NOT_CODED
 
-    @staticmethod
-    def constituency_for_location_code(location_code):
-        """
-        Returns the Kenya constituency for the provided Kenya location code.
-
-        The provided code may be a Kenya constituency only.
-
-        >>> KenyaLocations.constituency_for_location_code(KenyaCodes.NORTH_IMENTI)
-        'north imenti'
-        >>> KenyaLocations.constituency_for_location_code(KenyaCodes.NAIROBI)
-        'NC'
-
-        :param location_code: A Kenya constituency code
-        :type location_code: str
-        :return: Kenya constituency or Codes.NOT_CODED
-        :rtype: str
-        """
-        if location_code in KenyaCodes.CONSTITUENCIES:
-            return location_code
-
-        return Codes.NOT_CODED
 
     @classmethod
     def constituency_for_location_code(cls, location_code):
