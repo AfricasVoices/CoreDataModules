@@ -384,7 +384,7 @@ class KenyaCodes(object):
     UPPER_KAEWA_IVETI = "upper kaewa/iveti"
     WAMUNYU = "wamuyu"
 
- WARD_TO_CONSTITUENCY_MAP = {
+WARD_TO_CONSTITUENCY_MAP = {
         KIVAA: MASINGA,
         MASINGA_CENTRAL: MASINGA,
         EKALAKALA: MASINGA,
