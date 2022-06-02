@@ -342,7 +342,92 @@ class KenyaCodes(object):
     WUNDANYI = "wundanyi"
     YATTA = "yatta"
 
-    CONSTITUENCY_TO_COUNTY_MAP = {
+    # Kenya Wards
+    ATHI_RIVER = "athi river"
+    EKALAKALA = "ekalakala"
+    IKOMBE = "ikombe"
+    KATANGI = "katangi"
+    KANGUNDO_NORTH = "kangundo north"
+    KANGUNDO_CENTRAL = "kangundo central"
+    KANGUNDO_EAST = "kangundo east"
+    KANGUNDO_WEST = "kangundo west"
+    KITHIMANI = "kithimani"
+    KATHIANI_CENTRAL = "kathiani central"
+    KYELENI = "kyeleni"
+    KOLA = "kola"
+    KIBAUNI = "kibauni"
+    KALAMA = "kalama"
+    KINANIE = "kinanie"
+    KIVAA = "kivaa"
+    LOWER_KAEWA_KAANI = "lower kaewa/kaani"
+    MATUU = "matuu"
+    MATUNGULU_NORTH = "matungulu north"
+    MATUNGULU_EAST = "matungulu east"
+    MATUNGULU_WEST = "matungulu west"
+    MITABONI = "mitaboni"
+    MUA = "mua"
+    MUTITUNI = "mutituni"
+    MACHAKOS_CENTRAL = "machakos central"
+    MUMBUNI_NORTH = "mumbuni north"
+    MUVUTINI_KIIMA_KIMWE = "muvutini/kiima-kimwe"
+    MBIUNI = "mbiuni"
+    MAKUTANO = "makutano"
+    MASII = "makutano"
+    MUTHETHENI = "muthetheni"
+    MASINGA_CENTRAL = "masinga central"
+    MUTHESYA = "muthesya"
+    MUTHWANI = "muthwani"
+    NDITHINI = "ndithini"
+    NDALANI = "ndalani"
+    SYOKIMAU_MULOLONGO = "syokimau/mulolongo"
+    TALA = "tala"
+    UPPER_KAEWA_IVETI = "upper kaewa/iveti"
+    WAMUNYU = "wamuyu"
+
+ WARD_TO_CONSTITUENCY_MAP = {
+        KIVAA: MASINGA,
+        MASINGA_CENTRAL: MASINGA,
+        EKALAKALA: MASINGA,
+        MUTHESYA: MASINGA,
+        NDITHINI: MASINGA,
+        NDALANI: YATTA,
+        MATUU: YATTA,
+        KITHIMANI: YATTA,
+        IKOMBE: YATTA,
+        KATANGI:YATTA,
+        KANGUNDO_NORTH: KANGUNDO,
+        KANGUNDO_CENTRAL: KANGUNDO,
+        KANGUNDO_EAST: KANGUNDO,
+        KANGUNDO_WEST: KANGUNDO,
+        MATUNGULU_NORTH: MATUNGULU,
+        MATUNGULU_EAST: MATUNGULU,
+        MATUNGULU_WEST: MATUNGULU,
+        KYELENI: MATUNGULU,
+        TALA: MATUNGULU,
+        MITABONI: KATHIANI,
+        KATHIANI_CENTRAL: KATHIANI,
+        UPPER_KAEWA_IVETI: KATHIANI,
+        LOWER_KAEWA_KAANI: KATHIANI,
+        ATHI_RIVER: MAVOKO,
+        KINANIE: MAVOKO,
+        MUTHWANI: MAVOKO,
+        SYOKIMAU_MULOLONGO: MAVOKO,
+        KALAMA: MACHAKOS_TOWN,
+        MUA: MACHAKOS_TOWN,
+        MUTITUNI: MACHAKOS_TOWN,
+        MACHAKOS_CENTRAL: MACHAKOS_TOWN,
+        MUMBUNI_NORTH: MACHAKOS_TOWN,
+        MUVUTINI_KIIMA_KIMWE: MACHAKOS_TOWN,
+        KOLA: MACHAKOS_TOWN,
+        MBIUNI: MWALA,
+        MAKUTANO: MWALA,
+        MASII: MWALA,
+        MUTHETHENI: MWALA,
+        WAMUNYU: MWALA,
+        KIBAUNI: MWALA
+  }
+
+CONSTITUENCY_TO_COUNTY_MAP = {
         CHANGAMWE: MOMBASA,
         JOMVU: MOMBASA,
         KISAUNI: MOMBASA,
@@ -635,6 +720,8 @@ class KenyaCodes(object):
         MATHARE: NAIROBI
     }
 
-    CONSTITUENCIES = list(CONSTITUENCY_TO_COUNTY_MAP.keys())
+WARDS = list(WARD_TO_CONSTITUENCY_MAP.keys())
 
-    COUNTIES = list(set(CONSTITUENCY_TO_COUNTY_MAP.values()))
+CONSTITUENCIES = list(CONSTITUENCY_TO_COUNTY_MAP.keys())
+
+COUNTIES = list(set(CONSTITUENCY_TO_COUNTY_MAP.values()))
