@@ -6,7 +6,7 @@ class KenyaLocations(object):
     @classmethod
     def is_location_code(cls, text):
         """
-        Returns True if the given location argument matches a kenya constituency or county
+        Returns True if the given location argument matches a kenya ward, constituency or county
         code; False otherwise.
 
         >>> KenyaLocations.is_location_code('nairobi')
@@ -25,8 +25,30 @@ class KenyaLocations(object):
         :return: Whether or not location matches a known kenya location code
         :rtype: bool
         """
-        return text in KenyaCodes.CONSTITUENCIES or \
+        return text in KenyaCodes.WARDS or KenyaCodes.CONSTITUENCIES or \
                text in KenyaCodes.COUNTIES
+
+    @staticmethod
+    def ward_for_location_code(location_code):
+        """
+        Returns the Kenya ward for the provided Kenya location code.
+
+        The provided code may be a Kenya constituency only.
+
+        >>> KenyaLocations.ward_for_location_code(KenyaCodes.KIVAA)
+        'kivaa'
+        >>> KenyaLocations.ward_for_location_code(KenyaCodes.NAIROBI)
+        'NC'
+
+        :param location_code: A Kenya ward code
+        :type location_code: str
+        :return: Kenya ward or Codes.NOT_CODED
+        :rtype: str
+        """
+        if location_code in KenyaCodes.WARDS:
+            return location_code
+
+        return Codes.NOT_CODED
 
     @staticmethod
     def constituency_for_location_code(location_code):
@@ -45,6 +67,35 @@ class KenyaLocations(object):
         :return: Kenya constituency or Codes.NOT_CODED
         :rtype: str
         """
+        if location_code in KenyaCodes.CONSTITUENCIES:
+            return location_code
+
+        return Codes.NOT_CODED
+
+    @classmethod
+    def constituency_for_location_code(cls, location_code):
+        """
+        Returns the constituency for the provided Kenya location code.
+
+        The provided code may be a Kenya ward or a constituency.
+
+        >>> KenyaLocations.constituency_for_location_code(KenyaCodes.KIVAA)
+        'masinga'
+        >>> KenyaLocations.constituency_for_location_code(KenyaCodes.MASINGA)
+        'masinga'
+
+        :param location_code: A Kenya ward or constituency code
+        :type location_code: str
+        :return: A kenyan constituency code or Codes.NOT_CODED
+        :rtype: str
+        """
+        ward = cls.ward_for_location_code(location_code)
+        if ward != Codes.NOT_CODED:
+            location_code = ward
+
+        if location_code in KenyaCodes.WARDS:
+            return KenyaCodes.WARD_TO_CONSTITUENCY_MAP[location_code]
+
         if location_code in KenyaCodes.CONSTITUENCIES:
             return location_code
 
