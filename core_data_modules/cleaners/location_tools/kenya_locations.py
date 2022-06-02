@@ -25,7 +25,7 @@ class KenyaLocations(object):
         :return: Whether or not location matches a known kenya location code
         :rtype: bool
         """
-        return text in KenyaCodes.WARDS or KenyaCodes.CONSTITUENCIES or \
+        return text in KenyaCodes.WARDS or text in KenyaCodes.CONSTITUENCIES or \
                text in KenyaCodes.COUNTIES
 
     @staticmethod
