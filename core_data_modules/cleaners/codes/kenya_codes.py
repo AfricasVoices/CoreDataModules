@@ -343,6 +343,7 @@ class KenyaCodes(object):
     YATTA = "yatta"
 
     # Kenya Wards
+    # Machakos County Wards, src: https://kenyayote.com/iebc-machakos-county-registered-voters-constituency-wards/
     ATHI_RIVER = "athi river"
     EKALAKALA = "ekalakala"
     IKOMBE = "ikombe"
@@ -384,6 +385,8 @@ class KenyaCodes(object):
     UPPER_KAEWA_IVETI = "upper kaewa/iveti"
     WAMUNYU = "wamuyu"
 
+    # Machakos wards -> consituency map
+    # Todo: update the rest of the wards
     WARD_TO_CONSTITUENCY_MAP = {
             KIVAA: MASINGA,
             MASINGA_CENTRAL: MASINGA,
