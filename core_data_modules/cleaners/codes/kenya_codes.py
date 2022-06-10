@@ -373,7 +373,7 @@ class KenyaCodes(object):
     MUVUTINI_KIIMA_KIMWE = "muvutini/kiima-kimwe"
     MBIUNI = "mbiuni"
     MAKUTANO = "makutano"
-    MASII = "makutano"
+    MASII = "masii"
     MUTHETHENI = "muthetheni"
     MASINGA_CENTRAL = "masinga central"
     MUTHESYA = "muthesya"
