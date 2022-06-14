@@ -1,5 +1,6 @@
 class KenyaCodes(object):
-    KENYAN_TELEPHONE = "kenyan telephone"
+    KENYAN_TELEPHONE = "kenyan telephone"  # all telephone numbers.
+    KENYAN_MOBILE = "kenyan mobile"  # mobile telephone numbers only.
 
     # Counties
     BARINGO = "baringo"
