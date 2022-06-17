@@ -65,7 +65,7 @@ class KenyaLocations(object):
 
         :param location_code: A Kenya ward or constituency code
         :type location_code: str
-        :return: A kenyan constituency code or Codes.NOT_CODED
+        :return: Kenya constituency or Codes.NOT_CODED
         :rtype: str
         """
         ward = cls.ward_for_location_code(location_code)
