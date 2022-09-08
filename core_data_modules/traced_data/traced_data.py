@@ -386,6 +386,8 @@ class TracedData(Mapping):
         assert dict(self) == dict(deserialized_traced_data)
         assert self._sha == deserialized_traced_data._sha
 
+        print(serialized_history)
+
         return serialized_history
 
     @classmethod
