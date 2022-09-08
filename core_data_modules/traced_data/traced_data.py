@@ -384,7 +384,7 @@ class TracedData(Mapping):
         # Check that the SHAs are valid and this serialized history can be correctly deserialized
         deserialized_traced_data = self.deserialize(serialized_history)
         assert dict(self) == dict(deserialized_traced_data)
-        assert traced_data._sha == deserialized_traced_data._sha
+        assert self._sha == deserialized_traced_data._sha
 
         return serialized_history
 
