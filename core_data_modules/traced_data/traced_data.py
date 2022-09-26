@@ -381,6 +381,11 @@ class TracedData(Mapping):
             )
             traced_data = traced_data._prev
 
+        # Check that the SHAs are valid and this serialized history can be correctly deserialized
+        deserialized_traced_data = TracedData.deserialize(serialized_history)
+        assert dict(self) == dict(deserialized_traced_data)
+        assert self._sha == deserialized_traced_data._sha
+
         return serialized_history
 
     @classmethod
@@ -388,7 +393,7 @@ class TracedData(Mapping):
         traced_data = None
 
         for d in reversed(serialized_history):
-            data = d["Data"]
+            data = d["Data"].copy()
             for k, v in d["NestedTracedData"].items():
                 data[k] = cls.deserialize(v)
             sha = d["SHA"]
