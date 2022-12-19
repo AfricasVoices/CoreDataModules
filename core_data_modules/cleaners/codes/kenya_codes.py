@@ -1376,7 +1376,7 @@ class KenyaCodes(object):
     NAMAMALI = "namamali"
     MARAMA_WEST = "marama west"
     MARAMA_CENTRAL = "marama central"
-    MARENYO_SHIANDA = "marenyo - shianda"
+    MARENYO_SHIANDA = "marenyo-shianda"
     MARAMA_NORTH = "marama north"
     MARAMA_SOUTH = "marama south"
     KISA_NORTH = "kisa north"
