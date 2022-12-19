@@ -2132,7 +2132,7 @@ class KenyaCodes(object):
         MATHARE: NAIROBI
     }
 
-    WARDS = list(WARD_TO_CONSTITUENCY_MAP.keys())
+    # WARDS = list(WARD_TO_CONSTITUENCY_MAP.keys())
 
     CONSTITUENCIES = list(CONSTITUENCY_TO_COUNTY_MAP.keys())
 
