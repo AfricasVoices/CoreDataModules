@@ -83,6 +83,7 @@ class KenyaCodes(object):
     CHEPALUNGU = "chepalungu"
     CHERANGANY = "cherangany"
     CHESUMEI = "chesumei"
+    CHUKA_IGAMBANG_OMBE = "chuka/igambang'ombe"
     DADAAB = "dadaab"
     DAGORETTI_NORTH = "dagoretti north"
     DAGORETTI_SOUTH = "dagoretti south"
@@ -112,7 +113,6 @@ class KenyaCodes(object):
     GITHUNGURI = "githunguri"
     HAMISI = "hamisi"
     HOMA_BAY_TOWN = "homa bay town"
-    IGAMBANG_OMBE = "igambang'ombe"
     IGEMBE_CENTRAL = "igembe central"
     IGEMBE_NORTH = "igembe north"
     IGEMBE_SOUTH = "igembe south"
@@ -231,7 +231,6 @@ class KenyaCodes(object):
     MAVOKO = "mavoko"
     MBEERE_NORTH = "mbeere north"
     MBEERE_SOUTH = "mbeere south"
-    MBITA = "mbita"
     MBOONI = "mbooni"
     MOGOTIO = "mogotio"
     MOIBEN = "moiben"
@@ -304,7 +303,8 @@ class KenyaCodes(object):
     SOUTH_MUGIRANGO = "south mugirango"
     SOY = "soy"
     STAREHE = "starehe"
-    SUBA = "suba"
+    SUBA_NORTH_MBITA = "suba north/mbita"
+    SUBA_SOUTH = "suba south"
     SUBUKIA = "subukia"
     SUNA_EAST = "suna east"
     SUNA_WEST = "suna west"
@@ -1900,7 +1900,7 @@ class KenyaCodes(object):
         CENTRAL_IMENTI: MERU,
         SOUTH_IMENTI: MERU,
         MAARA: THARAKA_NITHI,
-        IGAMBANG_OMBE: THARAKA_NITHI,
+        CHUKA_IGAMBANG_OMBE: THARAKA_NITHI,
         THARAKA: THARAKA_NITHI,
         MANYATTA: EMBU,
         RUNYENJES: EMBU,
@@ -2090,8 +2090,8 @@ class KenyaCodes(object):
         RANGWE: HOMA_BAY,
         HOMA_BAY_TOWN: HOMA_BAY,
         NDHIWA: HOMA_BAY,
-        MBITA: HOMA_BAY,
-        SUBA: HOMA_BAY,
+        SUBA_NORTH_MBITA: HOMA_BAY,
+        SUBA_SOUTH: HOMA_BAY,
         RONGO: MIGORI,
         AWENDO: MIGORI,
         SUNA_EAST: MIGORI,
