@@ -1169,7 +1169,7 @@ class KenyaCodes(object):
     MANDA_SHIVANGA = "manda-shivanga"
     MANGA = "manga"
     MANG_U = "mang'u"
-    MANYATTA_B = "manyatta 'b'"
+    MANYATTA_B = "manyatta b"
     MARA = "mara"
     MARACHI_CENTRAL = "marachi central"
     MARACHI_EAST = "marachi east"
