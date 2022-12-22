@@ -351,7 +351,7 @@ class KenyaCodes(object):
     ADAMASAJIDE = "adamasajide"
     ADU = "adu"
     AGENG_A_NANGUBA = "ageng'a nanguba"
-    AGUTHI_GAAKI = "aguthi-gaaki"
+    AGUTHI_GAAKI = "aguthi gaaki"
     AHERO = "ahero"
     AINABKOI_OLARE = "ainabkoi/olare"
     AINAMOI = "ainamoi"
@@ -406,11 +406,11 @@ class KenyaCodes(object):
     BASUBA = "basuba"
     BATALU = "batalu"
     BATEI = "batei"
-    BENANE_LAGDERA = "benane-lagdera"
-    BENANE_WAJIR_SOUTH = "benane-wajir south"
-    BIASHARA_NAIVASHA = "biashara-naivasha"
-    BIASHARA_NAKURU_TOWN_EAST = "biashara-nakuru town east"
-    BIASHARA_RUIRU = "biashara-ruiru"
+    BENANE_LAGDERA = "benane lagdera"
+    BENANE_WAJIR_SOUTH = "benane wajir south"
+    BIASHARA_NAIVASHA = "biashara naivasha"
+    BIASHARA_NAKURU_TOWN_EAST = "biashara nakuru town east"
+    BIASHARA_RUIRU = "biashara ruiru"
     BIBIRIONI = "bibirioni"
     BIDII = "bidii"
     BIRONGO = "birongo"
@@ -457,8 +457,8 @@ class KenyaCodes(object):
     BUNYALA_WEST_BUDALANGI = "bunyala west"
     BUNYALA_WEST_NAVAKHOLO = "bunyala west"
     BURAT = "burat"
-    BURA_FAFI = "bura-fafi"
-    BURA_MWATATE = "bura-mwatate"
+    BURA_FAFI = "bura fafi"
+    BURA_MWATATE = "bura mwatate"
     BURDER = "burder"
     BURUMBA = "burumba"
     BUSALI = "busali"
@@ -477,12 +477,12 @@ class KenyaCodes(object):
     CENTRAL_GEM = "central gem"
     CENTRAL_KAMAGAMBO = "central kamagambo"
     CENTRAL_KANYAMKAGO = "central kanyamkago"
-    CENTRAL_KARACHUONYO = "central-karachuonyo"
+    CENTRAL_KARACHUONYO = "central karachuonyo"
     CENTRAL_KASIPUL = "central kasipul"
     CENTRAL_KISUMU = "central kisumu"
     CENTRAL_MARAGOLI = "central maragoli"
-    CENTRAL_MWINGI_CENTRAL = "central-mwingi central"
-    CENTRAL_NDARAGWA = "central-ndaragwa"
+    CENTRAL_MWINGI_CENTRAL = "central mwingi central"
+    CENTRAL_NDARAGWA = "central ndaragwa"
     CENTRAL_NYAKACH = "central nyakach"
     CENTRAL_SAKWA_AWENDO = "central sakwa"
     CENTRAL_SAKWA_BONDO = "central sakwa"
@@ -587,7 +587,7 @@ class KenyaCodes(object):
     ELUGULU = "elugulu"
     ELWAK_NORTH = "elwak north"
     ELWAK_SOUTH = "elwak south"
-    EL_BARTA = "el-barta"
+    EL_BARTA = "el barta"
     EMABUNGO = "emabungo"
     EMALI_MULALA = "emali/mulala"
     EMBAKASI = "embakasi"
@@ -650,8 +650,8 @@ class KenyaCodes(object):
     GITARU = "gitaru"
     GITHABAI = "githabai"
     GITHER = "gither"
-    GITHIGA_GITHUNGURI = "githiga-githunguri"
-    GITHIGA_LAIKIPIA_WEST = "githiga-laikipia west"
+    GITHIGA_GITHUNGURI = "githiga githunguri"
+    GITHIGA_LAIKIPIA_WEST = "githiga laikipia west"
     GITHIORO = "githioro"
     GITHOBOKONI = "githobokoni"
     GITHUNGURI = "githunguri"
@@ -684,12 +684,12 @@ class KenyaCodes(object):
     HOMA_BAY_EAST = "homa bay east"
     HOMA_BAY_WEST = "homa bay west"
     HONGWE = "hongwe"
-    HOSPITAL_KIMININI = "hospital-kiminini"
-    HOSPITAL_MATHARE = "hospital-mathare"
-    HOSPITAL_THIKA_TOWN = "hospital-thika town"
+    HOSPITAL_KIMININI = "hospital kiminini"
+    HOSPITAL_MATHARE = "hospital mathare"
+    HOSPITAL_THIKA_TOWN = "hospital thika town"
     HULUGHO = "hulugho"
-    HURUMA_MATHARE = "huruma-mathare"
-    HURUMA_TURBO = "huruma-turbo"
+    HURUMA_MATHARE = "huruma mathare"
+    HURUMA_TURBO = "huruma turbo"
     IBENO = "ibeno"
     IBRAHIM_URE = "ibrahim ure"
     ICHAGAKI = "ichagaki"
@@ -710,8 +710,8 @@ class KenyaCodes(object):
     IKOMBE = "ikombe"
     IKUTHA = "ikutha"
     ILCHAMUS = "ilchamus"
-    ILDAMAT_KAJIADO_CENTRAL = "ildamat-kajiado central"
-    ILDAMAT_NAROK_EAST = "ildamat-narok east"
+    ILDAMAT_KAJIADO_CENTRAL = "ildamat kajiado central"
+    ILDAMAT_NAROK_EAST = "ildamat narok east"
     ILIMA = "ilima"
     ILKERIN = "ilkerin"
     ILLERET = "illeret"
@@ -719,10 +719,10 @@ class KenyaCodes(object):
     ILOODOKILANI = "iloodokilani"
     IMARA_DAIMA = "imara daima"
     IMARORO = "imaroro"
-    INGOSTSE_MATHIA = "ingostse-mathia"
+    INGOSTSE_MATHIA = "ingostse mathia"
     INOI = "inoi"
     IRIAINI = "iriaini"
-    IRIA_INI = "iria-ini"
+    IRIA_INI = "iria ini"
     ISIBANIA = "isibania"
     ISUKHA_CENTRAL = "isukha central"
     ISUKHA_EAST = "isukha east"
@@ -769,7 +769,7 @@ class KenyaCodes(object):
     KAGAARI_NORTH = "kagaari north"
     KAGAARI_SOUTH = "kagaari south"
     KAGAN = "kagan"
-    KAGUNDU_INI = "kagundu-ini"
+    KAGUNDU_INI = "kagundu ini"
     KAHAWA = "kahawa"
     KAHAWA_SUKARI = "kahawa sukari"
     KAHAWA_WENDANI = "kahawa wendani"
@@ -789,8 +789,8 @@ class KenyaCodes(object):
     KALIMONI = "kalimoni"
     KALOBEYEI = "kalobeyei"
     KALOKOL = "kalokol"
-    KALOLENI_KALOLENI = "kaloleni-kaloleni"
-    KALOLENI_VOI = "kaloleni-voi"
+    KALOLENI_KALOLENI = "kaloleni kaloleni"
+    KALOLENI_VOI = "kaloleni voi"
     KAMACHARIA = "kamacharia"
     KAMAGUT = "kamagut"
     KAMAHUHA = "kamahuha"
@@ -822,7 +822,7 @@ class KenyaCodes(object):
     KANYANGI = "kanyangi"
     KANYASA = "kanyasa"
     KANYEKINI = "kanyekini"
-    KANYENYA_INI = "kanyenya-ini"
+    KANYENYA_INI = "kanyenya ini"
     KANYIKELA = "kanyikela"
     KANZIKO = "kanziko"
     KAPCHEMUTWA = "kapchemutwa"
@@ -834,16 +834,16 @@ class KenyaCodes(object):
     KAPKATENY = "kapkateny"
     KAPKATET = "kapkatet"
     KAPKUGERWET = "kapkugerwet"
-    KAPKURES_NAKURU_TOWN_WEST = "kapkures-nakuru town west"
-    KAPKURES_SOY = "kapkures-soy"
+    KAPKURES_NAKURU_TOWN_WEST = "kapkures nakuru town west"
+    KAPKURES_SOY = "kapkures soy"
     KAPLAMAI = "kaplamai"
     KAPLELARTET = "kaplelartet"
     KAPLETUNDO = "kapletundo"
     KAPOMBOI = "kapomboi"
     KAPROPITA = "kapropita"
     KAPSABET = "kapsabet"
-    KAPSAOS_AINAMOI = "kapsaos-ainamoi"
-    KAPSAOS_TURBO = "kapsaos-turbo"
+    KAPSAOS_AINAMOI = "kapsaos ainamoi"
+    KAPSAOS_TURBO = "kapsaos turbo"
     KAPSASIAN = "kapsasian"
     KAPSIMOTWO = "kapsimotwo"
     KAPSOIT = "kapsoit"
@@ -855,7 +855,7 @@ class KenyaCodes(object):
     KAPTARAKWA = "kaptarakwa"
     KAPTEL_KAMOIYWO = "kaptel/kamoiywo"
     KAPTEMBWO = "kaptembwo"
-    KAPTUMO_KABOI = "kaptumo-kaboi"
+    KAPTUMO_KABOI = "kaptumo kaboi"
     KAPUTIEI_NORTH = "kaputiei north"
     KAPUTIR = "kaputir"
     KAPYEGO = "kapyego"
@@ -895,22 +895,22 @@ class KenyaCodes(object):
     KAYOLE_SOUTH = "kayole south"
     KEDOWA_KIMUGUL = "kedowa/kimugul"
     KEE = "kee"
-    KEEKONYOKIE_KAJIADO_WEST = "keekonyokie-kajiado west"
-    KEEKONYOKIE_NAROK_EAST = "keekonyokie-narok east"
+    KEEKONYOKIE_KAJIADO_WEST = "keekonyokie kajiado west"
+    KEEKONYOKIE_NAROK_EAST = "keekonyokie narok east"
     KEGOGI = "kegogi"
     KEIYO = "keiyo"
     KEMBU = "kembu"
-    KEMELOI_MARABA = "kemeloi-maraba"
+    KEMELOI_MARABA = "kemeloi maraba"
     KEMERA = "kemera"
     KENDU_BAY_TOWN = "kendu bay town"
-    KENYAWA_POKA = "kenyawa-poka"
+    KENYAWA_POKA = "kenyawa poka"
     KERINGET = "keringet"
     KERIO_DELTA = "kerio delta"
     KERUGOYA = "kerugoya"
     KEUMBU = "keumbu"
     KEYIAN = "keyian"
-    KHALABA_KANDUYI = "khalaba-kanduyi"
-    KHALABA_MATUNGU = "khalaba-matungu"
+    KHALABA_KANDUYI = "khalaba kanduyi"
+    KHALABA_MATUNGU = "khalaba matungu"
     KHALALIO = "khalalio"
     KHASOKO = "khasoko"
     KHOLERA = "kholera"
@@ -936,7 +936,7 @@ class KenyaCodes(object):
     KIGUMO = "kigumo"
     KIHARA = "kihara"
     KIHINGO = "kihingo"
-    KIHUMBU_INI = "kihumbu-ini"
+    KIHUMBU_INI = "kihumbu ini"
     KIIMA_KIU_KALANZONI = "kiima kiu/kalanzoni"
     KIINE = "kiine"
     KIIRUA_NAARI = "kiirua/naari"
@@ -1038,7 +1038,7 @@ class KenyaCodes(object):
     KOSIRAI = "kosirai"
     KOTARUK_LOBEI = "kotaruk/lobei"
     KOYONZO = "koyonzo"
-    KOYO_NDURIO = "koyo-ndurio"
+    KOYO_NDURIO = "koyo ndurio"
     KUBO_SOUTH = "kubo south"
     KUINET_KAPSUSWA = "kuinet/kapsuswa"
     KUKU = "kuku"
@@ -1076,8 +1076,8 @@ class KenyaCodes(object):
     LAPUR = "lapur"
     LARE = "lare"
     LARI_KIRENGA = "lari/kirenga"
-    LELAN_MARAKWET_WEST = "lelan-marakwet west"
-    LELAN_POKOT_SOUTH = "lelan-pokot south"
+    LELAN_MARAKWET_WEST = "lelan marakwet west"
+    LELAN_POKOT_SOUTH = "lelan pokot south"
     LELMOKWO_NGECHEK = "lelmokwo/ngechek"
     LEMBUS = "lembus"
     LEMBUS_KWEN = "lembus kwen"
@@ -1116,7 +1116,7 @@ class KenyaCodes(object):
     LUANDA_SOUTH = "luanda south"
     LUANDA_TOWNSHIP = "luanda township"
     LUCKY_SUMMER = "lucky summer"
-    LUGAGA_WAMULUMA = "lugaga-wamuluma"
+    LUGAGA_WAMULUMA = "lugaga wamuluma"
     LUGARI = "lugari"
     LUMAKANDA = "lumakanda"
     LUSHEYA_LUBINU = "lusheya/lubinu"
@@ -1166,10 +1166,10 @@ class KenyaCodes(object):
     MALINDI_TOWN = "malindi town"
     MALKAGUFU = "malkagufu"
     MALKAMARI = "malkamari"
-    MANDA_SHIVANGA = "manda-shivanga"
+    MANDA_SHIVANGA = "manda shivanga"
     MANGA = "manga"
     MANG_U = "mang'u"
-    MANYATTA_B = "manyatta 'b'"
+    MANYATTA_B = "manyatta b"
     MARA = "mara"
     MARACHI_CENTRAL = "marachi central"
     MARACHI_EAST = "marachi east"
@@ -1184,7 +1184,7 @@ class KenyaCodes(object):
     MARAMA_SOUTH = "marama south"
     MARAMA_WEST = "marama west"
     MARANI = "marani"
-    MARENYO_SHIANDA = "marenyo-shianda"
+    MARENYO_SHIANDA = "marenyo shianda"
     MARIAKANI = "mariakani"
     MARIANI = "mariani"
     MARIASHONI = "mariashoni"
@@ -1235,8 +1235,8 @@ class KenyaCodes(object):
     MBEU = "mbeu"
     MBIRI = "mbiri"
     MBIRIKANI_ESELENKEI = "mbirikani/eselenkei"
-    MBITINI_KITUI_RURAL = "mbitini-kitui rural"
-    MBITINI_MAKUENI = "mbitini-makueni"
+    MBITINI_KITUI_RURAL = "mbitini kitui rural"
+    MBITINI_MAKUENI = "mbitini makueni"
     MBIUNI = "mbiuni"
     MBOGHONI = "mboghoni"
     MBOLOLO = "mbololo"
@@ -1268,8 +1268,8 @@ class KenyaCodes(object):
     MIWANI = "miwani"
     MJAMBERE = "mjambere"
     MJI_WA_KALE_MAKADARA = "mji wa kale/makadara"
-    MKOMANI_LAMU_WEST = "mkomani-lamu west"
-    MKOMANI_NYALI = "mkomani-nyali"
+    MKOMANI_LAMU_WEST = "mkomani lamu west"
+    MKOMANI_NYALI = "mkomani nyali"
     MKONGANI = "mkongani"
     MKUNUMBI = "mkunumbi"
     MLANGO_KUBWA = "mlango kubwa"
@@ -1286,8 +1286,8 @@ class KenyaCodes(object):
     MOLO = "molo"
     MONYERERO = "monyerero"
     MOROTHILE = "morothile"
-    MOSIRO_KAJIADO_WEST = "mosiro-kajiado west"
-    MOSIRO_NAROK_EAST = "mosiro-narok east"
+    MOSIRO_KAJIADO_WEST = "mosiro kajiado west"
+    MOSIRO_NAROK_EAST = "mosiro narok east"
     MOSOP = "mosop"
     MOTICHO = "moticho"
     MOTOSIET = "motosiet"
@@ -1304,8 +1304,8 @@ class KenyaCodes(object):
     MUGOGODO_WEST = "mugogodo west"
     MUGOIRI = "mugoiri"
     MUGUGA = "muguga"
-    MUGUMO_INI = "mugumo-ini"
-    MUGUMU_INI = "mugumu-ini"
+    MUGUMO_INI = "mugumo ini"
+    MUGUMU_INI = "mugumu ini"
     MUGUNDA = "mugunda"
     MUGURU = "muguru"
     MUGWE = "mugwe"
@@ -1316,8 +1316,8 @@ class KenyaCodes(object):
     MUKAA = "mukaa"
     MUKOTHIMA = "mukothima"
     MUKURE = "mukure"
-    MUKURWE_INI_CENTRAL = "mukurwe-ini central"
-    MUKURWE_INI_WEST = "mukurwe-ini west"
+    MUKURWE_INI_CENTRAL = "mukurwe ini central"
+    MUKURWE_INI_WEST = "mukurwe ini west"
     MUKUTANI = "mukutani"
     MUKUYUNI = "mukuyuni"
     MULANGO = "mulango"
@@ -1352,9 +1352,9 @@ class KenyaCodes(object):
     MUTITUNI = "mutituni"
     MUTOMO = "mutomo"
     MUTONGUNI = "mutonguni"
-    MUTU_INI = "mutu-ini"
+    MUTU_INI = "mutu ini"
     MUVAU_KIKUUMINI = "muvau/kikuumini"
-    MUVUTI_KIIMA_KIMWE = "muvuti/kiima-kimwe"
+    MUVUTI_KIIMA_KIMWE = "muvuti/kiima kimwe"
     MWAKIRUNGE = "mwakirunge"
     MWANAMWINGA = "mwanamwinga"
     MWANDA_MGANGE = "mwanda/mgange"
@@ -1368,8 +1368,8 @@ class KenyaCodes(object):
     MWERENI = "mwereni"
     MWIBONA = "mwibona"
     MWIHOKO = "mwihoko"
-    MWIKI_KASARANI = "mwiki-kasarani"
-    MWIKI_RUIRU = "mwiki-ruiru"
+    MWIKI_KASARANI = "mwiki kasarani"
+    MWIKI_RUIRU = "mwiki ruiru"
     MWIMBI = "mwimbi"
     MWIYOGO_ENDARASHA = "mwiyogo/endarasha"
     NAATHU = "naathu"
@@ -1420,8 +1420,8 @@ class KenyaCodes(object):
     NGENYILEL = "ngenyilel"
     NGERIA = "ngeria"
     NGEWA = "ngewa"
-    NGINDA_MANYATTA = "nginda-manyatta"
-    NGINDA_MARAGWA = "nginda-maragwa"
+    NGINDA_MANYATTA = "nginda manyatta"
+    NGINDA_MARAGWA = "nginda maragwa"
     NGOBIT = "ngobit"
     NGOLIA = "ngolia"
     NGOLIBA = "ngoliba"
@@ -1502,7 +1502,7 @@ class KenyaCodes(object):
     OLORROPIL = "olorropil"
     OLPUSIMORU = "olpusimoru"
     OL_LESSOS = "ol'lessos"
-    OL_MORAN = "ol-moran"
+    OL_MORAN = "ol moran"
     OMBEYI = "ombeyi"
     ONGATA_RONGAI = "ongata rongai"
     PANGANI = "pangani"
@@ -1516,12 +1516,12 @@ class KenyaCodes(object):
     PURKO = "purko"
     RABAI_KISURUTINI = "rabai/kisurutini"
     RACECOURSE = "racecourse"
-    RAGANA_ORUBA = "ragana-oruba"
+    RAGANA_ORUBA = "ragana oruba"
     RAILWAYS = "railways"
     RAMISI = "ramisi"
     RAVINE = "ravine"
     RHAMU = "rhamu"
-    RHAMU_DIMTU = "rhamu-dimtu"
+    RHAMU_DIMTU = "rhamu dimtu"
     RHODA = "rhoda"
     RIABAI = "riabai"
     RIANA = "riana"
@@ -1539,7 +1539,7 @@ class KenyaCodes(object):
     RUGURU = "ruguru"
     RUGURU_NGANDORI = "ruguru/ngandori"
     RUIRI_RWARERA = "ruiri/rwarera"
-    RUMA_KAKSINGRI = "ruma-kaksingri"
+    RUMA_KAKSINGRI = "ruma kaksingri"
     RUMURUTI_TOWNSHIP = "rumuruti township"
     RURII = "rurii"
     RURING_U = "ruring'u"
@@ -1558,8 +1558,8 @@ class KenyaCodes(object):
     SAIMO_SOI = "saimo/soi"
     SAKA = "saka"
     SALAMA = "salama"
-    SALA_BURA = "sala-bura"
-    SALA_LAFEY = "sala-lafey"
+    SALA_BURA = "sala bura"
+    SALA_LAFEY = "sala lafey"
     SAMBIRIR = "sambirir"
     SAMETA_MOKWERERO = "sameta/mokwerero"
     SANGAILU = "sangailu"
@@ -1581,17 +1581,17 @@ class KenyaCodes(object):
     SHANKOE = "shankoe"
     SHANZU = "shanzu"
     SHAURIMOYO_KALOLENI = "shaurimoyo kaloleni"
-    SHELLA_LAMU_WEST = "shella-lamu west"
-    SHELLA_MALINDI = "shella-malindi"
+    SHELLA_LAMU_WEST = "shella lamu west"
+    SHELLA_MALINDI = "shella malindi"
     SHEYWE = "sheywe"
     SHIKA_ADABU = "shika adabu"
     SHIMANZI_GANJONI = "shimanzi/ganjoni"
     SHIMBIR_FATUMA = "shimbir fatuma"
     SHIMO_LA_TEWA = "shimo la tewa"
-    SHINOYI_SHIKOMARI_ESUMEYIA = "shinoyi-shikomari-esumeyia"
+    SHINOYI_SHIKOMARI_ESUMEYIA = "shinoyi shikomari esumeyia"
     SHIRERE = "shirere"
     SHIRU = "shiru"
-    SHIRUGU_MUGAI = "shirugu-mugai"
+    SHIRUGU_MUGAI = "shirugu mugai"
     SIANA = "siana"
     SIAYA_TOWNSHIP = "siaya township"
     SIBOTI = "siboti"
@@ -1614,8 +1614,8 @@ class KenyaCodes(object):
     SITIKHO = "sitikho"
     SIYOI = "siyoi"
     SOGOO = "sogoo"
-    SOIN_RONGAI = "soin-rongai"
-    SOIN_SIGOWET_SOIN = "soin-sigowet/soin"
+    SOIN_RONGAI = "soin rongai"
+    SOIN_SIGOWET_SOIN = "soin sigowet/soin"
     SOKOKE = "sokoke"
     SOKONI = "sokoni"
     SOLAI = "solai"
@@ -1686,15 +1686,15 @@ class KenyaCodes(object):
     TIWI = "tiwi"
     TONGAREN = "tongaren"
     TONONOKA = "tononoka"
-    TOWNSHIP_GARISSA_TOWNSHIP = "township-garissa township"
-    TOWNSHIP_KANDUYI = "township-kanduyi"
-    TOWNSHIP_KIAMBU = "township-kiambu"
-    TOWNSHIP_KIHARU = "township-kiharu"
-    TOWNSHIP_KITUI_CENTRAL = "township-kitui central"
-    TOWNSHIP_MANDERA_EAST = "township-mandera east"
-    TOWNSHIP_THIKA_TOWN = "township-thika town"
-    TOWNSHIP_WAJIR_EAST = "township-wajir east"
-    TOWNSHIP_WEST_MUGIRANGO = "township-west mugirango"
+    TOWNSHIP_GARISSA_TOWNSHIP = "township garissa township"
+    TOWNSHIP_KANDUYI = "township kanduyi"
+    TOWNSHIP_KIAMBU = "township kiambu"
+    TOWNSHIP_KIHARU = "township kiharu"
+    TOWNSHIP_KITUI_CENTRAL = "township kitui central"
+    TOWNSHIP_MANDERA_EAST = "township mandera east"
+    TOWNSHIP_THIKA_TOWN = "township thika town"
+    TOWNSHIP_WAJIR_EAST = "township wajir east"
+    TOWNSHIP_WEST_MUGIRANGO = "township west mugirango"
     TSEIKURU = "tseikuru"
     TSIMBA_GOLINI = "tsimba golini"
     TUDOR = "tudor"
@@ -1721,14 +1721,14 @@ class KenyaCodes(object):
     UTHIRU_RUTHIMITU = "uthiru/ruthimitu"
     VANGA = "vanga"
     VISOI = "visoi"
-    VIWANDANI_MAKADARA = "viwandani-makadara"
-    VIWANDANI_NAIVASHA = "viwandani-naivasha"
+    VIWANDANI_MAKADARA = "viwandani makadara"
+    VIWANDANI_NAIVASHA = "viwandani naivasha"
     VOO_KYAMATU = "voo/kyamatu"
     WAA = "waa"
     WABERA = "wabera"
     WABERI = "waberi"
     WAGBERI = "wagberi"
-    WAIA_KAKO = "waia-kako"
+    WAIA_KAKO = "waia kako"
     WAITA = "waita"
     WAITALUK = "waitaluk"
     WAITHAKA = "waithaka"
@@ -1743,8 +1743,8 @@ class KenyaCodes(object):
     WANGU = "wangu"
     WANJOHI = "wanjohi"
     WARANQARA = "waranqara"
-    WARGADUD_MANDERA_SOUTH = "wargadud-mandera south"
-    WARGADUD_TARBAJ = "wargadud-tarbaj"
+    WARGADUD_MANDERA_SOUTH = "wargadud mandera south"
+    WARGADUD_TARBAJ = "wargadud tarbaj"
     WASEGES = "waseges"
     WASIMBETE = "wasimbete"
     WASO = "waso"
@@ -1794,50 +1794,1458 @@ class KenyaCodes(object):
     ZIWA_LA_NG_OMBE = "ziwa la ng'ombe"
     ZOMBE_MWITIKA = "zombe/mwitika"
 
-    # Machakos wards -> consituency map
-    # Todo: update the rest of the wards
-    # WARD_TO_CONSTITUENCY_MAP = {
-    #     KIVAA: MASINGA,
-    #     MASINGA_CENTRAL: MASINGA,
-    #     EKALAKALA: MASINGA,
-    #     MUTHESYA: MASINGA,
-    #     NDITHINI: MASINGA,
-    #     NDALANI: YATTA,
-    #     MATUU: YATTA,
-    #     KITHIMANI: YATTA,
-    #     IKOMBE: YATTA,
-    #     KATANGI: YATTA,
-    #     KANGUNDO_NORTH: KANGUNDO,
-    #     KANGUNDO_CENTRAL: KANGUNDO,
-    #     KANGUNDO_EAST: KANGUNDO,
-    #     KANGUNDO_WEST: KANGUNDO,
-    #     MATUNGULU_NORTH: MATUNGULU,
-    #     MATUNGULU_EAST: MATUNGULU,
-    #     MATUNGULU_WEST: MATUNGULU,
-    #     KYELENI: MATUNGULU,
-    #     TALA: MATUNGULU,
-    #     MITABONI: KATHIANI,
-    #     KATHIANI_CENTRAL: KATHIANI,
-    #     UPPER_KAEWA_IVETI: KATHIANI,
-    #     LOWER_KAEWA_KAANI: KATHIANI,
-    #     ATHI_RIVER: MAVOKO,
-    #     KINANIE: MAVOKO,
-    #     MUTHWANI: MAVOKO,
-    #     SYOKIMAU_MULOLONGO: MAVOKO,
-    #     KALAMA: MACHAKOS_TOWN,
-    #     MUA: MACHAKOS_TOWN,
-    #     MUTITUNI: MACHAKOS_TOWN,
-    #     MACHAKOS_CENTRAL: MACHAKOS_TOWN,
-    #     MUMBUNI_NORTH: MACHAKOS_TOWN,
-    #     MUVUTINI_KIIMA_KIMWE: MACHAKOS_TOWN,
-    #     KOLA: MACHAKOS_TOWN,
-    #     MBIUNI: MWALA,
-    #     MAKUTANO: MWALA,
-    #     MASII: MWALA,
-    #     MUTHETHENI: MWALA,
-    #     WAMUNYU: MWALA,
-    #     KIBAUNI: MWALA
-    # }
+    WARD_TO_CONSTITUENCY_MAP = {
+        PORT_REITZ: CHANGAMWE,
+        KIPEVU: CHANGAMWE,
+        AIRPORT: CHANGAMWE,
+        CHANGAMWE: CHANGAMWE,
+        CHAANI: CHANGAMWE,
+        JOMVU_KUU: JOMVU,
+        MIRITINI: JOMVU,
+        MIKINDANI: JOMVU,
+        MJAMBERE: KISAUNI,
+        JUNDA: KISAUNI,
+        BAMBURI: KISAUNI,
+        MWAKIRUNGE: KISAUNI,
+        MTOPANGA: KISAUNI,
+        MAGOGONI: KISAUNI,
+        SHANZU: KISAUNI,
+        FRERE_TOWN: NYALI,
+        ZIWA_LA_NG_OMBE: NYALI,
+        MKOMANI_NYALI: NYALI,
+        KONGOWEA: NYALI,
+        KADZANDANI: NYALI,
+        MTONGWE: LIKONI,
+        SHIKA_ADABU: LIKONI,
+        BOFU: LIKONI,
+        LIKONI: LIKONI,
+        TIMBWANI: LIKONI,
+        MJI_WA_KALE_MAKADARA: MVITA,
+        TUDOR: MVITA,
+        TONONOKA: MVITA,
+        SHIMANZI_GANJONI: MVITA,
+        MAJENGO: MVITA,
+        GOMBATO_BONGWE: MSAMBWENI,
+        UKUNDA: MSAMBWENI,
+        KINONDO: MSAMBWENI,
+        RAMISI: MSAMBWENI,
+        PONGWE_KIKONENI: LUNGA_LUNGA,
+        DZOMBO: LUNGA_LUNGA,
+        MWERENI: LUNGA_LUNGA,
+        VANGA: LUNGA_LUNGA,
+        TSIMBA_GOLINI: MATUGA,
+        WAA: MATUGA,
+        TIWI: MATUGA,
+        KUBO_SOUTH: MATUGA,
+        MKONGANI: MATUGA,
+        NDAVAYA: KINANGO,
+        PUMA: KINANGO,
+        KINANGO: KINANGO,
+        MACKINNON_ROAD: KINANGO,
+        CHENGONI_SAMBURU: KINANGO,
+        MWAVUMBO: KINANGO,
+        KASEMENI: KINANGO,
+        TEZO: KILIFI_NORTH,
+        SOKONI: KILIFI_NORTH,
+        KIBARANI: KILIFI_NORTH,
+        DABASO: KILIFI_NORTH,
+        MATSANGONI: KILIFI_NORTH,
+        WATAMU: KILIFI_NORTH,
+        MNARANI: KILIFI_NORTH,
+        JUNJU: KILIFI_SOUTH,
+        MWARAKAYA: KILIFI_SOUTH,
+        SHIMO_LA_TEWA: KILIFI_SOUTH,
+        CHASIMBA: KILIFI_SOUTH,
+        MTEPENI: KILIFI_SOUTH,
+        MARIAKANI: KALOLENI,
+        KAYAFUNGO: KALOLENI,
+        KALOLENI_KALOLENI: KALOLENI,
+        MWANAMWINGA: KALOLENI,
+        MWAWESA: RABAI,
+        RURUMA: RABAI,
+        KAMBE_RIBE: RABAI,
+        RABAI_KISURUTINI: RABAI,
+        GANZE: GANZE,
+        BAMBA: GANZE,
+        JARIBUNI: GANZE,
+        SOKOKE: GANZE,
+        JILORE: MALINDI,
+        KAKUYUNI: MALINDI,
+        GANDA: MALINDI,
+        MALINDI_TOWN: MALINDI,
+        SHELLA_MALINDI: MALINDI,
+        MARAFA: MAGARINI,
+        MAGARINI: MAGARINI,
+        GONGONI: MAGARINI,
+        ADU: MAGARINI,
+        GARASHI: MAGARINI,
+        SABAKI: MAGARINI,
+        KIPINI_EAST: GARSEN,
+        GARSEN_SOUTH: GARSEN,
+        KIPINI_WEST: GARSEN,
+        GARSEN_CENTRAL: GARSEN,
+        GARSEN_WEST: GARSEN,
+        GARSEN_NORTH: GARSEN,
+        KINAKOMBA: GALOLE,
+        MIKINDUNI: GALOLE,
+        CHEWANI: GALOLE,
+        WAYU: GALOLE,
+        CHEWELE: BURA,
+        HIRIMANI: BURA,
+        BANGALE: BURA,
+        SALA_BURA: BURA,
+        MADOGO: BURA,
+        FAZA: LAMU_EAST,
+        KIUNGA: LAMU_EAST,
+        BASUBA: LAMU_EAST,
+        SHELLA_LAMU_WEST: LAMU_WEST,
+        MKOMANI_LAMU_WEST: LAMU_WEST,
+        HINDI: LAMU_WEST,
+        MKUNUMBI: LAMU_WEST,
+        HONGWE: LAMU_WEST,
+        WITU: LAMU_WEST,
+        BAHARI: LAMU_WEST,
+        CHALA: TAVETA,
+        MAHOO: TAVETA,
+        BOMANI: TAVETA,
+        MBOGHONI: TAVETA,
+        MATA: TAVETA,
+        WUNDANYI_MBALE: WUNDANYI,
+        WERUGHA: WUNDANYI,
+        WUMINGU_KISHUSHE: WUNDANYI,
+        MWANDA_MGANGE: WUNDANYI,
+        RONG_E: MWATATE,
+        MWATATE: MWATATE,
+        BURA_MWATATE: MWATATE,
+        CHAWIA: MWATATE,
+        WUSI_KISHAMBA: MWATATE,
+        MBOLOLO: VOI,
+        SAGALLA: VOI,
+        KALOLENI_VOI: VOI,
+        MARUNGU: VOI,
+        KASIGAU: VOI,
+        NGOLIA: VOI,
+        WABERI: GARISSA_TOWNSHIP,
+        GALBET: GARISSA_TOWNSHIP,
+        TOWNSHIP_GARISSA_TOWNSHIP: GARISSA_TOWNSHIP,
+        IFTIN: GARISSA_TOWNSHIP,
+        BALAMBALA: BALAMBALA,
+        DANYERE: BALAMBALA,
+        JARA_JARA: BALAMBALA,
+        SAKA: BALAMBALA,
+        SANKURI: BALAMBALA,
+        MODOGASHE: LAGDERA,
+        BENANE_LAGDERA: LAGDERA,
+        GOREALE: LAGDERA,
+        MAALIMIN: LAGDERA,
+        SABENA: LAGDERA,
+        BARAKI: LAGDERA,
+        DERTU: DADAAB,
+        DADAAB: DADAAB,
+        LABASIGALE: DADAAB,
+        DAMAJALE: DADAAB,
+        LIBOI: DADAAB,
+        ABAKAILE: DADAAB,
+        BURA_FAFI: FAFI,
+        DEKAHARIA: FAFI,
+        JARAJILA: FAFI,
+        FAFI: FAFI,
+        NANIGHI: FAFI,
+        HULUGHO: IJARA,
+        SANGAILU: IJARA,
+        IJARA: IJARA,
+        MASALANI: IJARA,
+        GURAR: WAJIR_NORTH,
+        BUTE: WAJIR_NORTH,
+        KORONDILE: WAJIR_NORTH,
+        MALKAGUFU: WAJIR_NORTH,
+        BATALU: WAJIR_NORTH,
+        DANABA: WAJIR_NORTH,
+        GODOMA: WAJIR_NORTH,
+        WAGBERI: WAJIR_EAST,
+        TOWNSHIP_WAJIR_EAST: WAJIR_EAST,
+        BARWAGO: WAJIR_EAST,
+        KHOROF_HARAR: WAJIR_EAST,
+        ELBEN: TARBAJ,
+        SARMAN: TARBAJ,
+        TARBAJ: TARBAJ,
+        WARGADUD_TARBAJ: TARBAJ,
+        ARBAJAHAN: WAJIR_WEST,
+        HADADO_ATHIBOHOL: WAJIR_WEST,
+        ADAMASAJIDE: WAJIR_WEST,
+        GANYURE_WAGALLA: WAJIR_WEST,
+        ELDAS: ELDAS,
+        DELLA: ELDAS,
+        LAKOLEY_SOUTH_BASIR: ELDAS,
+        ELNUR_TULA_TULA: ELDAS,
+        BENANE_WAJIR_SOUTH: WAJIR_SOUTH,
+        BURDER: WAJIR_SOUTH,
+        DADAJA_BULLA: WAJIR_SOUTH,
+        HABASSWEIN: WAJIR_SOUTH,
+        LAGBOGHOL_SOUTH: WAJIR_SOUTH,
+        IBRAHIM_URE: WAJIR_SOUTH,
+        DIIF: WAJIR_SOUTH,
+        TAKABA_SOUTH: MANDERA_WEST,
+        TAKABA: MANDERA_WEST,
+        LAGSURE: MANDERA_WEST,
+        DANDU: MANDERA_WEST,
+        GITHER: MANDERA_WEST,
+        BANISSA: BANISSA,
+        DERKHALE: BANISSA,
+        GUBA: BANISSA,
+        MALKAMARI: BANISSA,
+        KILIWEHIRI: BANISSA,
+        ASHABITO: MANDERA_NORTH,
+        GUTICHA: MANDERA_NORTH,
+        MOROTHILE: MANDERA_NORTH,
+        RHAMU: MANDERA_NORTH,
+        RHAMU_DIMTU: MANDERA_NORTH,
+        WARGADUD_MANDERA_SOUTH: MANDERA_SOUTH,
+        KUTULO: MANDERA_SOUTH,
+        ELWAK_SOUTH: MANDERA_SOUTH,
+        ELWAK_NORTH: MANDERA_SOUTH,
+        SHIMBIR_FATUMA: MANDERA_SOUTH,
+        ARABIA: MANDERA_EAST,
+        TOWNSHIP_MANDERA_EAST: MANDERA_EAST,
+        NEBOI: MANDERA_EAST,
+        KHALALIO: MANDERA_EAST,
+        LIBEHIA: MANDERA_EAST,
+        SALA_LAFEY: LAFEY,
+        FINO: LAFEY,
+        LAFEY: LAFEY,
+        WARANQARA: LAFEY,
+        ALANGO_GOF: LAFEY,
+        BUTIYE: MOYALE,
+        SOLOLO: MOYALE,
+        HEILLU_MANYATTA: MOYALE,
+        GOLBO: MOYALE,
+        MOYALE_TOWNSHIP: MOYALE,
+        URAN: MOYALE,
+        OBBU: MOYALE,
+        DUKANA: NORTH_HORR,
+        MAIKONA: NORTH_HORR,
+        TURBI: NORTH_HORR,
+        NORTH_HORR: NORTH_HORR,
+        ILLERET: NORTH_HORR,
+        SAGANTE_JALDESA: SAKU,
+        KARARE: SAKU,
+        MARSABIT_CENTRAL: SAKU,
+        LOIYANGALANI: LAISAMIS,
+        KARGI_SOUTH_HORR: LAISAMIS,
+        KORR_NGURUNIT: LAISAMIS,
+        LOGO_LOGO: LAISAMIS,
+        LAISAMIS: LAISAMIS,
+        WABERA: ISIOLO_NORTH,
+        BULLA_PESA: ISIOLO_NORTH,
+        CHARI: ISIOLO_NORTH,
+        CHERAB: ISIOLO_NORTH,
+        NGARE_MARA: ISIOLO_NORTH,
+        BURAT: ISIOLO_NORTH,
+        OLDO_NYIRO: ISIOLO_NORTH,
+        GARBATULLA: ISIOLO_SOUTH,
+        KINNA: ISIOLO_SOUTH,
+        SERICHO: ISIOLO_SOUTH,
+        MAUA: IGEMBE_SOUTH,
+        KIEGOI_ANTUBOCHIU: IGEMBE_SOUTH,
+        ATHIRU_GAITI: IGEMBE_SOUTH,
+        AKACHIU: IGEMBE_SOUTH,
+        KANUNI: IGEMBE_SOUTH,
+        AKIRANG_ONDU: IGEMBE_CENTRAL,
+        ATHIRU_RUUJINE: IGEMBE_CENTRAL,
+        IGEMBE_EAST: IGEMBE_CENTRAL,
+        NJIA: IGEMBE_CENTRAL,
+        KANGETA: IGEMBE_CENTRAL,
+        ANTUAMBUI: IGEMBE_NORTH,
+        NTUNENE: IGEMBE_NORTH,
+        ANTUBETWE_KIONGO: IGEMBE_NORTH,
+        NAATHU: IGEMBE_NORTH,
+        AMWATHI: IGEMBE_NORTH,
+        ATHWANA: TIGANIA_WEST,
+        AKITHII: TIGANIA_WEST,
+        KIANJAI: TIGANIA_WEST,
+        NKOMO: TIGANIA_WEST,
+        MBEU: TIGANIA_WEST,
+        THANGATHA: TIGANIA_EAST,
+        MIKINDURI: TIGANIA_EAST,
+        KIGUCHWA: TIGANIA_EAST,
+        MUTHARA: TIGANIA_EAST,
+        KARAMA: TIGANIA_EAST,
+        MUNICIPALITY: NORTH_IMENTI,
+        NTIMA_EAST: NORTH_IMENTI,
+        NTIMA_WEST: NORTH_IMENTI,
+        NYAKI_WEST: NORTH_IMENTI,
+        NYAKI_EAST: NORTH_IMENTI,
+        TIMAU: BUURI,
+        KISIMA: BUURI,
+        KIIRUA_NAARI: BUURI,
+        RUIRI_RWARERA: BUURI,
+        KIBIRICHIA: BUURI,
+        MWANGANTHIA: CENTRAL_IMENTI,
+        ABOTHUGUCHI_CENTRAL: CENTRAL_IMENTI,
+        ABOTHUGUCHI_WEST: CENTRAL_IMENTI,
+        KIAGU: CENTRAL_IMENTI,
+        MITUNGUU: SOUTH_IMENTI,
+        IGOJI_EAST: SOUTH_IMENTI,
+        IGOJI_WEST: SOUTH_IMENTI,
+        ABOGETA_EAST: SOUTH_IMENTI,
+        ABOGETA_WEST: SOUTH_IMENTI,
+        NKUENE: SOUTH_IMENTI,
+        MITHERU: MAARA,
+        MUTHAMBI: MAARA,
+        MWIMBI: MAARA,
+        GANGA: MAARA,
+        CHOGORIA: MAARA,
+        MARIANI: CHUKA_IGAMBANG_OMBE,
+        KARINGANI: CHUKA_IGAMBANG_OMBE,
+        MAGUMONI: CHUKA_IGAMBANG_OMBE,
+        MUGWE: CHUKA_IGAMBANG_OMBE,
+        IGAMBANG_OMBE: CHUKA_IGAMBANG_OMBE,
+        GATUNGA: THARAKA,
+        MUKOTHIMA: THARAKA,
+        NKONDI: THARAKA,
+        CHIAKARIGA: THARAKA,
+        MARIMANTI: THARAKA,
+        RUGURU_NGANDORI: MANYATTA,
+        KITHIMU: MANYATTA,
+        NGINDA_MANYATTA: MANYATTA,
+        MBETI_NORTH: MANYATTA,
+        KIRIMARI: MANYATTA,
+        GATURI_SOUTH: MANYATTA,
+        GATURI_NORTH: RUNYENJES,
+        KAGAARI_SOUTH: RUNYENJES,
+        CENTRAL_WARD: RUNYENJES,
+        KAGAARI_NORTH: RUNYENJES,
+        KYENI_NORTH: RUNYENJES,
+        KYENI_SOUTH: RUNYENJES,
+        MWEA: MBEERE_SOUTH,
+        MAKIMA: MBEERE_SOUTH,
+        MBETI_SOUTH: MBEERE_SOUTH,
+        MAVURIA: MBEERE_SOUTH,
+        KIAMBERE: MBEERE_SOUTH,
+        NTHAWA: MBEERE_NORTH,
+        MUMINJI: MBEERE_NORTH,
+        EVURORE: MBEERE_NORTH,
+        NGOMENI: MWINGI_NORTH,
+        KYUSO: MWINGI_NORTH,
+        MUMONI: MWINGI_NORTH,
+        TSEIKURU: MWINGI_NORTH,
+        THARAKA: MWINGI_NORTH,
+        KYOME_THAANA: MWINGI_WEST,
+        NGUUTANI: MWINGI_WEST,
+        MIGWANI: MWINGI_WEST,
+        KIOMO_KYETHANI: MWINGI_WEST,
+        CENTRAL_MWINGI_CENTRAL: MWINGI_CENTRAL,
+        KIVOU: MWINGI_CENTRAL,
+        NGUNI: MWINGI_CENTRAL,
+        NUU: MWINGI_CENTRAL,
+        MUI: MWINGI_CENTRAL,
+        WAITA: MWINGI_CENTRAL,
+        MUTONGUNI: KITUI_WEST,
+        KAUWI: KITUI_WEST,
+        MATINYANI: KITUI_WEST,
+        KWA_MUTONGA_KITHUMULA: KITUI_WEST,
+        KISASI: KITUI_RURAL,
+        MBITINI_KITUI_RURAL: KITUI_RURAL,
+        KWAVONZA_YATTA: KITUI_RURAL,
+        KANYANGI: KITUI_RURAL,
+        MIAMBANI: KITUI_CENTRAL,
+        TOWNSHIP_KITUI_CENTRAL: KITUI_CENTRAL,
+        KYANGWITHYA_WEST: KITUI_CENTRAL,
+        MULANGO: KITUI_CENTRAL,
+        KYANGWITHYA_EAST: KITUI_CENTRAL,
+        ZOMBE_MWITIKA: KITUI_EAST,
+        NZAMBANI: KITUI_EAST,
+        CHULUNI: KITUI_EAST,
+        VOO_KYAMATU: KITUI_EAST,
+        ENDAU_MALALANI: KITUI_EAST,
+        MUTITO_KALIKU: KITUI_EAST,
+        IKANGA_KYATUNE: KITUI_SOUTH,
+        MUTOMO: KITUI_SOUTH,
+        MUTHA: KITUI_SOUTH,
+        IKUTHA: KITUI_SOUTH,
+        KANZIKO: KITUI_SOUTH,
+        ATHI: KITUI_SOUTH,
+        KIVAA: MASINGA,
+        MASINGA_CENTRAL: MASINGA,
+        EKALAKALA: MASINGA,
+        MUTHESYA: MASINGA,
+        NDITHINI: MASINGA,
+        NDALANI: YATTA,
+        MATUU: YATTA,
+        KITHIMANI: YATTA,
+        IKOMBE: YATTA,
+        KATANGI: YATTA,
+        KANGUNDO_NORTH: KANGUNDO,
+        KANGUNDO_CENTRAL: KANGUNDO,
+        KANGUNDO_EAST: KANGUNDO,
+        KANGUNDO_WEST: KANGUNDO,
+        TALA: MATUNGULU,
+        MATUNGULU_NORTH: MATUNGULU,
+        MATUNGULU_EAST: MATUNGULU,
+        MATUNGULU_WEST: MATUNGULU,
+        KYELENI: MATUNGULU,
+        MITABONI: KATHIANI,
+        KATHIANI_CENTRAL: KATHIANI,
+        UPPER_KAEWA_IVETI: KATHIANI,
+        LOWER_KAEWA_KAANI: KATHIANI,
+        ATHI_RIVER: MAVOKO,
+        KINANIE: MAVOKO,
+        MUTHWANI: MAVOKO,
+        SYOKIMAU_MULOLONGO: MAVOKO,
+        KALAMA: MACHAKOS_TOWN,
+        MUA: MACHAKOS_TOWN,
+        MUTITUNI: MACHAKOS_TOWN,
+        MACHAKOS_CENTRAL: MACHAKOS_TOWN,
+        MUMBUNI_NORTH: MACHAKOS_TOWN,
+        MUVUTI_KIIMA_KIMWE: MACHAKOS_TOWN,
+        KOLA: MACHAKOS_TOWN,
+        MBIUNI: MWALA,
+        MAKUTANO_MWALA: MWALA,
+        MASII: MWALA,
+        MUTHETHENI: MWALA,
+        WAMUNYU: MWALA,
+        KIBAUNI: MWALA,
+        TULIMANI: MBOONI,
+        MBOONI: MBOONI,
+        KITHUNGO_KITUNDU: MBOONI,
+        KITETA_KISAU: MBOONI,
+        WAIA_KAKO: MBOONI,
+        KALAWA: MBOONI,
+        KASIKEU: KILOME,
+        MUKAA: KILOME,
+        KIIMA_KIU_KALANZONI: KILOME,
+        UKIA: KAITI,
+        KEE: KAITI,
+        KILUNGU: KAITI,
+        ILIMA: KAITI,
+        WOTE: MAKUENI,
+        MUVAU_KIKUUMINI: MAKUENI,
+        MAVINDINI: MAKUENI,
+        KITISE_KITHUKI: MAKUENI,
+        KATHONZWENI: MAKUENI,
+        NZAUI_KILILI_KALAMBA: MAKUENI,
+        MBITINI_MAKUENI: MAKUENI,
+        MAKINDU: KIBWEZI_WEST,
+        NGUUMO: KIBWEZI_WEST,
+        KIKUMBULYU_NORTH: KIBWEZI_WEST,
+        KIKUMBULYU_SOUTH: KIBWEZI_WEST,
+        NGUU_MASUMBA: KIBWEZI_WEST,
+        EMALI_MULALA: KIBWEZI_WEST,
+        MASONGALENI: KIBWEZI_EAST,
+        MTITO_ANDEI: KIBWEZI_EAST,
+        THANGE: KIBWEZI_EAST,
+        IVINGONI_NZAMBANI: KIBWEZI_EAST,
+        ENGINEER: KINANGOP,
+        GATHARA: KINANGOP,
+        NORTH_KINANGOP: KINANGOP,
+        MURUNGARU: KINANGOP,
+        NJABINI_KIBURU: KINANGOP,
+        NYAKIO: KINANGOP,
+        GITHABAI: KINANGOP,
+        MAGUMU: KINANGOP,
+        WANJOHI: KIPIPIRI,
+        KIPIPIRI: KIPIPIRI,
+        GETA: KIPIPIRI,
+        GITHIORO: KIPIPIRI,
+        KARAU: OL_KALOU,
+        KANJUIRI_RANGE: OL_KALOU,
+        MIRANGINE: OL_KALOU,
+        KAIMBAGA: OL_KALOU,
+        RURII: OL_KALOU,
+        GATHANJI: OL_JOROK,
+        GATIMU: OL_JOROK,
+        WERU: OL_JOROK,
+        CHARAGITA: OL_JOROK,
+        LESHAU_PONDO: NDARAGWA,
+        KIRIITA: NDARAGWA,
+        CENTRAL_NDARAGWA: NDARAGWA,
+        SHAMATA: NDARAGWA,
+        DEDAN_KIMANTHI: TETU,
+        WAMAGANA: TETU,
+        AGUTHI_GAAKI: TETU,
+        MWEIGA: KIENI,
+        NAROMORU_KIAMATHAGA: KIENI,
+        MWIYOGO_ENDARASHA: KIENI,
+        MUGUNDA: KIENI,
+        GATARAKWA: KIENI,
+        THEGU_RIVER: KIENI,
+        KABARU: KIENI,
+        GAKAWA: KIENI,
+        RUGURU: MATHIRA,
+        MAGUTU: MATHIRA,
+        IRIAINI: MATHIRA,
+        KONYU: MATHIRA,
+        KIRIMUKUYU: MATHIRA,
+        KARATINA_TOWN: MATHIRA,
+        MAHIGA: OTHAYA,
+        IRIA_INI: OTHAYA,
+        CHINGA: OTHAYA,
+        KARIMA: OTHAYA,
+        GIKONDI: MUKURWEINI,
+        RUGI: MUKURWEINI,
+        MUKURWE_INI_WEST: MUKURWEINI,
+        MUKURWE_INI_CENTRAL: MUKURWEINI,
+        KIGANJO_MATHARI: NYERI_TOWN,
+        RWARE: NYERI_TOWN,
+        GATITU_MURUGURU: NYERI_TOWN,
+        RURING_U: NYERI_TOWN,
+        KAMAKWA_MUKARO: NYERI_TOWN,
+        MUTITHI: MWEA,
+        KANGAI: MWEA,
+        THIBA: MWEA,
+        WAMUMU: MWEA,
+        NYANGATI: MWEA,
+        MURINDUKO: MWEA,
+        GATHIGIRIRI: MWEA,
+        TEBERE: MWEA,
+        KABARE: GICHUGU,
+        BARAGWI: GICHUGU,
+        NJUKIINI: GICHUGU,
+        NGARIAMA: GICHUGU,
+        KARUMANDI: GICHUGU,
+        MUKURE: NDIA,
+        KIINE: NDIA,
+        KARITI: NDIA,
+        MUTIRA: KIRINYAGA_CENTRAL,
+        KANYEKINI: KIRINYAGA_CENTRAL,
+        KERUGOYA: KIRINYAGA_CENTRAL,
+        INOI: KIRINYAGA_CENTRAL,
+        KANYENYA_INI: KANGEMA,
+        MUGURU: KANGEMA,
+        RWATHIA: KANGEMA,
+        GITUGI: MATHIOYA,
+        KIRU: MATHIOYA,
+        KAMACHARIA: MATHIOYA,
+        WANGU: KIHARU,
+        MUGOIRI: KIHARU,
+        MBIRI: KIHARU,
+        TOWNSHIP_KIHARU: KIHARU,
+        MURARANDIA: KIHARU,
+        GATURI: KIHARU,
+        KAHUMBU: KIGUMO,
+        MUTHITHI: KIGUMO,
+        KIGUMO: KIGUMO,
+        KANGARI: KIGUMO,
+        KINYONA: KIGUMO,
+        KIMORORI_WEMPA: MARAGWA,
+        MAKUYU: MARAGWA,
+        KAMBITI: MARAGWA,
+        KAMAHUHA: MARAGWA,
+        ICHAGAKI: MARAGWA,
+        NGINDA_MARAGWA: MARAGWA,
+        NG_ARARIA: KANDARA,
+        MURUKA: KANDARA,
+        KAGUNDU_INI: KANDARA,
+        GAICHANJIRU: KANDARA,
+        ITHIRU: KANDARA,
+        RUCHU: KANDARA,
+        ITHANGA: GATANGA,
+        KAKUZI_MITUBIRI: GATANGA,
+        MUGUMO_INI: GATANGA,
+        KIHUMBU_INI: GATANGA,
+        GATANGA: GATANGA,
+        KARIARA: GATANGA,
+        KIAMWANGI: GATUNDU_SOUTH,
+        KIGANJO: GATUNDU_SOUTH,
+        NDARUGU: GATUNDU_SOUTH,
+        NGENDA: GATUNDU_SOUTH,
+        GITUAMBA: GATUNDU_NORTH,
+        GITHOBOKONI: GATUNDU_NORTH,
+        CHANIA: GATUNDU_NORTH,
+        MANG_U: GATUNDU_NORTH,
+        MURERA: JUJA,
+        THETA: JUJA,
+        JUJA: JUJA,
+        WITEITHIE: JUJA,
+        KALIMONI: JUJA,
+        TOWNSHIP_THIKA_TOWN: THIKA_TOWN,
+        KAMENU: THIKA_TOWN,
+        HOSPITAL_THIKA_TOWN: THIKA_TOWN,
+        GATUANYAGA: THIKA_TOWN,
+        NGOLIBA: THIKA_TOWN,
+        GITOTHUA: RUIRU,
+        BIASHARA_RUIRU: RUIRU,
+        GATONGORA: RUIRU,
+        KAHAWA_SUKARI: RUIRU,
+        KAHAWA_WENDANI: RUIRU,
+        KIUU: RUIRU,
+        MWIKI_RUIRU: RUIRU,
+        MWIHOKO: RUIRU,
+        GITHUNGURI: GITHUNGURI,
+        GITHIGA_GITHUNGURI: GITHUNGURI,
+        IKINU: GITHUNGURI,
+        NGEWA: GITHUNGURI,
+        KOMOTHAI: GITHUNGURI,
+        TING_ANG_A: KIAMBU,
+        NDUMBERI: KIAMBU,
+        RIABAI: KIAMBU,
+        TOWNSHIP_KIAMBU: KIAMBU,
+        CIANDA: KIAMBAA,
+        KARURI: KIAMBAA,
+        NDENDERU: KIAMBAA,
+        MUCHATHA: KIAMBAA,
+        KIHARA: KIAMBAA,
+        GITARU: KABETE,
+        MUGUGA: KABETE,
+        NYADHUNA: KABETE,
+        KABETE: KABETE,
+        UTHIRU: KABETE,
+        KARAI: KIKUYU,
+        NACHU: KIKUYU,
+        SIGONA: KIKUYU,
+        KIKUYU: KIKUYU,
+        KINOO: KIKUYU,
+        BIBIRIONI: LIMURU,
+        LIMURU_CENTRAL: LIMURU,
+        NDEIYA: LIMURU,
+        LIMURU_EAST: LIMURU,
+        NGECHA_TIGONI: LIMURU,
+        KINALE: LARI,
+        KIJABE: LARI,
+        NYANDUMA: LARI,
+        KAMBURU: LARI,
+        LARI_KIRENGA: LARI,
+        KAERIS: TURKANA_NORTH,
+        LAKE_ZONE: TURKANA_NORTH,
+        LAPUR: TURKANA_NORTH,
+        KAALENG_KAIKOR: TURKANA_NORTH,
+        KIBISH: TURKANA_NORTH,
+        NAKALALE: TURKANA_NORTH,
+        KAKUMA: TURKANA_WEST,
+        LOPUR: TURKANA_WEST,
+        LETEA: TURKANA_WEST,
+        SONGOT: TURKANA_WEST,
+        KALOBEYEI: TURKANA_WEST,
+        LOKICHOGGIO: TURKANA_WEST,
+        NANAAM: TURKANA_WEST,
+        KERIO_DELTA: TURKANA_CENTRAL,
+        KANG_ATOTHA: TURKANA_CENTRAL,
+        KALOKOL: TURKANA_CENTRAL,
+        LODWAR_TOWNSHIP: TURKANA_CENTRAL,
+        KANAMKEMER: TURKANA_CENTRAL,
+        KOTARUK_LOBEI: LOIMA,
+        TURKWEL: LOIMA,
+        LOIMA: LOIMA,
+        LOKIRIAMA_LORENGIPPI: LOIMA,
+        KAPUTIR: TURKANA_SOUTH,
+        KATILU: TURKANA_SOUTH,
+        LOBOKAT: TURKANA_SOUTH,
+        KALAPATA: TURKANA_SOUTH,
+        LOKICHAR: TURKANA_SOUTH,
+        KAPEDO_NAPEITOM: TURKANA_EAST,
+        KATILIA: TURKANA_EAST,
+        LOKORI_KOCHODIN: TURKANA_EAST,
+        RIWO: KAPENGURIA,
+        KAPENGURIA: KAPENGURIA,
+        MNAGEI: KAPENGURIA,
+        SIYOI: KAPENGURIA,
+        ENDUGH: KAPENGURIA,
+        SOOK: KAPENGURIA,
+        SEKERR: SIGOR,
+        MASOOL: SIGOR,
+        LOMUT: SIGOR,
+        WEIWEI: SIGOR,
+        SUAM: KACHELIBA,
+        KODICH: KACHELIBA,
+        KASEI: KACHELIBA,
+        KAPCHOK: KACHELIBA,
+        KIWAWA: KACHELIBA,
+        ALALE: KACHELIBA,
+        CHEPARERIA: POKOT_SOUTH,
+        BATEI: POKOT_SOUTH,
+        LELAN_POKOT_SOUTH: POKOT_SOUTH,
+        TAPACH: POKOT_SOUTH,
+        LODOKEJEK: SAMBURU_WEST,
+        SUGUTA_MARMAR: SAMBURU_WEST,
+        MARALAL: SAMBURU_WEST,
+        LOOSUK: SAMBURU_WEST,
+        PORO: SAMBURU_WEST,
+        EL_BARTA: SAMBURU_NORTH,
+        NACHOLA: SAMBURU_NORTH,
+        NDOTO: SAMBURU_NORTH,
+        NYIRO: SAMBURU_NORTH,
+        ANGATA_NANYOKIE: SAMBURU_NORTH,
+        BAAWA: SAMBURU_NORTH,
+        WASO: SAMBURU_EAST,
+        WAMBA_WEST: SAMBURU_EAST,
+        WAMBA_EAST: SAMBURU_EAST,
+        WAMBA_NORTH: SAMBURU_EAST,
+        KAPOMBOI: KWANZA,
+        KWANZA: KWANZA,
+        KEIYO: KWANZA,
+        BIDII: KWANZA,
+        CHEPCHOINA: ENDEBESS,
+        ENDEBESS: ENDEBESS,
+        MATUMBEI: ENDEBESS,
+        KINYORO: SABOTI,
+        MATISI: SABOTI,
+        TUWANI: SABOTI,
+        SABOTI: SABOTI,
+        MACHEWA: SABOTI,
+        KIMININI: KIMININI,
+        WAITALUK: KIMININI,
+        SIRENDE: KIMININI,
+        HOSPITAL_KIMININI: KIMININI,
+        SIKHENDU: KIMININI,
+        NABISWA: KIMININI,
+        SINYERERE: CHERANGANY,
+        MAKUTANO: CHERANGANY,
+        KAPLAMAI: CHERANGANY,
+        MOTOSIET: CHERANGANY,
+        CHERANGANY_SUWERWA: CHERANGANY,
+        CHEPSIRO_KIPTOROR: CHERANGANY,
+        SITATUNGA: CHERANGANY,
+        MOI_S_BRIDGE: SOY,
+        KAPKURES_SOY: SOY,
+        ZIWA: SOY,
+        SEGERO_BARSOMBE: SOY,
+        KIPSOMBA: SOY,
+        SOY: SOY,
+        KUINET_KAPSUSWA: SOY,
+        NGENYILEL: TURBO,
+        TAPSAGOI: TURBO,
+        KAMAGUT: TURBO,
+        KIPLOMBE: TURBO,
+        KAPSAOS_TURBO: TURBO,
+        HURUMA_TURBO: TURBO,
+        TEMBELIO: MOIBEN,
+        SERGOIT: MOIBEN,
+        KARUNA_MEIBEKI: MOIBEN,
+        MOIBEN: MOIBEN,
+        KIMUMU: MOIBEN,
+        KAPSOYA: AINABKOI,
+        KAPTAGAT: AINABKOI,
+        AINABKOI_OLARE: AINABKOI,
+        SIMAT_KAPSERET: KAPSERET,
+        KIPKENYO: KAPSERET,
+        NGERIA: KAPSERET,
+        MEGUN: KAPSERET,
+        LANGAS: KAPSERET,
+        RACECOURSE: KESSES,
+        CHEPTIRET_KIPCHAMO: KESSES,
+        TULWET_CHUIYAT: KESSES,
+        TARAKWA: KESSES,
+        KAPYEGO: MARAKWET_EAST,
+        SAMBIRIR: MARAKWET_EAST,
+        ENDO: MARAKWET_EAST,
+        EMBOBUT_EMBULOT: MARAKWET_EAST,
+        LELAN_MARAKWET_WEST: MARAKWET_WEST,
+        SENGWER: MARAKWET_WEST,
+        CHERANG_ANY_CHEBORORWA: MARAKWET_WEST,
+        MOIBEN_KUSERWO: MARAKWET_WEST,
+        KAPSOWAR: MARAKWET_WEST,
+        ARROR: MARAKWET_WEST,
+        EMSOO: KEIYO_NORTH,
+        KAMARINY: KEIYO_NORTH,
+        KAPCHEMUTWA: KEIYO_NORTH,
+        TAMBACH: KEIYO_NORTH,
+        KAPTARAKWA: KEIYO_SOUTH,
+        CHEPKORIO: KEIYO_SOUTH,
+        SOY_NORTH: KEIYO_SOUTH,
+        SOY_SOUTH: KEIYO_SOUTH,
+        KABIEMIT: KEIYO_SOUTH,
+        METKEI: KEIYO_SOUTH,
+        SONGHOR_SOBA: TINDERET,
+        TINDIRET: TINDERET,
+        CHEMELIL_CHEMASE: TINDERET,
+        KAPSIMOTWO: TINDERET,
+        KABWARENG: ALDAI,
+        TERIK: ALDAI,
+        KEMELOI_MARABA: ALDAI,
+        KOBUJOI: ALDAI,
+        KAPTUMO_KABOI: ALDAI,
+        KOYO_NDURIO: ALDAI,
+        NANDI_HILLS: NANDI_HILLS,
+        CHEPKUNYUK: NANDI_HILLS,
+        OL_LESSOS: NANDI_HILLS,
+        KAPCHORUA: NANDI_HILLS,
+        CHEMUNDU_KAPNG_ETUNY: CHESUMEI,
+        KOSIRAI: CHESUMEI,
+        LELMOKWO_NGECHEK: CHESUMEI,
+        KAPTEL_KAMOIYWO: CHESUMEI,
+        KIPTUYA: CHESUMEI,
+        CHEPKUMIA: EMGWEN,
+        KAPKANGANI: EMGWEN,
+        KAPSABET: EMGWEN,
+        KILIBWONI: EMGWEN,
+        CHEPTERWAI: MOSOP,
+        KIPKAREN: MOSOP,
+        KURGUNG_SURUNGAI: MOSOP,
+        KABIYET: MOSOP,
+        NDALAT: MOSOP,
+        KABISAGA: MOSOP,
+        SANGALO_KEBULONIK: MOSOP,
+        TIRIOKO: TIATY,
+        KOLOWA: TIATY,
+        RIBKWO: TIATY,
+        SILALE: TIATY,
+        LOIYAMOROCK: TIATY,
+        TANGULBEI_KOROSSI: TIATY,
+        CHURO_AMAYA: TIATY,
+        BARWESSA: BARINGO_NORTH,
+        KABARTONJO: BARINGO_NORTH,
+        SAIMO_KIPSARAMAN: BARINGO_NORTH,
+        SAIMO_SOI: BARINGO_NORTH,
+        BARTABWA: BARINGO_NORTH,
+        KABARNET: BARINGO_CENTRAL,
+        SACHO: BARINGO_CENTRAL,
+        TENGES: BARINGO_CENTRAL,
+        EWALEL_CHAPCHAP: BARINGO_CENTRAL,
+        KAPROPITA: BARINGO_CENTRAL,
+        MARIGAT: BARINGO_SOUTH,
+        ILCHAMUS: BARINGO_SOUTH,
+        MOCHONGOI: BARINGO_SOUTH,
+        MUKUTANI: BARINGO_SOUTH,
+        MOGOTIO: MOGOTIO,
+        EMINING: MOGOTIO,
+        KISANANA: MOGOTIO,
+        LEMBUS: ELDAMA_RAVINE,
+        LEMBUS_KWEN: ELDAMA_RAVINE,
+        RAVINE: ELDAMA_RAVINE,
+        MUMBERES_MAJI_MAZURI: ELDAMA_RAVINE,
+        LEMBUS_PERKERRA: ELDAMA_RAVINE,
+        KOIBATEK: ELDAMA_RAVINE,
+        OL_MORAN: LAIKIPIA_WEST,
+        RUMURUTI_TOWNSHIP: LAIKIPIA_WEST,
+        GITHIGA_LAIKIPIA_WEST: LAIKIPIA_WEST,
+        MARMANET: LAIKIPIA_WEST,
+        IGWAMITI: LAIKIPIA_WEST,
+        SALAMA: LAIKIPIA_WEST,
+        NGOBIT: LAIKIPIA_EAST,
+        TIGITHI: LAIKIPIA_EAST,
+        THINGITHU: LAIKIPIA_EAST,
+        NANYUKI: LAIKIPIA_EAST,
+        UMANDE: LAIKIPIA_EAST,
+        SOSIAN: LAIKIPIA_NORTH,
+        SEGERA: LAIKIPIA_NORTH,
+        MUGOGODO_WEST: LAIKIPIA_NORTH,
+        MUGOGODO_EAST: LAIKIPIA_NORTH,
+        MARIASHONI: MOLO,
+        ELBURGON: MOLO,
+        TURI: MOLO,
+        MOLO: MOLO,
+        MAU_NAROK: NJORO,
+        MAUCHE: NJORO,
+        KIHINGO: NJORO,
+        NESSUIT: NJORO,
+        LARE: NJORO,
+        NJORO: NJORO,
+        BIASHARA_NAIVASHA: NAIVASHA,
+        HELLS_GATE: NAIVASHA,
+        LAKE_VIEW: NAIVASHA,
+        MAI_MAHIU: NAIVASHA,
+        MAIELLA: NAIVASHA,
+        OLKARIA: NAIVASHA,
+        NAIVASHA_EAST: NAIVASHA,
+        VIWANDANI_NAIVASHA: NAIVASHA,
+        GILGIL: GILGIL,
+        ELEMENTAITA: GILGIL,
+        MBARUK_EBURU: GILGIL,
+        MALEWA_WEST: GILGIL,
+        MURINDATI: GILGIL,
+        AMALO: KURESOI_SOUTH,
+        KERINGET: KURESOI_SOUTH,
+        KIPTAGICH: KURESOI_SOUTH,
+        TINET: KURESOI_SOUTH,
+        KIPTORORO: KURESOI_NORTH,
+        NYOTA: KURESOI_NORTH,
+        SIRIKWA: KURESOI_NORTH,
+        KAMARA: KURESOI_NORTH,
+        SUBUKIA: SUBUKIA,
+        WASEGES: SUBUKIA,
+        KABAZI: SUBUKIA,
+        MENENGAI_WEST: RONGAI,
+        SOIN_RONGAI: RONGAI,
+        VISOI: RONGAI,
+        MOSOP: RONGAI,
+        SOLAI: RONGAI,
+        DUNDORI: BAHATI,
+        KABATINI: BAHATI,
+        KIAMAINA: BAHATI,
+        LANET_UMOJA: BAHATI,
+        BAHATI: BAHATI,
+        BARUT: NAKURU_TOWN_WEST,
+        LONDON: NAKURU_TOWN_WEST,
+        KAPTEMBWO: NAKURU_TOWN_WEST,
+        KAPKURES_NAKURU_TOWN_WEST: NAKURU_TOWN_WEST,
+        RHODA: NAKURU_TOWN_WEST,
+        SHAABAB: NAKURU_TOWN_WEST,
+        BIASHARA_NAKURU_TOWN_EAST: NAKURU_TOWN_EAST,
+        KIVUMBINI: NAKURU_TOWN_EAST,
+        FLAMINGO: NAKURU_TOWN_EAST,
+        MENENGAI: NAKURU_TOWN_EAST,
+        NAKURU_EAST: NAKURU_TOWN_EAST,
+        KILGORIS_CENTRAL: KILGORIS,
+        KEYIAN: KILGORIS,
+        ANGATA_BARIKOI: KILGORIS,
+        SHANKOE: KILGORIS,
+        KIMINTET: KILGORIS,
+        LOLGORIAN: KILGORIS,
+        ILKERIN: EMURUA_DIKIRR,
+        OLOLMASANI: EMURUA_DIKIRR,
+        MOGONDO: EMURUA_DIKIRR,
+        KAPSASIAN: EMURUA_DIKIRR,
+        OLPUSIMORU: NAROK_NORTH,
+        OLOKURTO: NAROK_NORTH,
+        NAROK_TOWN: NAROK_NORTH,
+        NKARETA: NAROK_NORTH,
+        OLORROPIL: NAROK_NORTH,
+        MELILI: NAROK_NORTH,
+        MOSIRO_NAROK_EAST: NAROK_EAST,
+        ILDAMAT_NAROK_EAST: NAROK_EAST,
+        KEEKONYOKIE_NAROK_EAST: NAROK_EAST,
+        SUSWA: NAROK_EAST,
+        MAJIMOTO_NAROOSURA: NAROK_SOUTH,
+        OLOLULUNG_A: NAROK_SOUTH,
+        MELELO: NAROK_SOUTH,
+        LOITA: NAROK_SOUTH,
+        SOGOO: NAROK_SOUTH,
+        SAGAMIAN: NAROK_SOUTH,
+        ILMOTIOK: NAROK_WEST,
+        MARA: NAROK_WEST,
+        SIANA: NAROK_WEST,
+        NAIKARRA: NAROK_WEST,
+        OLKERI: KAJIADO_NORTH,
+        ONGATA_RONGAI: KAJIADO_NORTH,
+        NKAIMURUNYA: KAJIADO_NORTH,
+        OLOOLUA: KAJIADO_NORTH,
+        NGONG: KAJIADO_NORTH,
+        PURKO: KAJIADO_CENTRAL,
+        ILDAMAT_KAJIADO_CENTRAL: KAJIADO_CENTRAL,
+        DALALEKUTUK: KAJIADO_CENTRAL,
+        MATAPATO_NORTH: KAJIADO_CENTRAL,
+        MATAPATO_SOUTH: KAJIADO_CENTRAL,
+        KAPUTIEI_NORTH: KAJIADO_EAST,
+        KITENGELA: KAJIADO_EAST,
+        OLOOSIRKON_SHOLINKE: KAJIADO_EAST,
+        KENYAWA_POKA: KAJIADO_EAST,
+        IMARORO: KAJIADO_EAST,
+        KEEKONYOKIE_KAJIADO_WEST: KAJIADO_WEST,
+        ILOODOKILANI: KAJIADO_WEST,
+        MAGADI: KAJIADO_WEST,
+        EWUASO_OONKIDONG_I: KAJIADO_WEST,
+        MOSIRO_KAJIADO_WEST: KAJIADO_WEST,
+        ENTONET_LENKISIM: KAJIADO_SOUTH,
+        MBIRIKANI_ESELENKEI: KAJIADO_SOUTH,
+        KUKU: KAJIADO_SOUTH,
+        ROMBO: KAJIADO_SOUTH,
+        KIMANA: KAJIADO_SOUTH,
+        LONDIANI: KIPKELION_EAST,
+        KEDOWA_KIMUGUL: KIPKELION_EAST,
+        CHEPSEON: KIPKELION_EAST,
+        TENDENO_SORGET: KIPKELION_EAST,
+        KUNYAK: KIPKELION_WEST,
+        KAMASIAN: KIPKELION_WEST,
+        KIPKELION: KIPKELION_WEST,
+        CHILCHILA: KIPKELION_WEST,
+        KAPSOIT: AINAMOI,
+        AINAMOI: AINAMOI,
+        KAPKUGERWET: AINAMOI,
+        KIPCHEBOR: AINAMOI,
+        KIPCHIMCHIM: AINAMOI,
+        KAPSAOS_AINAMOI: AINAMOI,
+        KISIARA: BURETI,
+        TEBESONIK: BURETI,
+        CHEBOIN: BURETI,
+        CHEMOSOT: BURETI,
+        LITEIN: BURETI,
+        CHEPLANGET: BURETI,
+        KAPKATET: BURETI,
+        WALDAI: BELGUT,
+        KABIANGA: BELGUT,
+        CHEPTORORIET_SERETUT: BELGUT,
+        CHAIK: BELGUT,
+        KAPSUSER: BELGUT,
+        SIGOWET: SIGOWET_SOIN,
+        KAPLELARTET: SIGOWET_SOIN,
+        SOLIAT: SIGOWET_SOIN,
+        SOIN_SIGOWET_SOIN: SIGOWET_SOIN,
+        NDANAI_ABOSI: SOTIK,
+        CHEMAGEL: SOTIK,
+        KIPSONOI: SOTIK,
+        KAPLETUNDO: SOTIK,
+        RONGENA_MANARET: SOTIK,
+        KONG_ASIS: CHEPALUNGU,
+        NYANGORES: CHEPALUNGU,
+        SIGOR: CHEPALUNGU,
+        CHEBUNYO: CHEPALUNGU,
+        SIONGIROI: CHEPALUNGU,
+        MERIGI: BOMET_EAST,
+        KEMBU: BOMET_EAST,
+        LONGISA: BOMET_EAST,
+        KIPRERES: BOMET_EAST,
+        CHEMANER: BOMET_EAST,
+        SILIBWET_TOWNSHIP: BOMET_CENTRAL,
+        NDARAWETA: BOMET_CENTRAL,
+        SINGORWET: BOMET_CENTRAL,
+        CHESOEN: BOMET_CENTRAL,
+        MUTARAKWA: BOMET_CENTRAL,
+        CHEPCHABAS: KONOIN,
+        KIMULOT: KONOIN,
+        MOGOGOSIEK: KONOIN,
+        BOITO: KONOIN,
+        EMBOMOS: KONOIN,
+        MAUTUMA: LUGARI,
+        LUGARI: LUGARI,
+        LUMAKANDA: LUGARI,
+        CHEKALINI: LUGARI,
+        CHEVAYWA: LUGARI,
+        LWANDETI: LUGARI,
+        LIKUYANI: LIKUYANI,
+        SANGO: LIKUYANI,
+        KONGONI: LIKUYANI,
+        NZOIA: LIKUYANI,
+        SINOKO: LIKUYANI,
+        WEST_KABRAS: MALAVA,
+        CHEMUCHE: MALAVA,
+        EAST_KABRAS: MALAVA,
+        BUTALI_CHEGULO: MALAVA,
+        MANDA_SHIVANGA: MALAVA,
+        SHIRUGU_MUGAI: MALAVA,
+        SOUTH_KABRAS: MALAVA,
+        BUTSOTSO_EAST: LURAMBI,
+        BUTSOTSO_SOUTH: LURAMBI,
+        BUTSOTSO_CENTRAL: LURAMBI,
+        SHEYWE: LURAMBI,
+        MAHIAKALO: LURAMBI,
+        SHIRERE: LURAMBI,
+        INGOSTSE_MATHIA: NAVAKHOLO,
+        SHINOYI_SHIKOMARI_ESUMEYIA: NAVAKHOLO,
+        BUNYALA_WEST_NAVAKHOLO: NAVAKHOLO,
+        BUNYALA_EAST: NAVAKHOLO,
+        BUNYALA_CENTRAL_NAVAKHOLO: NAVAKHOLO,
+        MUMIAS_CENTRAL: MUMIAS_WEST,
+        MUMIAS_NORTH: MUMIAS_WEST,
+        ETENJE: MUMIAS_WEST,
+        MUSANDA: MUMIAS_WEST,
+        LUSHEYA_LUBINU: MUMIAS_EAST,
+        MALAHA_ISONGO_MAKUNGA: MUMIAS_EAST,
+        EAST_WANGA: MUMIAS_EAST,
+        KOYONZO: MATUNGU,
+        KHOLERA: MATUNGU,
+        KHALABA_MATUNGU: MATUNGU,
+        MAYONI: MATUNGU,
+        NAMAMALI: MATUNGU,
+        MARAMA_WEST: BUTERE,
+        MARAMA_CENTRAL: BUTERE,
+        MARENYO_SHIANDA: BUTERE,
+        MARAMA_NORTH: BUTERE,
+        MARAMA_SOUTH: BUTERE,
+        KISA_NORTH: KHWISERO,
+        KISA_EAST: KHWISERO,
+        KISA_WEST: KHWISERO,
+        KISA_CENTRAL: KHWISERO,
+        ISUKHA_NORTH: SHINYALU,
+        MURHANDA: SHINYALU,
+        ISUKHA_CENTRAL: SHINYALU,
+        ISUKHA_SOUTH: SHINYALU,
+        ISUKHA_EAST: SHINYALU,
+        ISUKHA_WEST: SHINYALU,
+        IDAKHO_SOUTH: IKOLOMANI,
+        IDAKHO_EAST: IKOLOMANI,
+        IDAKHO_NORTH: IKOLOMANI,
+        IDAKHO_CENTRAL: IKOLOMANI,
+        LUGAGA_WAMULUMA: VIHIGA,
+        SOUTH_MARAGOLI: VIHIGA,
+        CENTRAL_MARAGOLI: VIHIGA,
+        MUNGOMA: VIHIGA,
+        LYADUYWA_IZAVA: SABATIA,
+        WEST_SABATIA: SABATIA,
+        CHAVAKALI: SABATIA,
+        NORTH_MARAGOLI: SABATIA,
+        WODANGA: SABATIA,
+        BUSALI: SABATIA,
+        SHIRU: HAMISI,
+        GISAMBAI: HAMISI,
+        SHAMAKHOKHO: HAMISI,
+        BANJA: HAMISI,
+        MUHUDU: HAMISI,
+        TAMBUA: HAMISI,
+        JEPKOYAI: HAMISI,
+        LUANDA_TOWNSHIP: LUANDA,
+        WEMILABI: LUANDA,
+        MWIBONA: LUANDA,
+        LUANDA_SOUTH: LUANDA,
+        EMABUNGO: LUANDA,
+        NORTH_EAST_BUNYORE: EMUHAYA,
+        CENTRAL_BUNYORE: EMUHAYA,
+        WEST_BUNYORE: EMUHAYA,
+        CHEPTAIS: MT_ELGON,
+        CHESIKAKI: MT_ELGON,
+        CHEPYUK: MT_ELGON,
+        KAPKATENY: MT_ELGON,
+        KAPTAMA: MT_ELGON,
+        ELGON: MT_ELGON,
+        NAMWELA: SIRISIA,
+        MALAKISI_SOUTH_KULISIRU: SIRISIA,
+        LWANDANYI: SIRISIA,
+        KABUCHAI_CHWELE: KABUCHAI,
+        WEST_NALONDO: KABUCHAI,
+        BWAKE_LUUYA: KABUCHAI,
+        MUKUYUNI: KABUCHAI,
+        SOUTH_BUKUSU: BUMULA,
+        BUMULA: BUMULA,
+        KHASOKO: BUMULA,
+        KABULA: BUMULA,
+        KIMAETI: BUMULA,
+        WEST_BUKUSU: BUMULA,
+        SIBOTI: BUMULA,
+        BUKEMBE_WEST: KANDUYI,
+        BUKEMBE_EAST: KANDUYI,
+        TOWNSHIP_KANDUYI: KANDUYI,
+        KHALABA_KANDUYI: KANDUYI,
+        MUSIKOMA: KANDUYI,
+        EAST_SANG_ALO: KANDUYI,
+        MARAKARU_TUUTI: KANDUYI,
+        WEST_SANG_ALO: KANDUYI,
+        MIHUU: WEBUYE_EAST,
+        NDIVISI: WEBUYE_EAST,
+        MARAKA: WEBUYE_EAST,
+        MISIKHU: WEBUYE_WEST,
+        SITIKHO: WEBUYE_WEST,
+        MATULO: WEBUYE_WEST,
+        BOKOLI: WEBUYE_WEST,
+        KIBINGEI: KIMILILI,
+        KIMILILI: KIMILILI,
+        MAENI: KIMILILI,
+        KAMUKUYWA: KIMILILI,
+        MBAKALO: TONGAREN,
+        NAITIRI_KABUYEFWE: TONGAREN,
+        MILIMA: TONGAREN,
+        NDALU_TABANI: TONGAREN,
+        TONGAREN: TONGAREN,
+        SOYSAMBU_MITUA: TONGAREN,
+        MALABA_CENTRAL: TESO_NORTH,
+        MALABA_NORTH: TESO_NORTH,
+        ANG_URAI_SOUTH: TESO_NORTH,
+        ANG_URAI_NORTH: TESO_NORTH,
+        ANG_URAI_EAST: TESO_NORTH,
+        MALABA_SOUTH: TESO_NORTH,
+        ANG_OROM: TESO_SOUTH,
+        CHAKOL_SOUTH: TESO_SOUTH,
+        CHAKOL_NORTH: TESO_SOUTH,
+        AMUKURA_WEST: TESO_SOUTH,
+        AMUKURA_EAST: TESO_SOUTH,
+        AMUKURA_CENTRAL: TESO_SOUTH,
+        NAMBALE_TOWNSHIP: NAMBALE,
+        BUKHAYO_NORTH_WALTSI: NAMBALE,
+        BUKHAYO_EAST: NAMBALE,
+        BUKHAYO_CENTRAL: NAMBALE,
+        BUKHAYO_WEST: MATAYOS,
+        MAYENJE: MATAYOS,
+        MATAYOS_SOUTH: MATAYOS,
+        BUSIBWABO: MATAYOS,
+        BURUMBA: MATAYOS,
+        MARACHI_WEST: BUTULA,
+        KINGANDOLE: BUTULA,
+        MARACHI_CENTRAL: BUTULA,
+        MARACHI_EAST: BUTULA,
+        MARACHI_NORTH: BUTULA,
+        ELUGULU: BUTULA,
+        NAMBOBOTO_NAMBUKU: FUNYULA,
+        NANGINA: FUNYULA,
+        AGENG_A_NANGUBA: FUNYULA,
+        BWIRI: FUNYULA,
+        BUNYALA_CENTRAL_BUDALANGI: BUDALANGI,
+        BUNYALA_NORTH: BUDALANGI,
+        BUNYALA_WEST_BUDALANGI: BUDALANGI,
+        BUNYALA_SOUTH: BUDALANGI,
+        WEST_UGENYA: UGENYA,
+        UKWALA: UGENYA,
+        NORTH_UGENYA: UGENYA,
+        EAST_UGENYA: UGENYA,
+        SIDINDI: UGUNJA,
+        SIGOMERE: UGUNJA,
+        UGUNJA: UGUNJA,
+        USONGA: ALEGO_USONGA,
+        WEST_ALEGO: ALEGO_USONGA,
+        CENTRAL_ALEGO: ALEGO_USONGA,
+        SIAYA_TOWNSHIP: ALEGO_USONGA,
+        NORTH_ALEGO: ALEGO_USONGA,
+        SOUTH_EAST_ALEGO: ALEGO_USONGA,
+        NORTH_GEM: GEM,
+        WEST_GEM_GEM: GEM,
+        CENTRAL_GEM: GEM,
+        YALA_TOWNSHIP: GEM,
+        EAST_GEM_GEM: GEM,
+        SOUTH_GEM: GEM,
+        WEST_YIMBO: BONDO,
+        CENTRAL_SAKWA_BONDO: BONDO,
+        SOUTH_SAKWA_BONDO: BONDO,
+        YIMBO_EAST: BONDO,
+        WEST_SAKWA_BONDO: BONDO,
+        NORTH_SAKWA_BONDO: BONDO,
+        EAST_ASEMBO: RARIEDA,
+        WEST_ASEMBO: RARIEDA,
+        NORTH_UYOMA: RARIEDA,
+        SOUTH_UYOMA: RARIEDA,
+        WEST_UYOMA: RARIEDA,
+        KAJULU: KISUMU_EAST,
+        KOLWA_EAST: KISUMU_EAST,
+        MANYATTA_B: KISUMU_EAST,
+        NYALENDA_A: KISUMU_EAST,
+        KOLWA_CENTRAL: KISUMU_EAST,
+        SOUTH_WEST_KISUMU: KISUMU_WEST,
+        CENTRAL_KISUMU: KISUMU_WEST,
+        KISUMU_NORTH: KISUMU_WEST,
+        WEST_KISUMU: KISUMU_WEST,
+        NORTH_WEST_KISUMU: KISUMU_WEST,
+        RAILWAYS: KISUMU_CENTRAL,
+        MIGOSI: KISUMU_CENTRAL,
+        SHAURIMOYO_KALOLENI: KISUMU_CENTRAL,
+        MARKET_MILIMANI: KISUMU_CENTRAL,
+        KONDELE: KISUMU_CENTRAL,
+        NYALENDA_B: KISUMU_CENTRAL,
+        WEST_SEME: SEME,
+        CENTRAL_SEME: SEME,
+        EAST_SEME: SEME,
+        NORTH_SEME: SEME,
+        EAST_KANO_WAWIDHI: NYANDO,
+        AWASI_ONJIKO: NYANDO,
+        AHERO: NYANDO,
+        KABONYO_KANYAGWAL: NYANDO,
+        KOBURA: NYANDO,
+        MIWANI: MUHORONI,
+        OMBEYI: MUHORONI,
+        MASOGO_NYANG_OMA: MUHORONI,
+        CHEMELIL: MUHORONI,
+        MUHORONI_KORU: MUHORONI,
+        SOUTH_WEST_NYAKACH: NYAKACH,
+        NORTH_NYAKACH: NYAKACH,
+        CENTRAL_NYAKACH: NYAKACH,
+        WEST_NYAKACH: NYAKACH,
+        SOUTH_EAST_NYAKACH: NYAKACH,
+        WEST_KASIPUL: KASIPUL,
+        SOUTH_KASIPUL: KASIPUL,
+        CENTRAL_KASIPUL: KASIPUL,
+        EAST_KAMAGAK: KASIPUL,
+        WEST_KAMAGAK: KASIPUL,
+        KABONDO_EAST: KABONDO_KASIPUL,
+        KABONDO_WEST: KABONDO_KASIPUL,
+        KOKWANYO_KAKELO: KABONDO_KASIPUL,
+        KOJWACH: KABONDO_KASIPUL,
+        WEST_KARACHUONYO: KARACHUONYO,
+        NORTH_KARACHUONYO: KARACHUONYO,
+        CENTRAL_KARACHUONYO: KARACHUONYO,
+        KANYALUO: KARACHUONYO,
+        KIBIRI: KARACHUONYO,
+        WANGCHIENG: KARACHUONYO,
+        KENDU_BAY_TOWN: KARACHUONYO,
+        WEST_GEM_RANGWE: RANGWE,
+        EAST_GEM_RANGWE: RANGWE,
+        KAGAN: RANGWE,
+        KOCHIA: RANGWE,
+        HOMA_BAY_CENTRAL: HOMA_BAY_TOWN,
+        HOMA_BAY_ARUJO: HOMA_BAY_TOWN,
+        HOMA_BAY_WEST: HOMA_BAY_TOWN,
+        HOMA_BAY_EAST: HOMA_BAY_TOWN,
+        KWABWAI: NDHIWA,
+        KANYADOTO: NDHIWA,
+        KANYIKELA: NDHIWA,
+        KABUOCH_NORTH: NDHIWA,
+        KABUOCH_SOUTH_PALA: NDHIWA,
+        KANYAMWA_KOLOGI: NDHIWA,
+        KANYAMWA_KOSEWE: NDHIWA,
+        MFANGANO_ISLAND: SUBA_NORTH_MBITA,
+        RUSINGA_ISLAND: SUBA_NORTH_MBITA,
+        KASGUNGA: SUBA_NORTH_MBITA,
+        GEMBE: SUBA_NORTH_MBITA,
+        LAMBWE: SUBA_NORTH_MBITA,
+        GWASSI_SOUTH: SUBA_SOUTH,
+        GWASSI_NORTH: SUBA_SOUTH,
+        KAKSINGRI_WEST: SUBA_SOUTH,
+        RUMA_KAKSINGRI: SUBA_SOUTH,
+        NORTH_KAMAGAMBO: RONGO,
+        CENTRAL_KAMAGAMBO: RONGO,
+        EAST_KAMAGAMBO: RONGO,
+        SOUTH_KAMAGAMBO: RONGO,
+        NORTH_SAKWA_AWENDO: AWENDO,
+        SOUTH_SAKWA_AWENDO: AWENDO,
+        WEST_SAKWA_AWENDO: AWENDO,
+        CENTRAL_SAKWA_AWENDO: AWENDO,
+        GOD_JOPE: SUNA_EAST,
+        SUNA_CENTRAL: SUNA_EAST,
+        KAKRAO: SUNA_EAST,
+        KWA: SUNA_EAST,
+        WIGA: SUNA_WEST,
+        WASWETA_II: SUNA_WEST,
+        RAGANA_ORUBA: SUNA_WEST,
+        WASIMBETE: SUNA_WEST,
+        WEST_KANYAMKAGO: URIRI,
+        NORTH_KANYAMKAGO: URIRI,
+        CENTRAL_KANYAMKAGO: URIRI,
+        SOUTH_KANYAMKAGO: URIRI,
+        EAST_KANYAMKAGO: URIRI,
+        KACHIEN_G: NYATIKE,
+        KANYASA: NYATIKE,
+        NORTH_KADEM: NYATIKE,
+        MACALDER_KANYARWANDA: NYATIKE,
+        KALER: NYATIKE,
+        GOT_KACHOLA: NYATIKE,
+        MUHURU: NYATIKE,
+        BUKIRA_EAST: KURIA_WEST,
+        BUKIRA_CENTRL_IKEREGE: KURIA_WEST,
+        ISIBANIA: KURIA_WEST,
+        MAKERERO: KURIA_WEST,
+        MASABA: KURIA_WEST,
+        TAGARE: KURIA_WEST,
+        NYAMOSENSE_KOMOSOKO: KURIA_WEST,
+        GOKEHARAKA_GETAMBWEGA: KURIA_EAST,
+        NTIMARU_WEST: KURIA_EAST,
+        NTIMARU_EAST: KURIA_EAST,
+        NYABASI_EAST: KURIA_EAST,
+        NYABASI_WEST: KURIA_EAST,
+        BOMARIBA: BONCHARI,
+        BOGIAKUMU: BONCHARI,
+        BOMORENDA: BONCHARI,
+        RIANA: BONCHARI,
+        TABAKA: SOUTH_MUGIRANGO,
+        BOIKANG_A: SOUTH_MUGIRANGO,
+        BOGETENGA: SOUTH_MUGIRANGO,
+        BORABU_CHITAGO: SOUTH_MUGIRANGO,
+        MOTICHO: SOUTH_MUGIRANGO,
+        GETENGA: SOUTH_MUGIRANGO,
+        BOMBABA_BORABU: BOMACHOGE_BORABU,
+        BOOCHI_BORABU: BOMACHOGE_BORABU,
+        BOKIMONGE: BOMACHOGE_BORABU,
+        MAGENCHE: BOMACHOGE_BORABU,
+        MASIGE_WEST: BOBASI,
+        MASIGE_EAST: BOBASI,
+        BASI_CENTRAL: BOBASI,
+        NYACHEKI: BOBASI,
+        BASI_BOGETAORIO: BOBASI,
+        BOBASI_CHACHE: BOBASI,
+        SAMETA_MOKWERERO: BOBASI,
+        BOBASI_BOITANGARE: BOBASI,
+        MAJOGE_BASI: BOMACHOGE_CHACHE,
+        BOOCHI_TENDERE: BOMACHOGE_CHACHE,
+        BOSOTI_SENGERA: BOMACHOGE_CHACHE,
+        ICHUNI: NYARIBARI_MASABA,
+        NYAMASIBI: NYARIBARI_MASABA,
+        MASIMBA: NYARIBARI_MASABA,
+        GESUSU: NYARIBARI_MASABA,
+        KIAMOKAMA: NYARIBARI_MASABA,
+        BOBARACHO: NYARIBARI_CHACHE,
+        KISII_CENTRAL: NYARIBARI_CHACHE,
+        KEUMBU: NYARIBARI_CHACHE,
+        KIOGORO: NYARIBARI_CHACHE,
+        BIRONGO: NYARIBARI_CHACHE,
+        IBENO: NYARIBARI_CHACHE,
+        MONYERERO: KITUTU_CHACHE_NORTH,
+        SENSI: KITUTU_CHACHE_NORTH,
+        MARANI: KITUTU_CHACHE_NORTH,
+        KEGOGI: KITUTU_CHACHE_NORTH,
+        BOGUSERO: KITUTU_CHACHE_SOUTH,
+        BOGEKA: KITUTU_CHACHE_SOUTH,
+        NYAKOE: KITUTU_CHACHE_SOUTH,
+        KITUTU_CENTRAL: KITUTU_CHACHE_SOUTH,
+        NYATIEKO: KITUTU_CHACHE_SOUTH,
+        RIGOMA: KITUTU_MASABA,
+        GACHUBA: KITUTU_MASABA,
+        KEMERA: KITUTU_MASABA,
+        MAGOMBO: KITUTU_MASABA,
+        MANGA: KITUTU_MASABA,
+        GESIMA: KITUTU_MASABA,
+        NYAMAIYA: WEST_MUGIRANGO,
+        BOGICHORA: WEST_MUGIRANGO,
+        BOSAMARO: WEST_MUGIRANGO,
+        BONYAMATUTA: WEST_MUGIRANGO,
+        TOWNSHIP_WEST_MUGIRANGO: WEST_MUGIRANGO,
+        ITIBO: NORTH_MUGIRANGO,
+        BOMWAGAMO: NORTH_MUGIRANGO,
+        BOKEIRA: NORTH_MUGIRANGO,
+        MAGWAGWA: NORTH_MUGIRANGO,
+        EKERENYO: NORTH_MUGIRANGO,
+        MEKENENE: BORABU,
+        KIABONYORU: BORABU,
+        NYANSIONGO: BORABU,
+        ESISE: BORABU,
+        KITISURU: WESTLANDS,
+        PARKLANDS_HIGHRIDGE: WESTLANDS,
+        KARURA: WESTLANDS,
+        KANGEMI: WESTLANDS,
+        MOUNTAIN_VIEW: WESTLANDS,
+        KILIMANI: DAGORETTI_NORTH,
+        KAWANGWARE: DAGORETTI_NORTH,
+        GATINA: DAGORETTI_NORTH,
+        KILELESHWA: DAGORETTI_NORTH,
+        KABIRO: DAGORETTI_NORTH,
+        MUTU_INI: DAGORETTI_SOUTH,
+        NGANDO: DAGORETTI_SOUTH,
+        RIRUTA: DAGORETTI_SOUTH,
+        UTHIRU_RUTHIMITU: DAGORETTI_SOUTH,
+        WAITHAKA: DAGORETTI_SOUTH,
+        KAREN: LANG_ATA,
+        NAIROBI_WEST: LANG_ATA,
+        MUGUMU_INI: LANG_ATA,
+        SOUTH_C: LANG_ATA,
+        NYAYO_HIGHRISE: LANG_ATA,
+        LAINI_SABA: KIBRA,
+        LINDI: KIBRA,
+        MAKINA: KIBRA,
+        WOODLEY_KENYATTA_GOLF_COURSE: KIBRA,
+        SARANGOMBE: KIBRA,
+        GITHURAI: ROYSAMBU,
+        KAHAWA_WEST: ROYSAMBU,
+        ZIMMERMAN: ROYSAMBU,
+        ROYSAMBU: ROYSAMBU,
+        KAHAWA: ROYSAMBU,
+        CLAY_CITY: KASARANI,
+        MWIKI_KASARANI: KASARANI,
+        KASARANI: KASARANI,
+        NJIRU: KASARANI,
+        RUAI: KASARANI,
+        BABA_DOGO: RUARAKA,
+        UTALII: RUARAKA,
+        MATHARE_NORTH: RUARAKA,
+        LUCKY_SUMMER: RUARAKA,
+        KOROGOCHO: RUARAKA,
+        IMARA_DAIMA: EMBAKASI_SOUTH,
+        KWA_NJENGA: EMBAKASI_SOUTH,
+        KWA_REUBEN: EMBAKASI_SOUTH,
+        PIPELINE: EMBAKASI_SOUTH,
+        KWARE: EMBAKASI_SOUTH,
+        KARIOBANGI_NORTH: EMBAKASI_NORTH,
+        DANDORA_AREA_I: EMBAKASI_NORTH,
+        DANDORA_AREA_II: EMBAKASI_NORTH,
+        DANDORA_AREA_III: EMBAKASI_NORTH,
+        DANDORA_AREA_IV: EMBAKASI_NORTH,
+        KAYOLE_NORTH: EMBAKASI_CENTRAL,
+        KAYOLE_CENTRAL: EMBAKASI_CENTRAL,
+        KAYOLE_SOUTH: EMBAKASI_CENTRAL,
+        KOMAROCK: EMBAKASI_CENTRAL,
+        MATOPENI_SPRING_VALLEY: EMBAKASI_CENTRAL,
+        UPPER_SAVANNAH: EMBAKASI_EAST,
+        LOWER_SAVANNAH: EMBAKASI_EAST,
+        EMBAKASI: EMBAKASI_EAST,
+        UTAWALA: EMBAKASI_EAST,
+        MIHANGO: EMBAKASI_EAST,
+        UMOJA_I: EMBAKASI_WEST,
+        UMOJA_II: EMBAKASI_WEST,
+        MOWLEM: EMBAKASI_WEST,
+        KARIOBANGI_SOUTH: EMBAKASI_WEST,
+        MARINGO_HAMZA: MAKADARA,
+        VIWANDANI_MAKADARA: MAKADARA,
+        HARAMBEE: MAKADARA,
+        MAKONGENI: MAKADARA,
+        PUMWANI: KAMUKUNJI,
+        EASTLEIGH_NORTH: KAMUKUNJI,
+        EASTLEIGH_SOUTH: KAMUKUNJI,
+        AIRBASE: KAMUKUNJI,
+        CALIFORNIA: KAMUKUNJI,
+        NAIROBI_CENTRAL: STAREHE,
+        NGARA: STAREHE,
+        PANGANI: STAREHE,
+        ZIWANI_KARIOKOR: STAREHE,
+        LANDIMAWE: STAREHE,
+        NAIROBI_SOUTH: STAREHE,
+        HOSPITAL_MATHARE: MATHARE,
+        MABATINI: MATHARE,
+        HURUMA_MATHARE: MATHARE,
+        NGEI: MATHARE,
+        MLANGO_KUBWA: MATHARE,
+        KIAMAIKO: MATHARE,
+    }
 
     CONSTITUENCY_TO_COUNTY_MAP = {
         CHANGAMWE: MOMBASA,
@@ -2132,7 +3540,7 @@ class KenyaCodes(object):
         MATHARE: NAIROBI
     }
 
-    # WARDS = list(WARD_TO_CONSTITUENCY_MAP.keys())
+    WARDS = list(WARD_TO_CONSTITUENCY_MAP.keys())
 
     CONSTITUENCIES = list(CONSTITUENCY_TO_COUNTY_MAP.keys())
 
