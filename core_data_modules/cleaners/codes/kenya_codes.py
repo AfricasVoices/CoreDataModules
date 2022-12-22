@@ -1474,7 +1474,7 @@ class KenyaCodes(object):
     NYAKI_EAST = "nyaki east"
     NYAKI_WEST = "nyaki west"
     NYAKOE = "nyakoe"
-    NYALENDA_A = "nyalenda 'a'"
+    NYALENDA_A = "nyalenda a"
     NYALENDA_B = "nyalenda b"
     NYAMAIYA = "nyamaiya"
     NYAMASIBI = "nyamasibi"
