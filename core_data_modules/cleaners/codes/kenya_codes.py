@@ -342,7 +342,7 @@ class KenyaCodes(object):
     WUNDANYI = "wundanyi"
     YATTA = "yatta"
 
-    # Kenya Wards
+    # Kenya Wards src: https://docs.google.com/spreadsheets/d/1NQEJ7ikjrmqQAI8sJ-SXyoZhvOYftMtY/edit?usp=share_link&ouid=105008405800104279592&rtpof=true&sd=true
     ABAKAILE = "abakaile"
     ABOGETA_EAST = "abogeta east"
     ABOGETA_WEST = "abogeta west"
