@@ -342,8 +342,8 @@ class KenyaCodes(object):
     WUNDANYI = "wundanyi"
     YATTA = "yatta"
 
-    # The data for the kenya wards variables was obtained from the IEBC website and was exported from a PDF file
-    # containing registered voters per county assembly ward for the 2022 general election to a spreadsheet: https://docs.google.com/spreadsheets/d/1NQEJ7ikjrmqQAI8sJ-SXyoZhvOYftMtY/edit?usp=share_link&ouid=105008405800104279592&rtpof=true&sd=true. 
+    # The data for the kenya wards was obtained from the IEBC website and was exported from a PDF file containing registered
+    # voters per county assembly ward for the 2022 general election to a spreadsheet: https://docs.google.com/spreadsheets/d/1NQEJ7ikjrmqQAI8sJ-SXyoZhvOYftMtY/edit?usp=share_link&ouid=105008405800104279592&rtpof=true&sd=true. 
     # The wards in the spreadsheet were then formatted appropriately and used to define these variables.
     ABAKAILE = "abakaile"
     ABOGETA_EAST = "abogeta east"
