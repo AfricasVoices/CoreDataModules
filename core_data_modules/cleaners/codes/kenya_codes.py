@@ -303,7 +303,7 @@ class KenyaCodes(object):
     SOUTH_MUGIRANGO = "south mugirango"
     SOY = "soy"
     STAREHE = "starehe"
-    SUBA_NORTH_MBITA = "suba north/mbita"
+    SUBA_NORTH = "suba north"
     SUBA_SOUTH = "suba south"
     SUBUKIA = "subukia"
     SUNA_EAST = "suna east"
@@ -3046,11 +3046,11 @@ class KenyaCodes(object):
         KABUOCH_SOUTH_PALA: NDHIWA,
         KANYAMWA_KOLOGI: NDHIWA,
         KANYAMWA_KOSEWE: NDHIWA,
-        MFANGANO_ISLAND: SUBA_NORTH_MBITA,
-        RUSINGA_ISLAND: SUBA_NORTH_MBITA,
-        KASGUNGA: SUBA_NORTH_MBITA,
-        GEMBE: SUBA_NORTH_MBITA,
-        LAMBWE: SUBA_NORTH_MBITA,
+        MFANGANO_ISLAND: SUBA_NORTH,
+        RUSINGA_ISLAND: SUBA_NORTH,
+        KASGUNGA: SUBA_NORTH,
+        GEMBE: SUBA_NORTH,
+        LAMBWE: SUBA_NORTH,
         GWASSI_SOUTH: SUBA_SOUTH,
         GWASSI_NORTH: SUBA_SOUTH,
         KAKSINGRI_WEST: SUBA_SOUTH,
@@ -3498,7 +3498,7 @@ class KenyaCodes(object):
         RANGWE: HOMA_BAY,
         HOMA_BAY_TOWN: HOMA_BAY,
         NDHIWA: HOMA_BAY,
-        SUBA_NORTH_MBITA: HOMA_BAY,
+        SUBA_NORTH: HOMA_BAY,
         SUBA_SOUTH: HOMA_BAY,
         RONGO: MIGORI,
         AWENDO: MIGORI,
