@@ -1,8 +1,8 @@
 from collections import OrderedDict
 
 from core_data_modules.analysis import analysis_utils
+from core_data_modules.analysis.analysis_utils import normal_codes
 from core_data_modules.cleaners import Codes
-from core_data_modules.data_models.code_scheme import CodeTypes
 
 
 def _non_stop_codes(codes):
@@ -15,18 +15,6 @@ def _non_stop_codes(codes):
     :rtype: list of core_data_modules.data_models.Code
     """
     return [code for code in codes if code.control_code != Codes.STOP]
-
-
-def _normal_codes(codes):
-    """
-    Filters a list of codes for those with code type CodeTypes.NORMAL.
-
-    :param codes: Codes to filter.
-    :type codes: list of core_data_modules.data_models.Code
-    :return: All codes in `codes` which have code type CodeTypes.NORMAL.
-    :rtype: list of core_data_modules.data_models.Code
-    """
-    return [code for code in codes if code.code_type == CodeTypes.NORMAL]
 
 
 def _make_breakdowns_dict(breakdown_configurations):
@@ -154,7 +142,7 @@ def _compute_theme_distributions_for_theme_configuration(individuals, consent_wi
         themes["Total Relevant Participants"], themes["Total Relevant Participants"],
         breakdown_configurations
     )
-    for code in _normal_codes(theme_configuration.code_scheme.codes):
+    for code in normal_codes(theme_configuration.code_scheme.codes):
         _compute_breakdown_percentages(
             themes[code.string_value], themes["Total Relevant Participants"],
             breakdown_configurations

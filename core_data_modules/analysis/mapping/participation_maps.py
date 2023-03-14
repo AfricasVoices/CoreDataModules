@@ -1,21 +1,9 @@
 from core_data_modules.analysis import theme_distributions
-from core_data_modules.data_models.code_scheme import CodeTypes
+from core_data_modules.analysis.analysis_utils import normal_codes
 from core_data_modules.logging import Logger
 from core_data_modules.util import IOUtils
 
 log = Logger(__name__)
-
-
-def _normal_codes(codes):
-    """
-    Filters a list of codes for those with code type CodeTypes.NORMAL.
-
-    :param codes: Codes to filter.
-    :type codes: list of core_data_modules.data_models.Code
-    :return: All codes in `codes` which have code type CodeTypes.NORMAL.
-    :rtype: list of core_data_modules.data_models.Code
-    """
-    return [code for code in codes if code.code_type == CodeTypes.NORMAL]
 
 
 def export_participation_maps(individuals, consent_withdrawn_field, theme_configurations, admin_region_configuration,
@@ -55,7 +43,7 @@ def export_participation_maps(individuals, consent_withdrawn_field, theme_config
     )[admin_region_configuration.dataset_name]
 
     total_frequencies = dict()
-    for region_code in _normal_codes(admin_region_configuration.code_scheme.codes):
+    for region_code in normal_codes(admin_region_configuration.code_scheme.codes):
         total_frequencies[region_code.string_value] = region_distributions[region_code.string_value]["Total Participants"]
 
     mapper(total_frequencies, f"{file_prefix}total_participants.png")
