@@ -131,7 +131,7 @@ def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_co
             range_min = bin_edges[bin_id - 1] + 1
             range_max = bin_edges[bin_id]
             legend_elements.append(Patch(
-                label=range_min if range_min == range_max else f"{range_min} - {range_max}",
+                label=int(range_min) if range_min == range_max else f"{int(range_min)} - {int(range_max)}",
                 facecolor=_AVF_COLOR_MAP(float(bin_id) / number_of_classes),
                 linewidth=0.1, edgecolor="black"
             ))
