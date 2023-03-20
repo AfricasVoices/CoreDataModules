@@ -43,6 +43,18 @@ def get_codes_from_td(td, analysis_configuration):
     return codes
 
 
+def normal_codes(codes):
+    """
+    Filters a list of codes for those with code type CodeTypes.NORMAL.
+
+    :param codes: Codes to filter.
+    :type codes: list of core_data_modules.data_models.Code
+    :return: All codes in `codes` which have code type CodeTypes.NORMAL.
+    :rtype: list of core_data_modules.data_models.Code
+    """
+    return [code for code in codes if code.code_type == CodeTypes.NORMAL]
+
+
 def responded(td, consent_withdrawn_key, analysis_configuration):
     """
     Returns whether the given TracedData object contains a response under the given analysis_configuration.

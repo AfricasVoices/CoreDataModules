@@ -1,21 +1,9 @@
 from collections import OrderedDict
 
 from core_data_modules.analysis import analysis_utils
-from core_data_modules.data_models import CodeTypes
+from core_data_modules.analysis.analysis_utils import normal_codes
 
 _NUMBER_OF_INDIVIDUALS_HEADER = "Number of Individuals"
-
-
-def _normal_codes(codes):
-    """
-    Filters a list of codes for those with code type CodeTypes.NORMAL.
-
-    :param codes: Codes to filter.
-    :type codes: list of core_data_modules.data_models.Code
-    :return: All codes in `codes` which have code type CodeTypes.NORMAL.
-    :rtype: list of core_data_modules.data_models.Code
-    """
-    return [code for code in codes if code.code_type == CodeTypes.NORMAL]
 
 
 def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configuration_1, analysis_configuration_2):
@@ -42,8 +30,8 @@ def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configurat
 
     # Initialise the cross_tab_counts dict with all the possible combinations in the 2 given code schemes, with counts
     # initially set to 0.
-    for config_1_code in _normal_codes(analysis_configuration_1.code_scheme.codes):
-        for config_2_code in _normal_codes(analysis_configuration_2.code_scheme.codes):
+    for config_1_code in normal_codes(analysis_configuration_1.code_scheme.codes):
+        for config_2_code in normal_codes(analysis_configuration_2.code_scheme.codes):
             # Assign the count dict for this pair of codes
             # e.g. { "gender": "man", "age_category": "10_to_14", "Number of Individuals": 0 }
             cross_tab_counts[(config_1_code.string_value, config_2_code.string_value)] = {
@@ -55,8 +43,8 @@ def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configurat
     # Count up all the individuals in each category.
     individuals = analysis_utils.filter_opt_ins(individuals, consent_withdrawn_field)
     for ind in individuals:
-        config_1_normal_codes = _normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_1))
-        config_2_normal_codes = _normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_2))
+        config_1_normal_codes = normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_1))
+        config_2_normal_codes = normal_codes(analysis_utils.get_codes_from_td(ind, analysis_configuration_2))
 
         # Skip individuals that don't have a normal code in both datasets, because it's impossible to compute a
         # cross-tab for these individuals.
@@ -71,16 +59,16 @@ def compute_cross_tabs(individuals, consent_withdrawn_field, analysis_configurat
         cross_tab_counts[cross_tab_key][_NUMBER_OF_INDIVIDUALS_HEADER] += 1
 
     # Compute percentages
-    for config_1_code in _normal_codes(analysis_configuration_1.code_scheme.codes):
+    for config_1_code in normal_codes(analysis_configuration_1.code_scheme.codes):
         # Count the total number of individuals with code_1
         code_1_total = 0
-        for config_2_code in _normal_codes(analysis_configuration_2.code_scheme.codes):
+        for config_2_code in normal_codes(analysis_configuration_2.code_scheme.codes):
             cross_tab_key = (config_1_code.string_value, config_2_code.string_value)
             code_1_total += cross_tab_counts[cross_tab_key][_NUMBER_OF_INDIVIDUALS_HEADER]
 
         # For each code 2, compute the percentage occurrence of this code within the other code 2s for this code 1.
         # For example, compute the percentage distributions of gender for each age-range.
-        for config_2_code in _normal_codes(analysis_configuration_2.code_scheme.codes):
+        for config_2_code in normal_codes(analysis_configuration_2.code_scheme.codes):
             cross_tab_key = (config_1_code.string_value, config_2_code.string_value)
             pair_count = cross_tab_counts[cross_tab_key][_NUMBER_OF_INDIVIDUALS_HEADER]
             percent_key = f"{analysis_configuration_2.dataset_name} / {analysis_configuration_1.dataset_name} (%)"
