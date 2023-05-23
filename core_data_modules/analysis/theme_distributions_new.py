@@ -4,7 +4,7 @@ from core_data_modules.analysis import analysis_utils
 
 
 class ThemeAnalysis:
-    def __init__(self, scheme_id, code_id, display_text, theme_type, total_consenting_participants):
+    def __init__(self, scheme_id, code_id, display_text, string_value, theme_type, total_consenting_participants):
         """
         :type display_text: str
         :type theme_type: str
@@ -13,6 +13,7 @@ class ThemeAnalysis:
         self.scheme_id = scheme_id
         self.code_id = code_id
         self.display_text = display_text
+        self.string_value = string_value
         self.theme_type = theme_type
         self.total_consenting_participants = total_consenting_participants
 
@@ -21,6 +22,7 @@ class ThemeAnalysis:
             "scheme_id": self.scheme_id,
             "code_id": self.code_id,
             "display_text": self.display_text,
+            "string_value": self.string_value,
             "theme_type": self.theme_type,
             "total_consenting_participants": self.total_consenting_participants
         }
@@ -48,7 +50,7 @@ class EpisodeAnalysis:
 class ThemeDistributions:
     def __init__(self, episodes):
         """
-        :type episodes: dict of str -> list of ThemeAnalysis
+        :type episodes: dict of str -> list of EpisodeAnalysis
         """
         self.episodes = episodes
 
@@ -104,4 +106,31 @@ def compute_theme_distributions(participants, consent_withdrawn_field, theme_con
 
     return ThemeDistributions(
         episodes=episode_analyses
+    )
+
+
+def export_theme_distributions_csv(participants, consent_withdrawn_field, theme_configurations,
+                                   breakdown_configurations, f):
+    theme_distributions = compute_theme_distributions(participants, consent_withdrawn_field, theme_configurations,
+                                                      breakdown_configurations)
+
+    rows = []
+    last_dataset_name = None
+    for ep in theme_distributions.episodes:
+        for theme in ep.theme_distributions:
+            dataset_name = ep.episode_id
+            row = {
+                "Dataset": dataset_name if dataset_name != last_dataset_name else "",
+                "Theme": theme.string_value,
+                "Total Participants": ep.total_relevant_participants,
+                "Total Participants %": "100"
+            }
+            rows.append(row)
+
+    headers = ["Dataset", "Theme", "Total Participants", "Total Participants %"]
+
+    analysis_utils.write_csv(
+        rows,
+        headers,
+        f
     )
