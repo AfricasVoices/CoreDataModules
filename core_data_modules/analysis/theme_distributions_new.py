@@ -72,6 +72,7 @@ def _compute_episode_theme_distributions(participants, consent_withdrawn_field, 
             scheme_id=episode_configuration.code_scheme.scheme_id,
             code_id=code.code_id,
             display_text=code.display_text,
+            string_value=code.string_value,
             theme_type=code.code_type,
             total_consenting_participants=0
         )
