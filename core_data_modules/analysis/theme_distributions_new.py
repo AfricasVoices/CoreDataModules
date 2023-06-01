@@ -4,13 +4,27 @@ from core_data_modules.analysis import analysis_utils
 
 
 class ThemeAnalysis:
-    def __init__(self, scheme_id, code_id, display_text, string_value, theme_type, total_consenting_participants):
+    """
+    Represents the analysis done on a single theme.
+    """
+
+    def __init__(self, code_scheme_id, code_id, display_text, string_value, theme_type, total_consenting_participants):
         """
+        :param code_scheme_id: Id of the code scheme that this theme belongs to.
+        :type code_scheme_id: str
+        :param code_id: Code id of this theme within the code scheme.
+        :type code_id: str
+        :param display_text: Text to show users in visualisations.
         :type display_text: str
+        :param string_value: Label to use for this theme in CSV exports.
+        :type string_value: str
+        :param theme_type: One of core_data_modules.data_models.CodeTypes.
         :type theme_type: str
+        :param total_consenting_participants: Total number of consenting participants that were labelled with this
+                                              theme.
         :type total_consenting_participants: int
         """
-        self.scheme_id = scheme_id
+        self.code_scheme_id = code_scheme_id
         self.code_id = code_id
         self.display_text = display_text
         self.string_value = string_value
@@ -19,7 +33,7 @@ class ThemeAnalysis:
 
     def to_dict(self):
         return {
-            "scheme_id": self.scheme_id,
+            "code_scheme_id": self.code_scheme_id,
             "code_id": self.code_id,
             "display_text": self.display_text,
             "string_value": self.string_value,
@@ -28,48 +42,60 @@ class ThemeAnalysis:
         }
 
 
-class EpisodeAnalysis:
-    def __init__(self, episode_id, total_relevant_participants, theme_distributions):
+class DatasetAnalysis:
+    """
+    Represents the analysis done on a single dataset.
+    """
+
+    def __init__(self, dataset_id, total_relevant_participants, theme_distributions):
         """
-        :type episode_id: str
+        :param dataset_id: Id to give this dataset.
+        :type dataset_id: str
+        :param total_relevant_participants: The total number of consenting participants who gave a relevant response
+                                            to this dataset.
         :type total_relevant_participants: int
+        :param theme_distributions: Per-theme analysis for this dataset.
         :type theme_distributions: list of ThemeAnalysis
         """
-        self.episode_id = episode_id
+        self.dataset_id = dataset_id
         self.total_relevant_participants = total_relevant_participants
         self.theme_distributions = theme_distributions
 
     def to_dict(self):
         return {
-            "episode_id": self.episode_id,
+            "dataset_id": self.dataset_id,
             "total_relevant_participants": self.total_relevant_participants,
             "theme_distributions": [dist.to_dict() for dist in self.theme_distributions]
         }
 
 
-class ThemeDistributions:
-    def __init__(self, episodes):
+class ThemeDistributionsAnalysis:
+    """
+    Represents the results of a theme distributions analysis.
+    """
+
+    def __init__(self, datasets):
         """
-        :type episodes: dict of str -> list of EpisodeAnalysis
+        :type datasets: dict of str -> list of DatasetAnalysis
         """
-        self.episodes = episodes
+        self.datasets = datasets
 
     def to_dict(self):
         return {
-            "episodes": [ep.to_dict() for ep in self.episodes]
+            "datasets": [ep.to_dict() for ep in self.datasets]
         }
 
 
-def _compute_episode_theme_distributions(participants, consent_withdrawn_field, episode_configuration,
+def _compute_dataset_theme_distributions(participants, consent_withdrawn_field, dataset_configuration,
                                          breakdown_configurations):
     """
     :type episode_configuration: core_data_modules.analysis.AnalysisConfiguration
     """
     # Initialise theme totals for each theme in the dataset
     theme_analyses = OrderedDict()
-    for code in episode_configuration.code_scheme.codes:
+    for code in dataset_configuration.code_scheme.codes:
         theme_analyses[code.code_id] = ThemeAnalysis(
-            scheme_id=episode_configuration.code_scheme.scheme_id,
+            code_scheme_id=dataset_configuration.code_scheme.scheme_id,
             code_id=code.code_id,
             display_text=code.display_text,
             string_value=code.string_value,
@@ -81,14 +107,14 @@ def _compute_episode_theme_distributions(participants, consent_withdrawn_field, 
 
     # Iterate over the participants, incrementing total relevant and
     for participant in participants:
-        if analysis_utils.relevant(participant, consent_withdrawn_field, episode_configuration):
+        if analysis_utils.relevant(participant, consent_withdrawn_field, dataset_configuration):
             episode_total_relevant_participants += 1
 
-        for code in analysis_utils.get_codes_from_td(participant, episode_configuration):
+        for code in analysis_utils.get_codes_from_td(participant, dataset_configuration):
             theme_analyses[code.code_id].total_consenting_participants += 1
 
-    return EpisodeAnalysis(
-        episode_id=episode_configuration.dataset_name,
+    return DatasetAnalysis(
+        dataset_id=dataset_configuration.dataset_name,
         total_relevant_participants=episode_total_relevant_participants,
         theme_distributions=list(theme_analyses.values())
     )
@@ -100,13 +126,13 @@ def compute_theme_distributions(participants, consent_withdrawn_field, theme_con
     episode_analyses = []
     for episode_config in theme_configurations:
         episode_analyses.append(
-            _compute_episode_theme_distributions(
+            _compute_dataset_theme_distributions(
                 participants, consent_withdrawn_field, episode_config, breakdown_configurations
             )
         )
 
-    return ThemeDistributions(
-        episodes=episode_analyses
+    return ThemeDistributionsAnalysis(
+        datasets=episode_analyses
     )
 
 
@@ -117,13 +143,13 @@ def export_theme_distributions_csv(participants, consent_withdrawn_field, theme_
 
     rows = []
     last_dataset_name = None
-    for ep in theme_distributions.episodes:
-        for theme in ep.theme_distributions:
-            dataset_name = ep.episode_id
+    for dataset in theme_distributions.datasets:
+        for theme in dataset.theme_distributions:
+            dataset_name = dataset.dataset_id
             row = {
                 "Dataset": dataset_name if dataset_name != last_dataset_name else "",
                 "Theme": theme.string_value,
-                "Total Participants": ep.total_relevant_participants,
+                "Total Participants": dataset.total_relevant_participants,
                 "Total Participants %": "100"
             }
             rows.append(row)
