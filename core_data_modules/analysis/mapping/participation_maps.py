@@ -64,17 +64,17 @@ def export_participation_maps(individuals, consent_withdrawn_field, theme_config
         map_index = 1
         log.info(f"Exporting map to '{file_prefix}{config.dataset_name}_{map_index}_total_relevant.png'...")
         config_total_frequencies = dict()
-        for region_code in _normal_codes(admin_region_configuration.code_scheme.codes):
+        for region_code in normal_codes(admin_region_configuration.code_scheme.codes):
             config_total_frequencies[region_code.string_value] = distributions[config.dataset_name][
                 "Total Relevant Participants"][f"{admin_region_configuration.dataset_name}:{region_code.string_value}"]
 
         mapper(config_total_frequencies, f"{file_prefix}{config.dataset_name}_{map_index}_total_relevant.png")
 
-        for theme in _normal_codes(config.code_scheme.codes):
+        for theme in normal_codes(config.code_scheme.codes):
             map_index += 1
             log.info(f"Exporting map to '{file_prefix}{config.dataset_name}_{map_index}_{theme.string_value}.png'...")
             theme_frequencies = dict()
-            for region_code in _normal_codes(admin_region_configuration.code_scheme.codes):
+            for region_code in normal_codes(admin_region_configuration.code_scheme.codes):
                 theme_frequencies[region_code.string_value] = distributions[config.dataset_name][theme.string_value][
                     f"{admin_region_configuration.dataset_name}:{region_code.string_value}"]
 
