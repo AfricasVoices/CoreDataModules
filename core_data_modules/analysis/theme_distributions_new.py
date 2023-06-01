@@ -1,6 +1,8 @@
 from collections import OrderedDict
 
 from core_data_modules.analysis import analysis_utils
+from core_data_modules.analysis.analysis_utils import compute_percentage_str
+from core_data_modules.data_models import CodeTypes
 
 
 class ThemeAnalysis:
@@ -142,17 +144,23 @@ def export_theme_distributions_csv(participants, consent_withdrawn_field, theme_
                                                       breakdown_configurations)
 
     rows = []
-    last_dataset_name = None
     for dataset in theme_distributions.datasets:
+        rows.append({
+            "Dataset": dataset.dataset_id,
+            "Theme": "Total Relevant Participants",
+            "Total Participants": dataset.total_relevant_participants,
+            "Total Participants %": "100"
+        })
+
         for theme in dataset.theme_distributions:
-            dataset_name = dataset.dataset_id
-            row = {
-                "Dataset": dataset_name if dataset_name != last_dataset_name else "",
+            rows.append({
+                "Dataset": "",
                 "Theme": theme.string_value,
-                "Total Participants": dataset.total_relevant_participants,
-                "Total Participants %": "100"
-            }
-            rows.append(row)
+                "Total Participants": theme.total_consenting_participants,
+                "Total Participants %": compute_percentage_str(
+                    theme.total_consenting_participants, dataset.total_relevant_participants
+                ) if theme.theme_type == CodeTypes.NORMAL else ""
+            })
 
     headers = ["Dataset", "Theme", "Total Participants", "Total Participants %"]
 
