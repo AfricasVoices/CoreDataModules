@@ -149,7 +149,7 @@ def export_theme_distributions_csv(participants, consent_withdrawn_field, theme_
             "Dataset": dataset.dataset_id,
             "Theme": "Total Relevant Participants",
             "Total Participants": dataset.total_relevant_participants,
-            "Total Participants %": "100"
+            "Total Participants %": compute_percentage_str(1, 1)  # 100%, via compute_percentage_str for the formatting
         })
 
         for theme in dataset.theme_distributions:
