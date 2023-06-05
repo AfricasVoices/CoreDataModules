@@ -88,6 +88,18 @@ class ThemeDistributionsAnalysis:
         }
 
 
+def _non_stop_codes(codes):
+    """
+    Filters a list of codes for those that do not have control code Codes.STOP.
+
+    :param codes: Codes to filter.
+    :type codes: list of core_data_modules.data_models.Code
+    :return: All codes in `codes` except those with control code Codes.STOP.
+    :rtype: list of core_data_modules.data_models.Code
+    """
+    return [code for code in codes if code.control_code != Codes.STOP]
+
+
 def _compute_dataset_theme_distributions(participants, consent_withdrawn_field, dataset_configuration,
                                          breakdown_configurations):
     """
@@ -95,7 +107,7 @@ def _compute_dataset_theme_distributions(participants, consent_withdrawn_field, 
     """
     # Initialise theme totals for each theme in the dataset
     theme_analyses = OrderedDict()
-    for code in dataset_configuration.code_scheme.codes:
+    for code in _non_stop_codes(dataset_configuration.code_scheme.codes):
         theme_analyses[code.code_id] = ThemeAnalysis(
             code_scheme_id=dataset_configuration.code_scheme.scheme_id,
             code_id=code.code_id,
@@ -107,12 +119,14 @@ def _compute_dataset_theme_distributions(participants, consent_withdrawn_field, 
 
     episode_total_relevant_participants = 0
 
-    # Iterate over the participants, incrementing total relevant and
+    # Calculate all the theme_distributions data for this dataset
     for participant in participants:
+        # Total relevance for this episode
         if analysis_utils.relevant(participant, consent_withdrawn_field, dataset_configuration):
             episode_total_relevant_participants += 1
 
-        for code in analysis_utils.get_codes_from_td(participant, dataset_configuration):
+        # Totals for each theme
+        for code in _non_stop_codes(analysis_utils.get_codes_from_td(participant, dataset_configuration)):
             theme_analyses[code.code_id].total_consenting_participants += 1
 
     return DatasetAnalysis(
