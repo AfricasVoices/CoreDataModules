@@ -77,15 +77,16 @@ class ThemeDistributionsAnalysis:
     Represents the results of a theme distributions analysis.
     """
 
-    def __init__(self, datasets):
+    def __init__(self, dataset_analyses):
         """
-        :type datasets: dict of str -> list of DatasetAnalysis
+        :param: Dataset analyses conducted in this theme distributions analysis.
+        :type dataset_analyses: list of DatasetAnalysis
         """
-        self.datasets = datasets
+        self.datasets = dataset_analyses
 
     def to_dict(self):
         return {
-            "datasets": [ep.to_dict() for ep in self.datasets]
+            "datasets": [dataset.to_dict() for dataset in self.datasets]
         }
 
 
@@ -104,7 +105,25 @@ def _non_stop_codes(codes):
 def _compute_dataset_theme_distributions(participants, consent_withdrawn_field, dataset_configuration,
                                          breakdown_configurations):
     """
-    :type episode_configuration: core_data_modules.analysis.AnalysisConfiguration
+    Computes the theme distributions for a list of participants, for a single dataset.
+
+    :param participants: Participants to compute the theme_distributions for.
+    :type participants: iterable of core_data_modules.traced_data.TracedData
+    :param consent_withdrawn_field: Field in each individuals object which records if consent is withdrawn.
+    :type consent_withdrawn_field: str
+    :param dataset_configuration: Configuration for the themes. It should contain:
+                                  - dataset_name. This will be used to index the returned theme_distributions dict
+                                    (the "theme dataset_name" above).
+                                  - code_scheme. This will be used to index each themes dictionary in the returned
+                                    theme_distributions dict (the "theme" above). Themes are formatted as
+                                    {theme_configuration.dataset_name}_{code.string_value} for each code in the
+                                    code_scheme.
+    :type dataset_configuration: iterable of core_data_modules.analysis.AnalysisConfiguration
+    :param breakdown_configurations: Configuration for the breakdowns dict.
+                                     For details, see `theme_distributions._make_breakdowns_dict`.
+    :type breakdown_configurations: iterable of core_data_modules.analysis.AnalysisConfiguration
+    :return: Theme distributions results for one dataset.
+    :rtype: DatasetAnalysis
     """
     # Initialise theme totals for each theme in the dataset
     theme_analyses = OrderedDict()
@@ -137,25 +156,76 @@ def _compute_dataset_theme_distributions(participants, consent_withdrawn_field, 
     )
 
 
-def compute_theme_distributions(participants, consent_withdrawn_field, theme_configurations, breakdown_configurations):
+def compute_theme_distributions(participants, consent_withdrawn_field, dataset_configurations, breakdown_configurations):
+    """
+    Computes the theme distributions for a list of participants.
+
+    :param participants: Participants to compute the theme_distributions for.
+    :type participants: iterable of core_data_modules.traced_data.TracedData
+    :param consent_withdrawn_field: Field in each individuals object which records if consent is withdrawn.
+    :type consent_withdrawn_field: str
+    :param dataset_configurations: Configuration for the themes. Each configuration should contain:
+                                  - dataset_name. This will be used to index the returned theme_distributions dict
+                                    (the "theme dataset_name" above).
+                                  - code_scheme. This will be used to index each themes dictionary in the returned
+                                    theme_distributions dict (the "theme" above). Themes are formatted as
+                                    {theme_configuration.dataset_name}_{code.string_value} for each code in the
+                                    code_scheme.
+    :type dataset_configurations: iterable of core_data_modules.analysis.AnalysisConfiguration
+    :param breakdown_configurations: Configuration for the breakdowns dict.
+                                     For details, see `theme_distributions._make_breakdowns_dict`.
+    :type breakdown_configurations: iterable of core_data_modules.analysis.AnalysisConfiguration
+    :return: Theme distributions results
+    :rtype: ThemeDistributionsAnalysis
+    """
     participants = analysis_utils.filter_opt_ins(participants, consent_withdrawn_field)
 
-    episode_analyses = []
-    for episode_config in theme_configurations:
-        episode_analyses.append(
+    dataset_analyses = []
+    for dataset_config in dataset_configurations:
+        dataset_analyses.append(
             _compute_dataset_theme_distributions(
-                participants, consent_withdrawn_field, episode_config, breakdown_configurations
+                participants, consent_withdrawn_field, dataset_config, breakdown_configurations
             )
         )
 
     return ThemeDistributionsAnalysis(
-        datasets=episode_analyses
+        dataset_analyses=dataset_analyses
     )
 
 
-def export_theme_distributions_csv(participants, consent_withdrawn_field, theme_configurations,
+def export_theme_distributions_csv(participants, consent_withdrawn_field, dataset_configurations,
                                    breakdown_configurations, f):
-    theme_distributions = compute_theme_distributions(participants, consent_withdrawn_field, theme_configurations,
+    """
+    Computes the theme_distributions and exports them to a CSV.
+
+    The CSV will contain the headers:
+     - Dataset, set to the dataset_name in each of the `theme_configurations`, de-duplicated for clarity).
+     - Theme, set to {dataset_name}_{code.string_value}, for each code in each theme_configuration.
+     - Total Participants
+     - Total Participants %
+    and raw total and % headers for each scheme and code in the `breakdown_configurations`.
+
+    TODO: Implement breakdowns
+
+    :param participants: Participants to compute the theme_distributions for.
+    :type participants: iterable of core_data_modules.traced_data.TracedData
+    :param consent_withdrawn_field: Field in each individuals object which records if consent is withdrawn.
+    :type consent_withdrawn_field: str
+    :param dataset_configurations: Configuration for the themes. Each configuration should contain:
+                                  - dataset_name. This will be used to index the returned theme_distributions dict
+                                    (the "theme dataset_name" above).
+                                  - code_scheme. This will be used to index each themes dictionary in the returned
+                                    theme_distributions dict (the "theme" above). Themes are formatted as
+                                    {theme_configuration.dataset_name}_{code.string_value} for each code in the
+                                    code_scheme.
+    :type dataset_configurations: iterable of core_data_modules.analysis.AnalysisConfiguration
+    :param breakdown_configurations: Configuration for the breakdowns dict.
+                                     For details, see `theme_distributions._make_breakdowns_dict`.
+    :type breakdown_configurations: iterable of core_data_modules.analysis.AnalysisConfiguration
+    :param f: File to write the theme_distributions CSV to.
+    :type f: file-like
+    """
+    theme_distributions = compute_theme_distributions(participants, consent_withdrawn_field, dataset_configurations,
                                                       breakdown_configurations)
 
     rows = []
