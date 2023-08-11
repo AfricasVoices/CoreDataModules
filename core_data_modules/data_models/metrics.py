@@ -22,6 +22,28 @@ class MessagesMetrics(object):
 
         self.validate()
 
+    def __add__(self, other):
+        return MessagesMetrics(
+            self.messages_count + other.messages_count,
+            self.messages_with_label + other.messages_with_label,
+            self.not_coded_messages + other.not_coded_messages,
+            self.wrong_scheme_messages + other.wrong_scheme_messages
+        )
+
+    def __sub__(self, other):
+        return MessagesMetrics(
+            self.messages_count - other.messages_count,
+            self.messages_with_label - other.messages_with_label,
+            self.not_coded_messages - other.not_coded_messages,
+            self.wrong_scheme_messages - other.wrong_scheme_messages
+        )
+
+    def __eq__(self, other):
+        return self.messages_count == other.messages_count and \
+            self.messages_with_label == other.messages_with_label and \
+            self.not_coded_messages == other.not_coded_messages and \
+            self.wrong_scheme_messages == other.wrong_scheme_messages
+
     @classmethod
     def from_firebase_map(cls, data):
         messages_count = data["messages_count"]
