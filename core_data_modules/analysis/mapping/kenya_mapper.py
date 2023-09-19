@@ -4,7 +4,7 @@ from shapely import unary_union
 from core_data_modules.analysis.mapping import mapping_utils
 
 
-def export_kenya_constituencies_map(constituency_frequencies, file_path):
+def export_kenya_constituencies_map(constituency_frequencies, file_path, region_filter=None):
     """
     Exports a choropleth map of Kenya's constituencies, with each constituency shaded according to the given frequency
     for each constituency.
@@ -13,8 +13,13 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path):
     :type constituency_frequencies: dict of str -> int
     :param file_path: Path to write the generated map to.
     :type file_path: str
+    :param region_filter: A function which, given a constituency name, returns whether the constituency should be drawn
+                          in the exported map.
+    :type region_filter: func of str -> boolean
     """
     constituencies_map = mapping_utils.get_standard_geodata("kenya", "constituencies")
+    if region_filter is not None:
+        constituencies_map = constituencies_map[constituencies_map.ADM2_AVF.apply(region_filter)]
 
     lakes_map = mapping_utils.get_standard_geodata("kenya", "lakes")
     lakes_map = lakes_map[lakes_map.LAKE_AVF.isin({"lake_turkana", "lake_victoria"})]
@@ -41,7 +46,7 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path):
     plt.close()
 
 
-def export_kenya_counties_map(county_frequencies, file_path):
+def export_kenya_counties_map(county_frequencies, file_path, region_filter=None):
     """
     Exports a choropleth map of Kenya's counties, with each county shaded and labelled according to the given frequency
     for each county.
@@ -50,8 +55,13 @@ def export_kenya_counties_map(county_frequencies, file_path):
     :type county_frequencies: dict of str -> int
     :param file_path: Path to write the generated map to.
     :type file_path: str
+    :param region_filter: A function which, given a county name, returns whether the county should be drawn in the
+                          exported map.
+    :type region_filter: func of str -> boolean
     """
     counties_map = mapping_utils.get_standard_geodata("kenya", "counties")
+    if region_filter is not None:
+        counties_map = counties_map[counties_map.ADM1_AVF.apply(region_filter)]
 
     lakes_map = mapping_utils.get_standard_geodata("kenya", "lakes")
     lakes_map = lakes_map[lakes_map.LAKE_AVF.isin({"lake_turkana", "lake_victoria"})]
