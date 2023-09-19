@@ -9,7 +9,7 @@ setup(
     setup_requires=["pytest-runner"],
     install_requires=["firebase_admin", "python-dateutil", "pytz"],
     extras_require={
-        "mapping": ["numpy", "pandas", "matplotlib<3.4.0", "geopandas", "descartes", "mapclassify"]
+        "mapping": ["numpy", "pandas", "matplotlib<3.4.0", "geopandas", "shapely", "descartes", "mapclassify"]
     },
     tests_require=["pytest<=3.6.4"]
 )

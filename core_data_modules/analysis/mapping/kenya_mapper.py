@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+from shapely import unary_union
 
 from core_data_modules.analysis.mapping import mapping_utils
 
@@ -14,8 +15,13 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path):
     :type file_path: str
     """
     constituencies_map = mapping_utils.get_standard_geodata("kenya", "constituencies")
+
     lakes_map = mapping_utils.get_standard_geodata("kenya", "lakes")
     lakes_map = lakes_map[lakes_map.LAKE_AVF.isin({"lake_turkana", "lake_victoria"})]
+
+    # Clip lakes geometry to constituencies geometry.
+    constituency_geometry = unary_union(constituencies_map["geometry"])
+    lakes_map["geometry"] = lakes_map["geometry"].intersection(constituency_geometry)
 
     fig, ax = plt.subplots()
 
@@ -46,14 +52,18 @@ def export_kenya_counties_map(county_frequencies, file_path):
     :type file_path: str
     """
     counties_map = mapping_utils.get_standard_geodata("kenya", "counties")
+
     lakes_map = mapping_utils.get_standard_geodata("kenya", "lakes")
     lakes_map = lakes_map[lakes_map.LAKE_AVF.isin({"lake_turkana", "lake_victoria"})]
+
+    # Clip lakes geometry to counties geometry.
+    country_geometry = unary_union(counties_map["geometry"])
+    lakes_map["geometry"] = lakes_map["geometry"].intersection(country_geometry)
 
     fig, ax = plt.subplots()
 
     # Draw the base map
     mapping_utils.plot_frequency_map(counties_map, "ADM1_AVF", county_frequencies, ax=ax,
-                                     # labels=labels,  TODO: Find out what this is
                                      label_position_columns=("ADM1_LX", "ADM1_LY"),
                                      callout_position_columns=("ADM1_CALLX", "ADM1_CALLY"))
 
