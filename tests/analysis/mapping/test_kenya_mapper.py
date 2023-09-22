@@ -41,5 +41,8 @@ class TestKenyaMapper(unittest.TestCase):
 
         file_path = path.join(self.test_dir, "counties.png")
         kenya_mapper.export_kenya_counties_map(frequencies, file_path)
-
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/counties.png", _IMAGE_TOLERANCE))
+
+        file_path = path.join(self.test_dir, "counties_filtered.png")
+        kenya_mapper.export_kenya_counties_map(frequencies, file_path, region_filter=lambda county: county in {"siaya", "kakamega", "kisumu"})
+        self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/counties_filtered.png", _IMAGE_TOLERANCE))
