@@ -40,7 +40,8 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path, region_
     )
 
     # Draw Kenya's lakes
-    mapping_utils.plot_water_bodies(lakes_map, ax=ax)
+    if not lakes_map["geometry"].is_empty.all():
+        mapping_utils.plot_water_bodies(lakes_map, ax=ax)
 
     plt.savefig(file_path, dpi=1200, bbox_inches="tight")
     plt.close()
@@ -78,7 +79,8 @@ def export_kenya_counties_map(county_frequencies, file_path, region_filter=None)
                                      callout_position_columns=("ADM1_CALLX", "ADM1_CALLY"))
 
     # Draw Kenya's lakes
-    mapping_utils.plot_water_bodies(lakes_map, ax=ax)
+    if not lakes_map["geometry"].is_empty.all():
+        mapping_utils.plot_water_bodies(lakes_map, ax=ax)
 
     plt.savefig(file_path, dpi=1200, bbox_inches="tight")
     plt.close()
