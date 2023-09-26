@@ -7,6 +7,8 @@ from random import Random
 from matplotlib.testing.compare import compare_images
 
 from core_data_modules.analysis.mapping import mapping_utils, somalia_mapper
+from core_data_modules.cleaners.codes import SomaliaCodes
+from core_data_modules.cleaners.location_tools import SomaliaLocations
 
 _IMAGE_TOLERANCE = 0.1
 
@@ -32,8 +34,14 @@ class TestKenyaMapper(unittest.TestCase):
 
         file_path = path.join(self.test_dir, "regions.png")
         somalia_mapper.export_somalia_region_frequencies_map(frequencies, file_path)
-
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/regions.png", _IMAGE_TOLERANCE))
+
+        file_path = path.join(self.test_dir, "regions_filtered.png")
+        somalia_mapper.export_somalia_region_frequencies_map(
+            frequencies, file_path,
+            region_filter=lambda region: SomaliaLocations.state_for_location_code(region) == SomaliaCodes.GALMUDUG
+        )
+        self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/regions_filtered.png", _IMAGE_TOLERANCE))
 
     def test_export_somalia_district_frequencies_map(self):
         regions = mapping_utils.get_standard_geodata("somalia", "districts")["ADM2_AVF"]
@@ -41,9 +49,14 @@ class TestKenyaMapper(unittest.TestCase):
 
         file_path = path.join(self.test_dir, "districts.png")
         somalia_mapper.export_somalia_district_frequencies_map(frequencies, file_path)
+        self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/districts.png", _IMAGE_TOLERANCE))
 
-        self.assertIsNone(
-            compare_images(file_path, "tests/analysis/mapping/resources/somalia/districts.png", _IMAGE_TOLERANCE))
+        file_path = path.join(self.test_dir, "districts_filtered.png")
+        somalia_mapper.export_somalia_district_frequencies_map(
+            frequencies, file_path,
+            region_filter=lambda district: SomaliaLocations.state_for_location_code(district) == SomaliaCodes.GALMUDUG
+        )
+        self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/districts_filtered.png", _IMAGE_TOLERANCE))
 
     def test_export_mogadishu_sub_district_frequencies_map(self):
         regions = mapping_utils.get_standard_geodata("somalia", "mogadishu_sub_districts")["ADM3_AVF"]
@@ -51,6 +64,11 @@ class TestKenyaMapper(unittest.TestCase):
 
         file_path = path.join(self.test_dir, "mogadishu_sub_districts.png")
         somalia_mapper.export_mogadishu_sub_district_frequencies_map(frequencies, file_path)
+        self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/mogadishu_sub_districts.png", _IMAGE_TOLERANCE))
 
-        self.assertIsNone(
-            compare_images(file_path, "tests/analysis/mapping/resources/somalia/mogadishu_sub_districts.png", _IMAGE_TOLERANCE))
+        file_path = path.join(self.test_dir, "mogadishu_sub_districts_filtered.png")
+        somalia_mapper.export_mogadishu_sub_district_frequencies_map(
+            frequencies, file_path,
+            region_filter=lambda sub_district: sub_district in {SomaliaCodes.BOONDHEERE, SomaliaCodes.CABDLCASIIS, SomaliaCodes.SHANGAANI}
+        )
+        self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/mogadishu_sub_districts_filtered.png", _IMAGE_TOLERANCE))
