@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "CoreDataModules"
+version = "0.17.1"
+authors = [
+  { name="Example Author", email="author@example.com" },
+]
+description = "A small example package"
+readme = "README.md"
+requires-python = "==3.8"
+dependencies=[
+  "firebase_admin", "python-dateutil", "pytz"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pypa/sampleproject"
+
+[tool.setuptools]
+packages = ["core_data_modules"]
+
+
+#from setuptools import setup
+#
+#setup(
+#    name="CoreDataModules",
+#    version="0.16.3",
+#    python_requires=">=3.7.0",
+#    url="https://github.com/AfricasVoices/CoreDataModules",
+#    packages=["core_data_modules"],
+#    setup_requires=["pytest-runner"],
+#    install_requires=["firebase_admin", "python-dateutil", "pytz"],
+#    extras_require={
+#        "mapping": ["numpy", "pandas", "matplotlib<3.4.0", "geopandas", "descartes", "mapclassify"]
+#    },
+#    tests_require=["pytest<=3.6.4"]
+#)
