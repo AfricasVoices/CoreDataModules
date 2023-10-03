@@ -33,11 +33,12 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path, region_
     # Draw the base map
     mapping_utils.plot_frequency_map(constituencies_map, "ADM2_AVF", constituency_frequencies, ax=ax)
 
-    # Draw a zoomed inset map of Nairobi because the constituencies here are really small
-    mapping_utils.plot_inset_frequency_map(
-        constituencies_map, "ADM2_AVF", constituency_frequencies,
-        inset_region=(36.62, -1.46, 37.12, -1.09), zoom=3, inset_position=(35.60, -2.95), ax=ax
-    )
+    if region_filter is None:
+        # Draw a zoomed inset map of  Nairobi because the constituencies here are really small
+        mapping_utils.plot_inset_frequency_map(
+            constituencies_map, "ADM2_AVF", constituency_frequencies,
+            inset_region=(36.62, -1.46, 37.12, -1.09), zoom=3, inset_position=(35.60, -2.95), ax=ax
+        )
 
     # Draw Kenya's lakes
     if not lakes_map["geometry"].is_empty.all():

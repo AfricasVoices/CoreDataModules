@@ -7,6 +7,7 @@ from random import Random
 from matplotlib.testing.compare import compare_images
 
 from core_data_modules.analysis.mapping import kenya_mapper, mapping_utils
+from core_data_modules.cleaners.codes.kenya_codes import KenyaCodes
 
 _IMAGE_TOLERANCE = 0.1
 
@@ -32,8 +33,14 @@ class TestKenyaMapper(unittest.TestCase):
 
         file_path = path.join(self.test_dir, "constituencies.png")
         kenya_mapper.export_kenya_constituencies_map(frequencies, file_path)
-
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/constituencies.png", _IMAGE_TOLERANCE))
+
+        file_path = path.join(self.test_dir, "constituencies_filtered.png")
+        kenya_mapper.export_kenya_constituencies_map(
+            frequencies, file_path,
+            region_filter=lambda constituency: constituency in {KenyaCodes.WESTLANDS}
+        )
+        self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/constituencies_filtered.png", _IMAGE_TOLERANCE))
 
     def test_export_kenya_counties_frequencies_map(self):
         counties = mapping_utils.get_standard_geodata("kenya", "counties")["ADM1_AVF"]
