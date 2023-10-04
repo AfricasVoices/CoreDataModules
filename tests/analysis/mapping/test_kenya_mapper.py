@@ -38,7 +38,8 @@ class TestKenyaMapper(unittest.TestCase):
         file_path = path.join(self.test_dir, "constituencies_filtered.png")
         kenya_mapper.export_kenya_constituencies_map(
             frequencies, file_path,
-            region_filter=lambda constituency: constituency in {KenyaCodes.WESTLANDS}
+            region_filter=lambda constituency: constituency in {KenyaCodes.WESTLANDS},
+            legend_position="upper left"
         )
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/constituencies_filtered.png", _IMAGE_TOLERANCE))
 
@@ -51,9 +52,19 @@ class TestKenyaMapper(unittest.TestCase):
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/counties.png", _IMAGE_TOLERANCE))
 
         file_path = path.join(self.test_dir, "counties_filtered.png")
-        kenya_mapper.export_kenya_counties_map(frequencies, file_path, region_filter=lambda county: county in {"siaya", "kakamega", "kisumu"})
+        kenya_mapper.export_kenya_counties_map(
+            frequencies,
+            file_path,
+            region_filter=lambda county: county in {"siaya", "kakamega", "kisumu"},
+            legend_position="upper left"
+        )
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/counties_filtered.png", _IMAGE_TOLERANCE))
 
         file_path = path.join(self.test_dir, "counties_filtered_no_lakes.png")
-        kenya_mapper.export_kenya_counties_map(frequencies, file_path, region_filter=lambda county: county in {"kitui"})
+        kenya_mapper.export_kenya_counties_map(
+            frequencies,
+            file_path,
+            region_filter=lambda county: county in {"kitui"},
+            legend_position="lower left"
+        )
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/kenya/counties_filtered_no_lakes.png", _IMAGE_TOLERANCE))

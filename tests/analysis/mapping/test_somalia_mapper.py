@@ -39,7 +39,8 @@ class TestKenyaMapper(unittest.TestCase):
         file_path = path.join(self.test_dir, "regions_filtered.png")
         somalia_mapper.export_somalia_region_frequencies_map(
             frequencies, file_path,
-            region_filter=lambda region: SomaliaLocations.state_for_location_code(region) == SomaliaCodes.GALMUDUG
+            region_filter=lambda region: SomaliaLocations.state_for_location_code(region) == SomaliaCodes.GALMUDUG,
+            legend_position="upper left"
         )
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/regions_filtered.png", _IMAGE_TOLERANCE))
 
@@ -54,7 +55,8 @@ class TestKenyaMapper(unittest.TestCase):
         file_path = path.join(self.test_dir, "districts_filtered.png")
         somalia_mapper.export_somalia_district_frequencies_map(
             frequencies, file_path,
-            region_filter=lambda district: SomaliaLocations.state_for_location_code(district) == SomaliaCodes.GALMUDUG
+            region_filter=lambda district: SomaliaLocations.state_for_location_code(district) == SomaliaCodes.GALMUDUG,
+            legend_position="upper left"
         )
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/districts_filtered.png", _IMAGE_TOLERANCE))
 
@@ -69,6 +71,7 @@ class TestKenyaMapper(unittest.TestCase):
         file_path = path.join(self.test_dir, "mogadishu_sub_districts_filtered.png")
         somalia_mapper.export_mogadishu_sub_district_frequencies_map(
             frequencies, file_path,
-            region_filter=lambda sub_district: sub_district in {SomaliaCodes.BOONDHEERE, SomaliaCodes.CABDLCASIIS, SomaliaCodes.SHANGAANI}
+            region_filter=lambda sub_district: sub_district in {SomaliaCodes.BOONDHEERE, SomaliaCodes.CABDLCASIIS, SomaliaCodes.SHANGAANI},
+            legend_position="upper right"
         )
         self.assertIsNone(compare_images(file_path, "tests/analysis/mapping/resources/somalia/mogadishu_sub_districts_filtered.png", _IMAGE_TOLERANCE))
