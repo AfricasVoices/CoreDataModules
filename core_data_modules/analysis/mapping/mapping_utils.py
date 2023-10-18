@@ -62,7 +62,7 @@ def get_standard_geodata(country, admin_level):
 
 
 def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_columns=None,
-                       callout_position_columns=None, show_legend=True, ax=None):
+                       callout_position_columns=None, show_legend=True, legend_position="lower right", ax=None):
     """
     Plots a map of the given geo data with a choropleth showing the frequency of responses in each administrative
     region.
@@ -135,7 +135,7 @@ def plot_frequency_map(geo_data, admin_id_column, frequencies, label_position_co
                 facecolor=_AVF_COLOR_MAP(float(bin_id) / number_of_classes),
                 linewidth=0.1, edgecolor="black"
             ))
-        ax.legend(handles=legend_elements, title="Participants", title_fontsize=6, loc="lower right",
+        ax.legend(handles=legend_elements, title="Participants", title_fontsize=6, loc=legend_position,
                   frameon=False, handlelength=1.8, handleheight=1.8, labelspacing=0, prop=dict(size=5.5))
 
     # Add a label to each administrative region showing its absolute frequency.

@@ -4,7 +4,8 @@ from shapely import unary_union
 from core_data_modules.analysis.mapping import mapping_utils
 
 
-def export_kenya_constituencies_map(constituency_frequencies, file_path, region_filter=None):
+def export_kenya_constituencies_map(constituency_frequencies, file_path, region_filter=None,
+                                    legend_position="lower right"):
     """
     Exports a choropleth map of Kenya's constituencies, with each constituency shaded according to the given frequency
     for each constituency.
@@ -16,6 +17,9 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path, region_
     :param region_filter: A function which, given a constituency name, returns whether the constituency should be drawn
                           in the exported map.
     :type region_filter: func of str -> boolean
+    :param legend_position: Where on the map to draw the legend. For accepted values, see `loc` at
+                            https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.legend.html
+    :type legend_position: str
     """
     constituencies_map = mapping_utils.get_standard_geodata("kenya", "constituencies")
     if region_filter is not None:
@@ -31,7 +35,9 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path, region_
     fig, ax = plt.subplots()
 
     # Draw the base map
-    mapping_utils.plot_frequency_map(constituencies_map, "ADM2_AVF", constituency_frequencies, ax=ax)
+    mapping_utils.plot_frequency_map(
+        constituencies_map, "ADM2_AVF", constituency_frequencies, ax=ax, legend_position=legend_position
+    )
 
     if region_filter is None:
         # Draw a zoomed inset map of  Nairobi because the constituencies here are really small
@@ -48,7 +54,7 @@ def export_kenya_constituencies_map(constituency_frequencies, file_path, region_
     plt.close()
 
 
-def export_kenya_counties_map(county_frequencies, file_path, region_filter=None):
+def export_kenya_counties_map(county_frequencies, file_path, region_filter=None, legend_position="lower right"):
     """
     Exports a choropleth map of Kenya's counties, with each county shaded and labelled according to the given frequency
     for each county.
@@ -60,6 +66,9 @@ def export_kenya_counties_map(county_frequencies, file_path, region_filter=None)
     :param region_filter: A function which, given a county name, returns whether the county should be drawn in the
                           exported map.
     :type region_filter: func of str -> boolean
+    :param legend_position: Where on the map to draw the legend. For accepted values, see `loc` at
+                            https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.legend.html
+    :type legend_position: str
     """
     counties_map = mapping_utils.get_standard_geodata("kenya", "counties")
     if region_filter is not None:
@@ -77,6 +86,7 @@ def export_kenya_counties_map(county_frequencies, file_path, region_filter=None)
     # Draw the base map
     mapping_utils.plot_frequency_map(counties_map, "ADM1_AVF", county_frequencies, ax=ax,
                                      label_position_columns=("ADM1_LX", "ADM1_LY"),
+                                     legend_position=legend_position,
                                      callout_position_columns=("ADM1_CALLX", "ADM1_CALLY"))
 
     # Draw Kenya's lakes
